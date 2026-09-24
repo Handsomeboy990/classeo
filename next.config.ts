@@ -1,7 +1,46 @@
 import type { NextConfig } from "next";
 
+const isDev = process.env.NODE_ENV !== "production";
+// HTTPS only headers are sent where TLS is guaranteed (Vercel, or a reverse
+// proxy that sets FORCE_HTTPS). A plain HTTP Docker run on a LAN would break
+// otherwise.
+const httpsOnly = !!process.env.VERCEL || process.env.FORCE_HTTPS === "true";
+
+// Strict CSP. 'unsafe-inline' on scripts is needed for the pre paint
+// preferences script and Next.js inline bootstrap; no third party origin is
+// allowed anywhere.
+const csp = [
+  "default-src 'self'",
+  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' data: blob:",
+  "font-src 'self'",
+  "connect-src 'self'",
+  "media-src 'self' data: blob:",
+  "frame-ancestors 'none'",
+  "form-action 'self'",
+  "base-uri 'self'",
+  "object-src 'none'",
+  ...(httpsOnly ? ["upgrade-insecure-requests"] : []),
+].join("; ");
+
+const securityHeaders = [
+  { key: "Content-Security-Policy", value: csp },
+  ...(httpsOnly ? [{ key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" }] : []),
+  { key: "X-Content-Type-Options", value: "nosniff" },
+  { key: "X-Frame-Options", value: "DENY" },
+  { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+  { key: "Permissions-Policy", value: "camera=(), microphone=(self), geolocation=(), payment=(), usb=()" },
+  { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
+];
+
 const nextConfig: NextConfig = {
-  /* config options here */
+  output: "standalone",
+  poweredByHeader: false,
+  experimental: { authInterrupts: true },
+  async headers() {
+    return [{ source: "/:path*", headers: securityHeaders }];
+  },
 };
 
 export default nextConfig;
