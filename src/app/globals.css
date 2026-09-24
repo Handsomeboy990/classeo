@@ -1,26 +1,221 @@
 @import "tailwindcss";
 
+/*
+ * Classeo design tokens.
+ * Palette drawn from the Benin flag, tuned for contrast: text and filled
+ * buttons use the deep green (6.6:1 on white), the flag yellow only sits on
+ * dark surfaces, red is reserved for danger. High contrast mode reaches AAA.
+ */
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #f7f7f2;
+  --surface: #ffffff;
+  --surface-2: #f0f1ea;
+  --border: #dddcd3;
+  --border-strong: #b9b8ad;
+  --text: #1a1d1a;
+  --text-muted: #545a52;
+  --primary: #006b40;
+  --primary-hover: #005532;
+  --primary-soft: #e3f1e9;
+  --on-primary: #ffffff;
+  --accent: #fcd116;
+  --accent-soft: #fff6cc;
+  --on-accent: #1a1d1a;
+  --danger: #c8102e;
+  --danger-soft: #fde8eb;
+  --warning: #8a5a00;
+  --warning-soft: #fff1d1;
+  --info: #1d4ed8;
+  --info-soft: #e5edff;
+  --success: #006b40;
+  --success-soft: #e3f1e9;
+  --sidebar: #0b3b2a;
+  --sidebar-hover: #134d38;
+  --sidebar-text: #e7efe9;
+  --sidebar-muted: #a9c2b4;
+  --focus: #1d4ed8;
+  --radius: 0.75rem;
+  color-scheme: light;
+}
+
+[data-theme="dark"] {
+  --bg: #0f1411;
+  --surface: #161d19;
+  --surface-2: #1d2621;
+  --border: #2c3831;
+  --border-strong: #46564c;
+  --text: #eef2ee;
+  --text-muted: #a8b3ab;
+  --primary: #3fbf7f;
+  --primary-hover: #5cd394;
+  --primary-soft: #16382a;
+  --on-primary: #06140d;
+  --accent-soft: #3a3208;
+  --danger: #ff6b7f;
+  --danger-soft: #3d1419;
+  --warning: #f0b43c;
+  --warning-soft: #3a2a08;
+  --info: #7aa2ff;
+  --info-soft: #17223d;
+  --success: #3fbf7f;
+  --success-soft: #16382a;
+  --sidebar: #0a1510;
+  --sidebar-hover: #14261d;
+  --focus: #7aa2ff;
+  color-scheme: dark;
+}
+
+[data-contrast="high"] {
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #ffffff;
+  --border: #000000;
+  --border-strong: #000000;
+  --text: #000000;
+  --text-muted: #1a1a1a;
+  --primary: #00391f;
+  --primary-hover: #000000;
+  --primary-soft: #ffffff;
+  --danger: #8b0000;
+  --warning: #4a3000;
+  --info: #002a8a;
+  --sidebar: #000000;
+  --sidebar-hover: #1a1a1a;
+  --sidebar-text: #ffffff;
+  --sidebar-muted: #ffffff;
+  --focus: #000000;
+}
+
+[data-theme="dark"][data-contrast="high"] {
+  --bg: #000000;
+  --surface: #000000;
+  --surface-2: #000000;
+  --border: #ffffff;
+  --border-strong: #ffffff;
+  --text: #ffffff;
+  --text-muted: #f0f0f0;
+  --primary: #7dffb4;
+  --on-primary: #000000;
+  --primary-soft: #000000;
+  --danger: #ff9aa8;
+  --warning: #ffd479;
+  --info: #a9c4ff;
+  --focus: #ffff00;
+}
+
+/* Text size preference, applied to the root so rem based layouts scale. */
+html[data-text="lg"] {
+  font-size: 112.5%;
+}
+html[data-text="xl"] {
+  font-size: 125%;
+}
+html[data-text="xxl"] {
+  font-size: 150%;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-text: var(--text);
+  --color-muted: var(--text-muted);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-soft: var(--primary-soft);
+  --color-on-primary: var(--on-primary);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-on-accent: var(--on-accent);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-hover: var(--sidebar-hover);
+  --color-sidebar-text: var(--sidebar-text);
+  --color-sidebar-muted: var(--sidebar-muted);
+  --color-focus: var(--focus);
+  --radius-card: var(--radius);
+  --font-sans: var(--font-body);
+  --font-display: var(--font-display);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body), system-ui, sans-serif;
+  line-height: 1.5;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display), var(--font-body), system-ui, sans-serif;
+  letter-spacing: -0.01em;
+}
+
+/* A visible focus on every interactive element, keyboard users first. */
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+button,
+[role="button"],
+a,
+summary,
+select,
+label[for] {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+/* Light data mode hides decorative images to save bandwidth. */
+html[data-lite="on"] img[data-decorative] {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, var(--surface-2) 25%, var(--border) 37%, var(--surface-2) 63%);
+  background-size: 400% 100%;
+  animation: skeleton 1.4s ease infinite;
+  border-radius: 0.5rem;
+}
+
+@keyframes skeleton {
+  0% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0 50%;
+  }
 }
