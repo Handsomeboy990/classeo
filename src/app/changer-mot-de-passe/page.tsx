@@ -1,0 +1,40 @@
+import type { Metadata } from "next";
+
+import { Logo } from "@/components/brand/logo";
+import { ActionForm, SubmitButton } from "@/components/kit/action-form";
+import { FormField } from "@/components/kit/form-field";
+import { Alert } from "@/components/ui/alert";
+import { Input } from "@/components/ui/input";
+import { changePassword } from "@/features/auth/actions";
+import { requireUser } from "@/lib/auth/session";
+
+export const metadata: Metadata = { title: "Changer le mot de passe" };
+
+export default async function ChangePasswordPage() {
+  const user = await requireUser();
+  return (
+    <main className="flex min-h-dvh items-center justify-center px-4 py-10">
+      <div className="w-full max-w-md">
+        <Logo />
+        <h1 className="mt-8 text-2xl font-bold">Changer le mot de passe</h1>
+        {user.mustChangePassword && (
+          <Alert tone="info" className="mt-4">
+            Première connexion : choisissez votre propre mot de passe pour continuer.
+          </Alert>
+        )}
+        <ActionForm action={changePassword} successToast={false} className="mt-6 flex flex-col gap-4">
+          <FormField label="Mot de passe actuel" name="current" required>
+            <Input type="password" autoComplete="current-password" />
+          </FormField>
+          <FormField label="Nouveau mot de passe" name="password" hint="10 caractères minimum, avec au moins une lettre et un chiffre." required>
+            <Input type="password" autoComplete="new-password" />
+          </FormField>
+          <FormField label="Confirmer le nouveau mot de passe" name="confirm" required>
+            <Input type="password" autoComplete="new-password" />
+          </FormField>
+          <SubmitButton size="lg">Enregistrer</SubmitButton>
+        </ActionForm>
+      </div>
+    </main>
+  );
+}
