@@ -20,6 +20,8 @@ export async function GET(request: Request) {
       const published = items.filter((i) => i.mode === "published").length;
       return {
         element: reportCardPdf({ title: `Bulletins de la ${classroom.name}, ${period.name} ${classroom.academicYear.label}`, meta: { ...base, reference: batchRef }, items: pages }),
+        kind: "bulletin" as const,
+        title: `Bulletins de la ${classroom.name}`,
         fileName: pdfFileName("bulletins", classroom.name, period.name, classroom.academicYear.label),
         reference: batchRef,
         summary: `bulletins de la ${classroom.name}, ${period.name} ${classroom.academicYear.label} (${items.length} élèves, ${published} publiés)`,

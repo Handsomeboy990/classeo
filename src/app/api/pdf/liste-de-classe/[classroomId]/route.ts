@@ -16,6 +16,8 @@ export async function GET(_request: Request, ctx: RouteContext<"/api/pdf/liste-d
       const meta = { title: "Liste de classe", subtitle: `${data.classroom} · ${data.yearLabel}`, reference, generatedAt: c.generatedAt, generatedBy: c.generatedBy, issuer };
       return {
         element: classListPdf(data, meta),
+        kind: "liste" as const,
+        title: meta.title,
         fileName: pdfFileName("liste-de-classe", data.classroom, data.yearLabel),
         reference,
         summary: `liste de la classe ${data.classroom} (${data.students.length} élèves${data.showPhones ? ", avec téléphones des parents" : ""})`,

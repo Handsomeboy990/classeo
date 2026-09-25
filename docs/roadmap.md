@@ -22,7 +22,7 @@ next waves, so they add features without conflicting migrations.
 
 ### W4: reach every family
 
-- Mobile Money collection (MTN MoMo, Moov Money) with automatic reconciliation of invoices, instead of recording the transaction reference by hand.
+- Online payment through an aggregator is built (FedaPay adapter, signed webhook, reconciliation of invoices), waiting for the merchant keys; parents can already declare a Mobile Money or bank transfer that the accountant confirms. Next: one FedaPay sub-account per school so the money lands on the school's own account, and a TrésorPay adapter for public schools once the Treasury opens an integration (see payment-providers.md). A direct connection to the operators' APIs (MTN MoMo, Moov Money) is out of scope: the aggregator carries it.
 - SMS and voice call notifications for parents without a smartphone, using the preferred channel already stored on each guardian.
 - USSD menu to check a child's last average and absences on a basic phone.
 - Voice in Fon, Yoruba, Dendi and Bariba for the read aloud feature, starting with pre recorded messages for the most frequent notifications.

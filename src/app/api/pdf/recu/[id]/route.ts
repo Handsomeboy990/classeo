@@ -15,6 +15,8 @@ export async function GET(_request: Request, ctx: RouteContext<"/api/pdf/recu/[i
       const meta = { title: "Reçu de paiement", subtitle: `Facture ${data.invoice.number}`, reference: data.reference, generatedAt: c.generatedAt, generatedBy: c.generatedBy, issuer };
       return {
         element: receiptPdf(data, meta),
+        kind: "recu" as const,
+        title: meta.title,
         fileName: pdfFileName("recu", data.reference, data.student.lastName, data.student.firstName),
         reference: data.reference,
         summary: `reçu ${data.reference} de ${data.student.lastName} ${data.student.firstName}`,

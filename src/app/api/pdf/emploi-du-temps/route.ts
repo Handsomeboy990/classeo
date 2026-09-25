@@ -17,6 +17,8 @@ export async function GET(request: Request) {
       const meta = { title: "Emploi du temps", subtitle: `${data.who}${data.yearLabel ? ` · ${data.yearLabel}` : ""}`, reference, generatedAt: c.generatedAt, generatedBy: c.generatedBy, issuer };
       return {
         element: timetablePdf(data, meta),
+        kind: "emploi_du_temps" as const,
+        title: meta.title,
         fileName: pdfFileName("emploi-du-temps", data.who, week),
         reference,
         summary: `emploi du temps ${data.who}, semaine du ${week}`,

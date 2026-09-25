@@ -1,9 +1,11 @@
 import type { ReactNode } from "react";
 
-import { View } from "@react-pdf/renderer";
+import { Image, View } from "@react-pdf/renderer";
 import type { Style } from "@react-pdf/types";
 
+import { currentSigned } from "./context";
 import { FONT_TITLE } from "./fonts";
+import { beninDateTime } from "./format";
 import { T } from "./layout";
 import { COLORS, styles } from "./theme";
 
@@ -165,30 +167,51 @@ export function Notice({ tone = "warning", title, children }: { tone?: "warning"
   );
 }
 
-// Signature boxes at the end of a document.
+// Signature boxes at the end of a document. In a document signed
+// electronically, the first box with a stamp (the head's) shows the signer's
+// signature and stamp images and the date of signature.
 export function Signatures({ items, marginTop = 18 }: { items: { role: string; name?: string | null; stamp?: boolean }[]; marginTop?: number }) {
+  const signed = currentSigned();
+  const signedIndex = signed ? items.findIndex((s) => s.stamp) : -1;
   return (
     <View style={{ flexDirection: "row", gap: 16, marginTop }} wrap={false}>
-      {items.map((s, i) => (
-        <View key={i} style={{ flex: 1 }}>
-          <T style={styles.label}>{s.role}</T>
-          <T style={{ fontSize: 9.5, fontWeight: 600, marginTop: 2, minHeight: 12 }}>{s.name ?? ""}</T>
-          <View
-            style={{
-              marginTop: 4,
-              height: s.stamp ? 58 : 44,
-              borderWidth: 0.75,
-              borderColor: COLORS.border,
-              borderStyle: "dashed",
-              borderRadius: 4,
-              justifyContent: "flex-end",
-              padding: 4,
-            }}
-          >
-            <T style={{ fontSize: 6.5, color: COLORS.faint }}>{s.stamp ? "Signature et cachet" : "Signature"}</T>
+      {items.map((s, i) => {
+        const e = i === signedIndex ? signed : null;
+        return (
+          <View key={i} style={{ flex: 1 }}>
+            <T style={styles.label}>{s.role}</T>
+            <T style={{ fontSize: 9.5, fontWeight: 600, marginTop: 2, minHeight: 12 }}>{e ? e.name : (s.name ?? "")}</T>
+            {e ? (
+              <View style={{ marginTop: 4, height: 70, position: "relative", borderWidth: 0.75, borderColor: COLORS.primary, borderRadius: 4, padding: 4, justifyContent: "flex-end" }}>
+                {e.stamp ? (
+                  // eslint-disable-next-line jsx-a11y/alt-text
+                  <Image src={e.stamp} style={{ position: "absolute", right: 5, top: 4, width: 60, height: 60, objectFit: "contain", opacity: 0.9 }} />
+                ) : null}
+                {e.signature ? (
+                  // eslint-disable-next-line jsx-a11y/alt-text
+                  <Image src={e.signature} style={{ position: "absolute", left: 6, top: 5, width: 118, height: 42, objectFit: "contain" }} />
+                ) : null}
+                <T style={{ fontSize: 6.5, color: COLORS.primaryDark, fontWeight: 600, maxWidth: "62%" }}>Signé électroniquement le {beninDateTime(e.signedAt)}</T>
+              </View>
+            ) : (
+              <View
+                style={{
+                  marginTop: 4,
+                  height: s.stamp ? 58 : 44,
+                  borderWidth: 0.75,
+                  borderColor: COLORS.border,
+                  borderStyle: "dashed",
+                  borderRadius: 4,
+                  justifyContent: "flex-end",
+                  padding: 4,
+                }}
+              >
+                <T style={{ fontSize: 6.5, color: COLORS.faint }}>{s.stamp ? "Signature et cachet" : "Signature"}</T>
+              </View>
+            )}
           </View>
-        </View>
-      ))}
+        );
+      })}
     </View>
   );
 }
