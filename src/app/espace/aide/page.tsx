@@ -18,7 +18,7 @@ export default async function HelpPage() {
 
   return (
     <>
-      <PageHeader title="Guide d'utilisation" description="Quelques étapes courtes, en images. Appuyez sur « Écouter » pour les entendre." />
+      <PageHeader title="Guide d'utilisation" description="Les étapes utiles à votre profil, les réglages d'affichage et les réponses aux questions fréquentes." />
       <div className="flex flex-col gap-10">
         <GuideSteps guide={mine} />
 
