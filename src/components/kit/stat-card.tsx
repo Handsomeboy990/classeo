@@ -28,9 +28,9 @@ export function StatCard({
   const body = (
     <>
       <div className="flex items-start justify-between gap-3">
-        <p className="min-w-0 text-sm leading-snug font-medium text-muted">{label}</p>
+        <p lang="fr" className="min-w-0 text-sm leading-snug font-medium break-words hyphens-auto text-muted">{label}</p>
         {Icon && (
-          <span className={cn("flex size-9 shrink-0 items-center justify-center rounded-control", toneCls)} aria-hidden>
+          <span className={cn("flex size-8 shrink-0 items-center justify-center rounded-control sm:size-9", toneCls)} aria-hidden>
             <Icon className="size-5" />
           </span>
         )}
