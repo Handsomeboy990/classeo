@@ -14,12 +14,21 @@ import { formatDate, formatDateTime } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Contenu" };
 
+const OPEN_LABELS = {
+  NONE: "",
+  AUDIO: "Écouter l'audio",
+  VIDEO: "Regarder la vidéo",
+  DOCUMENT: "Ouvrir le document",
+  IMAGE: "Voir l'image",
+} as const;
+
 export default async function ContentPage({ params }: PageProps<"/espace/contenus/[id]">) {
   const user = await requirePermission("content:view");
   const { id } = await params;
   const c = await getVisibleContent(user, id);
   if (!c) notFound();
   const manage = (await manageableIds(user, [c.id])).has(c.id);
+  const sameOrigin = !!c.mediaUrl?.startsWith("/");
 
   return (
     <article aria-labelledby="content-title" className="max-w-3xl">
@@ -78,26 +87,33 @@ export default async function ContentPage({ params }: PageProps<"/espace/contenu
             <CardTitle>{MEDIA_LABELS[c.mediaType]}</CardTitle>
           </CardHeader>
           <CardBody className="flex flex-col gap-4">
-            {c.mediaUrl && c.mediaType === "AUDIO" && (
-              // preload="none": nothing is downloaded until the reader presses play.
-              <audio controls preload="none" src={c.mediaUrl} className="w-full" aria-describedby={c.transcript ? "transcript-title" : undefined}>
-                <a href={c.mediaUrl}>Télécharger l&apos;audio</a>
+            {/* Players only for files served by the platform: the content
+                security policy blocks media from other origins, which open
+                through the link below instead. preload="none" downloads
+                nothing until the reader presses play. */}
+            {sameOrigin && c.mediaType === "AUDIO" && (
+              <audio controls preload="none" src={c.mediaUrl!} className="w-full" aria-describedby={c.transcript ? "transcript-title" : undefined}>
+                <a href={c.mediaUrl!}>Télécharger l&apos;audio</a>
               </audio>
             )}
-            {c.mediaUrl && c.mediaType === "VIDEO" && (
-              <video controls preload="none" src={c.mediaUrl} className="w-full rounded-lg bg-black" aria-describedby={c.transcript ? "transcript-title" : undefined}>
-                <a href={c.mediaUrl}>Télécharger la vidéo</a>
+            {sameOrigin && c.mediaType === "VIDEO" && (
+              <video controls preload="none" src={c.mediaUrl!} className="w-full rounded-lg bg-black" aria-describedby={c.transcript ? "transcript-title" : undefined}>
+                <a href={c.mediaUrl!}>Télécharger la vidéo</a>
               </video>
             )}
-            {c.mediaUrl?.startsWith("/") && c.mediaType === "IMAGE" && (
-              // Same origin images only: the content security policy blocks
-              // other origins, the link below still opens them.
+            {sameOrigin && c.mediaType === "IMAGE" && (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={c.mediaUrl} alt={c.easyRead ?? c.title} loading="lazy" className="max-h-96 w-auto rounded-lg" />
+              <img src={c.mediaUrl!} alt={c.easyRead ?? c.title} loading="lazy" className="max-h-96 w-auto rounded-lg" />
             )}
             {c.mediaUrl && (
-              <a href={c.mediaUrl} target="_blank" rel="noopener noreferrer" className="inline-flex h-11 items-center gap-2 text-sm font-semibold text-primary hover:underline">
-                <ExternalLink className="size-4" aria-hidden /> Ouvrir le {MEDIA_LABELS[c.mediaType].toLowerCase()} dans un nouvel onglet
+              <a
+                href={c.mediaUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex min-h-11 items-center gap-2 self-start rounded-lg border border-border-strong px-4 py-2 text-sm font-semibold text-primary hover:bg-surface-2"
+              >
+                <ExternalLink className="size-4" aria-hidden /> {OPEN_LABELS[c.mediaType]}
+                <span className="sr-only"> (nouvel onglet)</span>
               </a>
             )}
             {!c.mediaUrl && (c.mediaType === "AUDIO" || c.mediaType === "VIDEO") && (
