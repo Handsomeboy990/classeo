@@ -28,7 +28,9 @@ export async function listYears(user: User, now = new Date()) {
       closedAt: true,
       periods: { orderBy: { order: "asc" }, select: { id: true, name: true, order: true, startDate: true, endDate: true, isClosed: true } },
       extensions: {
-        where: { OR: [{ schoolId: null }, { school: schoolWhere(user) }] },
+        // An empty relation filter on the optional school matches no row, so
+        // the ministry (whole country) reads every extension without one.
+        where: user.scope.level === "NATIONAL" ? {} : { OR: [{ schoolId: null }, { school: { is: schoolWhere(user) } }] },
         orderBy: { createdAt: "desc" },
         take: 50,
         select: { id: true, until: true, reason: true, status: true, createdAt: true, requestId: true, school: { select: { id: true, name: true, code: true } } },

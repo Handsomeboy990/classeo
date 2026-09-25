@@ -24,7 +24,7 @@ export function subjectWhere(user: User, f?: Partial<SubjectFilters>): Prisma.Su
   const and: Prisma.SubjectWhereInput[] = [];
   const status = f?.status ?? "APPROVED";
   and.push({ status });
-  if (status !== "APPROVED" && user.scope.level !== "NATIONAL") and.push({ requestedBySchool: schoolWhere(user) });
+  if (status !== "APPROVED" && user.scope.level !== "NATIONAL") and.push({ requestedBySchool: { is: schoolWhere(user) } });
   if (f?.q) and.push({ OR: [{ name: { contains: f.q, mode: "insensitive" } }, { code: { contains: f.q, mode: "insensitive" } }] });
   return { AND: and };
 }
