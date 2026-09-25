@@ -1,4 +1,10 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "regions": ["lhr1"]
+  "regions": ["lhr1"],
+  "functions": {
+    "api/kora-tts.py": {
+      "maxDuration": 90,
+      "excludeFiles": "{src/**,e2e/**,docs/**,prisma/**,scripts/**,.claude/**,test-results/**,playwright-report/**,*.md,*.ts,*.mjs,*.json,Dockerfile,docker-compose.yml}"
+    }
+  }
 }
