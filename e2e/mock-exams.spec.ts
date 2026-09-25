@@ -32,11 +32,13 @@ test("a school proposes an exam, the partner accepts and the district validates 
   await shot(director, "01-list-director");
 
   await director.getByRole("link", { name: "Organiser un examen blanc" }).click();
-  await director.getByLabel("Intitulé").fill(title);
+  // The subjects are ticked by the client once the level is chosen: the
+  // form is hydrated before anything else is typed.
   await director.getByLabel("Classe d'examen").selectOption({ label: "3e" });
+  await expect(director.getByRole("checkbox", { name: "Mathématiques" })).toBeChecked();
+  await director.getByLabel("Intitulé").fill(title);
   await director.getByLabel("Premier jour des épreuves").fill(isoIn(20));
   await director.getByLabel("Dernier jour des épreuves").fill(isoIn(21));
-  await expect(director.getByRole("checkbox", { name: "Mathématiques" })).toBeChecked();
   await director.getByRole("checkbox", { name: /CEG Abomey-Calavi/ }).check();
   await shot(director, "02-create-school");
   await director.getByRole("button", { name: "Créer et envoyer les invitations" }).click();
@@ -101,8 +103,9 @@ test("a department imposes an exam on every school of a commune", async ({ pageA
   const page = await pageAs("ddemp");
   await page.goto("/espace/examens-blancs/nouveau");
   await expect(page.getByText(/La participation est imposée/)).toBeVisible();
-  await page.getByLabel("Intitulé").fill(title);
   await page.getByLabel("Classe d'examen").selectOption({ label: "3e" });
+  await expect(page.getByRole("checkbox", { name: "Mathématiques" })).toBeChecked();
+  await page.getByLabel("Intitulé").fill(title);
   await page.getByLabel("Premier jour des épreuves").fill(isoIn(30));
   await page.getByLabel("Dernier jour des épreuves").fill(isoIn(31));
   await page.getByRole("radio", { name: "Tous les établissements d'une commune" }).check();
