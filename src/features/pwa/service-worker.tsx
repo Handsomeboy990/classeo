@@ -3,6 +3,9 @@
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 
+// Starts listening for the browser's install offer as early as possible.
+import "./install";
+
 // Registers /sw.js in production (in development it would serve stale
 // bundles to the hot reloader). On the sign in page the private offline
 // copies are purged, so a shared phone never shows the previous user's data.
