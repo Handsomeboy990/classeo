@@ -13,10 +13,12 @@ const csp = [
   "default-src 'self'",
   `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob:",
+  // Media and images from https sources: teachers link hosted audio, video
+  // and pictures. Scripts, styles and connections stay same origin.
+  "img-src 'self' data: blob: https:",
   "font-src 'self'",
   "connect-src 'self'",
-  "media-src 'self' data: blob:",
+  "media-src 'self' data: blob: https:",
   "frame-ancestors 'none'",
   "form-action 'self'",
   "base-uri 'self'",
@@ -39,7 +41,18 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   experimental: { authInterrupts: true },
   async headers() {
-    return [{ source: "/:path*", headers: securityHeaders }];
+    return [
+      { source: "/:path*", headers: securityHeaders },
+      // The service worker must never be held back by an HTTP cache, or an
+      // update would wait for the cache to expire.
+      {
+        source: "/sw.js",
+        headers: [
+          { key: "Cache-Control", value: "no-cache, no-store, must-revalidate" },
+          { key: "Service-Worker-Allowed", value: "/" },
+        ],
+      },
+    ];
   },
 };
 
