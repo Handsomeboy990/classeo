@@ -10,9 +10,10 @@
  *   origins.
  * - Private copies are deleted when the user signs out or the session ends.
  * - Caches are versioned: a new VERSION removes the previous ones.
+ * - Push notifications are shown here and open their link when touched.
  */
 
-const VERSION = "2026-09-25.2";
+const VERSION = "2026-09-25.3";
 const SHELL = `classeo-shell-${VERSION}`;
 const ASSETS = `classeo-assets-${VERSION}`;
 const PAGES = `classeo-pages-${VERSION}`;
@@ -148,4 +149,56 @@ self.addEventListener("fetch", (event) => {
     return;
   }
   if (isStaticAsset(url)) event.respondWith(handleAsset(event));
+});
+
+/*
+ * Push notifications (see src/lib/channels/push.ts). The payload carries a
+ * title, a body, a link inside the private space and a tag: a newer
+ * notification of the same kind replaces the previous one.
+ */
+
+// Status bar badge: white silhouette of the logo on a transparent 96 px
+// square, as Android requires. Inlined so it needs no request.
+const BADGE = "data:image/png;base64,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";
+
+function safeLink(link) {
+  return typeof link === "string" && /^\/espace(\/[\w\-/]*)?(\?[\w\-=&%]*)?$/.test(link) ? link : "/espace/notifications";
+}
+
+self.addEventListener("push", (event) => {
+  let data = {};
+  try {
+    data = event.data ? event.data.json() : {};
+  } catch {
+    data = { body: event.data ? event.data.text() : "" };
+  }
+  event.waitUntil(
+    self.registration.showNotification(data.title || "Classéo", {
+      body: data.body || "Une nouvelle notification vous attend.",
+      icon: "/icons/icon-192.png",
+      badge: BADGE,
+      tag: data.tag || undefined,
+      renotify: Boolean(data.tag),
+      lang: "fr",
+      data: { link: safeLink(data.link) },
+    }),
+  );
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const target = new URL(safeLink(event.notification.data && event.notification.data.link), self.location.origin).href;
+  event.waitUntil(
+    (async () => {
+      const windows = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
+      // An open Classéo window is reused: brought to the front, then sent to the link.
+      const client = windows.find((c) => new URL(c.url).origin === self.location.origin);
+      if (client) {
+        const focused = await client.focus();
+        if (focused.url !== target && "navigate" in focused) await focused.navigate(target).catch(() => undefined);
+        return;
+      }
+      await self.clients.openWindow(target);
+    })(),
+  );
 });
