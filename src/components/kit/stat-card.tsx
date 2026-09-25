@@ -28,20 +28,20 @@ export function StatCard({
   const body = (
     <>
       <div className="flex items-start justify-between gap-3">
-        <p className="text-sm font-medium text-muted">{label}</p>
+        <p lang="fr" className="min-w-0 text-sm leading-snug font-medium break-words hyphens-auto text-muted">{label}</p>
         {Icon && (
-          <span className={cn("flex size-9 items-center justify-center rounded-lg", toneCls)} aria-hidden>
+          <span className={cn("flex size-8 shrink-0 items-center justify-center rounded-control sm:size-9", toneCls)} aria-hidden>
             <Icon className="size-5" />
           </span>
         )}
       </div>
-      <p className="mt-2 font-display text-3xl font-bold text-text">{value}</p>
-      {hint && <p className="mt-1 text-xs text-muted">{hint}</p>}
+      <p className="mt-2 font-display text-2xl leading-none sm:text-3xl font-bold tracking-tight text-text tabular-nums">{value}</p>
+      {hint && <p className="mt-2 text-hint text-muted">{hint}</p>}
     </>
   );
-  const cls = "rounded-card border border-border bg-surface p-5";
+  const cls = "rounded-card border border-border bg-surface p-4 shadow-card sm:p-5";
   return href ? (
-    <Link href={href} className={cn(cls, "block transition-colors hover:border-primary")}>
+    <Link href={href} className={cn(cls, "block transition-[border-color,box-shadow] duration-150 hover:border-primary hover:shadow-raised")}>
       {body}
     </Link>
   ) : (
@@ -50,5 +50,7 @@ export function StatCard({
 }
 
 export function StatGrid({ children }: { children: React.ReactNode }) {
-  return <div className="grid grid-cols-1 gap-4 min-[420px]:grid-cols-2 lg:grid-cols-4">{children}</div>;
+  // Two per row from the smallest phone, four on large screens; a single
+  // column when the text is enlarged (see globals.css, .ds-stat-grid).
+  return <div className="ds-stat-grid grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">{children}</div>;
 }

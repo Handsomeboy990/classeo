@@ -1,6 +1,6 @@
 "use client";
 
-import { Receipt } from "lucide-react";
+import { ReceiptText } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -8,7 +8,6 @@ import { ActionForm, SubmitButton } from "@/components/kit/action-form";
 import { FormField } from "@/components/kit/form-field";
 import { Button } from "@/components/ui/button";
 import { Input, Select } from "@/components/ui/input";
-import { FocusFirstError } from "@/features/fees/components/focus-first-error";
 import { announceSuccess } from "@/features/fees/components/toast-action";
 import { PAYMENT_METHOD_LABELS, PAYMENT_METHODS, type PaymentMethodCode } from "@/lib/domain/payments";
 import { formatFcfa } from "@/lib/utils";
@@ -47,10 +46,9 @@ export function PaymentForm({ invoiceId, remaining, today }: { invoiceId: string
       }}
       className="flex flex-col gap-4"
     >
-      <FocusFirstError />
       <input type="hidden" name="invoiceId" value={invoiceId} />
-      <FormField label="Montant versé (FCFA)" name="amount" required hint={`Reste à payer : ${formatFcfa(remaining)}`}>
-        <Input type="number" inputMode="numeric" min={1} max={remaining} step={1} value={amount} onChange={(e) => setAmount(e.target.value)} />
+      <FormField label="Montant versé" name="amount" required hint={`Reste à payer : ${formatFcfa(remaining)}`}>
+        <Input type="number" inputMode="numeric" min={1} max={remaining} step={1} value={amount} onChange={(e) => setAmount(e.target.value)} trailing="FCFA" />
       </FormField>
       <Button type="button" variant="ghost" size="sm" className="-mt-2 self-start" onClick={() => setAmount(String(remaining))}>
         Solder la facture ({formatFcfa(remaining)})
@@ -75,7 +73,7 @@ export function PaymentForm({ invoiceId, remaining, today }: { invoiceId: string
         <p role="status" className="rounded-lg bg-success-soft px-3 py-2 text-sm text-text">
           Paiement {last.reference} enregistré.{" "}
           <Link href={`/espace/frais/paiements/${last.paymentId}/recu`} className="inline-flex items-center gap-1 font-semibold text-primary underline">
-            <Receipt className="size-4" aria-hidden /> Imprimer le reçu
+            <ReceiptText className="size-4" aria-hidden /> Imprimer le reçu
           </Link>
         </p>
       )}

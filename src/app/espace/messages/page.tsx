@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { NewConversation } from "@/features/messages/new-conversation";
 import { allowedContacts, listConversations } from "@/features/messages/queries";
+import { roleLabel } from "@/features/messages/role-label";
 import { can, requirePermission } from "@/lib/auth/authorize";
 import { excerpt, isUnread } from "@/lib/domain/messaging";
 import { cn, formatDateTime } from "@/lib/utils";
@@ -25,7 +26,7 @@ export default async function MessagesPage() {
     <>
       <PageHeader
         title="Messagerie"
-        description={unreadCount ? `${unreadCount} conversation${unreadCount > 1 ? "s" : ""} avec un nouveau message.` : "Échangez avec l'école, les enseignants et les familles."}
+        description={unreadCount ? `${unreadCount} conversation${unreadCount > 1 ? "s" : ""} avec un nouveau message.` : "Conversations avec l'école, les enseignants et les familles."}
         actions={canWrite && <NewConversation contacts={contacts} showQuick={!!user.guardianId} />}
       />
       <Card>
@@ -53,7 +54,7 @@ export default async function MessagesPage() {
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-2">
                         <span className={cn("truncate", unread ? "font-bold" : "font-semibold")}>{names}</span>
-                        {others[0] && <span className="text-xs text-muted">{others[0].user.role.name}</span>}
+                        {others[0] && <span className="text-xs text-muted">{roleLabel(others[0].user.role.name, others[0].user.gender)}</span>}
                         {unread && (
                           <Badge tone="success" className="ml-auto">
                             <span className="size-2 rounded-full bg-current" aria-hidden /> Nouveau

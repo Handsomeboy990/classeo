@@ -16,6 +16,17 @@ services:
       interval: 5s
       retries: 10
 
+  # Local mail catcher: every e-mail the app sends lands here, nothing leaves
+  # the machine. `docker compose up -d mailpit`, then SMTP_HOST=localhost and
+  # SMTP_PORT=1025 in .env; messages are read at http://localhost:8025.
+  mailpit:
+    image: axllent/mailpit:v1.27
+    ports:
+      - "${MAILPIT_SMTP_PORT:-1025}:1025"
+      - "${MAILPIT_UI_PORT:-8025}:8025"
+    environment:
+      MP_MAX_MESSAGES: 5000
+
   # Applies migrations, then seeds demo data if the database is empty.
   migrate:
     build:
@@ -35,6 +46,10 @@ services:
     environment:
       DATABASE_URL: postgresql://classeo:classeo@db:5432/classeo
       SESSION_SECRET: ${SESSION_SECRET:-change-me-local-only-0123456789abcdef0123}
+      APP_URL: http://localhost:3000
+      # The local stack sends its e-mails to the Mailpit container.
+      SMTP_HOST: mailpit
+      SMTP_PORT: "1025"
     ports:
       - "3000:3000"
     depends_on:

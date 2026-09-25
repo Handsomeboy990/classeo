@@ -6,7 +6,7 @@ import { PageHeader } from "@/components/kit/page-header";
 import { StatCard, StatGrid } from "@/components/kit/stat-card";
 import { EmptyState } from "@/components/kit/states";
 import { Alert } from "@/components/ui/alert";
-import { ButtonLink } from "@/components/ui/button";
+import { ButtonLink, buttonVariants } from "@/components/ui/button";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { saveAttendance } from "@/features/attendance/actions";
 import { AttendanceRegister } from "@/features/attendance/components/attendance-register";
@@ -17,6 +17,7 @@ import { classroomOptions } from "@/features/classes/queries";
 import { can, requirePermission } from "@/lib/auth/authorize";
 import { isIsoDate, isWeekend, todayIso } from "@/lib/domain/attendance";
 import { param } from "@/lib/list";
+import { PdfDownloadLink } from "@/lib/pdf/download-link";
 import { formatDate, formatNumber, formatPercent } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Présences" };
@@ -49,17 +50,22 @@ export default async function AttendancePage(props: PageProps<"/espace/presences
     <>
       <PageHeader
         title="Présences"
-        description={`Appel de la ${reg.classroom.name}, ${formatDate(date)}, ${halfLabel}.`}
+        description={`Appel de la ${reg.classroom.name}, ${formatDate(date)}, ${halfLabel}`}
         actions={
           <>
             {can(user, "attendance:export") && (
               <a
                 href={`/api/export/presences?classe=${classroomId}&du=${stats.week.from}&au=${stats.week.to}`}
-                className="inline-flex h-11 items-center gap-2 rounded-lg border border-border-strong bg-surface px-4 text-sm font-semibold hover:bg-surface-2"
+                className={buttonVariants({ variant: "secondary" })}
               >
-                <Download className="size-4" aria-hidden /> Exporter la semaine
+                <Download aria-hidden /> Exporter la semaine
               </a>
             )}
+            <PdfDownloadLink
+              href={`/api/pdf/fiche-appel/${classroomId}?date=${date}`}
+              label="Fiche d'appel (PDF)"
+              description={`${reg.classroom.name}, ${formatDate(date)}, matin et après-midi`}
+            />
             {staffAttendance && (
               <ButtonLink href={`/espace/presences/enseignants?date=${date}`} variant="secondary">
                 <UserSquare2 aria-hidden /> Enseignants

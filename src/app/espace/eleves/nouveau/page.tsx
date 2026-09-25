@@ -15,13 +15,13 @@ export default async function NewStudentPage() {
   const [classes, guardians] = await Promise.all([classroomOptions(user), guardianOptions(user)]);
   return (
     <>
-      <nav aria-label="Fil d'Ariane" className="mb-2 text-sm text-muted">
+      <nav aria-label="Fil d'Ariane" className="mb-2 text-sm text-muted max-lg:hidden">
         <Link href="/espace/eleves" className="hover:underline">
           Élèves
         </Link>{" "}
         / Inscription
       </nav>
-      <PageHeader title="Inscrire un élève" description="L'élève reçoit un matricule et il est inscrit dans une classe de l'année active, avec son parent principal." />
+      <PageHeader title="Inscrire un élève" description="Inscription pour l'année active. Le matricule est attribué à l'enregistrement." />
       {classes.length ? (
         <StudentForm classes={classes} guardians={guardians} cancelHref="/espace/eleves" />
       ) : (

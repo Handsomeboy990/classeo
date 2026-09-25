@@ -1,4 +1,4 @@
-import { ArrowLeft, Receipt, Undo2 } from "lucide-react";
+import { ArrowLeft, ReceiptText, Undo2 } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -16,6 +16,7 @@ import { CancelPaymentButton } from "@/features/payments/components/cancel-payme
 import { PaymentForm } from "@/features/payments/components/payment-form";
 import { can, requirePermission } from "@/lib/auth/authorize";
 import { installmentStatus, PAYMENT_METHOD_LABELS, type InvoiceStatusCode } from "@/lib/domain/payments";
+import { PdfDownloadLink } from "@/lib/pdf/download-link";
 import { formatDate, formatFcfa } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Facture" };
@@ -32,19 +33,21 @@ export default async function InvoicePage({ params }: PageProps<"/espace/frais/f
   const remaining = Math.max(0, invoice.totalAmount - invoice.paidAmount);
   const canPay = can(user, "payment:create") && remaining > 0 && invoice.status !== "CANCELLED";
   const canCancel = can(user, "payment:delete") && invoice.status !== "CANCELLED";
+  const canReceipt = can(user, "payment:view");
   const progress = invoice.totalAmount > 0 ? Math.round((invoice.paidAmount / invoice.totalAmount) * 100) : 0;
 
   return (
     <>
-      <Link href="/espace/frais/factures" className="mb-3 inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline print:hidden">
+      <Link href="/espace/frais/factures" className="mb-3 inline-flex max-lg:hidden items-center gap-1.5 text-sm font-semibold text-primary hover:underline print:hidden">
         <ArrowLeft className="size-4" aria-hidden /> Toutes les factures
       </Link>
       <PageHeader
         title={`Facture ${invoice.number}`}
         description={`${student.lastName} ${student.firstName} · ${invoice.enrollment.classroom.name} · Année ${invoice.enrollment.academicYear.label}`}
+        actions={<PdfDownloadLink href={`/api/pdf/facture/${invoice.id}`} description={`facture ${invoice.number}`} />}
       />
 
-      <div className="grid gap-6 lg:grid-cols-[2fr_1fr]">
+      <div className="grid grid-cols-1 gap-6 *:min-w-0 lg:grid-cols-[2fr_1fr]">
         <div className="flex min-w-0 flex-col gap-6">
           <Card>
             <CardHeader>
@@ -91,7 +94,7 @@ export default async function InvoicePage({ params }: PageProps<"/espace/frais/f
               <THead>
                 <tr>
                   <TH>Tranche</TH>
-                  <TH>Échéance</TH>
+                  <TH className="max-sm:hidden">Échéance</TH>
                   <TH className="text-right">Montant</TH>
                   <TH className="text-right max-sm:hidden">Payé</TH>
                   <TH>Statut</TH>
@@ -100,8 +103,12 @@ export default async function InvoicePage({ params }: PageProps<"/espace/frais/f
               <tbody>
                 {invoice.installments.map((i) => (
                   <TR key={i.id}>
-                    <TD className="font-medium">{i.label}</TD>
-                    <TD>{formatDate(i.dueDate)}</TD>
+                    <TD className="font-medium">
+                      <span className="block">{i.label}</span>
+                      {/* Phone: the due date under the label, one column less. */}
+                      <span className="block text-xs font-normal text-muted sm:hidden">{formatDate(i.dueDate)}</span>
+                    </TD>
+                    <TD className="max-sm:hidden">{formatDate(i.dueDate)}</TD>
                     <TD className="text-right tabular-nums">{formatFcfa(i.amount)}</TD>
                     <TD className="text-right tabular-nums max-sm:hidden">{formatFcfa(i.paidAmount)}</TD>
                     <TD>
@@ -122,8 +129,8 @@ export default async function InvoicePage({ params }: PageProps<"/espace/frais/f
               <THead>
                 <tr>
                   <TH>Désignation</TH>
-                  <TH className="text-right">Quantité</TH>
-                  <TH className="text-right">Prix unitaire</TH>
+                  <TH className="text-right max-sm:hidden">Quantité</TH>
+                  <TH className="text-right max-sm:hidden">Prix unitaire</TH>
                   <TH className="text-right">Total</TH>
                 </tr>
               </THead>
@@ -131,8 +138,8 @@ export default async function InvoicePage({ params }: PageProps<"/espace/frais/f
                 {invoice.items.map((item) => (
                   <TR key={item.id}>
                     <TD>{item.description}</TD>
-                    <TD className="text-right tabular-nums">{item.quantity}</TD>
-                    <TD className="text-right tabular-nums">{formatFcfa(item.unitPrice)}</TD>
+                    <TD className="text-right tabular-nums max-sm:hidden">{item.quantity}</TD>
+                    <TD className="text-right tabular-nums max-sm:hidden">{formatFcfa(item.unitPrice)}</TD>
                     <TD className="text-right font-semibold tabular-nums">{formatFcfa(item.unitPrice * item.quantity)}</TD>
                   </TR>
                 ))}
@@ -161,8 +168,9 @@ export default async function InvoicePage({ params }: PageProps<"/espace/frais/f
                     </div>
                     <div className="flex shrink-0 flex-wrap gap-2">
                       <ButtonLink href={`/espace/frais/paiements/${p.id}/recu`} variant="secondary" size="sm">
-                        <Receipt aria-hidden /> Reçu
+                        <ReceiptText aria-hidden /> Reçu
                       </ButtonLink>
+                      {canReceipt && <PdfDownloadLink href={`/api/pdf/recu/${p.id}`} label="PDF" size="sm" description={`reçu ${p.reference}`} />}
                       {canCancel && <CancelPaymentButton id={p.id} reference={p.reference} amount={p.amount} />}
                     </div>
                   </li>

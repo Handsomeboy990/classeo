@@ -15,6 +15,7 @@ import { communesOf, listDepartments } from "@/features/territory/queries";
 import { narrowStatScope } from "@/features/territory/scope";
 import { can, ForbiddenError, requirePermission } from "@/lib/auth/authorize";
 import { param } from "@/lib/list";
+import { PdfDownloadLink } from "@/lib/pdf/download-link";
 
 export const metadata: Metadata = { title: "Statistiques" };
 
@@ -62,9 +63,12 @@ export default async function StatisticsPage({ searchParams }: PageProps<"/espac
         description={`Indicateurs clés de votre périmètre, année ${stats.yearLabel ?? ""}. Les résultats portent sur ${stats.previousYearLabel ?? "l'année précédente"}.`}
         actions={
           can(user, "statistics:export") ? (
-            <ButtonLink href={exportHref} variant="secondary" prefetch={false}>
-              <Download aria-hidden /> Exporter en CSV
-            </ButtonLink>
+            <>
+              <ButtonLink href={exportHref} variant="secondary" prefetch={false}>
+                <Download aria-hidden /> Exporter en CSV
+              </ButtonLink>
+              <PdfDownloadLink href={`/api/pdf/statistiques${query.size ? `?${query}` : ""}`} description="indicateurs clés et détail du périmètre affiché" />
+            </>
           ) : null
         }
       />

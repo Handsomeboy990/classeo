@@ -6,7 +6,7 @@ import { EmptyState } from "@/components/kit/states";
 import { SpokenSummary } from "@/features/family/components/blocks";
 import { TermGradesList } from "@/features/family/components/sections";
 import { beninToday } from "@/features/family/logic";
-import { requireStudentFile, termGrades } from "@/features/family/queries";
+import { requireStudentSection, termGrades } from "@/features/family/queries";
 import { mention } from "@/lib/domain/grades";
 import { formatAverage } from "@/lib/utils";
 
@@ -14,7 +14,7 @@ export const metadata: Metadata = { title: "Notes du trimestre" };
 
 export default async function TermGradesPage({ params }: PageProps<"/espace/suivi/[studentId]/notes">) {
   const { studentId } = await params;
-  const { enrollment } = await requireStudentFile(studentId);
+  const { enrollment } = await requireStudentSection(studentId, "notes");
   const term = await termGrades(enrollment, beninToday());
   const first = enrollment.student.firstName;
   const graded = term.subjects.filter((s) => s.average !== null);
@@ -25,7 +25,7 @@ export default async function TermGradesPage({ params }: PageProps<"/espace/suiv
         className="rounded-card border border-border bg-surface"
         icon={<NotebookPen className="size-7" />}
         title="Pas encore de note ce trimestre"
-        description="Les notes apparaissent ici dès qu'un enseignant les saisit. La moyenne se met à jour toute seule."
+        description="Les notes s'affichent ici dès qu'un enseignant les saisit, et la moyenne est recalculée à chaque note."
       />
     );
   }

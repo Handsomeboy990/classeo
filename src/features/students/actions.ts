@@ -57,8 +57,13 @@ function assertCapacity(classroom: { name: string; capacity: number; _count: { e
 // "BJ" + two digit year + six digit sequence, as the seeded matricules.
 async function nextMatricule(yearLabel: string) {
   const prefix = `BJ${yearLabel.slice(2, 4)}`;
-  const last = await db.student.findFirst({ where: { matricule: { startsWith: prefix } }, orderBy: { matricule: "desc" }, select: { matricule: true } });
-  const seq = last ? Number.parseInt(last.matricule.slice(prefix.length), 10) || 0 : 0;
+  // Only numeric suffixes count, so one hand made matricule cannot restart
+  // the sequence on numbers already taken.
+  const taken = await db.student.findMany({ where: { matricule: { startsWith: prefix } }, select: { matricule: true } });
+  const seq = taken.reduce((max, t) => {
+    const rest = t.matricule.slice(prefix.length);
+    return /^\d+$/.test(rest) ? Math.max(max, Number.parseInt(rest, 10)) : max;
+  }, 0);
   return `${prefix}${String(seq + 1).padStart(6, "0")}`;
 }
 

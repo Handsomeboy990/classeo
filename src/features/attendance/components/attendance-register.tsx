@@ -6,6 +6,7 @@ import { useMemo, useState, useTransition } from "react";
 
 import { toast } from "@/components/kit/toaster";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import type { ActionState } from "@/lib/action";
 import { ATTENDANCE_LABELS, attendanceRate, countStatuses, type AttendanceStatusCode } from "@/lib/domain/attendance";
 import { cn, formatPercent } from "@/lib/utils";
@@ -72,6 +73,8 @@ export function AttendanceRegister({
 
   if (!rows.length) return <p className="p-8 text-center text-muted">Personne à appeler.</p>;
 
+  const saveLabel = pending ? "Enregistrement…" : unsaved ? "Enregistrer l'appel" : "Enregistrer à nouveau";
+
   return (
     <div className="rounded-card border border-border bg-surface">
       <div className="flex flex-col gap-3 border-b border-border p-4 lg:flex-row lg:items-center lg:justify-between">
@@ -91,9 +94,10 @@ export function AttendanceRegister({
             <Button variant="secondary" onClick={() => setState(Object.fromEntries(rows.map((r) => [r.id, { status: "PRESENT", reason: "" }])))} disabled={pending}>
               <UserCheck aria-hidden /> Tous présents
             </Button>
-            <Button onClick={save} loading={pending}>
+            {/* Below lg the save button lives in the bar kept above the tab bar. */}
+            <Button onClick={save} loading={pending} className="max-lg:hidden">
               {!pending && <Save aria-hidden />}
-              {pending ? "Enregistrement…" : unsaved ? "Enregistrer l'appel" : "Enregistrer à nouveau"}
+              {saveLabel}
             </Button>
           </div>
         )}
@@ -102,15 +106,17 @@ export function AttendanceRegister({
         {rows.map((r) => {
           const s = state[r.id]!;
           return (
-            <li key={r.id} className="flex flex-col gap-2 px-4 py-3 md:flex-row md:items-center md:gap-4">
+            <li key={r.id} className="flex flex-col gap-2.5 px-4 py-3 md:flex-row md:items-center md:gap-4">
               <div className="min-w-0 md:w-56 md:shrink-0">
                 <p className="truncate font-semibold">{r.name}</p>
                 <p className="truncate font-mono text-xs text-muted">{r.detail}</p>
               </div>
-              <fieldset className="flex flex-wrap gap-1.5" disabled={!editable || pending}>
+              {/* Phone: four equal choices on one row, 48 px high, icon over
+                  the word. From md: the compact pills of the desktop. */}
+              <fieldset className="grid grid-cols-4 gap-1.5 md:flex md:flex-wrap" disabled={!editable || pending}>
                 <legend className="sr-only">Statut de {r.name}</legend>
                 {OPTIONS.map((o) => (
-                  <label key={o.value} className="relative">
+                  <label key={o.value} className="relative min-w-0">
                     <input
                       type="radio"
                       name={`status-${r.id}`}
@@ -121,12 +127,12 @@ export function AttendanceRegister({
                     />
                     <span
                       className={cn(
-                        "inline-flex h-10 cursor-pointer items-center gap-1.5 rounded-lg border border-border-strong px-3 text-sm font-semibold text-muted peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-primary peer-disabled:cursor-default",
+                        "flex h-12 cursor-pointer flex-col items-center justify-center gap-0.5 rounded-control border border-border-strong px-1 text-xs font-semibold text-muted select-none peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-primary peer-disabled:cursor-default md:h-10 md:flex-row md:gap-1.5 md:px-3 md:text-sm",
                         o.cls,
                       )}
                     >
-                      <o.Icon className="size-4" aria-hidden />
-                      {ATTENDANCE_LABELS[o.value]}
+                      <o.Icon className="size-4 shrink-0" aria-hidden />
+                      <span className="max-w-full truncate">{ATTENDANCE_LABELS[o.value]}</span>
                     </span>
                   </label>
                 ))}
@@ -136,14 +142,13 @@ export function AttendanceRegister({
                   <label htmlFor={`reason-${r.id}`} className="sr-only">
                     Motif pour {r.name}
                   </label>
-                  <input
+                  <Input
                     id={`reason-${r.id}`}
                     value={s.reason}
                     onChange={(e) => set(r.id, { reason: e.target.value })}
                     placeholder="Motif (facultatif)"
                     maxLength={200}
                     disabled={!editable || pending}
-                    className="h-10 w-full rounded-lg border border-border-strong bg-surface px-3 text-sm"
                   />
                 </div>
               )}
@@ -152,10 +157,19 @@ export function AttendanceRegister({
         })}
       </ul>
       {editable && (
-        <div className="flex justify-end border-t border-border p-4">
+        // An action bar: the floating accessibility button steps aside while
+        // it is on the page (globals.css).
+        <div
+          data-action-bar
+          className="sticky bottom-[var(--tab-bar-space)] z-30 flex flex-wrap items-center justify-between gap-x-3 gap-y-2 rounded-b-card border-t border-border bg-surface/95 p-3 shadow-[0_-4px_16px_rgb(0_0_0/0.06)] backdrop-blur-sm lg:static lg:justify-end lg:p-4 lg:shadow-none lg:backdrop-blur-none"
+        >
+          <p className="min-w-0 text-sm text-muted lg:hidden">
+            <strong className="text-text tabular-nums">{counts.ABSENT ?? 0}</strong> absent{(counts.ABSENT ?? 0) > 1 ? "s" : ""},{" "}
+            <strong className="text-text tabular-nums">{counts.LATE ?? 0}</strong> en retard
+          </p>
           <Button onClick={save} loading={pending}>
             {!pending && <Save aria-hidden />}
-            {pending ? "Enregistrement…" : "Enregistrer l'appel"}
+            {saveLabel}
           </Button>
         </div>
       )}

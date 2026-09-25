@@ -113,13 +113,13 @@ export async function TeacherDashboard({ user }: { user: NonNullable<CurrentUser
                     </p>
                     {sheet ? (
                       <div className="mt-1 flex items-center gap-2">
-                        <div className="h-2 w-40 rounded-full bg-surface-2" role="progressbar" aria-valuenow={Math.round(progress * 100)} aria-valuemin={0} aria-valuemax={100} aria-label={`Saisie ${a.classroom.name}, ${a.subject.name}`}>
+                        <div className="h-2 min-w-0 flex-1 basis-24 rounded-full bg-surface-2 sm:max-w-40" role="progressbar" aria-valuenow={Math.round(progress * 100)} aria-valuemin={0} aria-valuemax={100} aria-label={`Saisie ${a.classroom.name}, ${a.subject.name}`}>
                           <div className={progress >= 1 ? "h-full rounded-full bg-success" : "h-full rounded-full bg-primary"} style={{ width: `${Math.round(progress * 100)}%` }} />
                         </div>
-                        <span className="text-xs font-semibold tabular-nums">{formatPercent(progress)}</span>
+                        <span className="shrink-0 text-xs font-semibold whitespace-nowrap tabular-nums">{formatPercent(progress)}</span>
                       </div>
                     ) : (
-                      <p className="text-xs text-muted">Pas encore de fiche pour ce trimestre</p>
+                      <p className="text-xs text-muted">Pas encore de fiche pour cette période</p>
                     )}
                   </div>
                   {sheet?.isLocked ? (
@@ -152,7 +152,7 @@ export async function TeacherDashboard({ user }: { user: NonNullable<CurrentUser
               <CardTitle>Appel du jour</CardTitle>
             </CardHeader>
             {isWeekend(today) ? (
-              <EmptyState title="Pas de cours aujourd'hui" description="Bon week-end." />
+              <EmptyState title="Pas d'appel le week-end" />
             ) : (
               <ul className="divide-y divide-border">
                 {registerClasses.map((c) => (

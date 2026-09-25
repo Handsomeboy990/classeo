@@ -2,8 +2,8 @@ import { Lock, LockOpen, Plus, Settings2 } from "lucide-react";
 
 import { FormField } from "@/components/kit/form-field";
 import { Input, Select } from "@/components/ui/input";
-import { ConfirmButton } from "@/features/classes/components/confirm-button";
-import { FormDialog } from "@/features/classes/components/form-dialog";
+import { ConfirmButton } from "@/components/kit/confirm-button";
+import { FormDialog } from "@/components/kit/form-dialog";
 import { FORMULA_LABELS } from "@/lib/domain/grade-entry";
 
 import { createSheet, setClassLock, setSheetLock, updateSheet } from "../actions";

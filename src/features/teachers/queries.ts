@@ -5,6 +5,7 @@ import { getActiveYear } from "@/features/classes/academic";
 import { schoolWhere } from "@/lib/auth/scope";
 import type { CurrentUser } from "@/lib/auth/session";
 import { db } from "@/lib/db";
+import { sortByName } from "@/lib/utils";
 
 type User = NonNullable<CurrentUser>;
 
@@ -30,29 +31,30 @@ export async function listTeachers(user: User, opts: { q: string; active: boolea
         : {},
     ],
   };
-  const [rows, total] = await Promise.all([
-    db.teacher.findMany({
-      where,
-      orderBy: [{ lastName: "asc" }, { firstName: "asc" }],
-      skip: opts.skip,
-      take: opts.take,
-      select: {
-        id: true,
-        matricule: true,
-        firstName: true,
-        lastName: true,
-        phone: true,
-        specialty: true,
-        isActive: true,
-        userId: true,
-        school: { select: { name: true } },
-        assignments: { where: { classroom: { academicYearId: year?.id ?? "__none__" } }, select: { weeklyHours: true, classroom: { select: { name: true } } } },
-        mainClasses: { where: { academicYearId: year?.id ?? "__none__" }, select: { name: true } },
-      },
-    }),
-    db.teacher.count({ where }),
-  ]);
-  return { rows, total };
+  // French alphabetical order whatever the database collation: the names of
+  // every matching teacher are sorted here, then only the requested page is
+  // loaded in full (see listStudents).
+  const keys = sortByName(await db.teacher.findMany({ where, orderBy: { id: "asc" }, select: { id: true, lastName: true, firstName: true } }), (t) => t);
+  const pageIds = keys.slice(opts.skip, opts.skip + opts.take).map((k) => k.id);
+  const position = new Map(pageIds.map((id, i) => [id, i]));
+  const page = await db.teacher.findMany({
+    where: { id: { in: pageIds } },
+    select: {
+      id: true,
+      matricule: true,
+      firstName: true,
+      lastName: true,
+      phone: true,
+      specialty: true,
+      isActive: true,
+      userId: true,
+      school: { select: { name: true } },
+      assignments: { where: { classroom: { academicYearId: year?.id ?? "__none__" } }, select: { weeklyHours: true, classroom: { select: { name: true } } } },
+      mainClasses: { where: { academicYearId: year?.id ?? "__none__" }, select: { name: true } },
+    },
+  });
+  const rows = page.sort((a, b) => position.get(a.id)! - position.get(b.id)!);
+  return { rows, total: keys.length };
 }
 
 export async function getTeacher(user: User, id: string) {

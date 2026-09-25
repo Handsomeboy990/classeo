@@ -1,8 +1,10 @@
 import "server-only";
 
+import { deliverEmail } from "@/lib/channels/email";
+import { deliverPush } from "@/lib/channels/push";
 import { db } from "@/lib/db";
 
-type NotificationInput = { kind: string; title: string; body: string; link?: string };
+export type NotificationInput = { kind: string; title: string; body: string; link?: string };
 
 // Shared by every module that alerts someone (absence, published report card,
 // new message, decided request). Never throws: a failed notification must not
@@ -14,7 +16,10 @@ export async function notify(userIds: string[], input: NotificationInput) {
     await db.notification.createMany({ data: unique.map((userId) => ({ userId, ...input })) });
   } catch (error) {
     console.error("notification failed", error);
+    return;
   }
+  // Outside channels run after the in-app record and never block or fail it.
+  await Promise.allSettled([deliverPush(unique, input), deliverEmail(unique, input)]);
 }
 
 // User accounts of the guardians of the students behind these enrollments.

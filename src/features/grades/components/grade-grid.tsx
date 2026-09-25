@@ -3,7 +3,7 @@
 import { AlertTriangle, Lock, RotateCcw, Save } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useRef, useState, useTransition, type KeyboardEvent } from "react";
+import { useEffect, useMemo, useRef, useState, useTransition, type ChangeEvent, type FocusEvent, type KeyboardEvent } from "react";
 
 import { AverageLevel } from "@/components/kit/level";
 import { toast } from "@/components/kit/toaster";
@@ -23,9 +23,28 @@ function toValues(rows: Row[]): Values {
   return Object.fromEntries(rows.map((r) => [r.enrollmentId, { ...r.values }]));
 }
 
+const same = (a = "", b = "") => a.trim().replace(",", ".") === b.trim().replace(",", ".");
+
+function keepEdits(current: Values, before: Values, fresh: Values): Values {
+  return Object.fromEntries(
+    Object.entries(fresh).map(([id, cells]) => {
+      const next = { ...cells };
+      for (const [key, value] of Object.entries(current[id] ?? {})) if (!same(value, before[id]?.[key])) next[key] = value;
+      return [id, next];
+    }),
+  );
+}
+
+// Label shown above a field in the phone cards: "I1", "I2", then the full
+// word for the other evaluations ("Devoir", "Composition").
+function cardLabel(c: EvaluationColumn) {
+  return c.type === "INTERROGATION" ? c.short : c.label;
+}
+
 // The grade entry grid: one row per student, one column per evaluation.
-// Averages and ranks are recomputed on every keystroke with the same rules as
-// the server; only changed cells are sent, in one action.
+// Below 40rem each student becomes a card with labelled fields, the grid
+// would not fit. Averages and ranks are recomputed on every keystroke with
+// the same rules as the server; only changed cells are sent, in one action.
 export function GradeGrid({
   sheetId,
   formula,
@@ -45,14 +64,17 @@ export function GradeGrid({
   const [saved, setSaved] = useState<Values>(() => toValues(rows));
   const [values, setValues] = useState<Values>(() => toValues(rows));
   const [pending, startTransition] = useTransition();
-  const tableRef = useRef<HTMLTableElement>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
 
   // Fresh server data (after a save or a refresh) replaces the baseline.
+  // A cell typed since the previous baseline keeps what the user typed: the
+  // refresh that follows a save can land while the next grade is entered.
   const [prevRows, setPrevRows] = useState(rows);
   if (rows !== prevRows) {
+    const fresh = toValues(rows);
     setPrevRows(rows);
-    setSaved(toValues(rows));
-    setValues(toValues(rows));
+    setValues((current) => keepEdits(current, saved, fresh));
+    setSaved(fresh);
   }
 
   const computed = useMemo(() => {
@@ -105,20 +127,31 @@ export function GradeGrid({
     return () => window.removeEventListener("beforeunload", warn);
   }, [dirty.length]);
 
+  // The table and the cards are both rendered, CSS shows one of them: the
+  // first match that is laid out is the one the user sees.
+  function visibleInput(selector: string) {
+    const all = rootRef.current?.querySelectorAll<HTMLInputElement>(selector) ?? [];
+    return [...all].find((el) => el.getClientRects().length > 0);
+  }
+
   function focusCell(row: number, col: number) {
-    const el = tableRef.current?.querySelector<HTMLInputElement>(`input[data-row="${row}"][data-col="${col}"]`);
-    if (el) {
-      el.focus();
-      el.select();
-    }
+    // Past the last student, Enter goes on with the next evaluation.
+    const target = row >= rows.length && col + 1 < columns.length ? { row: 0, col: col + 1 } : { row, col };
+    const el = visibleInput(`input[data-row="${target.row}"][data-col="${target.col}"]`);
+    if (!el) return;
+    if (el.dataset.layout === "cards") {
+      // Centred, so neither the app bar nor the save bar covers it.
+      el.focus({ preventScroll: true });
+      el.scrollIntoView({ block: "center" });
+    } else el.focus();
+    el.select();
   }
 
   function save() {
     if (!dirty.length || pending) return;
     if (computed.errorCount) {
       toast("error", `${computed.errorCount} note${computed.errorCount > 1 ? "s sont invalides" : " est invalide"}. Corrigez les cases en rouge avant d'enregistrer.`);
-      const first = tableRef.current?.querySelector<HTMLInputElement>('input[aria-invalid="true"]');
-      first?.focus();
+      visibleInput('input[aria-invalid="true"]')?.focus();
       return;
     }
     const cells = dirty.map(({ enrollmentId, key }) => {
@@ -134,7 +167,7 @@ export function GradeGrid({
         toast("success", result.message ?? "Notes enregistrées.");
         router.refresh();
       } else {
-        toast("error", result?.message ?? "L'enregistrement a échoué. Vos saisies sont conservées : réessayez.");
+        toast("error", result?.message ?? "L'enregistrement a échoué. Vos saisies sont conservées, réessayez.");
       }
     });
   }
@@ -166,158 +199,265 @@ export function GradeGrid({
 
   const entered = rows.reduce((n, r) => n + columns.filter((c) => (values[r.enrollmentId]?.[c.key] ?? "").trim() !== "").length, 0);
 
+  // Props shared by the table cell and the card field of one grade.
+  function field(r: Row, ri: number, c: EvaluationColumn, ci: number, layout: "table" | "cards") {
+    const value = values[r.enrollmentId]?.[c.key] ?? "";
+    const error = computed.byId.get(r.enrollmentId)!.errors[c.key];
+    const changed = value.trim().replace(",", ".") !== (saved[r.enrollmentId]?.[c.key] ?? "").trim().replace(",", ".");
+    const errorId = `err-${layout}-${r.enrollmentId}-${ci}`;
+    return {
+      value,
+      error,
+      errorId,
+      props: {
+        type: "text",
+        inputMode: "decimal" as const,
+        enterKeyHint: "next" as const,
+        autoComplete: "off",
+        maxLength: 5,
+        "data-row": ri,
+        "data-col": ci,
+        "data-layout": layout,
+        value,
+        "aria-label": `${c.label}, ${r.name}`,
+        "aria-invalid": error ? true : undefined,
+        "aria-describedby": error ? errorId : `grid-help-${layout}`,
+        title: error,
+        onChange: (e: ChangeEvent<HTMLInputElement>) => setValues((v) => ({ ...v, [r.enrollmentId]: { ...v[r.enrollmentId], [c.key]: e.target.value } })),
+        onFocus: (e: FocusEvent<HTMLInputElement>) => e.currentTarget.select(),
+      },
+      tone: error ? "border-danger bg-danger-soft" : changed ? "border-primary bg-primary-soft" : "border-border-strong",
+    };
+  }
+
+  function rowAverage(errors: Record<string, string>, average: number | null) {
+    return Object.keys(errors).length ? (
+      <span className="inline-flex items-center gap-1 text-sm font-semibold text-danger">
+        <AlertTriangle className="size-4" aria-hidden /> Note invalide
+      </span>
+    ) : (
+      <AverageLevel average={average} />
+    );
+  }
+
   return (
-    <div className="rounded-card border border-border bg-surface">
-      <div className="flex flex-col gap-3 border-b border-border p-4 lg:flex-row lg:items-center lg:justify-between">
-        <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm">
-          <p>
-            <span className="text-muted">Notes saisies : </span>
-            <strong className="tabular-nums">
-              {entered} / {rows.length * columns.length}
-            </strong>
-          </p>
-          <p className="flex items-center gap-2">
-            <span className="text-muted">Moyenne de la classe :</span>
-            <AverageLevel average={computed.classAverage} />
-          </p>
-        </div>
-        {editable ? (
-          <div className="flex flex-wrap items-center gap-2">
-            <p className="text-sm text-muted" aria-live="polite">
-              {dirty.length ? `${dirty.length} modification${dirty.length > 1 ? "s" : ""} non enregistrée${dirty.length > 1 ? "s" : ""}` : "Tout est enregistré"}
-            </p>
-            {dirty.length > 0 && (
-              <Button variant="ghost" size="sm" onClick={() => setValues(saved)} disabled={pending}>
-                <RotateCcw aria-hidden /> Annuler les modifications
-              </Button>
-            )}
-            <Button onClick={save} loading={pending} disabled={!dirty.length} aria-keyshortcuts="Control+S">
-              {!pending && <Save aria-hidden />}
-              {pending ? "Enregistrement…" : "Enregistrer les notes"}
-            </Button>
-          </div>
-        ) : (
-          <p className="flex items-center gap-2 text-sm font-semibold text-muted">
-            <Lock className="size-4" aria-hidden /> {readOnlyReason ?? "Lecture seule"}
-          </p>
-        )}
+    <div ref={rootRef} className="flex flex-col rounded-card border border-border bg-surface lg:grid lg:grid-cols-[minmax(0,1fr)_auto]">
+      <div className="flex flex-wrap items-center gap-x-6 gap-y-2 border-b border-border p-4 text-sm lg:col-start-1 lg:row-start-1">
+        <p>
+          <span className="text-muted">Notes saisies : </span>
+          <strong className="tabular-nums">
+            {entered} / {rows.length * columns.length}
+          </strong>
+        </p>
+        <p className="flex flex-wrap items-center gap-x-2 gap-y-1">
+          <span className="whitespace-nowrap text-muted">Moyenne de la classe :</span>
+          <AverageLevel average={computed.classAverage} />
+        </p>
       </div>
 
       {editable && (
-        <p id="grid-help" className="border-b border-border bg-surface-2/60 px-4 py-2 text-xs text-muted">
-          Notes sur 20, virgule ou point pour les décimales, case vide si pas de note. Entrée ou flèches pour passer d&apos;une case à l&apos;autre, Échap pour
-          annuler une case, Ctrl+S pour enregistrer.
-        </p>
+        <div className="border-b border-border bg-surface-2/60 px-4 py-2 text-xs text-muted lg:col-span-2">
+          <p id="grid-help-table" className="max-sm:hidden">
+            Notes sur 20, virgule ou point pour les décimales, case vide si pas de note. Entrée ou flèches pour passer d&apos;une case à l&apos;autre, Échap pour
+            annuler une case, Ctrl+S pour enregistrer.
+          </p>
+          <p id="grid-help-cards" className="sm:hidden">
+            Notes sur 20, virgule ou point pour les décimales, case vide si pas de note. La touche Suivant passe à l&apos;élève suivant.
+          </p>
+        </div>
       )}
 
       {rows.length === 0 ? (
-        <p className="p-8 text-center text-muted">Aucun élève inscrit dans cette classe.</p>
+        <p className="p-8 text-center text-muted lg:col-span-2">Aucun élève inscrit dans cette classe.</p>
       ) : (
-        <div className="max-h-[70vh] overflow-auto">
-          <table ref={tableRef} className="w-full border-separate border-spacing-0 text-sm">
-            <caption className="sr-only">Grille de saisie des notes, une ligne par élève, une colonne par évaluation</caption>
-            <thead className="sticky top-0 z-20 bg-surface-2 text-xs font-semibold tracking-wide text-muted uppercase">
-              <tr>
-                <th scope="col" className="sticky left-0 z-30 border-b border-border bg-surface-2 px-3 py-3 text-left">
-                  Élève
-                </th>
-                {columns.map((c) => (
-                  <th key={c.key} scope="col" className="border-b border-border px-1 py-3 text-center" title={c.label}>
-                    <abbr title={c.label} className="no-underline">
-                      {c.short}
-                    </abbr>
-                    <span className="sr-only">{c.label}</span>
-                  </th>
-                ))}
-                <th scope="col" className="border-b border-border px-3 py-3 text-left">
-                  Moyenne
-                </th>
-                <th scope="col" className="border-b border-border px-3 py-3 text-right">
-                  Rang
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((r, ri) => {
-                const info = computed.byId.get(r.enrollmentId)!;
-                return (
-                  <tr key={r.enrollmentId} className="group">
-                    <th scope="row" className="sticky left-0 z-10 border-b border-border bg-surface px-3 py-1.5 text-left font-medium group-hover:bg-surface-2">
-                      <Link href={`/espace/eleves/${r.studentId}`} className="block max-w-56 truncate hover:underline" tabIndex={-1}>
+        <>
+          {/* Phone: one card per student. */}
+          <ol aria-label="Notes par élève" className="divide-y divide-border sm:hidden">
+            {rows.map((r, ri) => {
+              const info = computed.byId.get(r.enrollmentId)!;
+              return (
+                <li key={r.enrollmentId} className="px-4 py-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <Link href={`/espace/eleves/${r.studentId}`} className="block truncate font-semibold text-text hover:underline" tabIndex={-1}>
                         {r.name}
                       </Link>
-                      <span className="block font-mono text-[11px] font-normal text-muted">{r.matricule}</span>
-                    </th>
+                      <span className="block font-mono text-xs text-muted">{r.matricule}</span>
+                    </div>
+                    <p className="shrink-0 text-right text-xs text-muted">
+                      Rang
+                      <span className="block text-base font-bold text-text tabular-nums">{formatRank(info.rank, info.tied)}</span>
+                    </p>
+                  </div>
+                  <div className="mt-3 grid grid-cols-[repeat(auto-fill,minmax(4.25rem,1fr))] gap-2">
                     {columns.map((c, ci) => {
-                      const value = values[r.enrollmentId]?.[c.key] ?? "";
-                      const error = info.errors[c.key];
-                      const changed = value.trim().replace(",", ".") !== (saved[r.enrollmentId]?.[c.key] ?? "").trim().replace(",", ".");
+                      const f = field(r, ri, c, ci, "cards");
+                      const id = `card-${r.enrollmentId}-${ci}`;
                       return (
-                        <td key={c.key} className="border-b border-border px-1 py-1.5 text-center group-hover:bg-surface-2">
+                        <div key={c.key} className="flex min-w-0 flex-col gap-1">
+                          <label htmlFor={id} className="truncate text-xs font-semibold text-muted" title={c.label}>
+                            {cardLabel(c)}
+                          </label>
                           {editable ? (
                             <input
-                              type="text"
-                              inputMode="decimal"
-                              autoComplete="off"
-                              maxLength={5}
-                              data-row={ri}
-                              data-col={ci}
-                              value={value}
-                              aria-label={`${c.label}, ${r.name}`}
-                              aria-invalid={error ? true : undefined}
-                              aria-describedby={error ? `err-${r.enrollmentId}-${ci}` : "grid-help"}
-                              title={error}
-                              onChange={(e) => setValues((v) => ({ ...v, [r.enrollmentId]: { ...v[r.enrollmentId], [c.key]: e.target.value } }))}
+                              id={id}
+                              {...f.props}
                               onKeyDown={(e) => onKeyDown(e, ri, ci)}
-                              onFocus={(e) => e.currentTarget.select()}
-                              className={cn(
-                                "h-10 w-16 rounded-md border bg-surface text-center font-semibold tabular-nums text-text focus:border-primary",
-                                error ? "border-danger bg-danger-soft" : changed ? "border-primary bg-primary-soft" : "border-border-strong",
-                              )}
+                              className={cn("h-12 w-full min-w-0 rounded-control border bg-surface text-center text-base font-semibold text-text tabular-nums focus:border-primary", f.tone)}
                             />
                           ) : (
-                            <span className="inline-block w-16 font-semibold tabular-nums">{value || <span className="text-muted">–</span>}</span>
-                          )}
-                          {error && (
-                            <span id={`err-${r.enrollmentId}-${ci}`} className="sr-only">
-                              {error}
+                            <span id={id} className="flex h-12 items-center justify-center rounded-control bg-surface-2 text-base font-semibold tabular-nums">
+                              {f.value || <span className="text-muted">–</span>}
                             </span>
                           )}
-                        </td>
+                          {f.error && (
+                            <span id={f.errorId} className="sr-only">
+                              {f.error}
+                            </span>
+                          )}
+                        </div>
                       );
                     })}
-                    <td className="border-b border-border px-3 py-1.5 whitespace-nowrap group-hover:bg-surface-2">
-                      {Object.keys(info.errors).length ? (
-                        <span className="inline-flex items-center gap-1 text-sm font-semibold text-danger">
-                          <AlertTriangle className="size-4" aria-hidden /> Note invalide
-                        </span>
-                      ) : (
-                        <AverageLevel average={info.average} />
-                      )}
+                  </div>
+                  <div className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
+                    <span className="whitespace-nowrap text-muted">Moyenne :</span>
+                    {rowAverage(info.errors, info.average)}
+                  </div>
+                </li>
+              );
+            })}
+          </ol>
+          <dl className="grid grid-cols-[repeat(auto-fill,minmax(4.25rem,1fr))] gap-2 border-t border-border bg-surface-2 px-4 py-3 text-sm sm:hidden" aria-label="Moyenne par évaluation">
+            {columns.map((c, i) => (
+              <div key={c.key} className="min-w-0">
+                <dt className="truncate text-xs text-muted" title={c.label}>
+                  {cardLabel(c)}
+                </dt>
+                <dd className="font-semibold tabular-nums">{formatAverage(computed.colAverages[i] ?? null)}</dd>
+              </div>
+            ))}
+          </dl>
+
+          {/* From 40rem: the grid. */}
+          <div className="max-h-[70vh] overflow-auto max-sm:hidden lg:col-span-2">
+            <table className="w-full border-separate border-spacing-0 text-sm">
+              <caption className="sr-only">Grille de saisie des notes, une ligne par élève, une colonne par évaluation</caption>
+              <thead className="sticky top-0 z-20 bg-surface-2 text-xs font-semibold tracking-wide text-muted uppercase">
+                <tr>
+                  <th scope="col" className="sticky left-0 z-30 border-b border-border bg-surface-2 px-3 py-3 text-left">
+                    Élève
+                  </th>
+                  {columns.map((c) => (
+                    <th key={c.key} scope="col" className="border-b border-border px-1 py-3 text-center" title={c.label}>
+                      <abbr title={c.label} className="no-underline">
+                        {c.short}
+                      </abbr>
+                      <span className="sr-only">{c.label}</span>
+                    </th>
+                  ))}
+                  <th scope="col" className="border-b border-border px-3 py-3 text-left">
+                    Moyenne
+                  </th>
+                  <th scope="col" className="border-b border-border px-3 py-3 text-right">
+                    Rang
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((r, ri) => {
+                  const info = computed.byId.get(r.enrollmentId)!;
+                  return (
+                    <tr key={r.enrollmentId} className="group">
+                      <th scope="row" className="sticky left-0 z-10 border-b border-border bg-surface px-3 py-1.5 text-left font-medium group-hover:bg-surface-2">
+                        <Link href={`/espace/eleves/${r.studentId}`} className="block max-w-56 truncate hover:underline" tabIndex={-1}>
+                          {r.name}
+                        </Link>
+                        <span className="block font-mono text-[11px] font-normal text-muted">{r.matricule}</span>
+                      </th>
+                      {columns.map((c, ci) => {
+                        const f = field(r, ri, c, ci, "table");
+                        return (
+                          <td key={c.key} className="border-b border-border px-1 py-1.5 text-center group-hover:bg-surface-2">
+                            {editable ? (
+                              <input
+                                {...f.props}
+                                onKeyDown={(e) => onKeyDown(e, ri, ci)}
+                                className={cn("h-10 w-16 rounded-md border bg-surface text-center font-semibold text-text tabular-nums focus:border-primary", f.tone)}
+                              />
+                            ) : (
+                              <span className="inline-block w-16 font-semibold tabular-nums">{f.value || <span className="text-muted">–</span>}</span>
+                            )}
+                            {f.error && (
+                              <span id={f.errorId} className="sr-only">
+                                {f.error}
+                              </span>
+                            )}
+                          </td>
+                        );
+                      })}
+                      <td className="border-b border-border px-3 py-1.5 whitespace-nowrap group-hover:bg-surface-2">{rowAverage(info.errors, info.average)}</td>
+                      <td className="border-b border-border px-3 py-1.5 text-right font-semibold whitespace-nowrap tabular-nums group-hover:bg-surface-2">
+                        {formatRank(info.rank, info.tied)}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+              <tfoot className="sticky bottom-0 z-20 bg-surface-2 text-sm font-semibold">
+                <tr>
+                  <th scope="row" className="sticky left-0 z-30 border-t border-border bg-surface-2 px-3 py-2 text-left">
+                    Moyenne par évaluation
+                  </th>
+                  {computed.colAverages.map((a, i) => (
+                    <td key={columns[i]!.key} className="border-t border-border px-1 py-2 text-center tabular-nums">
+                      {formatAverage(a)}
                     </td>
-                    <td className="border-b border-border px-3 py-1.5 text-right font-semibold whitespace-nowrap tabular-nums group-hover:bg-surface-2">
-                      {formatRank(info.rank, info.tied)}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-            <tfoot className="sticky bottom-0 z-20 bg-surface-2 text-sm font-semibold">
-              <tr>
-                <th scope="row" className="sticky left-0 z-30 border-t border-border bg-surface-2 px-3 py-2 text-left">
-                  Moyenne par évaluation
-                </th>
-                {computed.colAverages.map((a, i) => (
-                  <td key={columns[i]!.key} className="border-t border-border px-1 py-2 text-center tabular-nums">
-                    {formatAverage(a)}
-                  </td>
-                ))}
-                <td className="border-t border-border px-3 py-2 tabular-nums">{formatAverage(computed.classAverage)}</td>
-                <td className="border-t border-border" />
-              </tr>
-            </tfoot>
-          </table>
+                  ))}
+                  <td className="border-t border-border px-3 py-2 tabular-nums">{formatAverage(computed.classAverage)}</td>
+                  <td className="border-t border-border" />
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </>
+      )}
+
+      {/* Save bar: beside the summary on a large screen; below lg, last in
+          the card, kept in view above the tab bar while scrolling. It is
+          marked as a phone action bar: the floating accessibility button
+          steps aside while it is on screen (globals.css). With very large
+          text the status takes its own line above the buttons. */}
+      {editable ? (
+        <div
+          data-action-bar
+          className={cn(
+            "flex flex-wrap items-center gap-2 lg:col-start-2 lg:row-start-1 lg:justify-end lg:border-b lg:border-border lg:p-4",
+            "sticky bottom-[var(--tab-bar-space)] z-30 rounded-b-card border-t border-border bg-surface/95 p-3 shadow-[0_-4px_16px_rgb(0_0_0/0.06)] backdrop-blur-sm lg:static lg:z-auto lg:rounded-none lg:border-t-0 lg:bg-surface lg:shadow-none lg:backdrop-blur-none",
+          )}
+        >
+          <p className="min-w-0 flex-1 text-sm text-muted lg:flex-none max-lg:[html[data-text=xl]_&]:basis-full max-lg:[html[data-text=xxl]_&]:basis-full" aria-live="polite">
+            {dirty.length ? `${dirty.length} modification${dirty.length > 1 ? "s" : ""} non enregistrée${dirty.length > 1 ? "s" : ""}` : "Tout est enregistré"}
+          </p>
+          {dirty.length > 0 && (
+            <Button variant="ghost" size="sm" onClick={() => setValues(saved)} disabled={pending} title="Annuler les modifications">
+              <RotateCcw aria-hidden /> <span className="max-sm:sr-only">Annuler les modifications</span>
+            </Button>
+          )}
+          <Button onClick={save} loading={pending} disabled={!dirty.length} aria-keyshortcuts="Control+S" className="max-lg:[html[data-text=xl]_&]:grow max-lg:[html[data-text=xxl]_&]:grow">
+            {!pending && <Save aria-hidden />}
+            {pending ? (
+              "Enregistrement…"
+            ) : (
+              <>
+                Enregistrer<span className="max-sm:sr-only"> les notes</span>
+              </>
+            )}
+          </Button>
         </div>
+      ) : (
+        <p className="flex items-center gap-2 p-4 text-sm font-semibold text-muted max-lg:order-first max-lg:border-b max-lg:border-border lg:col-start-2 lg:row-start-1 lg:border-b lg:border-border">
+          <Lock className="size-4 shrink-0" aria-hidden /> {readOnlyReason ?? "Lecture seule"}
+        </p>
       )}
     </div>
   );

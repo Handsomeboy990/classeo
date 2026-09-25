@@ -52,23 +52,39 @@ export function departmentWhere(user: User): Prisma.DepartmentWhereInput {
   return s.departmentId ? { id: s.departmentId } : NOTHING;
 }
 
-function isTeacherOnly(user: User) {
-  return user.role.code === "TEACHER" && !!user.teacherId;
+// A teacher account is limited to its own classes. The limit follows the
+// role, not the link to a teacher record: an account created with the
+// teacher role but not yet linked to a record reaches no class at all,
+// instead of falling back to the whole school.
+export function isTeacherRole(user: Pick<User, "role">) {
+  return user.role.code === "TEACHER";
+}
+
+function ownTeacherId(user: User) {
+  return user.teacherId ?? "__none__";
 }
 
 // Classes a user may see. A teacher sees the classes they teach or lead.
 export function classroomWhere(user: User): Prisma.ClassroomWhereInput {
-  if (isTeacherOnly(user))
+  if (isTeacherRole(user))
     return {
       schoolId: user.scope.schoolId ?? "__none__",
-      OR: [{ assignments: { some: { teacherId: user.teacherId! } } }, { mainTeacherId: user.teacherId! }],
+      OR: [{ assignments: { some: { teacherId: ownTeacherId(user) } } }, { mainTeacherId: ownTeacherId(user) }],
     };
   if (user.scope.level === "SELF") return { enrollments: { some: enrollmentWhere(user) } };
   return { school: schoolWhere(user) };
 }
 
+// Classes whose whole roster a user may read: the grades, attendance and
+// report cards of every student of the class. Families follow their own
+// child through enrollmentWhere and never see the classmates.
+export function rosterClassroomWhere(user: User): Prisma.ClassroomWhereInput {
+  if (user.scope.level === "SELF") return NOTHING;
+  return classroomWhere(user);
+}
+
 export function enrollmentWhere(user: User): Prisma.EnrollmentWhereInput {
-  if (isTeacherOnly(user)) return { classroom: classroomWhere(user) };
+  if (isTeacherRole(user)) return { classroom: classroomWhere(user) };
   if (user.scope.level === "SELF") {
     if (user.guardianId) return { student: { guardians: { some: { guardianId: user.guardianId } } } };
     if (user.studentId) return { studentId: user.studentId };
@@ -80,7 +96,7 @@ export function enrollmentWhere(user: User): Prisma.EnrollmentWhereInput {
 // Course assignments a user may write grades or attendance on. A teacher only
 // on their own; school staff on their school.
 export function assignmentWriteWhere(user: User): Prisma.CourseAssignmentWhereInput {
-  if (isTeacherOnly(user)) return { teacherId: user.teacherId! };
+  if (isTeacherRole(user)) return { teacherId: ownTeacherId(user) };
   return { classroom: { school: schoolWhere(user) } };
 }
 

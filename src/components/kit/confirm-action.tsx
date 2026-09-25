@@ -30,9 +30,9 @@ export function ConfirmAction({
   return (
     <>
       {trigger(() => setOpen(true))}
-      <Dialog open={open} onClose={() => setOpen(false)} title={title}>
-        <p className="text-sm text-muted">{description}</p>
-        <ActionForm action={action} onSuccess={() => setOpen(false)} className="mt-5 flex justify-end gap-2">
+      <Dialog open={open} onClose={() => setOpen(false)} title={title} size="sm">
+        <p className="text-sm leading-relaxed text-muted">{description}</p>
+        <ActionForm action={action} onSuccess={() => setOpen(false)} className="ds-dialog-actions mt-5">
           {Object.entries(fields).map(([k, v]) => (
             <input key={k} type="hidden" name={k} value={v} />
           ))}

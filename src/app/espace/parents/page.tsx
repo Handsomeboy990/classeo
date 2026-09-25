@@ -24,6 +24,7 @@ export default async function ParentsPage(props: PageProps<"/espace/parents">) {
   const columns: Column<Row>[] = [
     {
       header: "Parent",
+      primary: true,
       cell: (r) => (
         <Link href={`/espace/parents/${r.id}`} className="font-semibold text-primary hover:underline">
           {r.lastName} {r.firstName}
@@ -62,7 +63,7 @@ export default async function ParentsPage(props: PageProps<"/espace/parents">) {
 
   return (
     <>
-      <PageHeader title="Parents et tuteurs" description="Familles des élèves, canal de contact préféré et accès à l'application." actions={canCreate && <CreateGuardianDialog students={students} />} />
+      <PageHeader title="Parents et tuteurs" actions={canCreate && <CreateGuardianDialog students={students} />} />
       <DataTable
         rows={rows}
         columns={columns}
@@ -72,9 +73,10 @@ export default async function ParentsPage(props: PageProps<"/espace/parents">) {
         pageSize={pageSize}
         searchParams={sp}
         basePath="/espace/parents"
-        searchPlaceholder="Rechercher un parent, un téléphone, un élève"
+        searchPlaceholder="Parent, téléphone ou élève"
         caption="Liste des parents et tuteurs"
-        emptyTitle="Aucun parent"
+        emptyTitle={q ? "Aucun parent ne correspond à la recherche" : "Aucun parent"}
+        emptyDescription={q ? "Cherchez par nom, par téléphone ou par le nom d'un enfant." : undefined}
       />
     </>
   );

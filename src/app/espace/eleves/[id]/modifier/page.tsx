@@ -21,7 +21,7 @@ export default async function EditStudentPage(props: PageProps<"/espace/eleves/[
   const name = `${student.firstName} ${student.lastName}`;
   return (
     <>
-      <nav aria-label="Fil d'Ariane" className="mb-2 text-sm text-muted">
+      <nav aria-label="Fil d'Ariane" className="mb-2 text-sm text-muted max-lg:hidden">
         <Link href="/espace/eleves" className="hover:underline">
           Élèves
         </Link>{" "}

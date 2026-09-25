@@ -1,7 +1,7 @@
 import "server-only";
 
 import type { Prisma } from "@/generated/prisma/client";
-import { classroomWhere, schoolWhere } from "@/lib/auth/scope";
+import { classroomWhere, rosterClassroomWhere, schoolWhere } from "@/lib/auth/scope";
 import type { CurrentUser } from "@/lib/auth/session";
 import { db } from "@/lib/db";
 
@@ -56,7 +56,7 @@ export async function classroomOptions(user: User) {
 
 export async function getClassroom(user: User, id: string) {
   return db.classroom.findFirst({
-    where: { AND: [{ id }, classroomWhere(user)] },
+    where: { AND: [{ id }, rosterClassroomWhere(user)] },
     include: {
       school: { select: { id: true, name: true, cycle: true } },
       academicYear: { select: { id: true, label: true, isActive: true } },

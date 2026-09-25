@@ -1,13 +1,13 @@
-import { Download, Receipt } from "lucide-react";
+import { Download, ReceiptText } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 
 import { DataTable, type Column } from "@/components/kit/data-table";
 import { PageHeader } from "@/components/kit/page-header";
+import { UrlSelect } from "@/components/kit/url-select";
 import { buttonVariants } from "@/components/ui/button";
 import { requireFeeStaff } from "@/features/fees/access";
 import { FeesNav } from "@/features/fees/components/fees-nav";
-import { FilterSelect } from "@/features/fees/components/filter-select";
 import { feesTabs } from "@/features/fees/nav";
 import { listPayments } from "@/features/payments/queries";
 import { can } from "@/lib/auth/authorize";
@@ -35,22 +35,24 @@ export default async function PaymentsPage({ searchParams }: PageProps<"/espace/
     { header: "Date", cell: (r) => formatDate(r.paidAt), hideBelow: "sm" },
     {
       header: "Élève",
+      primary: true,
       cell: (r) => (
         <Link href={`/espace/frais/factures/${r.invoice.id}`} className="font-medium text-primary hover:underline">
           {r.invoice.enrollment.student.lastName} {r.invoice.enrollment.student.firstName}
         </Link>
       ),
     },
-    { header: "Classe", cell: (r) => r.invoice.enrollment.classroom.name, hideBelow: "lg" },
+    { header: "Classe", cell: (r) => r.invoice.enrollment.classroom.name, hideBelow: "lg", mobileHidden: false },
     { header: "Facture", cell: (r) => r.invoice.number, hideBelow: "lg" },
     { header: "Mode", cell: (r) => PAYMENT_METHOD_LABELS[r.method], hideBelow: "md" },
     { header: "Montant", cell: (r) => <span className="font-semibold">{formatFcfa(r.amount)}</span>, className: "text-right tabular-nums" },
     {
       header: "Reçu",
+      actions: true,
       cell: (r) => (
         <Link href={`/espace/frais/paiements/${r.id}/recu`} className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline">
-          <Receipt className="size-4" aria-hidden />
-          <span className="max-sm:sr-only">Reçu</span>
+          <ReceiptText className="size-4" aria-hidden />
+          <span>Reçu</span>
           <span className="sr-only"> du paiement {r.reference}</span>
         </Link>
       ),
@@ -59,7 +61,7 @@ export default async function PaymentsPage({ searchParams }: PageProps<"/espace/
 
   return (
     <>
-      <PageHeader title="Paiements" description={`Versements enregistrés sur l'année en cours. Total de la sélection : ${formatFcfa(sum)}.`} />
+      <PageHeader title="Paiements" description={`Versements de l'année en cours. Total de la liste : ${formatFcfa(sum)}.`} />
       <FeesNav items={feesTabs(user)} />
       <DataTable
         caption="Liste des paiements"
@@ -75,7 +77,15 @@ export default async function PaymentsPage({ searchParams }: PageProps<"/espace/
         emptyTitle="Aucun paiement ne correspond"
         toolbar={
           <>
-            <FilterSelect param="mode" label="Filtrer par mode de paiement" allLabel="Tous les modes" options={PAYMENT_METHODS.map((m) => ({ value: m, label: PAYMENT_METHOD_LABELS[m] }))} />
+            <UrlSelect
+              param="mode"
+              label="Filtrer par mode de paiement"
+              hideLabel
+              replace
+              allLabel="Tous les modes"
+              options={PAYMENT_METHODS.map((m) => ({ value: m, label: PAYMENT_METHOD_LABELS[m] }))}
+              className="sm:w-48"
+            />
             {can(user, "payment:export") && (
               <a href={`/api/export/paiements${exportQs.size ? `?${exportQs}` : ""}`} className={buttonVariants({ variant: "secondary" })} download>
                 <Download aria-hidden /> Exporter en CSV

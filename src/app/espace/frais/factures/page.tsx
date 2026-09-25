@@ -4,10 +4,10 @@ import Link from "next/link";
 
 import { DataTable, type Column } from "@/components/kit/data-table";
 import { PageHeader } from "@/components/kit/page-header";
+import { UrlSelect } from "@/components/kit/url-select";
 import { buttonVariants } from "@/components/ui/button";
 import { requireFeeStaff } from "@/features/fees/access";
 import { FeesNav } from "@/features/fees/components/fees-nav";
-import { FilterSelect } from "@/features/fees/components/filter-select";
 import { StatusBadge } from "@/features/fees/components/status-badge";
 import { feesTabs } from "@/features/fees/nav";
 import { getClassOptions, listInvoices } from "@/features/fees/queries";
@@ -41,15 +41,24 @@ export default async function InvoicesPage({ searchParams }: PageProps<"/espace/
           {r.number}
         </Link>
       ),
+      mobileHidden: true,
     },
     {
       header: "Élève",
+      primary: true,
       cell: (r) => (
         <div>
-          <p className="font-medium">
+          {/* On a phone the student heads the card and links to the invoice. */}
+          <Link href={`/espace/frais/factures/${r.id}`} className="font-semibold text-primary hover:underline sm:hidden">
+            {r.enrollment.student.lastName} {r.enrollment.student.firstName}
+          </Link>
+          <p className="font-medium max-sm:hidden">
             {r.enrollment.student.lastName} {r.enrollment.student.firstName}
           </p>
-          <p className="text-xs text-muted">{r.enrollment.student.matricule}</p>
+          <p className="text-xs text-muted">
+            <span className="sm:hidden">{r.number} · </span>
+            {r.enrollment.student.matricule}
+          </p>
         </div>
       ),
     },
@@ -63,7 +72,7 @@ export default async function InvoicesPage({ searchParams }: PageProps<"/espace/
 
   return (
     <>
-      <PageHeader title="Factures" description="Factures de l'année en cours. Ouvrez une facture pour enregistrer un paiement." />
+      <PageHeader title="Factures" description="Factures de l'année en cours. Les paiements s'enregistrent depuis la facture." />
       <FeesNav items={feesTabs(user)} />
       <DataTable
         caption="Liste des factures"
@@ -80,13 +89,24 @@ export default async function InvoicesPage({ searchParams }: PageProps<"/espace/
         emptyDescription="Modifiez la recherche ou les filtres."
         toolbar={
           <>
-            <FilterSelect
+            <UrlSelect
               param="statut"
               label="Filtrer par statut"
+              hideLabel
+              replace
               allLabel="Tous les statuts"
               options={INVOICE_STATUSES.map((s) => ({ value: s, label: INVOICE_STATUS_LABELS[s] }))}
+              className="sm:w-48"
             />
-            <FilterSelect param="classe" label="Filtrer par classe" allLabel="Toutes les classes" options={classes.map((c) => ({ value: c.id, label: c.name }))} />
+            <UrlSelect
+              param="classe"
+              label="Filtrer par classe"
+              hideLabel
+              replace
+              allLabel="Toutes les classes"
+              options={classes.map((c) => ({ value: c.id, label: c.name }))}
+              className="sm:w-48"
+            />
             {can(user, "fee:export") && (
               <a href={`/api/export/factures${exportQs.size ? `?${exportQs}` : ""}`} className={buttonVariants({ variant: "secondary" })} download>
                 <Download aria-hidden /> Exporter en CSV

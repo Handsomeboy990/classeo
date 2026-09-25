@@ -2,6 +2,7 @@
 
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { after } from "next/server";
 import { z } from "zod";
 
 import type { ActionState } from "@/lib/action";
@@ -9,11 +10,15 @@ import { audit } from "@/lib/audit";
 import { dummyVerify, hashPassword, verifyPassword } from "@/lib/auth/password";
 import { clientIp, createSession, destroySession, getCurrentUser } from "@/lib/auth/session";
 import { db } from "@/lib/db";
+import { platformUrl, sendMail } from "@/lib/mail";
+import { passwordChangedEmail } from "@/lib/mail/templates";
 import { hitRateLimit, resetRateLimit } from "@/lib/rate-limit";
+import { de } from "@/lib/utils";
 
 const MAX_FAILED = 5;
 const LOCK_MS = 15 * 60 * 1000;
 const GENERIC = "Adresse e-mail ou mot de passe incorrect.";
+const LOCKED = "Compte temporairement verrouillé après plusieurs échecs. Réessayez dans 15 minutes.";
 
 const loginSchema = z.object({
   email: z.string().trim().toLowerCase().email("Saisissez une adresse e-mail valide.").max(200),
@@ -43,30 +48,37 @@ export async function login(_prev: ActionState, formData: FormData): Promise<Act
     return { ok: false, message: `Trop de tentatives. Réessayez dans ${minutes} minute${minutes > 1 ? "s" : ""}.` };
   }
 
+  // Nothing in the answer may tell an existing address from an unknown one:
+  // an unknown address "locks" after the same number of attempts, and the
+  // state of an account (locked, disabled) is never revealed without its
+  // password.
   const user = await db.user.findUnique({ where: { email } });
   if (!user) {
+    if (byEmail.count > MAX_FAILED) return { ok: false, message: LOCKED };
     await dummyVerify(password);
     return { ok: false, message: GENERIC };
   }
-  if (user.lockedUntil && user.lockedUntil > new Date()) {
-    return { ok: false, message: "Compte temporairement verrouillé après plusieurs échecs. Réessayez dans 15 minutes." };
-  }
+  const now = new Date();
+  if (user.lockedUntil && user.lockedUntil > now) return { ok: false, message: LOCKED };
 
   const valid = await verifyPassword(user.passwordHash, password);
-  if (!valid || !user.isActive) {
-    const failed = user.failedLoginCount + 1;
+  if (!valid) {
+    // A lock that has run out starts a new series, as the attempt window of
+    // an unknown address does.
+    const failed = (user.lockedUntil ? 0 : user.failedLoginCount) + 1;
     await db.user.update({
       where: { id: user.id },
-      data: { failedLoginCount: failed, lockedUntil: failed >= MAX_FAILED ? new Date(Date.now() + LOCK_MS) : null },
+      data: { failedLoginCount: failed, lockedUntil: failed >= MAX_FAILED ? new Date(now.getTime() + LOCK_MS) : null },
     });
     await audit(null, { action: "login_failed", resource: "user", resourceId: user.id, summary: `Échec de connexion pour ${email}` });
-    return { ok: false, message: user.isActive ? GENERIC : "Ce compte est désactivé. Contactez votre administrateur." };
+    return { ok: false, message: GENERIC };
   }
+  if (!user.isActive) return { ok: false, message: "Ce compte est désactivé. Contactez votre administrateur." };
 
   await db.user.update({ where: { id: user.id }, data: { failedLoginCount: 0, lockedUntil: null, lastLoginAt: new Date() } });
   await resetRateLimit(`login:email:${email}`);
   await createSession(user.id);
-  await audit(null, { action: "login", resource: "user", resourceId: user.id, summary: `Connexion de ${user.firstName} ${user.lastName}`, schoolId: user.schoolId });
+  await audit(null, { action: "login", resource: "user", resourceId: user.id, summary: `Connexion ${de(`${user.firstName} ${user.lastName}`)}`, schoolId: user.schoolId });
 
   redirect(user.mustChangePassword ? "/changer-mot-de-passe" : safeNext(next));
 }
@@ -107,5 +119,15 @@ export async function changePassword(_prev: ActionState, formData: FormData): Pr
     db.session.updateMany({ where: { userId: user.id, id: { not: current.sessionId }, revokedAt: null }, data: { revokedAt: new Date() } }),
   ]);
   await audit(current, { action: "update", resource: "user", resourceId: user.id, summary: "Changement de mot de passe" });
+  // Security notice to the account's address, as after a reset by code. Sent
+  // once the answer has left, so a slow mail server never delays the page.
+  const at = new Date();
+  after(() =>
+    sendMail({
+      to: user.email,
+      tag: "password_changed",
+      ...passwordChangedEmail({ firstName: user.firstName, email: user.email, at, signInUrl: platformUrl("/connexion"), forgotUrl: platformUrl("/mot-de-passe-oublie"), keptSession: true }),
+    }),
+  );
   redirect("/espace");
 }

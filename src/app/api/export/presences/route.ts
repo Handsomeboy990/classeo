@@ -1,5 +1,5 @@
 import { shortDate } from "@/features/students/labels";
-import { classroomWhere } from "@/lib/auth/scope";
+import { rosterClassroomWhere } from "@/lib/auth/scope";
 import { ATTENDANCE_LABELS, addDays, isIsoDate, isoToDate, todayIso } from "@/lib/domain/attendance";
 import { db } from "@/lib/db";
 import { exportCsv } from "@/lib/export";
@@ -20,7 +20,7 @@ export async function GET(request: Request) {
     filename: `presences-${from}-${to}.csv`,
     load: async (user) =>
       db.studentAttendance.findMany({
-        where: { date: { gte: isoToDate(from), lte: isoToDate(to) }, enrollment: { classroomId, classroom: classroomWhere(user) } },
+        where: { date: { gte: isoToDate(from), lte: isoToDate(to) }, enrollment: { classroomId, classroom: rosterClassroomWhere(user) } },
         orderBy: [{ date: "asc" }, { half: "asc" }, { enrollment: { student: { lastName: "asc" } } }],
         select: {
           date: true,

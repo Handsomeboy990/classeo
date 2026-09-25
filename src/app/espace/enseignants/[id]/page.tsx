@@ -14,6 +14,7 @@ import { EditTeacherDialog } from "@/features/teachers/components/teacher-forms"
 import { getTeacher } from "@/features/teachers/queries";
 import { can, requirePermission } from "@/lib/auth/authorize";
 import { ATTENDANCE_LABELS, dateToIso } from "@/lib/domain/attendance";
+import { PdfDownloadLink } from "@/lib/pdf/download-link";
 import { formatDateTime, formatNumber } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Enseignant" };
@@ -29,7 +30,7 @@ export default async function TeacherPage(props: PageProps<"/espace/enseignants/
 
   return (
     <>
-      <nav aria-label="Fil d'Ariane" className="mb-2 text-sm text-muted">
+      <nav aria-label="Fil d'Ariane" className="mb-2 text-sm text-muted max-lg:hidden">
         <Link href="/espace/enseignants" className="hover:underline">
           Enseignants
         </Link>{" "}
@@ -39,20 +40,25 @@ export default async function TeacherPage(props: PageProps<"/espace/enseignants/
         title={name}
         description={`Matricule ${t.matricule} · ${t.school.name}${t.specialty ? ` · ${t.specialty}` : ""}`}
         actions={
-          can(user, "teacher:update") && (
-            <EditTeacherDialog
-              values={{
-                id: t.id,
-                lastName: t.lastName,
-                firstName: t.firstName,
-                gender: t.gender,
-                phone: t.phone,
-                specialty: t.specialty,
-                hiredAt: t.hiredAt ? dateToIso(t.hiredAt) : null,
-                isActive: t.isActive,
-              }}
-            />
-          )
+          <>
+            {can(user, "timetable:view") && (
+              <PdfDownloadLink href={`/api/pdf/emploi-du-temps?enseignant=${t.id}`} label="Emploi du temps (PDF)" description={`emploi du temps de ${name}`} />
+            )}
+            {can(user, "teacher:update") && (
+              <EditTeacherDialog
+                values={{
+                  id: t.id,
+                  lastName: t.lastName,
+                  firstName: t.firstName,
+                  gender: t.gender,
+                  phone: t.phone,
+                  specialty: t.specialty,
+                  hiredAt: t.hiredAt ? dateToIso(t.hiredAt) : null,
+                  isActive: t.isActive,
+                }}
+              />
+            )}
+          </>
         }
       />
       <StatGrid>
@@ -84,7 +90,7 @@ export default async function TeacherPage(props: PageProps<"/espace/enseignants/
               <tbody>
                 {t.assignments.map((a) => (
                   <TR key={a.id}>
-                    <TD>
+                    <TD className="whitespace-nowrap">
                       <Link href={`/espace/classes/${a.classroom.id}`} className="font-semibold text-primary hover:underline">
                         {a.classroom.name}
                       </Link>
@@ -122,13 +128,13 @@ export default async function TeacherPage(props: PageProps<"/espace/enseignants/
               <CardTitle>Coordonnées</CardTitle>
             </CardHeader>
             <CardBody>
-              <dl className="grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
+              <dl className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-3 text-sm [&_dd]:min-w-0 [&_dd]:break-words">
                 <dt className="text-muted">Téléphone</dt>
                 <dd>{t.phone ? <a href={`tel:${t.phone}`} className="font-mono hover:underline">{t.phone}</a> : "–"}</dd>
                 <dt className="text-muted">Embauche</dt>
                 <dd>{t.hiredAt ? shortDate(t.hiredAt) : "–"}</dd>
                 <dt className="text-muted">Compte</dt>
-                <dd>{t.user ? t.user.email : "Aucun compte"}</dd>
+                <dd className="break-all">{t.user ? t.user.email : "Aucun compte"}</dd>
                 {t.user?.lastLoginAt && (
                   <>
                     <dt className="text-muted">Dernière connexion</dt>

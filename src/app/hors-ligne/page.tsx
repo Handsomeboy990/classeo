@@ -10,7 +10,7 @@ export const metadata: Metadata = { title: "Hors ligne" };
 export const dynamic = "force-static";
 
 const MESSAGE =
-  "Pas de réseau pour le moment. Les pages que vous avez déjà ouvertes restent lisibles sur cet appareil : bulletins, notes, présences et emploi du temps. Les modifications attendront le retour de la connexion.";
+  "Pas de réseau pour le moment. Les pages déjà ouvertes sur cet appareil restent lisibles : bulletins, notes, présences et emploi du temps. Pour enregistrer une modification, il faut le réseau.";
 
 // Shown by the service worker when a page is requested without network and
 // no copy of it is kept on the device. Static: no database, no session.

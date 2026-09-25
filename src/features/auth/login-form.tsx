@@ -1,6 +1,7 @@
 "use client";
 
 import { Eye, EyeOff, LogIn } from "lucide-react";
+import Link from "next/link";
 import { useRef, useState } from "react";
 
 import { ActionForm, SubmitButton } from "@/components/kit/action-form";
@@ -35,14 +36,17 @@ export function LoginForm({ next, showDemo }: { next?: string; showDemo: boolean
           <button
             type="button"
             onClick={() => setVisible((v) => !v)}
-            className="absolute right-2 bottom-1.5 rounded-md p-2 text-muted hover:text-text"
+            className="absolute top-[1.625rem] right-0 inline-flex size-11 items-center justify-center rounded-md text-muted hover:text-text"
             aria-label={visible ? "Masquer le mot de passe" : "Afficher le mot de passe"}
             aria-pressed={visible}
           >
             {visible ? <EyeOff className="size-5" aria-hidden /> : <Eye className="size-5" aria-hidden />}
           </button>
         </div>
-        <SubmitButton size="lg" pendingLabel="Connexion…" className="mt-2 w-full">
+        <Link href="/mot-de-passe-oublie" className="-mt-1 self-end text-sm font-semibold text-primary underline-offset-4 hover:underline">
+          Mot de passe oublié ?
+        </Link>
+        <SubmitButton size="lg" pendingLabel="Connexion…" className="mt-1 w-full">
           <LogIn aria-hidden /> Se connecter
         </SubmitButton>
       </ActionForm>
@@ -53,7 +57,7 @@ export function LoginForm({ next, showDemo }: { next?: string; showDemo: boolean
             Comptes de démonstration
           </h2>
           <p className="mt-1 text-xs text-muted">
-            Choisissez un rôle pour remplir le formulaire. Mot de passe commun : <code className="font-semibold text-text">{DEMO_PASSWORD}</code>
+            Un rôle remplit le formulaire. Mot de passe commun : <code className="font-semibold text-text">{DEMO_PASSWORD}</code>
           </p>
           <ul className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
             {DEMO_ACCOUNTS.map((a) => (

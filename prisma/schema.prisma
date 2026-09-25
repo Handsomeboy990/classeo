@@ -164,11 +164,13 @@ model User {
   updatedAt          DateTime    @updatedAt
 
   sessions           Session[]
+  passwordResetTokens PasswordResetToken[]
   teacher            Teacher?
   student            Student?
   guardian           Guardian?
   auditLogs          AuditLog[]
   notifications      Notification[]
+  pushSubscriptions  PushSubscription[]
   contents           Content[]
   participations     ConversationParticipant[]
   messages           Message[]
@@ -194,6 +196,21 @@ model Session {
   revokedAt DateTime?
   ip        String?
   userAgent String?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+}
+
+// Forgotten password: a 6 digit code sent by e-mail, stored only as a keyed
+// hash, valid 15 minutes, 5 attempts, single use.
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  codeHash  String
+  expiresAt DateTime
+  usedAt    DateTime?
+  attempts  Int       @default(0)
   createdAt DateTime  @default(now())
 
   @@index([userId])
@@ -648,6 +665,22 @@ model Notification {
   createdAt DateTime  @default(now())
 
   @@index([userId, readAt])
+}
+
+// A browser or installed app that accepted web push for this user. One row
+// per device; removed when the push service answers that it has expired.
+model PushSubscription {
+  id         String    @id @default(cuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  endpoint   String    @unique
+  p256dh     String
+  auth       String
+  userAgent  String?
+  createdAt  DateTime  @default(now())
+  lastUsedAt DateTime?
+
+  @@index([userId])
 }
 
 enum RequestType {

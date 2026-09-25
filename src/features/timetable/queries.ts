@@ -1,7 +1,7 @@
 import "server-only";
 
 import type { Prisma } from "@/generated/prisma/client";
-import { classroomWhere } from "@/lib/auth/scope";
+import { classroomWhere, isTeacherRole } from "@/lib/auth/scope";
 import type { CurrentUser } from "@/lib/auth/session";
 import { db } from "@/lib/db";
 import { addDays } from "@/lib/domain/timetable";
@@ -65,7 +65,7 @@ async function activeYearId() {
 }
 
 export function isTeacherView(user: User) {
-  return user.role.code === "TEACHER" && !!user.teacherId;
+  return isTeacherRole(user);
 }
 
 // The teacher's own week, across all the classes they teach.

@@ -128,6 +128,93 @@ export function planRoleUpdate(input: {
   return { ok: true, added, removed, next: [...next].sort() };
 }
 
+// Levels a custom role may act at. Family roles (SELF) are tied to student
+// records and stay the system parent and student roles.
+export const CUSTOM_ROLE_LEVELS: ScopeLevel[] = ["NATIONAL", "DEPARTMENT", "COMMUNE", "SCHOOL"];
+
+export type RoleCreatePlan = { ok: true; permissions: string[]; dropped: string[] } | { ok: false; reason: string };
+
+// Plans a new custom role, empty or copied from an existing role.
+// - Its level is one the actor acts at or below, never SELF.
+// - It only receives permissions the actor holds: those of the source role
+//   the actor lacks are dropped and reported, not granted.
+export function planRoleCreate(input: { actor: Actor; scopeLevel: ScopeLevel; source?: Iterable<string> | null; catalogue: Iterable<string> }): RoleCreatePlan {
+  if (!CUSTOM_ROLE_LEVELS.includes(input.scopeLevel))
+    return { ok: false, reason: "Un rôle personnalisé agit au niveau national, d'un département, d'une commune ou d'un établissement." };
+  if (!isLevelAtOrBelow(input.scopeLevel, input.actor.scopeLevel))
+    return { ok: false, reason: "Vous ne pouvez pas créer un rôle d'un niveau supérieur au vôtre." };
+  const held = new Set(input.actor.permissions);
+  const known = new Set(input.catalogue);
+  const source = [...new Set(input.source ?? [])].filter((p) => known.has(p));
+  const permissions = source.filter((p) => held.has(p)).sort();
+  const dropped = source.filter((p) => !held.has(p)).sort();
+  return { ok: true, permissions, dropped };
+}
+
+// Renaming and describing a role: custom roles only, at the actor's level or
+// below. System roles keep their names, which the documentation and the demo
+// refer to; their permissions stay editable through the matrix.
+export function canEditRoleDetails(actor: Actor, role: { isSystem: boolean; scopeLevel: ScopeLevel }): RuleResult {
+  if (role.isSystem) return fail("Le nom et la description d'un rôle système ne se modifient pas. Ses droits restent modifiables.");
+  if (!isLevelAtOrBelow(role.scopeLevel, actor.scopeLevel)) return fail("Ce rôle agit à un niveau supérieur au vôtre : vous ne pouvez pas le modifier.");
+  return ok;
+}
+
+export type RoleDeletionPlan = { ok: true; move: boolean } | { ok: false; reason: string };
+
+// Deleting a custom role.
+// - System roles are never deleted.
+// - The actor must be able to assign the role (all its permissions, level at
+//   or below theirs).
+// - Every account holding it must be inside the actor's scope and is moved to
+//   a target role of the same level that the actor could assign; without
+//   accounts, no target is needed.
+export function planRoleDeletion(input: {
+  actor: Actor;
+  role: { id: string; isSystem: boolean } & RoleShape;
+  holders: { total: number; inScope: number };
+  target?: ({ id: string } & RoleShape) | null;
+}): RoleDeletionPlan {
+  const { actor, role, holders, target } = input;
+  if (role.isSystem) return { ok: false, reason: "Un rôle système ne peut pas être supprimé." };
+  const own = canAssignRole(actor, role);
+  if (!own.ok) return { ok: false, reason: "Ce rôle donne des droits que vous ne détenez pas ou agit au-dessus de votre niveau : vous ne pouvez pas le supprimer." };
+  if (holders.total === 0) return { ok: true, move: false };
+  // The number is not given: it would describe activity outside the
+  // actor's territory.
+  if (holders.inScope < holders.total) return { ok: false, reason: "Des comptes hors de votre périmètre utilisent ce rôle : il ne peut pas être supprimé." };
+  if (!target) return { ok: false, reason: "Des comptes utilisent ce rôle : choisissez le rôle qui les accueillera." };
+  if (target.id === role.id) return { ok: false, reason: "Choisissez un autre rôle que celui à supprimer." };
+  if (target.scopeLevel !== role.scopeLevel) return { ok: false, reason: "Le rôle d'accueil doit agir au même niveau, pour que chaque compte garde son périmètre." };
+  const byTarget = canAssignRole(actor, target);
+  if (!byTarget.ok) return byTarget;
+  return { ok: true, move: true };
+}
+
+const foldName = (v: string) =>
+  v
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toLowerCase();
+
+// Two role names that differ only by case, accents or spacing are the same
+// name for the people choosing a role from a list.
+export function sameRoleName(a: string, b: string) {
+  return foldName(a) === foldName(b);
+}
+
+// Stable technical code of a custom role, unique thanks to the suffix.
+export function customRoleCode(name: string, suffix: string) {
+  const slug = foldName(name)
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "")
+    .slice(0, 32)
+    .toUpperCase();
+  return `CUSTOM_${slug || "ROLE"}_${suffix.toUpperCase()}`;
+}
+
 // Temporary password shown once to the administrator. It satisfies the
 // password policy (10 characters minimum, a letter and a digit) and avoids
 // characters that are easy to misread when dictated (0/O, 1/l/I).

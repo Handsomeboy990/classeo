@@ -1,6 +1,6 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
+import { useId, useSyncExternalStore } from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -54,6 +54,10 @@ function apply(p: Prefs) {
 }
 
 function Choice({ legend, value, options, onChange }: { legend: string; value: string; options: [string, string][]; onChange: (v: string) => void }) {
+  // A name of its own: the settings can be mounted several times at once (the
+  // floating button, the account sheet, the Menu sheet), and radios sharing a
+  // name across the page would form a single group.
+  const name = useId();
   return (
     <fieldset>
       <legend className="mb-2 text-sm font-semibold">{legend}</legend>
@@ -67,7 +71,7 @@ function Choice({ legend, value, options, onChange }: { legend: string; value: s
               value === v ? "border-primary bg-primary-soft text-primary" : "border-border-strong bg-surface text-text hover:bg-surface-2",
             )}
           >
-            <input type="radio" className="sr-only" name={legend} value={v} checked={value === v} onChange={() => onChange(v)} />
+            <input type="radio" className="sr-only" name={name} value={v} checked={value === v} onChange={() => onChange(v)} />
             {label}
           </label>
         ))}

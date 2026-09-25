@@ -42,12 +42,12 @@ export default async function RequestPage({ params }: PageProps<"/espace/demande
         title={request.subject}
         description={`${REQUEST_TYPE_LABELS[request.type]} · ${request.school.name} (${request.school.code}), ${request.school.commune.name}, ${request.school.commune.department.name}`}
         actions={
-          <ButtonLink href="/espace/demandes" variant="secondary">
+          <ButtonLink href="/espace/demandes" variant="secondary" className="max-lg:hidden">
             <ArrowLeft aria-hidden /> Toutes les demandes
           </ButtonLink>
         }
       />
-      <div className="grid gap-4 lg:grid-cols-[2fr_1fr]">
+      <div className="grid grid-cols-1 gap-4 *:min-w-0 lg:grid-cols-[2fr_1fr]">
         <Card>
           <CardHeader>
             <CardTitle>Demande</CardTitle>

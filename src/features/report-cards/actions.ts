@@ -10,6 +10,7 @@ import { invalidate, tags } from "@/lib/cache";
 import { db } from "@/lib/db";
 import { DomainError } from "@/lib/errors";
 import { guardianUserIds, notify } from "@/lib/notify";
+import { plural } from "@/lib/utils";
 
 import { computeClassCards } from "./compute";
 
@@ -64,13 +65,13 @@ export const publishReportCards = createAction({
       action: "publish",
       resource: "report_card",
       resourceId: classroom.id,
-      summary: `Publication de ${cards.length} bulletins, ${classroom.name}, ${period.name}`,
+      summary: `Publication ${cards.length === 1 ? "d'un bulletin" : `de ${plural(cards.length, "bulletin")}`}, ${classroom.name}, ${period.name}`,
       metadata: { periodId: period.id, notified: new Set(recipients).size },
       schoolId: classroom.schoolId,
     });
     invalidate(tags.stats);
     const notified = new Set(recipients).size;
-    return `${cards.length} bulletins publiés pour la ${classroom.name}. ${
+    return `${plural(cards.length, "bulletin publié", "bulletins publiés")} pour la ${classroom.name}. ${
       notified ? `${notified} compte${notified > 1 ? "s" : ""} parent ou élève prévenu${notified > 1 ? "s" : ""}.` : "Aucun compte parent ou élève à prévenir dans cette classe."
     }`;
   },

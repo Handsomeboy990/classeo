@@ -1,17 +1,18 @@
-import { CalendarRange, FilePlus2, Pencil, Plus, Tags } from "lucide-react";
+import { CalendarRange, FilePlus2, Pencil, Plus, Tags, Trash2 } from "lucide-react";
 import type { Metadata } from "next";
 
+import { ConfirmButton } from "@/components/kit/confirm-button";
+import { FormDialog } from "@/components/kit/form-dialog";
 import { PageHeader } from "@/components/kit/page-header";
 import { EmptyState } from "@/components/kit/states";
 import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { requireFeeStaff } from "@/features/fees/access";
-import { DeleteFeeTypeButton, DeletePlanButton } from "@/features/fees/components/delete-buttons";
-import { FeeTypeForm } from "@/features/fees/components/fee-type-form";
+import { createFeeType, deleteFeeType, deletePlan, savePlan, updateFeeType } from "@/features/fees/actions";
+import { FeeTypeFields } from "@/features/fees/components/fee-type-form";
 import { FeesNav } from "@/features/fees/components/fees-nav";
-import { FormDialog } from "@/features/fees/components/form-dialog";
-import { PlanForm } from "@/features/fees/components/plan-form";
+import { PlanFields } from "@/features/fees/components/plan-form";
 import { feesTabs } from "@/features/fees/nav";
 import { getFeeTypes, type FeeTypeRow } from "@/features/fees/queries";
 import { can } from "@/lib/auth/authorize";
@@ -30,19 +31,21 @@ export default async function FeeTypesPage() {
     <>
       <PageHeader
         title="Types de frais et échéanciers"
-        description={`Ce que l'établissement facture${year ? ` pour l'année ${year.label}` : ""}, et en combien de tranches.`}
+        description={`Frais facturés par l'établissement${year ? ` en ${year.label}` : ""} et leurs tranches de paiement.`}
         actions={
           canCreate ? (
             <FormDialog
+              action={createFeeType}
               trigger={
                 <>
                   <Plus aria-hidden /> Nouveau type de frais
                 </>
               }
               title="Nouveau type de frais"
-              description={`Année scolaire ${year?.label ?? ""}`}
+              description={year ? `Année scolaire ${year.label}` : undefined}
+              submitLabel="Créer le type de frais"
             >
-              <FeeTypeForm levels={levels} />
+              <FeeTypeFields levels={levels} />
             </FormDialog>
           ) : null
         }
@@ -54,11 +57,11 @@ export default async function FeeTypesPage() {
           <EmptyState
             icon={<Tags className="size-7" />}
             title="Aucun type de frais pour cette année"
-            description={canCreate ? "Créez le premier type de frais, par exemple la contribution scolaire." : "Aucun frais n'a encore été défini."}
+            description={canCreate ? "Commencez par la contribution scolaire : son montant, puis ses tranches." : "L'établissement n'a encore défini aucun frais."}
           />
         </Card>
       ) : (
-        <ul className="grid gap-4 lg:grid-cols-2">
+        <ul className="grid grid-cols-1 gap-4 *:min-w-0 lg:grid-cols-2">
           {feeTypes.map((ft) => (
             <li key={ft.id}>
               <FeeTypeCard feeType={ft} levels={levels} user={user} />
@@ -89,7 +92,7 @@ function FeeTypeCard({ feeType: ft, levels, user }: { feeType: FeeTypeRow; level
       <CardBody className="flex flex-1 flex-col gap-4">
         <div className="flex flex-wrap gap-2">
           <Badge tone={ft.isActive ? "success" : "neutral"}>{ft.isActive ? "Actif" : "Désactivé"}</Badge>
-          <Badge tone={invoiced ? "info" : "neutral"}>{invoiced ? `${formatNumber(invoiced)} facture(s) émise(s)` : "Pas encore facturé"}</Badge>
+          <Badge tone={invoiced ? "info" : "neutral"}>{invoiced ? `${formatNumber(invoiced)} facture${invoiced > 1 ? "s émises" : " émise"}` : "Pas encore facturé"}</Badge>
         </div>
 
         <section aria-label={`Échéancier de ${ft.name}`}>
@@ -112,7 +115,8 @@ function FeeTypeCard({ feeType: ft, levels, user }: { feeType: FeeTypeRow; level
           )}
         </section>
 
-        <div className="mt-auto flex flex-wrap gap-2 border-t border-border pt-4">
+        {/* Phone: one full width action per row, within thumb reach. */}
+        <div className="mt-auto flex flex-col gap-2 border-t border-border pt-4 max-sm:*:w-full sm:flex-row sm:flex-wrap">
           {can(user, "fee:create") && ft.isActive && (
             <ButtonLink href={`/espace/frais/types/${ft.id}/facturer`} size="sm">
               <FilePlus2 aria-hidden /> Générer les factures
@@ -121,8 +125,10 @@ function FeeTypeCard({ feeType: ft, levels, user }: { feeType: FeeTypeRow; level
           {can(user, "fee:update") && (
             <>
               <FormDialog
+                action={savePlan}
                 variant="secondary"
                 size="sm"
+                wide
                 trigger={
                   <>
                     <CalendarRange aria-hidden /> {plan ? "Modifier l'échéancier" : "Ajouter un échéancier"}
@@ -130,8 +136,9 @@ function FeeTypeCard({ feeType: ft, levels, user }: { feeType: FeeTypeRow; level
                 }
                 title={`Échéancier : ${ft.name}`}
                 description={`Montant à répartir : ${formatFcfa(ft.amount)}. Les parts doivent faire 100 %.`}
+                submitLabel="Enregistrer l'échéancier"
               >
-                <PlanForm
+                <PlanFields
                   feeTypeId={ft.id}
                   amount={ft.amount}
                   initial={
@@ -142,6 +149,7 @@ function FeeTypeCard({ feeType: ft, levels, user }: { feeType: FeeTypeRow; level
                 />
               </FormDialog>
               <FormDialog
+                action={updateFeeType}
                 variant="ghost"
                 size="sm"
                 trigger={
@@ -151,12 +159,36 @@ function FeeTypeCard({ feeType: ft, levels, user }: { feeType: FeeTypeRow; level
                 }
                 title={`Modifier : ${ft.name}`}
               >
-                <FeeTypeForm levels={levels} initial={{ id: ft.id, name: ft.name, amount: ft.amount, levelId: ft.levelId, isActive: ft.isActive }} />
+                <FeeTypeFields levels={levels} initial={{ id: ft.id, name: ft.name, amount: ft.amount, levelId: ft.levelId, isActive: ft.isActive }} />
               </FormDialog>
             </>
           )}
-          {can(user, "fee:update") && plan && <DeletePlanButton id={plan.id} name={plan.name} />}
-          {can(user, "fee:delete") && <DeleteFeeTypeButton id={ft.id} name={ft.name} />}
+          {can(user, "fee:update") && plan && (
+            <ConfirmButton
+              action={deletePlan}
+              fields={{ id: plan.id }}
+              title={`Supprimer l'échéancier « ${plan.name} » ?`}
+              description="Les prochaines factures de ce type seront payables en une fois. Les factures déjà émises gardent leurs tranches."
+              confirmLabel="Supprimer l'échéancier"
+              variant="danger-ghost"
+              size="sm"
+            >
+              <Trash2 aria-hidden /> Supprimer l&apos;échéancier
+            </ConfirmButton>
+          )}
+          {can(user, "fee:delete") && (
+            <ConfirmButton
+              action={deleteFeeType}
+              fields={{ id: ft.id }}
+              title={`Supprimer « ${ft.name} » ?`}
+              description="Le type de frais et son échéancier seront supprimés. Un type de frais déjà facturé ne peut pas être supprimé : désactivez-le."
+              confirmLabel="Supprimer"
+              variant="danger-ghost"
+              size="sm"
+            >
+              <Trash2 aria-hidden /> Supprimer
+            </ConfirmButton>
+          )}
         </div>
       </CardBody>
     </Card>

@@ -10,9 +10,12 @@ import type { CurrentUser } from "@/lib/auth/session";
 import { db } from "@/lib/db";
 import { canAssignRole, canAssignRoleOn, generateTemporaryPassword, SCOPE_LABELS, type ScopeLevel, type ScopeRef } from "@/lib/domain/rights";
 import { DomainError } from "@/lib/errors";
+import { platformUrl, sendMail, type MailStatus } from "@/lib/mail";
+import { credentialsEmail } from "@/lib/mail/templates";
 
 import { communeRef, departmentRef, schoolRef, userScopeRef } from "../territory/scope";
 import { actorOf, userScopeWhere } from "./queries";
+import { nextTeacherMatricule } from "../teachers/matricule";
 
 type User = NonNullable<CurrentUser>;
 
@@ -36,6 +39,71 @@ const createSchema = z.object({
     .optional()
     .transform((v) => v || null),
 });
+
+const fold = (v: string) =>
+  v
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .trim()
+    .toLowerCase();
+
+// A teacher account only reaches the classes of its teacher record (see
+// scope.ts). The account is linked to the school's unlinked record with the
+// same name when there is exactly one, otherwise a record is created, so the
+// account works at once and the teacher can be assigned to courses.
+async function linkTeacherRecord(
+  tx: Prisma.TransactionClient,
+  account: { id: string; firstName: string; lastName: string; phone: string | null },
+  schoolId: string,
+) {
+  const candidates = await tx.teacher.findMany({
+    where: { schoolId, userId: null, isActive: true },
+    select: { id: true, firstName: true, lastName: true },
+  });
+  const matches = candidates.filter((t) => fold(t.firstName) === fold(account.firstName) && fold(t.lastName) === fold(account.lastName));
+  if (matches.length === 1) {
+    await tx.teacher.update({ where: { id: matches[0]!.id }, data: { userId: account.id } });
+    return "linked" as const;
+  }
+  await tx.teacher.create({
+    data: {
+      userId: account.id,
+      schoolId,
+      matricule: await nextTeacherMatricule(tx),
+      firstName: account.firstName,
+      lastName: account.lastName,
+      phone: account.phone,
+    },
+  });
+  return "created" as const;
+}
+
+function scopeLabel(level: ScopeLevel, entity: string | null | undefined) {
+  if (level === "NATIONAL") return "National, tout le Bénin";
+  return entity ? `${SCOPE_LABELS[level]} ${entity}` : SCOPE_LABELS[level];
+}
+
+// Sends the sign in details to the account holder. The temporary password is
+// still shown once on screen, so a failed or disabled e-mail never blocks the
+// handover; the status tells the manager which one happened.
+function sendCredentials(
+  reason: "created" | "reset",
+  user: User,
+  account: { email: string; firstName: string; roleName: string; scope: string },
+  password: string,
+): Promise<MailStatus> {
+  const mail = credentialsEmail({
+    reason,
+    firstName: account.firstName,
+    email: account.email,
+    roleName: account.roleName,
+    scopeLabel: account.scope,
+    by: { name: user.fullName, roleName: user.role.name },
+    password,
+    signInUrl: platformUrl("/connexion"),
+  });
+  return sendMail({ to: account.email, tag: reason === "created" ? "account_created" : "password_reset_by_manager", ...mail });
+}
 
 // Resolves the entity chosen for a role into its position in the territory.
 async function resolveTarget(level: ScopeLevel, entityId: string | null): Promise<{ ref: ScopeRef; label: string }> {
@@ -70,7 +138,9 @@ export const createUser = createAction({
 
     const password = generateTemporaryPassword();
     try {
-      const created = await db.user.create({
+      let teacherLink: "linked" | "created" | null = null;
+      const created = await db.$transaction(async (tx) => {
+        const account = await tx.user.create({
         data: {
           email: input.email,
           firstName: input.firstName,
@@ -84,17 +154,27 @@ export const createUser = createAction({
           communeId: role.scopeLevel === "COMMUNE" ? target.ref.communeId : null,
           schoolId: role.scopeLevel === "SCHOOL" ? target.ref.schoolId : null,
         },
-        select: { id: true, email: true },
+        select: { id: true, email: true, firstName: true, lastName: true, phone: true },
+        });
+        if (role.code === "TEACHER" && target.ref.schoolId) teacherLink = await linkTeacherRecord(tx, account, target.ref.schoolId);
+        return account;
       });
+      const mail = await sendCredentials("created", user, { email: created.email, firstName: created.firstName, roleName: role.name, scope: scopeLabel(role.scopeLevel, target.label) }, password);
       await audit(user, {
         action: "create",
         resource: "user",
         resourceId: created.id,
         schoolId: target.ref.schoolId ?? null,
         summary: `Création du compte ${created.email} : ${role.name}, ${SCOPE_LABELS[role.scopeLevel].toLowerCase()} ${target.label}`,
-        metadata: { role: role.code, scopeLevel: role.scopeLevel },
+        metadata: { role: role.code, scopeLevel: role.scopeLevel, mail },
       });
-      return { message: "Compte créé.", data: { email: created.email, password } };
+      const message =
+        teacherLink === "linked"
+          ? "Compte créé et rattaché à la fiche enseignant existante."
+          : teacherLink === "created"
+            ? "Compte créé avec sa fiche enseignant. Affectez-lui des cours depuis la page de la classe."
+            : "Compte créé.";
+      return { message, data: { email: created.email, password, mail } };
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") throw new DomainError("Un compte existe déjà avec cette adresse e-mail.");
       throw error;
@@ -111,8 +191,13 @@ async function manageableTarget(user: User, targetId: string) {
     select: {
       id: true,
       email: true,
+      firstName: true,
       isActive: true,
       schoolId: true,
+      scopeLevel: true,
+      school: { select: { name: true } },
+      commune: { select: { name: true } },
+      department: { select: { name: true } },
       role: { select: { name: true, scopeLevel: true, permissions: { select: { permission: { select: { code: true } } } } } },
     },
   });
@@ -155,14 +240,26 @@ export const resetUserPassword = createAction({
       db.user.update({ where: { id: target.id }, data: { passwordHash, mustChangePassword: true, failedLoginCount: 0, lockedUntil: null } }),
       db.session.updateMany({ where: { userId: target.id, revokedAt: null }, data: { revokedAt: new Date() } }),
     ]);
+    const mail = await sendCredentials(
+      "reset",
+      user,
+      {
+        email: target.email,
+        firstName: target.firstName,
+        roleName: target.role.name,
+        scope: scopeLabel(target.scopeLevel, target.school?.name ?? target.commune?.name ?? target.department?.name),
+      },
+      password,
+    );
     await audit(user, {
       action: "reset_password",
       resource: "user",
       resourceId: target.id,
       schoolId: target.schoolId,
       summary: `Réinitialisation du mot de passe de ${target.email}, sessions fermées`,
+      metadata: { mail },
     });
-    return { message: "Mot de passe réinitialisé.", data: { email: target.email, password } };
+    return { message: "Mot de passe réinitialisé.", data: { email: target.email, password, mail } };
   },
 });
 

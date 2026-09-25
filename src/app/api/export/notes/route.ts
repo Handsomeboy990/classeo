@@ -1,6 +1,6 @@
 import { getSheetForEntry } from "@/features/grades/queries";
 import { computeClassCards } from "@/features/report-cards/compute";
-import { classroomWhere } from "@/lib/auth/scope";
+import { rosterClassroomWhere } from "@/lib/auth/scope";
 import { parseGradeValue } from "@/lib/domain/grade-entry";
 import { rankEntries, subjectAverage, type GradeInput } from "@/lib/domain/grades";
 import { db } from "@/lib/db";
@@ -62,7 +62,7 @@ export async function GET(request: Request) {
         return computed.map((x) => ({ cells: { matricule: x.r.matricule, name: x.r.name, ...x.r.values, avg: fmt(x.avg), rank: ranks.get(x) ?? "" } }));
       }
       if (!classroomId || !periodId) return [];
-      const classroom = await db.classroom.findFirst({ where: { AND: [{ id: classroomId }, classroomWhere(user)] }, select: { id: true, name: true, academicYearId: true } });
+      const classroom = await db.classroom.findFirst({ where: { AND: [{ id: classroomId }, rosterClassroomWhere(user)] }, select: { id: true, name: true, academicYearId: true } });
       const period = classroom ? await db.schoolPeriod.findFirst({ where: { id: periodId, academicYearId: classroom.academicYearId } }) : null;
       if (!classroom || !period) return [];
       filename = safeName(`moyennes-${classroom.name}-${period.name}.csv`);

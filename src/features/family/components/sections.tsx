@@ -1,11 +1,11 @@
-import { ArrowLeft, CalendarCheck, CheckCircle2, Clock, Coins, FileText, Receipt, XCircle } from "lucide-react";
+import { ArrowLeft, CalendarCheck, CheckCircle2, Clock, Coins, FileText, ReceiptText, XCircle } from "lucide-react";
 import Link from "next/link";
 
 import { LogoMark } from "@/components/brand/logo";
 import { AverageLevel } from "@/components/kit/level";
 import { Badge } from "@/components/ui/badge";
 import { Table, TD, TH, THead, TR } from "@/components/ui/table";
-import { cn, formatAverage, formatDate, formatFcfa, formatPercent } from "@/lib/utils";
+import { cn, de, formatAverage, formatDate, formatFcfa, formatPercent } from "@/lib/utils";
 
 import { ATTENDANCE_STATUS, DAYS, INVOICE_STATUS, rankLabel, spokenTime, timetableGrid, type AttendanceRecord, type SchoolDay } from "../logic";
 import type { ReportCardView, SlotView, termGrades, invoicesOf } from "../queries";
@@ -126,7 +126,7 @@ export function TermGradesList({ term }: { term: Awaited<ReturnType<typeof termG
               </div>
               <AverageLevel average={s.average} />
             </div>
-            <ul className="flex flex-wrap gap-2 text-sm" aria-label={`Notes de ${s.subject}`}>
+            <ul className="flex flex-wrap gap-2 text-sm" aria-label={`Notes ${de(s.subject)}`}>
               {s.grades.length ? (
                 s.grades.map((g) => (
                   <li key={`${g.type}-${g.sequence}`} className="rounded-lg border border-border bg-surface-2 px-2.5 py-1">
@@ -325,7 +325,7 @@ export function InvoiceCard({ invoice }: { invoice: Awaited<ReturnType<typeof in
   return (
     <article aria-labelledby={`inv-${invoice.id}`} className="rounded-card border border-border bg-surface">
       <header className="flex flex-wrap items-center gap-3 border-b border-border p-4 sm:p-5">
-        <Pictogram icon={Receipt} tone={remaining ? "warning" : "success"} />
+        <Pictogram icon={ReceiptText} tone={remaining ? "warning" : "success"} />
         <div className="min-w-0 flex-1">
           <h3 id={`inv-${invoice.id}`} className="font-sans text-base font-bold">
             <Link href={`/espace/frais/factures/${invoice.id}`} className="underline-offset-4 hover:underline">
@@ -425,7 +425,7 @@ export function InvoiceCard({ invoice }: { invoice: Awaited<ReturnType<typeof in
 
 export function BackToChildren() {
   return (
-    <Link href="/espace/suivi" className="inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-primary underline-offset-4 hover:underline" data-print-hide>
+    <Link href="/espace/suivi" className="inline-flex min-h-11 max-lg:hidden items-center gap-1.5 text-sm font-semibold text-primary underline-offset-4 hover:underline" data-print-hide>
       <ArrowLeft className="size-4" aria-hidden />
       Mes enfants
     </Link>

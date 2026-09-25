@@ -2,7 +2,7 @@ import { Avatar } from "@/components/ui/avatar";
 import { BackToChildren } from "@/features/family/components/sections";
 import { SectionTabs, type SectionKey } from "@/features/family/components/section-tabs";
 import { requireStudentFile } from "@/features/family/queries";
-import { can } from "@/lib/auth/authorize";
+import { allowedSections } from "@/features/family/sections";
 
 // Header and section navigation of a student file. Every page below calls
 // requireStudentFile() again: a layout is not a security boundary.
@@ -12,23 +12,25 @@ export default async function StudentFileLayout({ children, params }: LayoutProp
   const name = `${enrollment.student.firstName} ${enrollment.student.lastName}`;
   const isSelf = user.studentId === enrollment.student.id;
 
-  const sections: { key: SectionKey; label: string }[] = [
-    { key: "bulletins", label: "Bulletins" },
-    { key: "notes", label: "Notes du trimestre" },
-    { key: "presences", label: "Présences" },
-    { key: "emploi-du-temps", label: "Emploi du temps" },
-    ...(can(user, "fee:view") ? [{ key: "frais" as const, label: "Frais" }] : []),
-  ];
+  const labels: Record<SectionKey, string> = {
+    bulletins: "Bulletins",
+    notes: "Notes du trimestre",
+    presences: "Présences",
+    "emploi-du-temps": "Emploi du temps",
+    frais: "Frais",
+  };
+  // Only the sections the account has the right to read.
+  const sections = allowedSections(user.permissions).map((key) => ({ key, label: labels[key] }));
 
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-4" data-print-hide>
         {!isSelf && <BackToChildren />}
-        <div className="flex flex-wrap items-center gap-4">
-          <Avatar name={name} className="size-16 text-xl" />
+        <div className="flex items-center gap-3 sm:gap-4">
+          <Avatar name={name} className="size-12 shrink-0 text-lg sm:size-16 sm:text-xl" />
           <div className="min-w-0 break-words hyphens-auto">
             <h1 className="text-2xl font-bold sm:text-3xl">{isSelf ? "Ma scolarité" : name}</h1>
-            <p className="text-muted">
+            <p className="text-sm text-muted sm:text-base">
               {enrollment.classroom.name} · {enrollment.school.name} · Année {enrollment.academicYear.label}
             </p>
           </div>

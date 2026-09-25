@@ -62,14 +62,14 @@ export default async function FeesOverviewPage() {
             <StatCard
               label="Taux de recouvrement"
               value={formatPercent(overview.rate)}
-              hint={overview.overdueCount ? `${formatNumber(overview.overdueCount)} facture(s) en retard` : "Aucune facture en retard"}
+              hint={overview.overdueCount ? `${formatNumber(overview.overdueCount)} facture${overview.overdueCount > 1 ? "s" : ""} en retard` : "Aucune facture en retard"}
               icon={overview.overdueCount ? AlertTriangle : Percent}
               tone={overview.overdueCount ? "danger" : "accent"}
               href={overview.overdueCount && can(user, "fee:view") ? "/espace/frais/factures?statut=OVERDUE" : undefined}
             />
           </StatGrid>
 
-          <div className="grid gap-6 lg:grid-cols-[3fr_2fr]">
+          <div className="grid grid-cols-1 gap-6 *:min-w-0 lg:grid-cols-[3fr_2fr]">
             <Card>
               <CardHeader>
                 <div>

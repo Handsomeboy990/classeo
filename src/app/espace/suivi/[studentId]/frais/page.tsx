@@ -1,12 +1,10 @@
 import { Wallet } from "lucide-react";
 import type { Metadata } from "next";
-import { forbidden } from "next/navigation";
 
 import { EmptyState } from "@/components/kit/states";
 import { SpokenSummary } from "@/features/family/components/blocks";
 import { InvoiceCard } from "@/features/family/components/sections";
-import { invoicesOf, requireStudentFile } from "@/features/family/queries";
-import { can } from "@/lib/auth/authorize";
+import { invoicesOf, requireStudentSection } from "@/features/family/queries";
 import { formatDate, formatFcfa } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Frais de scolarité" };
@@ -14,8 +12,7 @@ export const metadata: Metadata = { title: "Frais de scolarité" };
 // Read only: payments are recorded by the school's accountant.
 export default async function FeesPage({ params }: PageProps<"/espace/suivi/[studentId]/frais">) {
   const { studentId } = await params;
-  const { user, enrollment } = await requireStudentFile(studentId);
-  if (!can(user, "fee:view")) forbidden();
+  const { enrollment } = await requireStudentSection(studentId, "frais");
   const invoices = await invoicesOf(enrollment);
 
   if (!invoices.length) {

@@ -13,6 +13,7 @@ import { db } from "@/lib/db";
 import { DomainError } from "@/lib/errors";
 
 import { teacherWhere } from "./queries";
+import { nextTeacherMatricule } from "./matricule";
 
 const hiredAt = z
   .string()
@@ -32,13 +33,6 @@ const fields = {
   hiredAt,
 };
 
-// "ENS-" + five digits, as the seeded teacher matricules.
-async function nextMatricule() {
-  const last = await db.teacher.findFirst({ where: { matricule: { startsWith: "ENS-" } }, orderBy: { matricule: "desc" }, select: { matricule: true } });
-  const seq = last ? Number.parseInt(last.matricule.slice(4), 10) || 0 : 0;
-  return `ENS-${String(seq + 1).padStart(5, "0")}`;
-}
-
 export const createTeacher = createAction({
   permission: "teacher:create",
   schema: z.object(fields),
@@ -51,7 +45,7 @@ export const createTeacher = createAction({
     for (let attempt = 0; attempt < 3 && !teacherId; attempt++) {
       try {
         const teacher = await db.teacher.create({
-          data: { ...input, hiredAt: input.hiredAt ? isoToDate(input.hiredAt) : null, schoolId: school.id, matricule: await nextMatricule() },
+          data: { ...input, hiredAt: input.hiredAt ? isoToDate(input.hiredAt) : null, schoolId: school.id, matricule: await nextTeacherMatricule() },
         });
         teacherId = teacher.id;
       } catch (error) {
@@ -59,7 +53,7 @@ export const createTeacher = createAction({
       }
     }
     if (!teacherId) throw new DomainError("Le matricule n'a pas pu être attribué. Réessayez.");
-    await audit(user, { action: "create", resource: "teacher", resourceId: teacherId, summary: `Ajout de l'enseignant ${input.firstName} ${input.lastName}`, schoolId: school.id });
+    await audit(user, { action: "create", resource: "teacher", resourceId: teacherId, summary: `Ajout de ${input.gender === "F" ? "l'enseignante" : "l'enseignant"} ${input.firstName} ${input.lastName}`, schoolId: school.id });
     invalidate(tags.stats);
     redirect(`/espace/enseignants/${teacherId}`);
   },
@@ -77,7 +71,7 @@ export const updateTeacher = createAction({
       action: "update",
       resource: "teacher",
       resourceId: teacher.id,
-      summary: `Modification de l'enseignant ${input.firstName} ${input.lastName}${teacher.isActive !== input.isActive ? (input.isActive ? ", réactivé" : ", désactivé") : ""}`,
+      summary: `Modification de ${input.gender === "F" ? "l'enseignante" : "l'enseignant"} ${input.firstName} ${input.lastName}${teacher.isActive !== input.isActive ? `, ${input.isActive ? "réactivé" : "désactivé"}${input.gender === "F" ? "e" : ""}` : ""}`,
       schoolId: teacher.schoolId,
     });
     if (teacher.isActive !== input.isActive) invalidate(tags.stats);

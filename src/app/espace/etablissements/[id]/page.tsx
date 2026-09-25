@@ -84,7 +84,7 @@ export default async function SchoolDetailPage({ params, searchParams }: PagePro
       />
       <ScopeBreadcrumb scope={{ level: "SCHOOL", id: school.id }} basePath="/espace/territoire" user={user} />
 
-      <div className="grid gap-4 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 *:min-w-0 lg:grid-cols-3">
         <Card>
           <CardHeader>
             <CardTitle>Identité</CardTitle>

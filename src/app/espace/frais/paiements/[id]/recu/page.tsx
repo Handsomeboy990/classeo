@@ -3,97 +3,98 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { Logo } from "@/components/brand/logo";
-import { PrintButton, PrintStyles } from "@/features/fees/components/print";
-import { getReceipt } from "@/features/payments/queries";
+import { PrintButton } from "@/components/kit/print-button";
 import { requirePermission } from "@/lib/auth/authorize";
-import { amountInWords, PAYMENT_METHOD_LABELS } from "@/lib/domain/payments";
-import { formatDate, formatFcfa } from "@/lib/utils";
+import { PAYMENT_METHOD_LABELS } from "@/lib/domain/payments";
+import { loadReceipt } from "@/lib/pdf/data/payments";
+import { PdfDownloadLink } from "@/lib/pdf/download-link";
+import { amountSentence, beninDate, officialName, pdfFcfa } from "@/lib/pdf/format";
+import { PrintInfoGrid, PrintSheet, PrintSignatures } from "@/lib/pdf/print/sheet";
 
 export const metadata: Metadata = { title: "Reçu de paiement" };
 
+// The receipt as printed from the browser, laid out like its PDF. The lookup
+// goes through paymentWhere(): a payment outside the user's scope is not
+// found, whatever identifier is typed in the address bar.
 export default async function ReceiptPage({ params }: PageProps<"/espace/frais/paiements/[id]/recu">) {
   const user = await requirePermission("payment:view");
   const { id } = await params;
-  const payment = await getReceipt(user, id);
-  if (!payment) notFound();
+  const receipt = await loadReceipt(user, id);
+  if (!receipt) notFound();
 
-  const { invoice } = payment;
-  const student = invoice.enrollment.student;
-  const words = amountInWords(payment.amount);
-  const rest = Math.max(0, invoice.totalAmount - invoice.paidAmount);
+  const { data, issuer, invoiceId } = receipt;
+  const rest = Math.max(0, data.invoice.totalAmount - data.invoice.paidAmount);
+  const meta = {
+    title: "Reçu de paiement",
+    subtitle: `Facture ${data.invoice.number}`,
+    reference: data.reference,
+    generatedAt: new Date(),
+    generatedBy: { name: user.fullName, role: user.role.name, email: user.email },
+    issuer,
+  };
 
   return (
     <>
-      <PrintStyles />
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-3 print:hidden">
-        <Link href={`/espace/frais/factures/${invoice.id}`} className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline">
-          <ArrowLeft className="size-4" aria-hidden /> Retour à la facture {invoice.number}
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3" data-print-hide>
+        <Link href={`/espace/frais/factures/${invoiceId}`} className="inline-flex items-center max-lg:hidden gap-1.5 text-sm font-semibold text-primary hover:underline">
+          <ArrowLeft className="size-4" aria-hidden /> Retour à la facture {data.invoice.number}
         </Link>
-        <PrintButton label="Imprimer le reçu" />
+        <div className="flex flex-wrap gap-2">
+          <PrintButton label="Imprimer le reçu" />
+          <PdfDownloadLink href={`/api/pdf/recu/${receipt.id}`} description={`reçu ${data.reference}`} />
+        </div>
       </div>
 
-      <article className="mx-auto max-w-2xl rounded-card border border-border bg-surface p-6 text-text sm:p-8 print:border-0 print:p-0" aria-labelledby="receipt-title">
-        <header className="flex flex-col gap-4 border-b border-border pb-5 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <Logo />
-            <p className="mt-3 font-semibold">{invoice.school.name}</p>
-            {invoice.school.address && <p className="text-sm text-muted">{invoice.school.address}</p>}
-            {invoice.school.phone && <p className="text-sm text-muted">Tél. {invoice.school.phone}</p>}
-          </div>
-          <div className="sm:text-right">
-            <h1 id="receipt-title" className="text-2xl font-bold">
-              Reçu de paiement
-            </h1>
-            <p className="mt-1 font-mono text-lg font-semibold">{payment.reference}</p>
-            <p className="text-sm text-muted">du {formatDate(payment.paidAt)}</p>
-          </div>
-        </header>
+      <PrintSheet meta={meta}>
+        <PrintInfoGrid
+          columns={3}
+          items={[
+            { label: "Élève", value: officialName(data.student.lastName, data.student.firstName) },
+            { label: "Matricule", value: data.student.matricule },
+            { label: "Classe", value: `${data.classroom}, ${data.yearLabel}` },
+            { label: "Facture", value: data.invoice.number },
+            { label: "Mode de paiement", value: PAYMENT_METHOD_LABELS[data.method] },
+            { label: "Transaction", value: data.transactionId ?? "–" },
+          ]}
+        />
 
-        <dl className="grid grid-cols-1 gap-x-6 gap-y-3 py-5 sm:grid-cols-2">
-          <Item label="Élève" value={`${student.lastName} ${student.firstName}`} />
-          <Item label="Matricule" value={student.matricule} />
-          <Item label="Classe" value={`${invoice.enrollment.classroom.name}, année ${invoice.enrollment.academicYear.label}`} />
-          <Item label="Facture" value={invoice.number} />
-          <Item label="Objet" value={invoice.items.map((i) => i.description).join(", ")} />
-          <Item label="Mode de paiement" value={`${PAYMENT_METHOD_LABELS[payment.method]}${payment.transactionId ? `, réf. ${payment.transactionId}` : ""}`} />
-        </dl>
-
-        <div className="rounded-lg bg-primary-soft px-5 py-4">
-          <p className="text-sm font-semibold text-primary">Montant reçu</p>
-          <p className="font-display text-3xl font-bold">{formatFcfa(payment.amount)}</p>
-          <p className="mt-1 text-sm">
-            Arrêté le présent reçu à la somme de <strong>{words} francs CFA</strong>.
+        <div className="doc-keep mt-4 rounded-md border-l-4 border-[#006b40] bg-[#e3f1e9] px-5 py-4">
+          <p className="doc-label !text-[#006b40]">Montant reçu le {beninDate(data.paidAt)}</p>
+          <p className="doc-title mt-1 text-4xl">{pdfFcfa(data.amount)}</p>
+          <p className="mt-2">
+            Arrêté le présent reçu à la somme de <strong>{amountSentence(data.amount)}</strong>.
           </p>
         </div>
 
-        <dl className="mt-5 grid grid-cols-1 gap-3 text-sm sm:grid-cols-3">
-          <Item label="Total de la facture" value={formatFcfa(invoice.totalAmount)} />
-          <Item label="Total payé à ce jour" value={formatFcfa(invoice.paidAmount)} />
-          <Item label="Reste à payer" value={rest > 0 ? formatFcfa(rest) : "Facture soldée"} />
-        </dl>
+        <h2 className="doc-title mt-5 text-base">Objet du paiement</h2>
+        <p>{data.invoice.items.map((i) => i.description).join(", ") || "Frais scolaires"}</p>
 
-        <footer className="mt-8 flex flex-col gap-6 border-t border-border pt-5 text-sm sm:flex-row sm:justify-between">
-          <p className="text-muted">
-            Encaissé par {payment.recordedBy.firstName} {payment.recordedBy.lastName}
-            <br />
-            Enregistré le {formatDate(payment.createdAt)}
-          </p>
-          <div className="sm:text-right">
-            <p className="text-muted">Cachet et signature</p>
-            <div className="mt-2 h-16 w-48 rounded border border-dashed border-border-strong sm:ml-auto" aria-hidden />
+        <h2 className="doc-title mt-5 text-base">Situation de la facture après ce paiement</h2>
+        <div className="doc-keep mt-2 grid gap-3 sm:grid-cols-3 print:grid-cols-3">
+          <div className="doc-figure">
+            <p className="doc-label">Total de la facture</p>
+            <strong className="!text-xl">{pdfFcfa(data.invoice.totalAmount)}</strong>
           </div>
-        </footer>
-      </article>
-    </>
-  );
-}
+          <div className="doc-figure">
+            <p className="doc-label">Total payé à ce jour</p>
+            <strong className="!text-xl">{pdfFcfa(data.invoice.paidAmount)}</strong>
+          </div>
+          <div className="doc-figure doc-primary">
+            <p className="doc-label">Reste à payer</p>
+            <strong className="!text-xl">{rest > 0 ? pdfFcfa(rest) : "Soldée"}</strong>
+          </div>
+        </div>
 
-function Item({ label, value }: { label: string; value: string }) {
-  return (
-    <div>
-      <dt className="text-xs font-semibold tracking-wide text-muted uppercase">{label}</dt>
-      <dd className="font-medium">{value}</dd>
-    </div>
+        <div className="doc-keep mt-6 grid gap-6 sm:grid-cols-2 print:grid-cols-2">
+          <div className="text-sm">
+            <p className="doc-label">Encaissé par</p>
+            <p className="font-semibold">{data.recordedBy}</p>
+            <p className="doc-muted text-xs">Enregistré le {beninDate(data.createdAt)}</p>
+            <p className="doc-muted mt-3 text-xs">Conservez ce reçu : il vous sera demandé en cas de réclamation.</p>
+          </div>
+          <PrintSignatures className="mt-0" items={[{ role: "Pour l'établissement", stamp: true }]} />
+        </div>
+      </PrintSheet>
+    </>
   );
 }

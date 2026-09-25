@@ -27,6 +27,8 @@ export async function exportCsv<T>(options: {
   } catch {
     return new Response("Accès refusé", { status: 403 });
   }
+  // Same rule as the pages and actions: no export under a temporary password.
+  if (user.mustChangePassword) return new Response("Accès refusé", { status: 403 });
   const rows = await options.load(user);
   const lines = [
     options.columns.map((c) => escapeCsv(c.header)).join(";"),

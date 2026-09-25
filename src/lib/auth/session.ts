@@ -5,6 +5,7 @@ import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { cache } from "react";
 
+import { cached, tags } from "@/lib/cache";
 import { db } from "@/lib/db";
 
 import type { PermissionCode } from "./permissions";
@@ -70,8 +71,20 @@ export function clientIp(h: Headers) {
   return h.get("x-forwarded-for")?.split(",")[0]?.trim() || h.get("x-real-ip") || "unknown";
 }
 
+// A role's permissions change only through the rights matrix, which
+// invalidates tags.roles. Caching them avoids reading about eighty rows on
+// every request.
+const rolePermissions = cached(
+  async (roleId: string) => {
+    const rows = await db.rolePermission.findMany({ where: { roleId }, select: { permission: { select: { code: true } } } });
+    return rows.map((r) => r.permission.code);
+  },
+  ["role-permissions"],
+  { tags: [tags.roles], revalidate: 3600 },
+);
+
 const userInclude = {
-  role: { include: { permissions: { include: { permission: true } } } },
+  role: { select: { id: true, code: true, name: true } },
   school: { select: { id: true, name: true, communeId: true, commune: { select: { departmentId: true } } } },
   commune: { select: { id: true, name: true, departmentId: true } },
   department: { select: { id: true, name: true } },
@@ -81,6 +94,23 @@ const userInclude = {
 } as const;
 
 export type CurrentUser = Awaited<ReturnType<typeof loadUser>>;
+
+// A parent or a student has no territory: their scope is the school, or the
+// schools, of the children they follow (their own for a student), in the
+// active year. Never "Bénin".
+async function familyScopeLabel(userId: string) {
+  const rows = await db.enrollment.findMany({
+    where: {
+      academicYear: { isActive: true },
+      status: "ACTIVE",
+      student: { OR: [{ userId }, { guardians: { some: { guardian: { userId } } } }] },
+    },
+    select: { school: { select: { name: true } } },
+  });
+  const names = [...new Set(rows.map((r) => r.school.name))].sort((a, b) => a.localeCompare(b, "fr"));
+  if (!names.length) return "Espace famille";
+  return names.length === 1 ? names[0]! : `${names.slice(0, -1).join(", ")} et ${names[names.length - 1]}`;
+}
 
 async function loadUser(sessionId: string) {
   const session = await db.session.findUnique({
@@ -96,15 +126,16 @@ async function loadUser(sessionId: string) {
     firstName: u.firstName,
     lastName: u.lastName,
     fullName: `${u.firstName} ${u.lastName}`,
+    gender: u.gender,
     mustChangePassword: u.mustChangePassword,
     role: { id: u.role.id, code: u.role.code, name: u.role.name },
-    permissions: new Set(u.role.permissions.map((rp) => rp.permission.code as PermissionCode)),
+    permissions: new Set((await rolePermissions(u.role.id)) as PermissionCode[]),
     scope: {
       level: u.scopeLevel,
       departmentId: u.departmentId ?? u.commune?.departmentId ?? u.school?.commune.departmentId ?? null,
       communeId: u.communeId ?? u.school?.communeId ?? null,
       schoolId: u.schoolId,
-      label: u.school?.name ?? u.commune?.name ?? u.department?.name ?? "Bénin",
+      label: u.scopeLevel === "SELF" ? await familyScopeLabel(u.id) : (u.school?.name ?? u.commune?.name ?? u.department?.name ?? "Bénin"),
     },
     teacherId: u.teacher?.id ?? null,
     studentId: u.student?.id ?? null,

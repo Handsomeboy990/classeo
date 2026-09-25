@@ -54,11 +54,13 @@ export function RightsMatrix({
   const resources = Object.keys(RESOURCES) as Resource[];
 
   const table = (
-    <Table>
+    // When the grid is wider than its frame it scrolls sideways; the resource
+    // column stays pinned so each row keeps its name.
+    <Table density="compact">
       <caption className="sr-only">Droits du rôle {role.name} : une ligne par ressource, une colonne par action</caption>
       <THead>
         <tr>
-          <TH>Ressource</TH>
+          <TH className="sticky left-0 z-1 bg-surface-2">Ressource</TH>
           {ACTIONS.map((a) => (
             <TH key={a} className="text-center">
               {ACTION_LABELS[a]}
@@ -69,7 +71,7 @@ export function RightsMatrix({
       <tbody>
         {resources.map((r) => (
           <TR key={r}>
-            <TH scope="row" className="text-left text-sm font-semibold whitespace-normal text-text normal-case">
+            <TH scope="row" className="min-w-36 text-left text-sm font-semibold whitespace-normal text-text normal-case sticky left-0 z-1 bg-surface">
               {RESOURCES[r]}
             </TH>
             {ACTIONS.map((a) => {
@@ -123,7 +125,14 @@ export function RightsMatrix({
       {/* Permissions currently on the role that the viewer cannot see as
           editable are kept by the server, not sent. */}
       {table}
-      <div className="sticky bottom-0 flex flex-col gap-3 border-t border-border bg-surface px-4 py-3 sm:flex-row sm:items-center sm:justify-between" aria-live="polite">
+      {/* Above the tab bar on a phone, at the bottom of the window from lg.
+          An action bar: the floating accessibility button steps aside while
+          it is on the page (globals.css). */}
+      <div
+        data-action-bar
+        className="sticky bottom-(--tab-bar-space) z-10 flex flex-col gap-3 rounded-b-card border-t border-border bg-surface px-4 py-3 sm:flex-row sm:items-center sm:justify-between lg:bottom-0"
+        aria-live="polite"
+      >
         <p className="text-sm text-muted">
           {dirty ? (
             <>
@@ -134,7 +143,7 @@ export function RightsMatrix({
             "Aucune modification en cours."
           )}
         </p>
-        <div className="flex gap-2">
+        <div className="grid grid-cols-2 gap-2 sm:flex">
           <Button type="button" variant="secondary" disabled={!dirty} onClick={() => setChecked(new Set(role.permissions))}>
             <RotateCcw aria-hidden /> Annuler
           </Button>

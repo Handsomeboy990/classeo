@@ -6,7 +6,8 @@ import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/kit/page-header";
 import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
-import { ConfirmButton } from "@/features/classes/components/confirm-button";
+import { buttonVariants } from "@/components/ui/button";
+import { ConfirmButton } from "@/components/kit/confirm-button";
 import { deleteSheet } from "@/features/grades/actions";
 import { GradeGrid } from "@/features/grades/components/grade-grid";
 import { SheetLockButton, SheetSettingsDialog } from "@/features/grades/components/sheet-forms";
@@ -37,7 +38,7 @@ export default async function SheetPage(props: PageProps<"/espace/notes/[sheetId
 
   return (
     <>
-      <nav aria-label="Fil d'Ariane" className="mb-2 text-sm text-muted">
+      <nav aria-label="Fil d'Ariane" className="mb-2 text-sm text-muted max-lg:hidden">
         <Link href="/espace/notes" className="hover:underline">
           Notes
         </Link>{" "}
@@ -49,7 +50,7 @@ export default async function SheetPage(props: PageProps<"/espace/notes/[sheetId
       </nav>
       <PageHeader
         title={`${a.subject.name} · ${a.classroom.name}`}
-        description={`${sheet.period.name} ${sheet.period.academicYear.label} · coefficient ${a.coefficient} · ${a.teacher ? `${a.teacher.firstName} ${a.teacher.lastName}` : "enseignant non désigné"}`}
+        description={`${sheet.period.name}, ${sheet.period.academicYear.label} · coefficient ${a.coefficient} · ${a.teacher ? `${a.teacher.firstName} ${a.teacher.lastName}` : "enseignant non désigné"}`}
         actions={
           <>
             {sheet.isLocked && (
@@ -58,8 +59,8 @@ export default async function SheetPage(props: PageProps<"/espace/notes/[sheetId
               </Badge>
             )}
             {can(user, "grade:export") && (
-              <a href={`/api/export/notes?fiche=${sheet.id}`} className="inline-flex h-11 items-center gap-2 rounded-lg border border-border-strong bg-surface px-4 text-sm font-semibold hover:bg-surface-2">
-                <Download className="size-4" aria-hidden /> CSV
+              <a href={`/api/export/notes?fiche=${sheet.id}`} className={buttonVariants({ variant: "secondary" })}>
+                <Download aria-hidden /> CSV
               </a>
             )}
             {editable && (

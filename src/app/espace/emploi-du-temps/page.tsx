@@ -1,20 +1,21 @@
-import { CalendarDays, ChevronLeft, ChevronRight, Plus, Printer } from "lucide-react";
+import { CalendarDays, Plus, Printer } from "lucide-react";
 import type { Metadata } from "next";
-import Link from "next/link";
 
+import { FormDialog } from "@/components/kit/form-dialog";
 import { PageHeader } from "@/components/kit/page-header";
 import { EmptyState } from "@/components/kit/states";
+import { UrlSelect } from "@/components/kit/url-select";
 import { ButtonLink } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { FilterSelect } from "@/features/fees/components/filter-select";
-import { FormDialog } from "@/features/fees/components/form-dialog";
 import { DayList } from "@/features/timetable/components/day-list";
 import { SlotForm } from "@/features/timetable/components/slot-form";
 import { WeekGrid } from "@/features/timetable/components/week-grid";
+import { WeekNav } from "@/features/timetable/components/week-nav";
 import { loadTimetable } from "@/features/timetable/load";
 import { requirePermission } from "@/lib/auth/authorize";
-import { addDays } from "@/lib/domain/timetable";
-import { formatDate } from "@/lib/utils";
+import { isoToDate } from "@/lib/domain/attendance";
+import { addDays, weekMonday } from "@/lib/domain/timetable";
+import { PdfDownloadLink } from "@/lib/pdf/download-link";
 
 export const metadata: Metadata = { title: "Emploi du temps" };
 
@@ -62,6 +63,12 @@ export default async function TimetablePage({ searchParams }: PageProps<"/espace
             <ButtonLink href={printHref} variant="secondary">
               <Printer aria-hidden /> Version imprimable
             </ButtonLink>
+            {(t.mode === "teacher" || t.selected) && (
+              <PdfDownloadLink
+                href={`/api/pdf/emploi-du-temps?${new URLSearchParams({ ...(t.selected ? { classe: t.selected.id } : {}), semaine: iso(t.monday) })}`}
+                description={t.mode === "teacher" ? "mon emploi du temps de la semaine" : `emploi du temps de la ${t.selected?.name}`}
+              />
+            )}
             {t.rights.create && t.selected && (
               <FormDialog
                 trigger={
@@ -81,24 +88,17 @@ export default async function TimetablePage({ searchParams }: PageProps<"/espace
 
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         {t.mode === "class" && t.classes.length > 0 ? (
-          <FilterSelect param="classe" label="Classe affichée" options={t.classes.map((c) => ({ value: c.id, label: c.name }))} />
+          <UrlSelect param="classe" label="Classe affichée" hideLabel replace resetParams={["page", "jour"]} value={t.selected?.id} options={t.classes.map((c) => ({ value: c.id, label: c.name }))} className="sm:w-56" />
         ) : (
           <span />
         )}
-        <nav aria-label="Semaine affichée" className="flex items-center gap-2">
-          <Link href={href({ semaine: iso(addDays(t.monday, -7)) })} className="inline-flex size-11 items-center justify-center rounded-lg border border-border-strong bg-surface hover:bg-surface-2" aria-label="Semaine précédente">
-            <ChevronLeft className="size-5" aria-hidden />
-          </Link>
-          <p className="min-w-44 text-center text-sm font-semibold" aria-live="polite">
-            Semaine du {formatDate(t.monday)}
-          </p>
-          <Link href={href({ semaine: iso(addDays(t.monday, 7)) })} className="inline-flex size-11 items-center justify-center rounded-lg border border-border-strong bg-surface hover:bg-surface-2" aria-label="Semaine suivante">
-            <ChevronRight className="size-5" aria-hidden />
-          </Link>
-          <Link href={href({ semaine: undefined })} className="text-sm font-semibold text-primary hover:underline">
-            Cette semaine
-          </Link>
-        </nav>
+        <WeekNav
+          monday={t.monday}
+          previousHref={href({ semaine: iso(addDays(t.monday, -7)) })}
+          nextHref={href({ semaine: iso(addDays(t.monday, 7)) })}
+          currentHref={href({ semaine: undefined })}
+          isCurrent={iso(t.monday) === iso(weekMonday(isoToDate(t.todayIso)))}
+        />
       </div>
 
       {t.slots.length === 0 ? (

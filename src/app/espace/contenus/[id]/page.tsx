@@ -32,7 +32,7 @@ export default async function ContentPage({ params }: PageProps<"/espace/contenu
 
   return (
     <article aria-labelledby="content-title" className="max-w-3xl">
-      <Link href="/espace/contenus" className="mb-4 inline-flex h-11 items-center gap-2 text-sm font-semibold text-primary hover:underline">
+      <Link href="/espace/contenus" className="mb-4 inline-flex h-11 max-lg:hidden items-center gap-2 text-sm font-semibold text-primary hover:underline">
         <ArrowLeft className="size-4" aria-hidden /> Toutes les annonces et ressources
       </Link>
 
