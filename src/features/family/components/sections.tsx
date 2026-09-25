@@ -1,4 +1,4 @@
-import { ArrowLeft, CalendarCheck, CheckCircle2, Clock, Coins, Receipt, XCircle } from "lucide-react";
+import { ArrowLeft, CalendarCheck, CheckCircle2, Clock, Coins, FileText, Receipt, XCircle } from "lucide-react";
 import Link from "next/link";
 
 import { LogoMark } from "@/components/brand/logo";
@@ -328,7 +328,9 @@ export function InvoiceCard({ invoice }: { invoice: Awaited<ReturnType<typeof in
         <Pictogram icon={Receipt} tone={remaining ? "warning" : "success"} />
         <div className="min-w-0 flex-1">
           <h3 id={`inv-${invoice.id}`} className="font-sans text-base font-bold">
-            Facture {invoice.number}
+            <Link href={`/espace/frais/factures/${invoice.id}`} className="underline-offset-4 hover:underline">
+              Facture {invoice.number}
+            </Link>
           </h3>
           <p className="text-sm text-muted">Émise le {formatDate(invoice.issueDate)}</p>
         </div>
@@ -402,6 +404,13 @@ export function InvoiceCard({ invoice }: { invoice: Awaited<ReturnType<typeof in
                   <span>{METHOD[p.method]}</span>
                   <span className="text-muted">le {formatDate(p.paidAt)}</span>
                   <span className="text-muted">Réf. {p.reference}</span>
+                  <Link
+                    href={`/espace/frais/paiements/${p.id}/recu`}
+                    className="inline-flex min-h-11 items-center gap-1.5 font-semibold text-primary underline-offset-4 hover:underline"
+                  >
+                    <FileText className="size-4" aria-hidden />
+                    Reçu<span className="sr-only"> du paiement {p.reference}</span>
+                  </Link>
                 </li>
               ))}
             </ul>
