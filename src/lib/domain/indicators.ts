@@ -109,8 +109,8 @@ export const INDICATORS: Record<IndicatorKey, { label: string; short: string; fo
   studentsPerTeacher: { label: "Élèves par enseignant", short: "Élèves/ens.", format: "decimal", higherIsBetter: false },
   averageClassSize: { label: "Effectif moyen par classe", short: "Taille classe", format: "decimal", higherIsBetter: false },
   absenceRate: { label: "Taux d'absence", short: "Absence", format: "percent", higherIsBetter: false },
-  passRate: { label: "Taux de réussite 2025-2026", short: "Réussite", format: "percent", higherIsBetter: true },
-  meanAverage: { label: "Moyenne générale 2025-2026", short: "Moyenne", format: "average", higherIsBetter: true },
+  passRate: { label: "Taux de réussite (année précédente)", short: "Réussite", format: "percent", higherIsBetter: true },
+  meanAverage: { label: "Moyenne générale (année précédente)", short: "Moyenne", format: "average", higherIsBetter: true },
   pendingRequests: { label: "Demandes en attente", short: "Demandes", format: "number", higherIsBetter: false },
 };
 
