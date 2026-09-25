@@ -20,7 +20,7 @@ export function ReportCardSheet({ card, student }: { card: ReportCardView; stude
   const totalCoef = card.lines.reduce((n, l) => n + l.coefficient, 0);
   const totalPoints = card.lines.reduce((n, l) => n + (l.average ?? 0) * l.coefficient, 0);
   return (
-    <article aria-labelledby="report-title" className="rounded-card border border-border bg-surface" data-print-root>
+    <article aria-labelledby="report-title" className="rounded-card border border-border bg-surface [&_.rounded-full]:flex-wrap" data-print-root>
       <div className="hidden items-center gap-3 border-b border-border px-5 py-3 print:flex">
         <LogoMark className="size-10" />
         <div className="text-sm leading-tight">
@@ -112,8 +112,8 @@ const KIND = { INTERROGATION: "Interrogation", DEVOIR: "Devoir", COMPOSITION: "C
 
 export function TermGradesList({ term }: { term: Awaited<ReturnType<typeof termGrades>> }) {
   return (
-    <div className="flex flex-col gap-3">
-      <ul className="grid gap-3 lg:grid-cols-2">
+    <div className="flex flex-col gap-3 [&_.rounded-full]:flex-wrap">
+      <ul className="grid grid-cols-1 gap-3 lg:grid-cols-2">
         {term.subjects.map((s) => (
           <li key={s.id} className="flex flex-col gap-3 rounded-card border border-border bg-surface p-4">
             <div className="flex flex-wrap items-start justify-between gap-2">
@@ -334,7 +334,7 @@ export function InvoiceCard({ invoice }: { invoice: Awaited<ReturnType<typeof in
         </div>
         <Badge tone={status.tone}>{status.label}</Badge>
       </header>
-      <div className="grid gap-4 p-4 sm:p-5">
+      <div className="grid grid-cols-1 gap-4 p-4 sm:p-5">
         <dl className="grid grid-cols-1 gap-3 min-[420px]:grid-cols-3">
           <div>
             <dt className="text-sm text-muted">Total</dt>

@@ -189,7 +189,7 @@ export default function LandingPage() {
   return (
     <>
       <header className="bg-sidebar text-sidebar-text">
-        <div className="mx-auto flex max-w-7xl items-center gap-3 px-5 py-4 sm:px-8">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-3 px-5 py-4 sm:px-8">
           <Link href="/" aria-label="Classéo, accueil" className="rounded-lg">
             <Logo tone="inverse" />
           </Link>
@@ -268,7 +268,7 @@ export default function LandingPage() {
 
         {/* Actors -------------------------------------------------------- */}
         <section id="acteurs" aria-labelledby="actors-title" className="scroll-mt-4 bg-bg">
-          <div className="mx-auto grid max-w-7xl gap-10 px-5 py-16 sm:px-8 lg:grid-cols-[22rem_1fr] lg:gap-16 lg:py-24">
+          <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-5 py-16 sm:px-8 lg:grid-cols-[22rem_1fr] lg:gap-16 lg:py-24">
             <div className="lg:sticky lg:top-8 lg:self-start">
               <p className="text-sm font-bold tracking-[0.14em] text-primary uppercase">Qui utilise Classéo</p>
               <h2 id="actors-title" className="mt-3 text-3xl leading-tight font-extrabold sm:text-4xl">
@@ -297,7 +297,7 @@ export default function LandingPage() {
               <p className="mt-4 text-muted">Classéo est conçu dès le départ pour les personnes aveugles ou malvoyantes, sourdes ou malentendantes, et pour celles qui lisent peu.</p>
             </div>
 
-            <div className="mt-10 grid gap-6 lg:grid-cols-[minmax(0,26rem)_1fr]">
+            <div className="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,26rem)_1fr]">
               <article aria-labelledby="kora-title" className="relative overflow-hidden rounded-2xl bg-sidebar p-6 text-sidebar-text sm:p-8">
                 <span className="flex size-14 items-center justify-center rounded-2xl bg-accent text-on-accent" aria-hidden>
                   <Volume2 className="size-7" />
@@ -313,13 +313,13 @@ export default function LandingPage() {
                 <ReadAloud text={KORA_SAMPLE} label="Écouter Kora" className="relative mt-5 h-12 border-accent bg-accent px-5 text-base text-on-accent hover:bg-accent hover:brightness-95" />
               </article>
 
-              <ul className="grid gap-4 sm:grid-cols-2">
+              <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 {COMMITMENTS.map((c) => (
                   <li key={c.title} className="flex gap-4 rounded-2xl border border-border bg-bg p-5">
                     <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary" aria-hidden>
                       <c.icon className="size-6" />
                     </span>
-                    <div>
+                    <div className="min-w-0 break-words hyphens-auto">
                       <h3 className="font-sans text-lg font-bold">{c.title}</h3>
                       <p className="mt-1 text-muted">{c.text}</p>
                     </div>

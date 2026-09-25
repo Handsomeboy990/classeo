@@ -66,7 +66,7 @@ export async function FamilyDashboard({ user }: { user: User }) {
         readable={false}
       />
 
-      <div className="grid gap-4 lg:grid-cols-[1fr_20rem]">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_20rem]">
         <SpokenSummary text={household} label="Écouter" />
         <PictoTile icon={MessageCircle} tone={unread ? "danger" : "primary"} title="Messages" href="/espace/messages">
           <p className="font-display text-2xl font-bold">{unread ? `${unread} non lu${unread > 1 ? "s" : ""}` : "À jour"}</p>
@@ -80,7 +80,7 @@ export async function FamilyDashboard({ user }: { user: User }) {
       </div>
 
       {!isParent && overviews[0] && (
-        <div className="mt-8 grid gap-8 lg:grid-cols-2">
+        <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
           <TermGrades overview={overviews[0]} />
           <TodayTimeline overview={overviews[0]} />
         </div>
@@ -92,7 +92,7 @@ export async function FamilyDashboard({ user }: { user: User }) {
             <span id="resources-title">Ressources de ma classe</span>
           </SectionTitle>
           {resources.length ? (
-            <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+            <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
               {resources.map((r) => (
                 <li key={r.id} className="flex flex-col gap-2 rounded-card border border-border bg-surface p-4">
                   <div className="flex flex-wrap items-center gap-2">
@@ -172,7 +172,7 @@ function ChildPanel({ overview: o, isParent }: { overview: ChildOverview; isPare
       </div>
       <div className="p-4 sm:p-5">
         <SpokenSummary text={o.summary} />
-        <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 2xl:grid-cols-4">
           <PictoTile icon={FileText} title="Dernier bulletin" href={base} footer={o.lastReport?.periodLabel}>
             {o.lastReport ? <AverageLevel average={o.lastReport.average} /> : <p className="text-muted">Pas encore de bulletin publié.</p>}
           </PictoTile>
@@ -219,7 +219,7 @@ function TermGrades({ overview: o }: { overview: ChildOverview }) {
         <span id="my-grades-title">Mes notes ce trimestre</span>
       </SectionTitle>
       {withGrades.length ? (
-        <ul className="divide-y divide-border rounded-card border border-border bg-surface">
+        <ul className="divide-y divide-border rounded-card border border-border bg-surface [&_.rounded-full]:flex-wrap">
           {withGrades.map((s) => (
             <li key={s.id} className="flex flex-wrap items-center justify-between gap-2 px-4 py-3">
               <span className="font-semibold">{s.subject}</span>

@@ -74,7 +74,7 @@ export function PictoTile({
         <h3 className="font-sans text-base font-bold text-text">{title}</h3>
         {href && <ChevronRight className="ml-auto size-5 shrink-0 text-muted" aria-hidden />}
       </div>
-      <div className="mt-3 min-w-0 text-text [&>span]:whitespace-nowrap">{children}</div>
+      <div className="mt-3 min-w-0 text-text [&_.rounded-full]:flex-wrap">{children}</div>
       {footer && <div className="mt-auto pt-3 text-sm text-muted">{footer}</div>}
     </>
   );

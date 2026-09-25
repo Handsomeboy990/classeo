@@ -19,7 +19,7 @@ export function GuideSteps({ guide, headingLevel = 2 }: { guide: Guide; headingL
         </div>
         <ReadAloud text={guideText(guide)} label="Écouter le guide" />
       </div>
-      <ol className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+      <ol className="mt-5 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
         {guide.steps.map((s, i) => {
           const body = (
             <>

@@ -44,7 +44,7 @@ export default async function FollowUpPage() {
           description="Demandez au secrétariat de l'école de rattacher votre enfant à votre compte."
         />
       ) : (
-        <ul className="grid gap-4 md:grid-cols-2">
+        <ul className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {overviews.map((o) => {
             const e = o.enrollment;
             const name = `${e.student.firstName} ${e.student.lastName}`;
@@ -63,12 +63,12 @@ export default async function FollowUpPage() {
                       </p>
                     </div>
                   </div>
-                  <dl className="grid gap-3 min-[420px]:grid-cols-2">
+                  <dl className="grid grid-cols-1 gap-3 min-[420px]:grid-cols-2">
                     <div className="flex items-start gap-2">
                       <FileText className="mt-1 size-5 shrink-0 text-primary" aria-hidden />
                       <div>
                         <dt className="text-sm text-muted">Dernier bulletin</dt>
-                        <dd className="mt-1 whitespace-nowrap">{o.lastReport ? <AverageLevel average={o.lastReport.average} /> : "Pas encore publié"}</dd>
+                        <dd className="mt-1 [&_.rounded-full]:flex-wrap">{o.lastReport ? <AverageLevel average={o.lastReport.average} /> : "Pas encore publié"}</dd>
                       </div>
                     </div>
                     <div className="flex items-start gap-2">

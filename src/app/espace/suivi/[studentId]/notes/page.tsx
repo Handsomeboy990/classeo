@@ -45,7 +45,7 @@ export default async function TermGradesPage({ params }: PageProps<"/espace/suiv
   return (
     <div className="flex flex-col gap-5">
       <SpokenSummary text={text} label="Écouter les notes" />
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-card border border-border bg-surface p-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-card border border-border bg-surface p-4 [&_.rounded-full]:flex-wrap">
         <div>
           <h2 className="text-lg font-bold">{term.period.name} · moyenne provisoire</h2>
           <p className="text-sm text-muted">Calculée avec les notes déjà saisies, coefficients compris.</p>

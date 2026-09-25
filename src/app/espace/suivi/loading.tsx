@@ -8,7 +8,7 @@ export default function Loading() {
         <Skeleton className="mt-2 w-80 max-w-full" />
       </div>
       <Skeleton className="h-20 w-full rounded-card" />
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         {[0, 1].map((i) => (
           <div key={i} className="rounded-card border border-border bg-surface p-5">
             <div className="flex items-center gap-4">
