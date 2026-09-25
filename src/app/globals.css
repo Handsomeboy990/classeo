@@ -1561,3 +1561,108 @@ dialog.sheet[data-closing]::backdrop {
     animation: none;
   }
 }
+
+/*
+ * Average and mention (kit/level.tsx): value, five step gauge, word. The
+ * steps rise in height like a level meter; the filled ones take the tone,
+ * the others stay a quiet track. Wraps as a whole unit on narrow rows.
+ */
+.ds-level {
+  --level: var(--success);
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.125rem 0.5rem;
+  max-width: 100%;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  white-space: nowrap;
+}
+.ds-level[data-tone="warning"] {
+  --level: var(--warning);
+}
+.ds-level[data-tone="danger"] {
+  --level: var(--danger);
+}
+.ds-level-value {
+  color: var(--text);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.ds-level-unit {
+  margin-left: 0.0625rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  font-size: 0.8em;
+}
+.ds-level-steps {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 0.875rem;
+}
+.ds-level-steps > span {
+  width: 0.25rem;
+  border-radius: 1px;
+  background: color-mix(in srgb, var(--text-muted) 28%, transparent);
+}
+.ds-level-steps > span:nth-child(1) {
+  height: 40%;
+}
+.ds-level-steps > span:nth-child(2) {
+  height: 55%;
+}
+.ds-level-steps > span:nth-child(3) {
+  height: 70%;
+}
+.ds-level-steps > span:nth-child(4) {
+  height: 85%;
+}
+.ds-level-steps > span:nth-child(5) {
+  height: 100%;
+}
+.ds-level-steps > span[data-on] {
+  background: var(--level);
+}
+.ds-level-word {
+  color: var(--level);
+  font-weight: 600;
+}
+.ds-level[data-size="lg"] {
+  gap: 0.25rem 0.75rem;
+  font-size: 1.0625rem;
+  line-height: 1.75rem;
+}
+.ds-level[data-size="lg"] .ds-level-value {
+  font-family: var(--font-display), var(--font-body), system-ui, sans-serif;
+  font-size: 1.75rem;
+  letter-spacing: -0.01em;
+}
+.ds-level[data-size="lg"] .ds-level-steps {
+  height: 1.125rem;
+  gap: 3px;
+}
+.ds-level[data-size="lg"] .ds-level-steps > span {
+  width: 0.3125rem;
+}
+[data-contrast="high"] .ds-level-steps > span {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--text);
+}
+[data-contrast="high"] .ds-level-steps > span[data-on] {
+  background: var(--text);
+}
+[data-contrast="high"] .ds-level-word {
+  color: var(--text);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+@media (forced-colors: active) {
+  .ds-level-steps > span {
+    border: 1px solid CanvasText;
+  }
+  .ds-level-steps > span[data-on] {
+    background: CanvasText;
+  }
+}
