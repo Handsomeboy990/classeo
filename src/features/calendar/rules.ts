@@ -74,21 +74,6 @@ export function yearStatus(year: { isActive: boolean; startDate: Date }, closed:
   return year.startDate > now ? "UPCOMING" : "OPEN";
 }
 
-// Default periods proposed when the ministry creates a year: three terms
-// spread over the year.
-export function defaultTerms(start: Date, end: Date): PeriodInput[] {
-  const span = end.getTime() - start.getTime();
-  const cut = (f: number) => new Date(start.getTime() + Math.round((span * f) / 86_400_000) * 86_400_000);
-  const day = 86_400_000;
-  const a = cut(1 / 3);
-  const b = cut(2 / 3);
-  return [
-    { name: "Trimestre 1", startDate: start, endDate: a },
-    { name: "Trimestre 2", startDate: new Date(a.getTime() + day), endDate: b },
-    { name: "Trimestre 3", startDate: new Date(b.getTime() + day), endDate: end },
-  ];
-}
-
 // A date some days from now, as the default value of a date field.
 export function isoInDays(days: number, from = new Date()) {
   return toIso(new Date(from.getTime() + days * 86_400_000));

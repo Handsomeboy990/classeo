@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { calendarError, defaultTerms, isoToUtc, overlaps, yearLabelError, yearStatus } from "./rules";
+import { calendarError, isoToUtc, overlaps, yearLabelError, yearStatus } from "./rules";
 
 const d = isoToUtc;
 const start = d("2026-09-14");
@@ -56,8 +56,5 @@ describe("overlaps and status", () => {
     expect(yearStatus({ isActive: true, startDate: start }, false, now)).toBe("ACTIVE");
     expect(yearStatus({ isActive: true, startDate: start }, true, now)).toBe("CLOSED");
     expect(yearStatus({ isActive: false, startDate: d("2027-09-13") }, false, now)).toBe("UPCOMING");
-  });
-  it("proposes three valid terms", () => {
-    expect(calendarError(start, end, defaultTerms(start, end))).toBeNull();
   });
 });
