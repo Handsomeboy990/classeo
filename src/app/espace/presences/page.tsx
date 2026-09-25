@@ -17,6 +17,7 @@ import { classroomOptions } from "@/features/classes/queries";
 import { can, requirePermission } from "@/lib/auth/authorize";
 import { isIsoDate, isWeekend, todayIso } from "@/lib/domain/attendance";
 import { param } from "@/lib/list";
+import { PdfDownloadLink } from "@/lib/pdf/download-link";
 import { formatDate, formatNumber, formatPercent } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Présences" };
@@ -60,6 +61,11 @@ export default async function AttendancePage(props: PageProps<"/espace/presences
                 <Download className="size-4" aria-hidden /> Exporter la semaine
               </a>
             )}
+            <PdfDownloadLink
+              href={`/api/pdf/fiche-appel/${classroomId}?date=${date}`}
+              label="Fiche d'appel (PDF)"
+              description={`${reg.classroom.name}, ${formatDate(date)}, matin et après-midi`}
+            />
             {staffAttendance && (
               <ButtonLink href={`/espace/presences/enseignants?date=${date}`} variant="secondary">
                 <UserSquare2 aria-hidden /> Enseignants
