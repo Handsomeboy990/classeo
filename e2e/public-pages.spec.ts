@@ -74,11 +74,15 @@ test("the photo credits are reached from the footer, every photograph credited @
   await expect(items).toHaveCount(5);
   for (const item of await items.all()) {
     await expect(item.getByRole("img")).toHaveAttribute("alt", /.{20,}/);
-    await expect(item.getByRole("heading", { level: 2 })).toBeVisible();
+    await expect(item.getByRole("heading", { level: 3 })).toBeVisible();
     await expect(item.getByRole("link", { name: "Voir l'original sur Wikimedia Commons" })).toHaveAttribute("href", /^https:\/\/commons\.wikimedia\.org\/wiki\/File:/);
     await expect(item.getByText(/CC BY 4\.0|CC BY-SA 4\.0|Domaine public/).first()).toBeVisible();
     await expect(item.getByText(/Redimensionnée/)).toBeVisible();
   }
+  // The reading voice is credited too.
+  const voice = page.getByRole("region", { name: "Voix de lecture" });
+  await expect(voice).toContainText("SIWIS");
+  await expect(voice.getByRole("link", { name: "CC BY 4.0" })).toHaveAttribute("href", /creativecommons\.org\/licenses\/by\/4\.0/);
   for (const author of ["Thomas Dorn", "Rofik Adam", "DEGAN Gabin", "Kulttuurinavigaattori", "Peace Corps"]) await expect(page.locator("main")).toContainText(author);
   await expectNoHorizontalScroll(page);
 
