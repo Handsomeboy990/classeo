@@ -234,6 +234,9 @@ body {
   color: var(--text);
   font-family: var(--font-body), system-ui, sans-serif;
   line-height: 1.5;
+  /* A word longer than its line (large text on a phone) breaks instead of
+     widening the page. */
+  overflow-wrap: break-word;
 }
 
 h1,
@@ -1161,13 +1164,19 @@ html[data-lite="on"] img[data-decorative] {
  * Phone shell (below lg): a top app bar, a tab bar fixed at the bottom above
  * the home indicator, bottom sheets, and the accessibility button floating
  * above the tab bar. Sizes are in rem so they grow with the text size
- * preference.
+ * preference, except the floating button: a fixed 40 px on phones and 44 px
+ * from lg, so a larger text does not make it cover more of the page.
  */
 :root {
   --app-bar-h: 3.5rem;
   --tab-bar-h: 4rem;
-  --fab-size: 2.75rem;
+  --fab-size: 40px;
   --tab-bar-space: calc(var(--tab-bar-h) + env(safe-area-inset-bottom));
+}
+@media (min-width: 64rem) {
+  :root {
+    --fab-size: 44px;
+  }
 }
 
 /* Nothing may hide behind the tab bar or the floating button. */
@@ -1179,6 +1188,24 @@ html[data-lite="on"] img[data-decorative] {
 @media (min-width: 64rem) {
   .app-main {
     padding-bottom: calc(var(--fab-size) + 3rem);
+  }
+  /* Private space: the button sits in the header, nothing floats. */
+  body:has([data-a11y-docked]) .app-main {
+    padding-bottom: 3rem;
+  }
+}
+
+/*
+ * Phone conversation (data-chat): the chat fills the window between the app
+ * bar and the tab bar, its thread scrolls inside, the composer sits right
+ * above the tab bar and nothing is left empty under it.
+ */
+@media (max-width: 63.999rem) {
+  :root {
+    --chat-h: calc(100dvh - env(safe-area-inset-top) - var(--app-bar-h) - 1px - var(--tab-bar-space) - 2rem);
+  }
+  .app-main:has([data-chat]) {
+    padding-bottom: 0.75rem;
   }
 }
 
@@ -1216,7 +1243,13 @@ div.overflow-x-auto:has(> table) {
 
 /*
  * Accessibility button: bottom right, discreet (surface colour, hairline
- * border, soft shadow), above the tab bar on phones.
+ * border, soft shadow), above the tab bar on phones. It never covers an
+ * action:
+ * - a page with a save bar stuck to the bottom (grades, attendance, rights:
+ *   marked data-action-bar) hides it on phones; the account sheet and the
+ *   Menu sheet carry the same entry;
+ * - in the private space on a large screen it is docked in the header
+ *   (data-a11y-docked), so no gutter has to be kept free beside tables.
  */
 .a11y-fab {
   position: fixed;
@@ -1229,10 +1262,16 @@ div.overflow-x-auto:has(> table) {
     right: 1.5rem;
     bottom: 1.5rem;
   }
+  body:has([data-a11y-docked]) .a11y-fab {
+    display: none;
+  }
 }
 @media (max-width: 63.999rem) {
   body:has([data-tab-bar]) .a11y-fab {
     bottom: calc(var(--tab-bar-space) + 0.75rem);
+  }
+  body:has([data-action-bar]) .a11y-fab {
+    display: none;
   }
   /* Toasts rise above the tab bar instead of covering it. */
   body:has([data-tab-bar]) div.fixed.bottom-4:has(> .contents[aria-live]) {
@@ -1327,4 +1366,53 @@ dialog.sheet[data-closing]::backdrop {
   .app-main {
     padding-bottom: 0 !important;
   }
+}
+
+/*
+ * Items of a "Plus d'actions" panel (kit/more-actions.tsx): the links and
+ * buttons placed in it read as rows of a menu, whatever button style they
+ * were written with. Unlayered, so it wins over their utility classes; only
+ * direct children are styled, never the controls of a dialog they open.
+ */
+.ds-menu:not([hidden]) {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  padding: 0.375rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--elevation-lg);
+}
+.ds-menu > :is(a, button) {
+  width: 100%;
+  min-height: 2.75rem;
+  justify-content: flex-start;
+  padding: 0.5rem 0.75rem;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  box-shadow: none;
+  color: var(--text);
+  text-align: start;
+  white-space: normal;
+}
+.ds-menu > :is(a, button):hover {
+  background: var(--surface-2);
+  filter: none;
+}
+.ds-menu > :is(a, button) svg {
+  color: var(--text-muted);
+}
+/* A destructive item keeps its colour, as text. */
+.ds-menu > .bg-danger,
+.ds-menu > .bg-danger svg {
+  color: var(--danger);
+}
+.ds-menu > .bg-danger:hover {
+  background: var(--danger-soft);
+}
+[data-contrast="high"] .ds-menu > :is(a, button):hover {
+  outline: 2px solid currentColor;
+  outline-offset: -2px;
 }

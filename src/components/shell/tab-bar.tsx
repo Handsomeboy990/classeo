@@ -17,7 +17,7 @@ function Tab({ active, icon, label }: { active: boolean; icon: ReactNode; label:
       <span
         data-active={active || undefined}
         className={cn(
-          "tab-pill inline-flex h-8 w-14 items-center justify-center rounded-full transition-[transform,background-color] duration-150 group-active:scale-90 [&_svg]:size-[1.35rem]",
+          "tab-pill inline-flex h-8 w-full max-w-14 shrink-0 items-center justify-center rounded-full transition-[transform,background-color] duration-150 group-active:scale-90 [&_svg]:size-[1.35rem] [&_svg]:shrink-0",
           active ? "bg-primary-soft text-primary [&_svg]:stroke-[2.4]" : "text-muted",
         )}
       >
@@ -28,7 +28,10 @@ function Tab({ active, icon, label }: { active: boolean; icon: ReactNode; label:
   );
 }
 
-const TAB = "group flex h-full w-full flex-col items-center justify-center gap-1 select-none";
+// Each tab shares the width equally and may shrink (very large text on a
+// narrow phone): the pill narrows, the icon keeps its size, the label is
+// truncated rather than pushing the last tab off screen.
+const TAB = "group flex h-full w-full min-w-0 flex-col items-center justify-center gap-1 px-0.5 select-none";
 
 // Phone tab bar: the four destinations the user needs most (chosen from
 // their own menu, see mobileTabs in lib/navigation.ts) and "Menu" for the

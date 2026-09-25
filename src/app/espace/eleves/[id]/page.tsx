@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { AverageLevel } from "@/components/kit/level";
+import { MoreActions } from "@/components/kit/more-actions";
 import { PageHeader } from "@/components/kit/page-header";
 import { StatCard, StatGrid } from "@/components/kit/stat-card";
 import { EmptyState } from "@/components/kit/states";
@@ -36,6 +37,27 @@ export default async function StudentPage(props: PageProps<"/espace/eleves/[id]"
   const canUpdate = can(user, "student:update");
   const age = Math.floor((isoToDate(todayIso()).getTime() - student.birthDate.getTime()) / (365.25 * 86400000));
 
+  // Header actions: the two most used stay in view, the others (the second
+  // document, transfer, withdrawal) go behind "Plus d'actions", so a long
+  // name keeps its width at 1366 and 1440 px.
+  const active = current && current.academicYear.isActive ? current : null;
+  const editable = canUpdate && active ? active : null;
+  const actions = [
+    editable && (
+      <ButtonLink key="edit" href={`/espace/eleves/${student.id}/modifier`} variant="secondary">
+        <Pencil aria-hidden /> Modifier
+      </ButtonLink>
+    ),
+    active && active.status === "ACTIVE" && (
+      <PdfDownloadLink key="attestation" href={`/api/pdf/attestation/${student.id}`} label="Attestation (PDF)" description={`attestation de scolarité de ${name}`} />
+    ),
+    rights.grades && active && period && (
+      <PdfDownloadLink key="releve" href={`/api/pdf/releve/${student.id}`} label="Relevé de notes (PDF)" description={`relevé de notes de ${name}, ${period.name}`} />
+    ),
+  ].filter(Boolean);
+  const shown = actions.slice(0, 2);
+  const more = actions.slice(2);
+
   return (
     <>
       <nav aria-label="Fil d'Ariane" className="mb-2 text-sm text-muted max-lg:hidden">
@@ -47,23 +69,19 @@ export default async function StudentPage(props: PageProps<"/espace/eleves/[id]"
       <PageHeader
         title={name}
         description={`Matricule ${student.matricule}${current ? ` · ${current.classroom.name}, ${current.school.name} · ${ENROLLMENT_STATUS_LABELS[current.status]}` : ""}`}
+        actionsPlacement="below"
         actions={
-          <>
-            {current && current.academicYear.isActive && current.status === "ACTIVE" && (
-              <PdfDownloadLink href={`/api/pdf/attestation/${student.id}`} label="Attestation (PDF)" description={`attestation de scolarité de ${name}`} />
-            )}
-            {rights.grades && current && current.academicYear.isActive && period && (
-              <PdfDownloadLink href={`/api/pdf/releve/${student.id}`} label="Relevé de notes (PDF)" description={`relevé de notes de ${name}, ${period.name}`} />
-            )}
-            {canUpdate && current && current.academicYear.isActive && (
-              <>
-                <ButtonLink href={`/espace/eleves/${student.id}/modifier`} variant="secondary">
-                  <Pencil aria-hidden /> Modifier
-                </ButtonLink>
-                <EnrollmentStatusActions enrollmentId={current.id} status={current.status} name={name} className={current.classroom.name} />
-              </>
-            )}
-          </>
+          (shown.length > 0 || more.length > 0 || editable) && (
+            <>
+              {shown}
+              {(more.length > 0 || editable) && (
+                <MoreActions>
+                  {more}
+                  {editable && <EnrollmentStatusActions enrollmentId={editable.id} status={editable.status} name={name} className={editable.classroom.name} />}
+                </MoreActions>
+              )}
+            </>
+          )
         }
       />
       {param(sp, "inscrit") && (

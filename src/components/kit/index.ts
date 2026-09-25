@@ -6,6 +6,7 @@ export { DataTable, type Column } from "./data-table";
 export { FormDialog, useCloseDialog } from "./form-dialog";
 export { FormField } from "./form-field";
 export { AverageLevel } from "./level";
+export { MoreActions } from "./more-actions";
 export { PageHeader } from "./page-header";
 export { PrintButton } from "./print-button";
 export { ReadAloud } from "./read-aloud";

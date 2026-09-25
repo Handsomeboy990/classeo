@@ -10,7 +10,7 @@ import type { SearchParams } from "@/lib/list";
 import { cn } from "@/lib/utils";
 
 import { CHILD_LABELS, type ScopeStatistics } from "../queries";
-import { formatIndicator, indicatorFormatter } from "../format";
+import { ABSENCE_SCALE, absenceTone, formatIndicator, indicatorFormatter } from "../format";
 
 const TABLE_KEYS: IndicatorKey[] = [
   "schools",
@@ -64,15 +64,26 @@ export function Breakdown({
   const activeSort = keys.includes(sort) ? sort : "enrollments";
   const rows = sortByIndicator(stats.children, activeSort, direction);
   const meta = INDICATORS[activeSort];
-  const max = meta.format === "percent" ? 1 : meta.format === "average" ? 20 : undefined;
+  const absence = activeSort === "absenceRate";
+  const max = absence ? ABSENCE_SCALE : meta.format === "percent" ? 1 : meta.format === "average" ? 20 : undefined;
+  const scale = absence
+    ? "Échelle de 0 à 20 %, en rouge au-delà de 10 %."
+    : meta.format === "percent"
+      ? "Échelle de 0 à 100 %."
+      : meta.format === "average"
+        ? "Échelle de 0 à 20."
+        : "La barre la plus longue correspond à la valeur la plus élevée.";
   const chartData = rows
     .filter((r) => r.indicators[activeSort] !== null)
-    .map((r) => ({
-      label: r.name,
-      value: r.indicators[activeSort] as number,
-      href: hrefFor?.(r.id),
-      tone: meta.higherIsBetter === true && (r.indicators[activeSort] as number) < (activeSort === "passRate" ? 0.5 : 10) ? ("danger" as const) : undefined,
-    }));
+    .map((r) => {
+      const value = r.indicators[activeSort] as number;
+      return {
+        label: r.name,
+        value,
+        href: hrefFor?.(r.id),
+        tone: absence ? absenceTone(value) : meta.higherIsBetter === true && value < (activeSort === "passRate" ? 0.5 : 10) ? ("danger" as const) : undefined,
+      };
+    });
   const flip = direction === "desc" ? "asc" : "desc";
 
   return (
@@ -116,7 +127,7 @@ export function Breakdown({
         ) : (
           <>
             {chartData.length > 0 ? (
-              <BarChart label={`${meta.label} par ${labels.singular.toLowerCase()}`} data={chartData} format={indicatorFormatter(activeSort)} max={max} />
+              <BarChart label={`${meta.label} par ${labels.singular.toLowerCase()}`} data={chartData} format={indicatorFormatter(activeSort)} max={max} scale={scale} />
             ) : (
               <p className="text-sm text-muted">Aucune valeur disponible pour cet indicateur.</p>
             )}

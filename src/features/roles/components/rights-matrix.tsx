@@ -125,8 +125,11 @@ export function RightsMatrix({
       {/* Permissions currently on the role that the viewer cannot see as
           editable are kept by the server, not sent. */}
       {table}
-      {/* Above the tab bar on a phone, at the bottom of the window from lg. */}
+      {/* Above the tab bar on a phone, at the bottom of the window from lg.
+          An action bar: the floating accessibility button steps aside while
+          it is on the page (globals.css). */}
       <div
+        data-action-bar
         className="sticky bottom-(--tab-bar-space) z-10 flex flex-col gap-3 rounded-b-card border-t border-border bg-surface px-4 py-3 sm:flex-row sm:items-center sm:justify-between lg:bottom-0"
         aria-live="polite"
       >

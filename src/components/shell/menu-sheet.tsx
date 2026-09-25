@@ -1,12 +1,13 @@
 "use client";
 
-import { ChevronRight, Search } from "lucide-react";
+import { Accessibility, ChevronRight, Search } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 
 import { cn } from "@/lib/utils";
 
+import { AccessibilityPanel } from "./accessibility-panel";
 import { Sheet } from "./sheet";
 import { isActiveHref, type RenderedSection } from "./sidebar-nav";
 
@@ -20,7 +21,11 @@ function normalize(s: string) {
 export function MenuSheet({ sections, open, onClose }: { sections: RenderedSection[]; open: boolean; onClose: () => void }) {
   const pathname = usePathname();
   const [query, setQuery] = useState("");
+  const [a11y, setA11y] = useState(false);
   const q = normalize(query);
+  // The display settings, also reachable here: the floating button is hidden
+  // on pages with a save bar at the bottom.
+  const showSettings = !q || normalize("Réglages Accessibilité taille du texte contraste thème voix").includes(q);
   const shown = q
     ? sections
         .map((s) => ({ ...s, items: s.items.filter((i) => normalize(`${i.label} ${i.short ?? ""} ${s.title}`).includes(q)) }))
@@ -33,6 +38,7 @@ export function MenuSheet({ sections, open, onClose }: { sections: RenderedSecti
   }
 
   return (
+    <>
     <Sheet
       open={open}
       onClose={close}
@@ -91,12 +97,36 @@ export function MenuSheet({ sections, open, onClose }: { sections: RenderedSecti
             </ul>
           </div>
         ))}
-        {!shown.length && (
+        {showSettings && (
+          <div>
+            <p className="mb-1.5 px-1 text-xs font-semibold tracking-wider text-muted uppercase">Réglages</p>
+            <div className="overflow-hidden rounded-card border border-border bg-surface">
+              <button
+                type="button"
+                aria-haspopup="dialog"
+                onClick={() => {
+                  close();
+                  setA11y(true);
+                }}
+                className="flex min-h-13 w-full items-center gap-3 px-3 py-2 text-left font-medium text-text active:bg-surface-2"
+              >
+                <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-lg bg-surface-2 text-primary [&_svg]:size-5">
+                  <Accessibility aria-hidden />
+                </span>
+                <span className="min-w-0 flex-1">Accessibilité</span>
+                <ChevronRight className="size-4 shrink-0 text-muted" aria-hidden />
+              </button>
+            </div>
+          </div>
+        )}
+        {!shown.length && !showSettings && (
           <p className="px-1 py-6 text-center text-muted" role="status">
             Aucune rubrique ne correspond à « {query.trim()} ».
           </p>
         )}
       </nav>
     </Sheet>
+    <AccessibilityPanel open={a11y} onClose={() => setA11y(false)} />
+    </>
   );
 }

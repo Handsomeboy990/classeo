@@ -1,12 +1,14 @@
 "use client";
 
-import { BookOpen, ChevronRight, LogOut, MapPin, Settings2 } from "lucide-react";
+import { Accessibility, BookOpen, ChevronRight, LogOut, MapPin, Settings2 } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
 
 import { Avatar } from "@/components/ui/avatar";
 import { InstallEntry } from "@/features/pwa/install-ui";
 import { PushToggle } from "@/features/push/push-toggle";
 
+import { AccessibilityPanel } from "./accessibility-panel";
 import { Sheet } from "./sheet";
 import { SignOutButton } from "./sign-out-button";
 
@@ -17,8 +19,12 @@ const ROW =
 
 // Opened from the avatar of the phone app bar: who is signed in, with which
 // role and over which territory, then this device's settings and sign out.
+// "Accessibilité" opens the same settings as the floating button, which is
+// hidden on pages with a save bar at the bottom.
 export function AccountSheet({ open, onClose, user, pushKey }: { open: boolean; onClose: () => void; user: ShellUser; pushKey: string | null }) {
+  const [a11y, setA11y] = useState(false);
   return (
+    <>
     <Sheet
       open={open}
       onClose={onClose}
@@ -44,6 +50,21 @@ export function AccountSheet({ open, onClose, user, pushKey }: { open: boolean; 
       <div className="rounded-card border border-border">
         <PushToggle publicKey={pushKey} className="border-b border-border last:border-b-0" />
         <ul className="p-1">
+          <li>
+            <button
+              type="button"
+              className={ROW}
+              aria-haspopup="dialog"
+              onClick={() => {
+                onClose();
+                setA11y(true);
+              }}
+            >
+              <Accessibility aria-hidden />
+              <span className="flex-1 text-left">Accessibilité</span>
+              <ChevronRight className="size-4 text-muted" aria-hidden />
+            </button>
+          </li>
           <InstallEntry className={ROW} />
           <li>
             <Link href="/espace/preferences" onClick={onClose} className={ROW}>
@@ -69,5 +90,7 @@ export function AccountSheet({ open, onClose, user, pushKey }: { open: boolean; 
         </SignOutButton>
       </div>
     </Sheet>
+    <AccessibilityPanel open={a11y} onClose={() => setA11y(false)} />
+    </>
   );
 }

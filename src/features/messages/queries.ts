@@ -83,7 +83,7 @@ export async function listConversations(user: User) {
     orderBy: { updatedAt: "desc" },
     take: 100,
     include: {
-      participants: { select: { userId: true, lastReadAt: true, user: { select: { firstName: true, lastName: true, role: { select: { name: true } } } } } },
+      participants: { select: { userId: true, lastReadAt: true, user: { select: { firstName: true, lastName: true, gender: true, role: { select: { name: true } } } } } },
       messages: { orderBy: { createdAt: "desc" }, take: 1, select: { body: true, createdAt: true, senderId: true } },
     },
   });
@@ -94,7 +94,7 @@ export async function getThread(user: User, id: string) {
   return db.conversation.findFirst({
     where: { id, participants: { some: { userId: user.id } } },
     include: {
-      participants: { select: { userId: true, lastReadAt: true, user: { select: { firstName: true, lastName: true, role: { select: { name: true } }, school: { select: { name: true } } } } } },
+      participants: { select: { userId: true, lastReadAt: true, user: { select: { firstName: true, lastName: true, gender: true, role: { select: { name: true } }, school: { select: { name: true } } } } } },
       messages: {
         orderBy: { createdAt: "desc" },
         take: 200,
