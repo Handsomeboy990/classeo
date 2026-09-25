@@ -5,6 +5,7 @@ import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { cache } from "react";
 
+import { cached, tags } from "@/lib/cache";
 import { db } from "@/lib/db";
 
 import type { PermissionCode } from "./permissions";
@@ -70,8 +71,20 @@ export function clientIp(h: Headers) {
   return h.get("x-forwarded-for")?.split(",")[0]?.trim() || h.get("x-real-ip") || "unknown";
 }
 
+// A role's permissions change only through the rights matrix, which
+// invalidates tags.roles. Caching them avoids reading about eighty rows on
+// every request.
+const rolePermissions = cached(
+  async (roleId: string) => {
+    const rows = await db.rolePermission.findMany({ where: { roleId }, select: { permission: { select: { code: true } } } });
+    return rows.map((r) => r.permission.code);
+  },
+  ["role-permissions"],
+  { tags: [tags.roles], revalidate: 3600 },
+);
+
 const userInclude = {
-  role: { include: { permissions: { include: { permission: true } } } },
+  role: { select: { id: true, code: true, name: true } },
   school: { select: { id: true, name: true, communeId: true, commune: { select: { departmentId: true } } } },
   commune: { select: { id: true, name: true, departmentId: true } },
   department: { select: { id: true, name: true } },
@@ -98,7 +111,7 @@ async function loadUser(sessionId: string) {
     fullName: `${u.firstName} ${u.lastName}`,
     mustChangePassword: u.mustChangePassword,
     role: { id: u.role.id, code: u.role.code, name: u.role.name },
-    permissions: new Set(u.role.permissions.map((rp) => rp.permission.code as PermissionCode)),
+    permissions: new Set((await rolePermissions(u.role.id)) as PermissionCode[]),
     scope: {
       level: u.scopeLevel,
       departmentId: u.departmentId ?? u.commune?.departmentId ?? u.school?.commune.departmentId ?? null,
