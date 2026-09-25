@@ -8,44 +8,62 @@ import { Button } from "@/components/ui/button";
 
 export type MailStatus = "sent" | "skipped" | "failed";
 
-export type IssuedPassword = { email: string; password: string; mail?: MailStatus };
+export type IssuedPassword = { username: string; email?: string | null; password: string; mail?: MailStatus };
 
 const MAIL_LINE: Record<MailStatus, string> = {
-  sent: "Ces informations ont été envoyées par e-mail à cette adresse.",
-  skipped: "Aucun e-mail envoyé : l'envoi d'e-mails n'est pas configuré sur ce serveur. Transmettez ces informations vous-même.",
+  sent: "Ces informations ont aussi été envoyées à l'adresse e-mail du compte.",
+  skipped: "Aucun e-mail envoyé : le compte n'a pas d'adresse, ou l'envoi n'est pas configuré. Transmettez ces informations vous-même.",
   failed: "L'e-mail n'a pas pu être envoyé. Transmettez ces informations vous-même.",
 };
 
-// Shown once, right after the server generated it. It is not stored in clear
-// anywhere and cannot be displayed again.
-export function TemporaryPassword({ email, password, mail, onDone }: IssuedPassword & { onDone: () => void }) {
+function CopyButton({ value, label }: { value: string; label: string }) {
   const [copied, setCopied] = useState(false);
   async function copy() {
     try {
-      await navigator.clipboard.writeText(password);
+      await navigator.clipboard.writeText(value);
       setCopied(true);
     } catch {
       setCopied(false);
     }
   }
   return (
+    <Button type="button" variant="ghost" size="sm" onClick={copy} aria-label={label}>
+      {copied ? <Check aria-hidden /> : <Copy aria-hidden />}
+      {copied ? "Copié" : "Copier"}
+    </Button>
+  );
+}
+
+// Shown once, right after the server generated it. It is not stored in clear
+// anywhere and cannot be displayed again. The identifier comes first: it is
+// what the person types to sign in, e-mail or not.
+export function TemporaryPassword({ username, email, password, mail, onDone }: IssuedPassword & { onDone: () => void }) {
+  return (
     <div className="flex flex-col gap-4">
       <Alert tone="warning" title="Mot de passe temporaire, affiché une seule fois">
-        Sans e-mail reçu, transmettez-le à la personne en main propre ou par téléphone. Elle devra le changer à sa première connexion.
+        Transmettez l&apos;identifiant et le mot de passe à la personne, en main propre ou par téléphone. Elle devra choisir son propre mot de passe à sa première connexion.
       </Alert>
-      <dl className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-4 gap-y-2 text-sm">
-        <dt className="text-muted">Compte</dt>
-        <dd className="font-semibold break-all">{email}</dd>
+      <dl className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-4 gap-y-3 text-sm">
+        <dt className="text-muted">Identifiant</dt>
+        <dd className="flex flex-wrap items-center gap-2">
+          <code className="rounded-md bg-primary-soft px-2 py-1 font-mono text-base font-semibold break-all" data-testid="issued-username">
+            {username}
+          </code>
+          <CopyButton value={username} label="Copier l'identifiant" />
+        </dd>
         <dt className="text-muted">Mot de passe</dt>
         <dd className="flex flex-wrap items-center gap-2">
           <code className="rounded-md bg-surface-2 px-2 py-1 font-mono text-base tracking-wider" data-testid="temporary-password">
             {password}
           </code>
-          <Button type="button" variant="ghost" size="sm" onClick={copy} aria-label="Copier le mot de passe">
-            {copied ? <Check aria-hidden /> : <Copy aria-hidden />}
-            {copied ? "Copié" : "Copier"}
-          </Button>
+          <CopyButton value={password} label="Copier le mot de passe" />
         </dd>
+        {email && (
+          <>
+            <dt className="text-muted">E-mail</dt>
+            <dd className="break-all">{email}</dd>
+          </>
+        )}
       </dl>
       {mail && (
         <p className="flex items-start gap-2 text-sm text-muted" data-testid="mail-status" data-status={mail}>
@@ -55,7 +73,7 @@ export function TemporaryPassword({ email, password, mail, onDone }: IssuedPassw
       )}
       <div className="ds-dialog-actions">
         <Button type="button" onClick={onDone}>
-          J&apos;ai transmis le mot de passe
+          J&apos;ai transmis ces informations
         </Button>
       </div>
     </div>

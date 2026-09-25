@@ -1,25 +1,44 @@
 "use client";
 
-import { KeyRound, LogOut, Power, PowerOff } from "lucide-react";
+import { KeyRound, LogOut, Power, PowerOff, UserCog } from "lucide-react";
 import { useState, type ReactNode } from "react";
 
 import { ActionForm, SubmitButton } from "@/components/kit/action-form";
 import { ConfirmAction } from "@/components/kit/confirm-action";
+import { FormDialog } from "@/components/kit/form-dialog";
+import { FormField } from "@/components/kit/form-field";
+import { Select } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 
-import { resetUserPassword, revokeUserSessions, setUserActive } from "../actions";
+import { changeUserRole, resetUserPassword, revokeUserSessions, setUserActive } from "../actions";
 import { TemporaryPassword, type IssuedPassword } from "./temporary-password";
 
 // Row actions of the accounts table. In the table (from 40rem) they are
 // icon buttons on one line, each naming itself in a label shown on hover
 // and on keyboard focus; on a phone card they share the width of the card,
 // each with its short label under the icon.
-export function UserRowActions({ id, name, isActive, sessions }: { id: string; name: string; isActive: boolean; sessions: number }) {
+export function UserRowActions({
+  id,
+  name,
+  isActive,
+  sessions,
+  roleId,
+  roles,
+}: {
+  id: string;
+  name: string;
+  isActive: boolean;
+  sessions: number;
+  roleId: string;
+  // Roles of the same level the viewer may give to this account.
+  roles: { id: string; name: string }[];
+}) {
   return (
     <div className="grid w-full auto-cols-fr grid-flow-col gap-1.5 sm:flex sm:w-auto sm:justify-end sm:gap-1">
       <ResetPassword id={id} name={name} />
+      {roles.some((r) => r.id !== roleId) && <ChangeRole id={id} name={name} roleId={roleId} roles={roles} />}
       {sessions > 0 && (
         <ConfirmAction
           action={revokeUserSessions}
@@ -124,5 +143,41 @@ function ResetPassword({ id, name }: { id: string; name: string }) {
         )}
       </Dialog>
     </>
+  );
+}
+
+function ChangeRole({ id, name, roleId, roles }: { id: string; name: string; roleId: string; roles: { id: string; name: string }[] }) {
+  return (
+    <span className="group/tip relative flex sm:inline-flex">
+      <FormDialog
+        action={changeUserRole}
+        title={`Changer le rôle de ${name}`}
+        description="Seuls les rôles du même niveau que vous pouvez attribuer sont proposés. Le périmètre du compte ne change pas."
+        submitLabel="Changer le rôle"
+        triggerVariant="ghost"
+        triggerSize="sm"
+        triggerLabel={`Changer le rôle de ${name}`}
+        triggerClassName="max-sm:h-auto max-sm:min-h-11 max-sm:w-full max-sm:flex-col max-sm:gap-1 max-sm:px-1 max-sm:py-2 max-sm:text-xs sm:w-9 sm:px-0"
+        trigger={
+          <>
+            <UserCog aria-hidden />
+            <span className="sm:hidden" aria-hidden>
+              Rôle
+            </span>
+          </>
+        }
+      >
+        <input type="hidden" name="id" value={id} />
+        <FormField label="Nouveau rôle" name="roleId" required>
+          <Select defaultValue={roleId}>
+            {roles.map((r) => (
+              <option key={r.id} value={r.id}>
+                {r.name}
+              </option>
+            ))}
+          </Select>
+        </FormField>
+      </FormDialog>
+    </span>
   );
 }

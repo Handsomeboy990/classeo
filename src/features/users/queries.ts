@@ -7,6 +7,8 @@ import { db } from "@/lib/db";
 import { canAssignRole, type ScopeLevel } from "@/lib/domain/rights";
 import { param, type SearchParams } from "@/lib/list";
 
+import { roleVisibleWhere } from "../roles/queries";
+
 type User = NonNullable<CurrentUser>;
 
 // Accounts a user may see: those attached to an entity inside their
@@ -45,6 +47,7 @@ function listWhere(user: User, f: UserFilters): Prisma.UserWhereInput {
   if (f.q)
     and.push({
       OR: [
+        { username: { contains: f.q, mode: "insensitive" } },
         { email: { contains: f.q, mode: "insensitive" } },
         { lastName: { contains: f.q, mode: "insensitive" } },
         { firstName: { contains: f.q, mode: "insensitive" } },
@@ -59,6 +62,7 @@ function listWhere(user: User, f: UserFilters): Prisma.UserWhereInput {
 export function userListSelect(now: Date) {
   return {
     id: true,
+    username: true,
     email: true,
     firstName: true,
     lastName: true,
@@ -68,6 +72,9 @@ export function userListSelect(now: Date) {
     lastLoginAt: true,
     lockedUntil: true,
     scopeLevel: true,
+    schoolId: true,
+    communeId: true,
+    departmentId: true,
     createdAt: true,
     role: { select: { id: true, name: true, code: true, scopeLevel: true, permissions: { select: { permission: { select: { code: true } } } } } },
     department: { select: { name: true } },
@@ -104,20 +111,31 @@ export function actorOf(user: User) {
 }
 
 // Roles the user may hand out: the anti escalation rule, and never a family
-// role (parents and students are created with their student record).
+// role (parents and students are created with their student record). Only
+// the national roles and the roles of the user's own entity are offered; a
+// role owned by an entity only goes to accounts inside it (ownerEntityId).
 export async function assignableRoles(user: User) {
   const roles = await db.role.findMany({
-    where: { scopeLevel: { not: "SELF" } },
-    select: { id: true, code: true, name: true, scopeLevel: true, permissions: { select: { permission: { select: { code: true } } } } },
+    where: { AND: [{ scopeLevel: { not: "SELF" } }, roleVisibleWhere(user)] },
+    select: {
+      id: true,
+      code: true,
+      name: true,
+      scopeLevel: true,
+      ownerSchoolId: true,
+      ownerCommuneId: true,
+      ownerDepartmentId: true,
+      permissions: { select: { permission: { select: { code: true } } } },
+    },
     orderBy: { name: "asc" },
   });
   return roles
     .filter((r) => canAssignRole(actorOf(user), { scopeLevel: r.scopeLevel, permissions: r.permissions.map((p) => p.permission.code) }).ok)
-    .map((r) => ({ id: r.id, code: r.code, name: r.name, scopeLevel: r.scopeLevel }));
+    .map((r) => ({ id: r.id, code: r.code, name: r.name, scopeLevel: r.scopeLevel, ownerEntityId: r.ownerSchoolId ?? r.ownerCommuneId ?? r.ownerDepartmentId ?? null }));
 }
 
-export function roleFilterOptions() {
-  return db.role.findMany({ select: { id: true, name: true }, orderBy: { name: "asc" } });
+export function roleFilterOptions(user: User) {
+  return db.role.findMany({ where: roleVisibleWhere(user), select: { id: true, name: true }, orderBy: { name: "asc" } });
 }
 
 // Entities of the user's territory, for the scope select of the create form.
