@@ -1,7 +1,9 @@
 export { ActionForm, SubmitButton, useFormState } from "./action-form";
 export { BarChart } from "./bar-chart";
 export { ConfirmAction } from "./confirm-action";
+export { ConfirmButton } from "./confirm-button";
 export { DataTable, type Column } from "./data-table";
+export { FormDialog, useCloseDialog } from "./form-dialog";
 export { FormField } from "./form-field";
 export { AverageLevel } from "./level";
 export { PageHeader } from "./page-header";
