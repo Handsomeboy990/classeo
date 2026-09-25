@@ -49,12 +49,12 @@ export function passwordField(page: Page) {
   return page.locator("input[name=password]");
 }
 
-// The main menu. Below the desktop breakpoint it lives in a drawer opened
-// from the header.
+// The main menu. Below the desktop breakpoint it lives in a sheet opened
+// from the "Menu" tab of the bottom tab bar.
 export async function mainMenu(page: Page): Promise<Locator> {
   const width = page.viewportSize()?.width ?? 1366;
   if (width < 1024) {
-    await page.getByRole("button", { name: "Ouvrir le menu" }).click();
+    await page.getByRole("navigation", { name: "Navigation rapide" }).getByRole("button", { name: "Menu", exact: true }).click();
     const drawer = page.getByRole("dialog", { name: "Menu" });
     await expect(drawer).toBeVisible();
     return drawer.getByRole("navigation", { name: "Menu principal" });
