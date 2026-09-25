@@ -2,7 +2,7 @@
 // tested, and shared with the HTML print views.
 
 import { amountInWords } from "@/lib/domain/payments";
-import { formatFcfa } from "@/lib/utils";
+import { formatClock, formatFcfa } from "@/lib/utils";
 
 export const BENIN_TIME_ZONE = "Africa/Porto-Novo";
 
@@ -38,8 +38,7 @@ export function beninDate(d: Date): string {
 
 // "25 septembre 2026 à 14 h 05", the French typographic form of a time.
 export function beninDateTime(d: Date): string {
-  const [h, m] = timeFmt.format(d).split(":");
-  return `${beninDate(d)} à ${h} h ${m}`;
+  return `${beninDate(d)} à ${formatClock(timeFmt.format(d))}`;
 }
 
 // A calendar day stored at midnight UTC (birth date, due date, attendance
@@ -114,10 +113,11 @@ export function officialName(lastName: string, firstName: string): string {
   return `${lastName.toLocaleUpperCase("fr-FR")} ${firstName}`;
 }
 
-// French ordinal of a rank with its tie marker: "1er", "2e ex".
+// French ordinal of a rank with its tie marker, written in full: "1er",
+// "12e ex æquo".
 export function ordinal(rank: number | null, tied = false): string {
   if (rank === null) return "–";
-  return `${rank}${rank === 1 ? "er" : "e"}${tied ? " ex" : ""}`;
+  return `${rank}${rank === 1 ? "er" : "e"}${tied ? " ex æquo" : ""}`;
 }
 
 // "2 h 30" for a lesson length in minutes.

@@ -6,6 +6,7 @@ import { scopedEnrollment, termGrades } from "@/features/family/queries";
 import { rosterClassroomWhere } from "@/lib/auth/scope";
 import { db } from "@/lib/db";
 import { isIsoDate, isoToDate, todayIso } from "@/lib/domain/attendance";
+import { sortByName } from "@/lib/utils";
 
 import type { AttendanceSheetData, CertificateData, ClassListData, TranscriptData } from "../documents/school";
 import type { PdfUser } from "../respond";
@@ -62,7 +63,6 @@ export async function loadClassList(user: PdfUser, classroomId: string) {
       school: { select: schoolSelect },
       enrollments: {
         where: { status: "ACTIVE" },
-        orderBy: [{ student: { lastName: "asc" } }, { student: { firstName: "asc" } }],
         select: {
           isRepeating: true,
           student: {
@@ -86,7 +86,8 @@ export async function loadClassList(user: PdfUser, classroomId: string) {
     yearLabel: c.academicYear.label,
     mainTeacher: c.mainTeacher ? `${c.mainTeacher.firstName} ${c.mainTeacher.lastName}` : null,
     showPhones,
-    students: c.enrollments.map((e) => {
+    // French alphabetical order, whatever the database collation.
+    students: sortByName(c.enrollments, (e) => e.student).map((e) => {
       const g = e.student.guardians?.[0]?.guardian;
       return {
         matricule: e.student.matricule,
@@ -121,7 +122,7 @@ export async function loadAttendanceSheet(user: PdfUser, classroomId: string, ra
     classroom: morning.classroom.name,
     date: isoToDate(date),
     yearLabel: c.academicYear.label,
-    rows: morning.rows.map((r) => {
+    rows: [...morning.rows].sort((a, b) => a.name.localeCompare(b.name, "fr", { sensitivity: "base" })).map((r) => {
       const a = pm.get(r.enrollmentId);
       return {
         name: r.name,
@@ -140,13 +141,21 @@ export async function loadCertificate(user: PdfUser, studentId: string) {
   if (!validId(studentId)) return null;
   const enrollment = await scopedEnrollment(user, studentId);
   if (!enrollment || enrollment.status !== "ACTIVE") return null;
-  const [school, student, director] = await Promise.all([
+  const [school, student, director, first] = await Promise.all([
     schoolOf(enrollment.schoolId),
     db.student.findUniqueOrThrow({ where: { id: enrollment.student.id }, select: { birthPlace: true } }),
+    // The head of the school signs: its active school director account.
     db.user.findFirst({
       where: { schoolId: enrollment.schoolId, isActive: true, role: { code: "SCHOOL_DIRECTOR" } },
       orderBy: { createdAt: "asc" },
-      select: { firstName: true, lastName: true },
+      select: { firstName: true, lastName: true, gender: true },
+    }),
+    // First enrollment of the student in this school: the start of the
+    // earliest school year spent there.
+    db.enrollment.findFirst({
+      where: { studentId: enrollment.student.id, schoolId: enrollment.schoolId },
+      orderBy: { academicYear: { startDate: "asc" } },
+      select: { academicYear: { select: { startDate: true } } },
     }),
   ]);
   const data: CertificateData = {
@@ -154,9 +163,9 @@ export async function loadCertificate(user: PdfUser, studentId: string) {
     classroom: enrollment.classroom.name,
     level: enrollment.classroom.level.name,
     yearLabel: enrollment.academicYear.label,
-    enrolledAt: enrollment.enrolledAt,
+    enrolledSince: first?.academicYear.startDate ?? enrollment.enrolledAt,
     school: { name: school.name, commune: school.commune.name },
-    director: director ? `${director.firstName} ${director.lastName}` : null,
+    director: director ? { name: `${director.firstName} ${director.lastName}`, gender: director.gender } : null,
   };
   return { enrollmentId: enrollment.id, data, schoolId: school.id, issuer: schoolIssuer(school) };
 }

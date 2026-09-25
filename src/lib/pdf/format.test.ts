@@ -45,7 +45,7 @@ describe("dates in Benin time", () => {
     // 23:30 UTC on 30 September is already 1 October in Cotonou.
     const d = new Date("2026-09-30T23:30:00Z");
     expect(beninDate(d)).toBe("1er octobre 2026");
-    expect(beninDateTime(d)).toBe("1er octobre 2026 à 00 h 30");
+    expect(beninDateTime(d)).toBe("1er octobre 2026 à 0 h 30");
     expect(beninDateTime(new Date("2026-09-25T13:05:00Z"))).toBe("25 septembre 2026 à 14 h 05");
   });
 
@@ -114,7 +114,7 @@ describe("small labels", () => {
 
   it("writes ranks and durations", () => {
     expect(ordinal(1)).toBe("1er");
-    expect(ordinal(2, true)).toBe("2e ex");
+    expect(ordinal(12, true)).toBe("12e ex æquo");
     expect(ordinal(null)).toBe("–");
     expect(duration(45)).toBe("45 min");
     expect(duration(120)).toBe("2 h");

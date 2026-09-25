@@ -3,7 +3,7 @@ import { View } from "@react-pdf/renderer";
 import { GENDER_LABELS } from "@/features/students/labels";
 import { ATTENDANCE_LABELS, type AttendanceStatusCode } from "@/lib/domain/attendance";
 import { mention } from "@/lib/domain/grades";
-import { formatAverage } from "@/lib/utils";
+import { formatAverage, plural } from "@/lib/utils";
 
 import { DataTable, Figure, InfoGrid, Notice, Signatures } from "../components";
 import { FONT_TITLE } from "../fonts";
@@ -55,7 +55,7 @@ function Transcript({ data, meta }: { data: TranscriptData; meta: DocumentMeta }
           { label: "Élève", value: officialName(s.lastName, s.firstName) },
           { label: "Matricule", value: s.matricule },
           { label: "Classe", value: data.classroom },
-          { label: "Né(e) le", value: calendarDate(s.birthDate) },
+          { label: s.gender === "F" ? "Née le" : "Né le", value: calendarDate(s.birthDate) },
           { label: "Période", value: `${data.periodName}, ${data.yearLabel}` },
           { label: "Sexe", value: GENDER_LABELS[s.gender] },
         ]}
@@ -137,7 +137,7 @@ function ClassList({ data, meta }: { data: ClassListData; meta: DocumentMeta }) 
           { label: "Classe", value: `${data.classroom} (${data.level})` },
           { label: "Année scolaire", value: data.yearLabel },
           { label: "Professeur principal", value: data.mainTeacher ?? "Non désigné" },
-          { label: "Effectif", value: `${data.students.length} : ${girls} filles, ${data.students.length - girls} garçons` },
+          { label: "Effectif", value: `${data.students.length} : ${plural(girls, "fille")}, ${plural(data.students.length - girls, "garçon")}` },
         ]}
       />
       <View style={{ marginTop: 12 }}>
@@ -147,7 +147,7 @@ function ClassList({ data, meta }: { data: ClassListData; meta: DocumentMeta }) 
             { header: "Nom et prénoms", flex: 3, render: (r) => <T style={{ fontSize: 9, fontWeight: 600 }}>{officialName(r.lastName, r.firstName)}{r.isRepeating ? <T style={{ fontWeight: 400, color: COLORS.muted }}> (R)</T> : null}</T> },
             { header: "Matricule", flex: 1.4, render: (r) => r.matricule },
             { header: "Sexe", width: 34, align: "center", render: (r) => r.gender },
-            { header: "Né(e) le", flex: 1.2, render: (r) => calendarShort(r.birthDate) },
+            { header: "Date de naissance", flex: 1.2, render: (r) => calendarShort(r.birthDate) },
             ...(data.showPhones
               ? [
                   {
@@ -217,7 +217,7 @@ function AttendanceSheet({ data, meta }: { data: AttendanceSheetData; meta: Docu
         items={[
           { label: "Classe", value: data.classroom },
           { label: "Date", value: calendarWeekday(data.date) },
-          { label: "Effectif", value: `${data.rows.length} élèves` },
+          { label: "Effectif", value: plural(data.rows.length, "élève") },
           { label: "Matin", value: summary("morning") },
           { label: "Après-midi", value: summary("afternoon") },
           { label: "Année scolaire", value: data.yearLabel },
@@ -267,21 +267,40 @@ export type CertificateData = {
   classroom: string;
   level: string;
   yearLabel: string;
-  enrolledAt: Date;
+  // First day of the earliest school year the student spent in this school.
+  enrolledSince: Date;
   school: { name: string; commune: string };
-  director: string | null;
+  // The active head of the school, who signs.
+  director: { name: string; gender: "F" | "M" | null } | null;
 };
 
 function Certificate({ data, meta }: { data: CertificateData; meta: DocumentMeta }) {
   const s = data.student;
   const she = s.gender === "F";
   const line = { fontSize: 11.5, lineHeight: 1.7 };
+  // The signer speaks in the first person when their gender is known
+  // ("Je soussignée", "directrice"); otherwise the school head attests.
+  const head = data.director;
+  const signer = head?.gender ? { ...head, woman: head.gender === "F" } : null;
+  const headTitle = signer ? (signer.woman ? "La directrice" : "Le directeur") : "Le chef d'établissement";
   return (
     <DocumentPage meta={meta}>
       <View style={{ marginTop: 28, paddingHorizontal: 18 }}>
         <T style={[line]}>
-          Je soussigné(e), {data.director ? <T style={{ fontWeight: 700 }}>{data.director}</T> : "le chef d'établissement"}, chef de l&apos;établissement{" "}
-          <T style={{ fontWeight: 700 }}>{data.school.name}</T>, atteste que :
+          {signer ? (
+            <>
+              {signer.woman ? "Je soussignée" : "Je soussigné"}, <T style={{ fontWeight: 700 }}>{signer.name}</T>, {signer.woman ? "directrice" : "directeur"} de
+              l&apos;établissement <T style={{ fontWeight: 700 }}>{data.school.name}</T>, atteste que :
+            </>
+          ) : head ? (
+            <>
+              <T style={{ fontWeight: 700 }}>{head.name}</T>, chef de l&apos;établissement <T style={{ fontWeight: 700 }}>{data.school.name}</T>, atteste que :
+            </>
+          ) : (
+            <>
+              Le chef de l&apos;établissement <T style={{ fontWeight: 700 }}>{data.school.name}</T> atteste que :
+            </>
+          )}
         </T>
         <View style={{ marginVertical: 18, marginHorizontal: 30, paddingVertical: 14, paddingHorizontal: 18, borderLeftWidth: 3, borderLeftColor: COLORS.primary, backgroundColor: COLORS.soft }}>
           <T style={{ fontFamily: FONT_TITLE, fontWeight: 700, fontSize: 17, color: COLORS.primaryDark }}>{officialName(s.lastName, s.firstName)}</T>
@@ -295,7 +314,8 @@ function Certificate({ data, meta }: { data: CertificateData; meta: DocumentMeta
         </View>
         <T style={[line]}>
           est régulièrement {she ? "inscrite" : "inscrit"} dans notre établissement en classe de <T style={{ fontWeight: 700 }}>{data.classroom}</T> ({data.level}) au titre de
-          l&apos;année scolaire <T style={{ fontWeight: 700 }}>{data.yearLabel}</T>, depuis le {calendarDate(data.enrolledAt)}.
+          l&apos;année scolaire <T style={{ fontWeight: 700 }}>{data.yearLabel}</T>. {she ? "Elle" : "Il"} y est {she ? "inscrite" : "inscrit"} depuis le{" "}
+          {calendarDate(data.enrolledSince)}.
         </T>
         <T style={[line, { marginTop: 12 }]}>En foi de quoi, la présente attestation lui est délivrée pour servir et valoir ce que de droit.</T>
         <View style={{ marginTop: 28, alignItems: "flex-end" }} wrap={false}>
@@ -303,7 +323,7 @@ function Certificate({ data, meta }: { data: CertificateData; meta: DocumentMeta
             Fait à {data.school.commune}, le {beninDate(meta.generatedAt)}
           </T>
           <View style={{ width: 230, marginTop: 4 }}>
-            <Signatures items={[{ role: "Le chef d'établissement", name: data.director, stamp: true }]} />
+            <Signatures items={[{ role: headTitle, name: head?.name ?? null, stamp: true }]} />
           </View>
         </View>
       </View>
