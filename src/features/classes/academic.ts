@@ -42,7 +42,7 @@ export function isUniqueViolation(error: unknown) {
 // zod helpers for form data
 // ---------------------------------------------------------------------------
 
-export const id = z.string().trim().min(1, "Champ obligatoire.").max(64);
+export const id = z.string({ error: "Champ obligatoire." }).trim().min(1, "Champ obligatoire.").max(64);
 
 export const optionalId = z
   .string()
@@ -59,7 +59,7 @@ export const optionalText = (max = 120) =>
     .optional()
     .transform((v) => v || null);
 
-export const requiredText = (max = 80) => z.string().trim().min(1, "Champ obligatoire.").max(max, `${max} caractères au maximum.`);
+export const requiredText = (max = 80) => z.string({ error: "Champ obligatoire." }).trim().min(1, "Champ obligatoire.").max(max, `${max} caractères au maximum.`);
 
 export const checkbox = z
   .union([z.literal("on"), z.literal("true"), z.literal("false"), z.boolean()])

@@ -5,6 +5,7 @@ import { useState, type ComponentProps, type ReactNode } from "react";
 import { ActionForm, SubmitButton } from "@/components/kit/action-form";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
+import { FocusFirstInvalid } from "./focus-invalid";
 import type { ActionState } from "@/lib/action";
 
 // A button that opens a form in a native dialog. The dialog closes on
@@ -41,7 +42,10 @@ export function FormDialog({
         {trigger}
       </Button>
       <Dialog open={open} onClose={() => setOpen(false)} title={title} description={description} className={wide ? "max-w-2xl" : undefined}>
-        <ActionForm action={action} onSuccess={() => setOpen(false)} className="flex flex-col gap-4">
+        {/* React resets a form after its action returns, even on a validation
+            failure; cancelling the reset keeps what the user typed. */}
+        <ActionForm action={action} onSuccess={() => setOpen(false)} onReset={(e) => e.preventDefault()} className="flex flex-col gap-4">
+          <FocusFirstInvalid />
           {children}
           <div className="flex justify-end gap-2 border-t border-border pt-4">
             <Button type="button" variant="secondary" onClick={() => setOpen(false)}>
