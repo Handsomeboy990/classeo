@@ -16,6 +16,8 @@ Tailwind CSS 4, Prisma 7 with PostgreSQL (Neon in production), Vitest,
 Playwright, Docker.
 
 Architecture and decisions: [docs/architecture.md](docs/architecture.md).
+Security controls and audit: [docs/security.md](docs/security.md).
+Roadmap: [docs/roadmap.md](docs/roadmap.md).
 
 ## Run it
 
@@ -69,8 +71,10 @@ fills the form in one click.
 | `npm run typecheck` | route types and TypeScript |
 | `npm run lint` | ESLint |
 | `npm test` | unit tests |
+| `npm run test:e2e` | end to end tests (Playwright, needs a built app and a seeded database) |
 | `npm run db:seed` | seed an empty database |
 | `npm run db:reset` | wipe and reseed (destroys all data) |
+| `npm run db:sync-roles` | add missing default permissions to an existing database |
 
 ## Project layout
 
