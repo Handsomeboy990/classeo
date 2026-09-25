@@ -10,11 +10,7 @@ import { DomainError } from "@/lib/errors";
 // school and the academic year of the row it writes, after its scoped query
 // found that row.
 export async function assertWritable({ schoolId, academicYearId, now = new Date() }: { schoolId: string | null | undefined; academicYearId?: string | null; now?: Date }) {
-  if (schoolId) {
-    const school = await db.school.findUnique({ where: { id: schoolId }, select: { status: true, statusReason: true } });
-    if (school?.status === "SUSPENDED") throw new DomainError(`Établissement suspendu : aucune modification n'est possible.${school.statusReason ? ` Motif : ${school.statusReason}` : ""}`);
-    if (school?.status === "CLOSED") throw new DomainError("Établissement fermé : aucune modification n'est possible.");
-  }
+  if (schoolId) await assertSchoolWritable(schoolId);
   const year = academicYearId
     ? await db.academicYear.findUnique({ where: { id: academicYearId }, select: { id: true, endDate: true, closedAt: true, label: true } })
     : await db.academicYear.findFirst({ where: { isActive: true }, select: { id: true, endDate: true, closedAt: true, label: true } });
@@ -24,6 +20,14 @@ export async function assertWritable({ schoolId, academicYearId, now = new Date(
     where: { academicYearId: year.id, status: "ACTIVE", until: { gte: now }, OR: [{ schoolId: null }, ...(schoolId ? [{ schoolId }] : [])] },
   });
   if (!extension) throw new DomainError(`L'année scolaire ${year.label} est close : elle se consulte mais ne se modifie plus, sauf prolongation accordée par le ministère.`);
+}
+
+// For writes that belong to no school year (the school's own profile, its
+// payment accounts): only the school status matters.
+export async function assertSchoolWritable(schoolId: string) {
+  const school = await db.school.findUnique({ where: { id: schoolId }, select: { status: true, statusReason: true } });
+  if (school?.status === "SUSPENDED") throw new DomainError(`Établissement suspendu : aucune modification n'est possible.${school.statusReason ? ` Motif : ${school.statusReason}` : ""}`);
+  if (school?.status === "CLOSED") throw new DomainError("Établissement fermé : aucune modification n'est possible.");
 }
 
 const DAY_MS = 86_400_000;
