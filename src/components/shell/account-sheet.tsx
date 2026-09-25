@@ -1,6 +1,6 @@
 "use client";
 
-import { Accessibility, BookOpen, ChevronRight, LogOut, MapPin, Settings2 } from "lucide-react";
+import { Accessibility, BookOpen, ChevronRight, LogOut, Settings2 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -40,7 +40,6 @@ export function AccountSheet({ open, onClose, user, pushKey }: { open: boolean; 
       }
     >
       <p className="flex items-center gap-1.5 px-1 pt-1 pb-4 text-sm text-muted">
-        <MapPin className="size-4 shrink-0" aria-hidden />
         <span className="sr-only">Périmètre :</span>
         <span className="truncate">{user.scopeLabel}</span>
         <span aria-hidden>·</span>

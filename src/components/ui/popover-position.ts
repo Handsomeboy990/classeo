@@ -13,11 +13,11 @@ export function supportsPopover() {
 const GAP = 6;
 const MARGIN = 8;
 
-type PanelOptions = { matchWidth?: boolean; minWidth?: number; preferredHeight?: number };
+export type PanelOptions = { matchWidth?: boolean; minWidth?: number; preferredHeight?: number; align?: "start" | "end" };
 
 // Under the anchor, or above it when there is more room there, never wider
 // than the window.
-function place(anchor: HTMLElement, panel: HTMLElement, { matchWidth = true, minWidth = 0, preferredHeight = 320 }: PanelOptions) {
+export function place(anchor: HTMLElement, panel: HTMLElement, { matchWidth = true, minWidth = 0, preferredHeight = 320, align = "start" }: PanelOptions) {
   const r = anchor.getBoundingClientRect();
   const vv = window.visualViewport;
   const vh = vv ? vv.height + vv.offsetTop : window.innerHeight;
@@ -27,7 +27,7 @@ function place(anchor: HTMLElement, panel: HTMLElement, { matchWidth = true, min
   const up = below < Math.min(preferredHeight, 220) && above > below;
   const room = Math.max(120, up ? above : below);
   const width = Math.min(vw - MARGIN * 2, Math.max(matchWidth ? r.width : 0, minWidth));
-  const left = Math.min(Math.max(MARGIN, r.left), vw - MARGIN - width);
+  const left = Math.min(Math.max(MARGIN, align === "end" ? r.right - width : r.left), vw - MARGIN - width);
   const s = panel.style;
   s.setProperty("--panel-max-h", `${Math.min(room, preferredHeight)}px`);
   s.width = `${width}px`;
@@ -46,14 +46,14 @@ function toggle(panel: HTMLElement, open: boolean) {
 // Shows the panel while open and keeps it placed through scrolls, resizes
 // and the phone keyboard (visual viewport).
 export function useAnchoredPanel(open: boolean, anchor: RefObject<HTMLElement | null>, panel: RefObject<HTMLElement | null>, opts: PanelOptions = {}) {
-  const { matchWidth, minWidth, preferredHeight } = opts;
+  const { matchWidth, minWidth, preferredHeight, align } = opts;
   useLayoutEffect(() => {
     const a = anchor.current;
     const p = panel.current;
     if (!a || !p) return;
     toggle(p, open);
     if (!open) return;
-    const update = () => place(a, p, { matchWidth, minWidth, preferredHeight });
+    const update = () => place(a, p, { matchWidth, minWidth, preferredHeight, align });
     update();
     window.addEventListener("scroll", update, true);
     window.addEventListener("resize", update);
@@ -63,7 +63,7 @@ export function useAnchoredPanel(open: boolean, anchor: RefObject<HTMLElement | 
       window.removeEventListener("resize", update);
       window.visualViewport?.removeEventListener("resize", update);
     };
-  }, [open, anchor, panel, matchWidth, minWidth, preferredHeight]);
+  }, [open, anchor, panel, matchWidth, minWidth, preferredHeight, align]);
 }
 
 // Accents and case do not matter when searching: "eleve" finds "Élève".

@@ -1189,10 +1189,6 @@ html[data-lite="on"] img[data-decorative] {
   .app-main {
     padding-bottom: calc(var(--fab-size) + 3rem);
   }
-  /* Private space: the button sits in the header, nothing floats. */
-  body:has([data-a11y-docked]) .app-main {
-    padding-bottom: 3rem;
-  }
 }
 
 /*
@@ -1242,36 +1238,57 @@ div.overflow-x-auto:has(> table) {
 }
 
 /*
- * Accessibility button: bottom right, discreet (surface colour, hairline
- * border, soft shadow), above the tab bar on phones. It never covers an
- * action:
- * - a page with a save bar stuck to the bottom (grades, attendance, rights:
- *   marked data-action-bar) hides it on phones; the account sheet and the
- *   Menu sheet carry the same entry;
- * - in the private space on a large screen it is docked in the header
- *   (data-a11y-docked), so no gutter has to be kept free beside tables.
+ * Accessibility button (shell/accessibility-fab.tsx): bottom right on every
+ * screen, discreet (surface colour, hairline border, soft shadow), above the
+ * tab bar on phones. It never covers an action:
+ * - the shell keeps room for it at the end of the page (.app-main);
+ * - while the page scrolls it slides into a small tab on the right edge
+ *   (data-edge): transform only, 220 ms, nothing to wait for; it stays
+ *   clickable there and comes back when the scroll stops or on focus;
+ * - a page with an action bar stuck to the bottom (grades, attendance,
+ *   rights: data-action-bar) hides it; the Menu and account sheets carry
+ *   the same settings.
+ * Reduced motion: it moves without animation.
  */
 .a11y-fab {
   position: fixed;
   z-index: 30;
   right: max(1rem, env(safe-area-inset-right));
   bottom: max(1rem, env(safe-area-inset-bottom));
+  transition:
+    transform 220ms var(--ease-emphasis),
+    border-radius 220ms var(--ease-emphasis),
+    background-color var(--duration-fast) ease;
+}
+.a11y-fab[data-edge]:not(:focus-visible) {
+  /* Only a 1.25rem sliver stays in view, against the edge of the screen. */
+  transform: translateX(calc(100% + max(1rem, env(safe-area-inset-right)) - 1.25rem));
+  border-radius: 999px 0.5rem 0.5rem 999px;
+}
+.a11y-fab[data-edge]:not(:focus-visible) svg {
+  transform: translateX(-0.9rem) scale(0.8);
+}
+.a11y-fab svg {
+  transition: transform 220ms var(--ease-emphasis);
+}
+body:has([data-action-bar]) .a11y-fab {
+  display: none;
+}
+.a11y-panel {
+  max-width: calc(100vw - 1rem);
 }
 @media (min-width: 64rem) {
   .a11y-fab {
     right: 1.5rem;
     bottom: 1.5rem;
   }
-  body:has([data-a11y-docked]) .a11y-fab {
-    display: none;
+  .a11y-fab[data-edge]:not(:focus-visible) {
+    transform: translateX(calc(100% + 1.5rem - 1.25rem));
   }
 }
 @media (max-width: 63.999rem) {
   body:has([data-tab-bar]) .a11y-fab {
     bottom: calc(var(--tab-bar-space) + 0.75rem);
-  }
-  body:has([data-action-bar]) .a11y-fab {
-    display: none;
   }
   /* Toasts rise above the tab bar instead of covering it. */
   body:has([data-tab-bar]) div.fixed.bottom-4:has(> .contents[aria-live]) {
@@ -1665,4 +1682,194 @@ dialog.sheet[data-closing]::backdrop {
   .ds-level-steps > span[data-on] {
     background: CanvasText;
   }
+}
+
+/*
+ * Top bar panels (shell/header-popover.tsx) and notification badges.
+ * Badges: a count on the danger tone with a ring of the surface around it,
+ * so it reads on the icon it sits on; in the sidebar the ring takes the
+ * sidebar colour. The bell swings once when something new arrives (700 ms,
+ * transform only); reduced motion keeps it still.
+ */
+.ds-header-panel {
+  border-color: var(--border);
+}
+.nav-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  padding-inline: 0.3125rem;
+  border-radius: 999px;
+  background: var(--danger);
+  color: var(--on-danger);
+  box-shadow: 0 0 0 2px var(--surface);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+.bg-sidebar .nav-badge {
+  box-shadow: none;
+}
+.nav-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 999px;
+  background: var(--danger);
+  box-shadow: 0 0 0 2px var(--surface);
+}
+[data-contrast="high"] .nav-badge,
+[data-contrast="high"] .nav-dot {
+  outline: 1.5px solid var(--text);
+}
+.bell-ring {
+  transform-origin: 50% 8%;
+  animation: bell-ring 700ms var(--ease-emphasis);
+}
+.badge-pop {
+  animation: badge-pop 320ms var(--ease-emphasis);
+}
+@keyframes bell-ring {
+  15% {
+    transform: rotate(14deg);
+  }
+  35% {
+    transform: rotate(-11deg);
+  }
+  55% {
+    transform: rotate(7deg);
+  }
+  75% {
+    transform: rotate(-4deg);
+  }
+}
+@keyframes badge-pop {
+  from {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bell-ring,
+  .badge-pop {
+    animation: none;
+  }
+}
+
+/*
+ * Announcement band (shell/news-ticker.tsx), under the top bar: deep green
+ * with the flag yellow label, light text (12:1). The track holds the list
+ * twice and moves by half its width, linear, so the loop has no seam; it
+ * stops on hover, on keyboard focus and with the pause button. Reduced
+ * motion never animates it (the component then shows one item at a time).
+ */
+.ticker {
+  display: flex;
+  align-items: center;
+  min-height: 2.5rem;
+  background: var(--sidebar);
+  color: var(--sidebar-text);
+  font-size: 0.9375rem;
+}
+.ticker-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  align-self: stretch;
+  flex-shrink: 0;
+  padding-inline: 0.75rem 1rem;
+  background: var(--accent);
+  color: #1a1d1a;
+  font-family: var(--font-body), system-ui, sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 0.5rem) 100%, 0 100%);
+}
+.ticker-viewport {
+  position: relative;
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+  padding-inline: 0.75rem;
+  mask-image: linear-gradient(90deg, transparent, #000 1.25rem, #000 calc(100% - 1.25rem), transparent);
+}
+.ticker-track {
+  display: flex;
+  width: max-content;
+  animation: ticker-loop 40s linear infinite;
+}
+.ticker-viewport:is(:hover, :focus-within, [data-paused]) .ticker-track {
+  animation-play-state: paused;
+}
+.ticker-list {
+  display: flex;
+  flex-shrink: 0;
+}
+.ticker-list > li {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}
+.ticker-list > li::after {
+  content: "";
+  width: 0.375rem;
+  height: 0.375rem;
+  margin-inline: 1.5rem;
+  border-radius: 999px;
+  background: var(--accent);
+}
+.ticker-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.5rem;
+  color: inherit;
+}
+.ticker-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.ticker-link:focus-visible {
+  outline-color: var(--accent);
+  outline-offset: -3px;
+}
+.ticker-summary {
+  color: var(--sidebar-muted);
+}
+.ticker-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 999px;
+  color: var(--sidebar-text);
+}
+.ticker-btn:hover {
+  background: var(--sidebar-hover);
+}
+.ticker :focus-visible {
+  outline-color: var(--accent);
+}
+@media (max-width: 39.999rem) {
+  .ticker-summary {
+    display: none;
+  }
+}
+@keyframes ticker-loop {
+  to {
+    transform: translateX(-50%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ticker-track {
+    animation: none;
+  }
+}
+[data-contrast="high"] .ticker {
+  border-block: 2px solid var(--text);
 }
