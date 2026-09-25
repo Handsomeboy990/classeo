@@ -9,6 +9,8 @@ test.describe("password help without e-mail", () => {
   test.use({ storageState: authFile("directeur") });
 
   test("a staff member asks, the school head resets, the person signs in", async ({ page, browser }) => {
+    // A long journey across two browsers, with three password hashes.
+    test.slow();
     // The school head creates an account without e-mail: the identifier is
     // shown with the temporary password.
     const last = `Essai${uniqueSuffix().replace(/[^a-z]/g, "")}`;
