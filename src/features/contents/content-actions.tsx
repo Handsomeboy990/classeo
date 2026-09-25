@@ -17,7 +17,7 @@ export function ContentActions({
   canEdit,
   canPublish,
   canDelete,
-  afterDelete,
+  returnTo,
 }: {
   id: string;
   title: string;
@@ -25,7 +25,8 @@ export function ContentActions({
   canEdit: boolean;
   canPublish: boolean;
   canDelete: boolean;
-  afterDelete?: "/espace/contenus";
+  // List URL to come back to after a deletion, filters included.
+  returnTo: string;
 }) {
   return (
     <div className="flex flex-wrap items-center gap-2">
@@ -60,7 +61,7 @@ export function ContentActions({
       {canDelete && (
         <ConfirmAction
           action={deleteContent}
-          fields={afterDelete ? { id, redirectTo: afterDelete } : { id }}
+          fields={{ id, returnTo }}
           title="Supprimer ce contenu ?"
           description={`« ${title} » sera supprimé définitivement. Cette action ne peut pas être annulée.`}
           confirmLabel="Supprimer"

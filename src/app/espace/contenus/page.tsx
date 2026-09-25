@@ -5,6 +5,7 @@ import Link from "next/link";
 import { PageHeader } from "@/components/kit/page-header";
 import { SearchInput } from "@/components/kit/search-input";
 import { EmptyState } from "@/components/kit/states";
+import { Alert } from "@/components/ui/alert";
 import { ButtonLink } from "@/components/ui/button";
 import { ContentCard } from "@/features/contents/content-card";
 import { FilterLinks } from "@/features/contents/filter-links";
@@ -35,10 +36,12 @@ export default async function ContentsPage({ searchParams }: PageProps<"/espace/
     rows.map((r) => r.id),
   );
   const pages = Math.max(1, Math.ceil(total / pageSize));
+  const justDeleted = param(sp, "supprime") === "1";
+  const returnTo = pageHref(page);
 
   function pageHref(p: number) {
     const next = new URLSearchParams();
-    for (const [k, v] of Object.entries(sp)) if (typeof v === "string" && k !== "page") next.set(k, v);
+    for (const [k, v] of Object.entries(sp)) if (typeof v === "string" && k !== "page" && k !== "supprime") next.set(k, v);
     if (p > 1) next.set("page", String(p));
     const qs = next.toString();
     return qs ? `/espace/contenus?${qs}` : "/espace/contenus";
@@ -58,6 +61,11 @@ export default async function ContentsPage({ searchParams }: PageProps<"/espace/
         }
       />
 
+      {justDeleted && (
+        <Alert tone="success" className="mb-4">
+          Contenu supprimé.
+        </Alert>
+      )}
       <div className="mb-6 flex flex-col gap-4">
         <SearchInput placeholder="Rechercher un contenu…" />
         <FilterLinks
@@ -113,6 +121,7 @@ export default async function ContentsPage({ searchParams }: PageProps<"/espace/
                     canEdit={manage && can(user, "content:update")}
                     canPublish={manage && can(user, "content:publish")}
                     canDelete={manage && can(user, "content:delete")}
+                    returnTo={returnTo}
                   />
                 </li>
               );

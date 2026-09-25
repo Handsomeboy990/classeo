@@ -46,7 +46,7 @@ export default async function ContentPage({ params }: PageProps<"/espace/contenu
             canEdit={can(user, "content:update")}
             canPublish={can(user, "content:publish")}
             canDelete={can(user, "content:delete")}
-            afterDelete="/espace/contenus"
+            returnTo="/espace/contenus"
           />
         )}
       </div>

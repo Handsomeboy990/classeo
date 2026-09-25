@@ -15,8 +15,10 @@ export function ContentCard({
   canEdit,
   canPublish,
   canDelete,
+  returnTo,
 }: {
   content: ContentRow;
+  returnTo: string;
   canEdit: boolean;
   canPublish: boolean;
   canDelete: boolean;
@@ -70,7 +72,7 @@ export function ContentCard({
       </dl>
       {(canEdit || canPublish || canDelete) && (
         <div className="border-t border-border pt-3">
-          <ContentActions id={c.id} title={c.title} status={c.status} canEdit={canEdit} canPublish={canPublish} canDelete={canDelete} />
+          <ContentActions id={c.id} title={c.title} status={c.status} canEdit={canEdit} canPublish={canPublish} canDelete={canDelete} returnTo={returnTo} />
         </div>
       )}
     </Card>

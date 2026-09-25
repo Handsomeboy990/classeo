@@ -181,13 +181,26 @@ export const archiveContent = createAction({
 
 export const deleteContent = createAction({
   permission: "content:delete",
-  schema: idSchema.extend({ redirectTo: z.literal("/espace/contenus").optional() }),
-  handler: async ({ id, redirectTo }, user) => {
+  // The deleted card or page disappears with the refresh, so the result is
+  // shown on the list the user returns to (?supprime=1).
+  schema: idSchema.extend({
+    returnTo: z
+      .string()
+      .regex(/^\/espace\/contenus(\?[\w\-=&%.+]*)?$/)
+      .default("/espace/contenus"),
+  }),
+  handler: async ({ id, returnTo }, user) => {
     const current = await findManageable(user, id);
-    await db.content.delete({ where: { id: current.id } });
+    // Publication notifications would lead readers to a missing page.
+    await db.$transaction([
+      db.notification.deleteMany({ where: { kind: "content", link: `/espace/contenus/${current.id}` } }),
+      db.content.delete({ where: { id: current.id } }),
+    ]);
     await audit(user, { action: "delete", resource: "content", resourceId: id, summary: `Suppression du contenu « ${current.title} »`, schoolId: current.schoolId });
     invalidate(tags.contents);
-    if (redirectTo) redirect(redirectTo);
-    return "Contenu supprimé.";
+    const url = new URL(returnTo, "http://local");
+    url.searchParams.delete("page");
+    url.searchParams.set("supprime", "1");
+    redirect(`${url.pathname}${url.search}`);
   },
 });
