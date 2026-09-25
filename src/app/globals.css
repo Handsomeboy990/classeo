@@ -232,6 +232,10 @@ html[data-lite="on"] img[data-decorative] {
   body:has([data-print-root]) [data-offline-banner] {
     display: none !important;
   }
+  /* The shell is a two column grid: with the sidebar gone, collapse it. */
+  body:has([data-print-root]) > div {
+    display: block !important;
+  }
   body:has([data-print-root]) main {
     max-width: none !important;
     padding: 0 !important;
