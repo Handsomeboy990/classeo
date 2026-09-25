@@ -47,8 +47,8 @@ export default async function StudentPage(props: PageProps<"/espace/eleves/[id]"
   const canUpdate = can(user, "student:update");
   const age = Math.floor((isoToDate(todayIso()).getTime() - student.birthDate.getTime()) / (365.25 * 86400000));
 
-  // Header actions: the two most used stay in view, the others (the second
-  // document, transfer, withdrawal) go behind "Plus d'actions", so a long
+  // Header actions: the two most used (edit, history) stay in view, the
+  // others (documents, transfer, withdrawal) go behind "Plus d'actions", so a long
   // name keeps its width at 1366 and 1440 px.
   const active = current && current.academicYear.isActive ? current : null;
   const editable = canUpdate && active ? active : null;
@@ -61,6 +61,9 @@ export default async function StudentPage(props: PageProps<"/espace/eleves/[id]"
         <Pencil aria-hidden /> Modifier
       </ButtonLink>
     ),
+    <ButtonLink key="history" href={`/espace/eleves/${student.id}/parcours`} variant="secondary">
+      <History aria-hidden /> Parcours
+    </ButtonLink>,
     active && active.status === "ACTIVE" && (
       <PdfDownloadLink key="attestation" href={`/api/pdf/attestation/${student.id}`} label="Attestation (PDF)" description={`attestation de scolarité de ${name}`} />
     ),
@@ -72,9 +75,6 @@ export default async function StudentPage(props: PageProps<"/espace/eleves/[id]"
         <ArrowLeftRight aria-hidden /> Transférer
       </ButtonLink>
     ),
-    <ButtonLink key="history" href={`/espace/eleves/${student.id}/parcours`} variant="secondary">
-      <History aria-hidden /> Parcours
-    </ButtonLink>,
   ].filter(Boolean);
   const shown = actions.slice(0, 2);
   const more = actions.slice(2);
