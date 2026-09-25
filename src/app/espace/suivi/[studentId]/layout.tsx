@@ -26,11 +26,11 @@ export default async function StudentFileLayout({ children, params }: LayoutProp
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-4" data-print-hide>
         {!isSelf && <BackToChildren />}
-        <div className="flex flex-wrap items-center gap-4">
-          <Avatar name={name} className="size-16 text-xl" />
+        <div className="flex items-center gap-3 sm:gap-4">
+          <Avatar name={name} className="size-12 shrink-0 text-lg sm:size-16 sm:text-xl" />
           <div className="min-w-0 break-words hyphens-auto">
             <h1 className="text-2xl font-bold sm:text-3xl">{isSelf ? "Ma scolarité" : name}</h1>
-            <p className="text-muted">
+            <p className="text-sm text-muted sm:text-base">
               {enrollment.classroom.name} · {enrollment.school.name} · Année {enrollment.academicYear.label}
             </p>
           </div>

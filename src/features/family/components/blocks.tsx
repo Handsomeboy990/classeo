@@ -42,16 +42,20 @@ const tones = {
 
 export type Tone = keyof typeof tones;
 
-export function Pictogram({ icon: Icon, tone = "primary", size = "md" }: { icon: LucideIcon; tone?: Tone; size?: "md" | "lg" }) {
+export function Pictogram({ icon: Icon, tone = "primary", size = "md" }: { icon: LucideIcon; tone?: Tone; size?: "sm" | "md" | "lg" }) {
   return (
-    <span className={cn("flex shrink-0 items-center justify-center rounded-xl", tones[tone], size === "lg" ? "size-14" : "size-11")} aria-hidden>
-      <Icon className={size === "lg" ? "size-7" : "size-6"} />
+    <span
+      className={cn("flex shrink-0 items-center justify-center rounded-xl", tones[tone], size === "lg" ? "size-14" : size === "sm" ? "size-9 sm:size-11" : "size-11")}
+      aria-hidden
+    >
+      <Icon className={size === "lg" ? "size-7" : size === "sm" ? "size-5 sm:size-6" : "size-6"} />
     </span>
   );
 }
 
-// A big pictogram card. The whole card is the link; the label names the
-// destination for screen readers.
+// A pictogram card. The whole card is the link; the title names the
+// destination for screen readers. "row" lays it out on one line below lg
+// (a single figure beside the title, no empty height), as a card from lg.
 export function PictoTile({
   icon,
   tone = "primary",
@@ -59,6 +63,7 @@ export function PictoTile({
   href,
   children,
   footer,
+  layout = "card",
 }: {
   icon: LucideIcon;
   tone?: Tone;
@@ -66,19 +71,33 @@ export function PictoTile({
   href?: string;
   children: ReactNode;
   footer?: ReactNode;
+  layout?: "card" | "row";
 }) {
-  const body = (
+  const row = layout === "row";
+  const body = row ? (
     <>
-      <div className="flex items-center gap-3">
+      <div className="flex min-w-0 flex-1 items-center gap-3 lg:flex-none">
         <Pictogram icon={icon} tone={tone} />
-        <h3 className="min-w-0 flex-1 font-sans text-base font-bold break-words hyphens-auto text-text">{title}</h3>
-        {href && <ChevronRight className="ml-auto size-5 shrink-0 text-muted" aria-hidden />}
+        <h3 className="min-w-0 flex-1 font-sans text-base font-bold text-text">{title}</h3>
+        {href && <ChevronRight className="size-5 shrink-0 text-muted max-lg:order-last" aria-hidden />}
+        <div className="shrink-0 text-text lg:hidden">{children}</div>
+      </div>
+      <div className="mt-3 min-w-0 text-text max-lg:hidden">{children}</div>
+    </>
+  ) : (
+    <>
+      <div className="flex items-center gap-2.5 sm:gap-3">
+        <Pictogram icon={icon} tone={tone} size="sm" />
+        <h3 className="min-w-0 flex-1 font-sans text-sm leading-snug font-bold text-balance text-text sm:text-base">{title}</h3>
+        {href && <ChevronRight className="ml-auto size-5 shrink-0 text-muted max-sm:hidden" aria-hidden />}
       </div>
       <div className="mt-3 min-w-0 text-text [&_.rounded-full]:flex-wrap">{children}</div>
-      {footer && <div className="mt-auto pt-3 text-sm text-muted">{footer}</div>}
+      {footer && <div className="mt-auto pt-2 text-xs text-muted sm:pt-3 sm:text-sm">{footer}</div>}
     </>
   );
-  const cls = "flex h-full min-h-40 flex-col rounded-card border border-border bg-surface p-4";
+  const cls = row
+    ? "flex h-full items-center rounded-card border border-border bg-surface p-3 sm:p-4 lg:min-h-40 lg:flex-col lg:items-stretch"
+    : "flex h-full min-h-32 flex-col rounded-card border border-border bg-surface p-3 sm:min-h-40 sm:p-4";
   return href ? (
     <Link href={href} className={cn(cls, "transition-colors hover:border-primary hover:bg-surface-2")}>
       {body}

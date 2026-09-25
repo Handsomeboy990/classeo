@@ -25,7 +25,7 @@ export default async function TermGradesPage({ params }: PageProps<"/espace/suiv
         className="rounded-card border border-border bg-surface"
         icon={<NotebookPen className="size-7" />}
         title="Pas encore de note ce trimestre"
-        description="Les notes apparaissent ici dès qu'un enseignant les saisit. La moyenne se met à jour toute seule."
+        description="Les notes s'affichent ici dès qu'un enseignant les saisit, et la moyenne est recalculée à chaque note."
       />
     );
   }
