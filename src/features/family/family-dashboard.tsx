@@ -5,9 +5,10 @@ import { AverageLevel } from "@/components/kit/level";
 import { PageHeader } from "@/components/kit/page-header";
 import { ReadAloud } from "@/components/kit/read-aloud";
 import { EmptyState } from "@/components/kit/states";
-import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
+import { StudentAvatar } from "@/features/students/components/student-avatar";
+import { GuardianTransferRequests } from "@/features/transfers/components/guardian-requests";
 import type { CurrentUser } from "@/lib/auth/session";
 import { cn, formatAverage, formatDate } from "@/lib/utils";
 
@@ -65,6 +66,7 @@ export async function FamilyDashboard({ user }: { user: User }) {
         description={isParent ? "Bulletins, présences et cours de vos enfants. « Écouter » lit ce résumé à voix haute." : "Vos cours, vos notes et vos présences. « Écouter » lit ce résumé à voix haute."}
         readable={false}
       />
+      <GuardianTransferRequests user={user} />
 
       <div className="grid grid-cols-1 gap-3 sm:gap-4 lg:grid-cols-[1fr_20rem]">
         <SpokenSummary text={household} label="Écouter" />
@@ -157,7 +159,7 @@ function ChildPanel({ overview: o, isParent }: { overview: ChildOverview; isPare
   return (
     <section aria-labelledby={headingId} className="overflow-hidden rounded-card border border-border bg-surface">
       <div className="flex flex-wrap items-center gap-3 border-b border-border bg-surface-2 p-4 sm:gap-4 sm:p-5">
-        <Avatar name={name} className="size-12 text-base sm:size-14 sm:text-lg" />
+        <StudentAvatar name={name} photoFileId={e.student.photoFileId} className="size-12 text-base sm:size-14 sm:text-lg" />
         <div className="min-w-0 flex-1">
           <h2 id={headingId} className="text-xl font-bold sm:text-2xl">
             {isParent ? name : "Ma journée"}

@@ -35,7 +35,7 @@ export function currentPeriod<P extends Period>(periods: P[], today: SchoolDay):
 }
 
 const enrollmentInclude = {
-  student: { select: { id: true, firstName: true, lastName: true, gender: true, matricule: true, birthDate: true } },
+  student: { select: { id: true, firstName: true, lastName: true, gender: true, matricule: true, birthDate: true, photoFileId: true } },
   classroom: { select: { id: true, name: true, level: { select: { name: true } } } },
   school: { select: { id: true, name: true, communeId: true, commune: { select: { name: true, departmentId: true } } } },
   academicYear: { select: { id: true, label: true } },
