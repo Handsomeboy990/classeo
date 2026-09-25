@@ -149,11 +149,19 @@ export default async function ComparisonPage({ searchParams }: PageProps<"/espac
             <CardBody className="flex flex-col gap-6">
               <BarChart
                 label={`${meta.label} par année`}
-                data={years.map((y) => ({ label: y.label, value: data.total[y.id]?.[indicator] ?? 0 }))}
+                data={years.flatMap((y) => {
+                  const value = data.total[y.id]?.[indicator] ?? null;
+                  return value === null ? [] : [{ label: y.label, value }];
+                })}
                 format={(n) => formatIndicator(indicator, n)}
                 max={chartMax}
                 scale={chartMax === undefined ? "La barre la plus longue correspond à la valeur la plus élevée." : indicator === "meanAverage" ? "Échelle de 0 à 20." : indicator === "absenceRate" ? "Échelle de 0 à 20 %." : "Échelle de 0 à 100 %."}
               />
+              {years.some((y) => (data.total[y.id]?.[indicator] ?? null) === null) && (
+                <p className="text-sm text-muted">
+                  Sans donnée pour {years.filter((y) => (data.total[y.id]?.[indicator] ?? null) === null).map((y) => y.label).join(", ")} : aucun bulletin publié ou aucun appel enregistré.
+                </p>
+              )}
               <div className="-mx-4 overflow-x-auto sm:-mx-5">
                 <Table density="compact">
                   <caption className="sr-only">
