@@ -4,7 +4,7 @@ import type { Prisma } from "@/generated/prisma/client";
 import type { CurrentUser } from "@/lib/auth/session";
 import { db } from "@/lib/db";
 
-import { userScopeWhere } from "../users/queries";
+import { NOT_MAILBOX_ROLE, userScopeWhere } from "../users/queries";
 import { ownerFor, type ActorScope } from "./ownership";
 
 type User = NonNullable<CurrentUser>;
@@ -71,7 +71,7 @@ async function lastChanges(roleIds: string[]) {
 export async function listRolesWithCounts(user: User) {
   const [roles, counts, totals] = await Promise.all([
     db.role.findMany({
-      where: roleVisibleWhere(user),
+      where: { AND: [roleVisibleWhere(user), NOT_MAILBOX_ROLE] },
       select: {
         id: true,
         code: true,

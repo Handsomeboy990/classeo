@@ -4,17 +4,20 @@ import { cache } from "react";
 
 import type { Prisma } from "@/generated/prisma/client";
 import { can, ForbiddenError } from "@/lib/auth/authorize";
-import { classroomWhere, isTeacherRole } from "@/lib/auth/scope";
+import { classroomWhere, isTeacherRole, schoolWhere } from "@/lib/auth/scope";
 import type { CurrentUser } from "@/lib/auth/session";
 import { db } from "@/lib/db";
 import {
   allowedTargetLevels,
-  audiencesOf,
   managerReach,
+  MAX_RECIPIENTS,
+  membershipsOf,
   parseTargetValue,
-  readerReach,
+  readerGroups,
+  recipientLevel,
   type Position,
   type Reach,
+  type ReaderGroup,
   type TargetIds,
 } from "@/lib/domain/content-targeting";
 
@@ -32,21 +35,19 @@ const teacherClassroomIds = cache(async (user: User) => {
   return rows.map((r) => r.id);
 });
 
-// Where the user's children (guardian) or the user (student) study this year.
-const familyPositions = cache(async (user: User): Promise<Position[]> => {
-  if (user.scope.level !== "SELF") return [];
-  const who: Prisma.EnrollmentWhereInput | null = user.guardianId
-    ? { student: { guardians: { some: { guardianId: user.guardianId } } } }
-    : user.studentId
-      ? { studentId: user.studentId }
-      : null;
-  if (!who) return [];
+// Where the students behind these enrollments study this year.
+async function positions(where: Prisma.EnrollmentWhereInput): Promise<Position[]> {
   const rows = await db.enrollment.findMany({
-    where: { AND: [who, { academicYearId: await activeYearId(), status: "ACTIVE" }] },
+    where: { AND: [where, { academicYearId: await activeYearId(), status: "ACTIVE" }] },
     select: { classroomId: true, schoolId: true, school: { select: { communeId: true, commune: { select: { departmentId: true } } } } },
   });
   return rows.map((r) => ({ classroomId: r.classroomId, schoolId: r.schoolId, communeId: r.school.communeId, departmentId: r.school.commune.departmentId }));
-});
+}
+
+// A guardian link counts whatever the account's level: a teacher can also
+// be the parent of a pupil.
+const childrenPositions = cache(async (user: User) => (user.guardianId ? positions({ student: { guardians: { some: { guardianId: user.guardianId } } } }) : []));
+const ownPosition = cache(async (user: User) => (user.studentId ? ((await positions({ studentId: user.studentId }))[0] ?? null) : null));
 
 // Role based, like the scope filters: an unlinked teacher account manages
 // no class rather than the whole school.
@@ -59,38 +60,48 @@ async function profile(user: User) {
     communeId: user.scope.communeId,
     schoolId: user.scope.schoolId,
     isTeacher: isTeacher(user),
+    isPartner: user.role.code === "PARTNER",
     teacherClassroomIds: await teacherClassroomIds(user),
   };
 }
 
-export async function readerReachFor(user: User) {
-  return readerReach({ ...(await profile(user)), family: await familyPositions(user) });
+export async function membershipsFor(user: User) {
+  const [p, children, own] = await Promise.all([profile(user), childrenPositions(user), ownPosition(user)]);
+  return membershipsOf({ ...p, children, own });
 }
 
 export async function managerReachFor(user: User) {
   return managerReach(await profile(user));
 }
 
-export function audiencesFor(user: User) {
-  return audiencesOf({
-    level: user.scope.level,
-    isTeacher: isTeacher(user),
-    isGuardian: !!user.guardianId,
-    isStudent: !!user.studentId,
-    isPartner: user.role.code === "PARTNER",
-  });
-}
-
 const NATIONAL_TARGET: Prisma.ContentWhereInput = { departmentId: null, communeId: null, schoolId: null, classroomId: null };
 
-// Mirrors isInReach() from the domain rules as a database filter: the most
-// specific target decides, so every clause pins the more specific ids to null.
-export function reachWhere(reach: Reach, { includeNational }: { includeNational: boolean }): Prisma.ContentWhereInput {
+// Mirrors readerGroupMatches() from the domain rules: the most specific
+// target decides, so every clause pins the more specific ids to null.
+function groupWhere(g: ReaderGroup): Prisma.ContentWhereInput {
+  const or: Prisma.ContentWhereInput[] = [NATIONAL_TARGET];
+  if (g.departments.length) or.push({ departmentId: { in: g.departments }, communeId: null, schoolId: null, classroomId: null });
+  if (g.communes.length) or.push({ communeId: { in: g.communes }, schoolId: null, classroomId: null });
+  if (g.schools.length) or.push({ schoolId: { in: g.schools }, classroomId: null });
+  if (g.classrooms.length) or.push({ classroomId: { in: g.classrooms } });
+  return { audience: { in: g.audiences }, OR: or };
+}
+
+// Published contents addressed to the user: inside the target and in the
+// audience, for the same membership. This is what the list shows by
+// default, what the ticker scrolls and what notifications announce.
+export async function receivedWhere(user: User): Promise<Prisma.ContentWhereInput> {
+  const groups = readerGroups(await membershipsFor(user));
+  if (!groups.length) return { id: "__none__" };
+  return { status: "PUBLISHED", OR: groups.map(groupWhere) };
+}
+
+// Management reach as a database filter (see isInReach()).
+export function reachWhere(reach: Reach): Prisma.ContentWhereInput {
   // Explicit "every row": an empty {} inside an OR matches nothing in Prisma.
   if (reach.all) return { id: { not: "" } };
   const { exact, subtree } = reach;
   const or: Prisma.ContentWhereInput[] = [];
-  if (includeNational) or.push(NATIONAL_TARGET);
   if (exact.departments.length) or.push({ departmentId: { in: exact.departments }, communeId: null, schoolId: null, classroomId: null });
   if (exact.communes.length) or.push({ communeId: { in: exact.communes }, schoolId: null, classroomId: null });
   if (exact.schools.length) or.push({ schoolId: { in: exact.schools }, classroomId: null });
@@ -115,21 +126,25 @@ export function reachWhere(reach: Reach, { includeNational }: { includeNational:
   return or.length ? { OR: or } : { id: "__none__" };
 }
 
-// Contents the user may manage with the given permission: their own, or any
-// whose target is inside their management reach.
+// Contents the user may manage: their own, or any whose target is inside
+// their management reach, whatever the status and the audience.
 export async function manageableWhere(user: User): Promise<Prisma.ContentWhereInput> {
-  return { OR: [{ authorId: user.id }, reachWhere(await managerReachFor(user), { includeNational: false })] };
+  return { OR: [{ authorId: user.id }, reachWhere(await managerReachFor(user))] };
 }
 
-// Everything the user may read: published contents in reach for their
-// audience, their own contents, and, for editors, every content they manage.
+// Contents a user may follow as a supervisor or an author ("managed" view).
+async function managedWhere(user: User): Promise<Prisma.ContentWhereInput> {
+  return can(user, "content:update") ? manageableWhere(user) : { authorId: user.id };
+}
+
+// A detail page opens for what the user received and for what they manage.
 export async function visibleWhere(user: User): Promise<Prisma.ContentWhereInput> {
-  const or: Prisma.ContentWhereInput[] = [
-    { AND: [{ status: "PUBLISHED" }, { audience: { in: audiencesFor(user) } }, reachWhere(await readerReachFor(user), { includeNational: true })] },
-    { authorId: user.id },
-  ];
-  if (can(user, "content:update")) or.push(reachWhere(await managerReachFor(user), { includeNational: false }));
-  return { OR: or };
+  return { OR: [await receivedWhere(user), await managedWhere(user)] };
+}
+
+// Whether the user has a "managed" view at all.
+export function canFollowManaged(user: User) {
+  return can(user, "content:create") || can(user, "content:update");
 }
 
 export type TickerItem = { id: string; title: string; summary: string | null; type: "ANNOUNCEMENT" | "RESOURCE" | "EVENT" };
@@ -172,12 +187,22 @@ export function targetLabel(c: Pick<ContentRow, "department" | "commune" | "scho
   return "National, tout le Bénin";
 }
 
-export type ContentFilters = { type?: "ANNOUNCEMENT" | "RESOURCE" | "EVENT"; status?: "DRAFT" | "PUBLISHED" | "ARCHIVED"; q: string; skip: number; take: number };
+export type ContentView = "received" | "managed";
+
+export type ContentFilters = {
+  view: ContentView;
+  type?: "ANNOUNCEMENT" | "RESOURCE" | "EVENT";
+  status?: "DRAFT" | "PUBLISHED" | "ARCHIVED";
+  q: string;
+  skip: number;
+  take: number;
+};
 
 export async function listContents(user: User, f: ContentFilters) {
-  const and: Prisma.ContentWhereInput[] = [await visibleWhere(user)];
+  const managed = f.view === "managed" && canFollowManaged(user);
+  const and: Prisma.ContentWhereInput[] = [managed ? await managedWhere(user) : await receivedWhere(user)];
   if (f.type) and.push({ type: f.type });
-  if (f.status) and.push({ status: f.status });
+  if (managed && f.status) and.push({ status: f.status });
   if (f.q)
     and.push({
       OR: [
@@ -198,6 +223,17 @@ export async function listContents(user: User, f: ContentFilters) {
     db.content.count({ where }),
   ]);
   return { rows, total };
+}
+
+// The scrolling band: published contents addressed to the user, flagged for
+// the ticker and not expired. Never what the user only supervises.
+export async function listTickerContents(user: User, now = new Date()) {
+  return db.content.findMany({
+    where: { AND: [await receivedWhere(user), { ticker: true }, { OR: [{ tickerUntil: null }, { tickerUntil: { gt: now } }] }] },
+    select: { id: true, title: true, easyRead: true, type: true, publishedAt: true },
+    orderBy: { publishedAt: "desc" },
+    take: 5,
+  });
 }
 
 export async function getVisibleContent(user: User, id: string) {
@@ -247,17 +283,59 @@ export async function targetOptions(user: User): Promise<TargetOption[]> {
     });
     out.push(...schools.map((x) => ({ value: `SCHOOL:${x.id}`, label: x.name, group: "Établissements" })));
   }
-  if (levels.includes("CLASSROOM")) {
-    const where: Prisma.ClassroomWhereInput = isTeacher(user)
-      ? { AND: [classroomWhere(user), { academicYearId: await activeYearId() }] }
-      : { schoolId: s.schoolId ?? "__none__", academicYearId: await activeYearId() };
-    const classes = await db.classroom.findMany({ where, select: { id: true, name: true, level: { select: { order: true } } }, orderBy: [{ level: { order: "asc" } }, { name: "asc" }] });
-    out.push(...classes.map((c) => ({ value: `CLASSROOM:${c.id}`, label: `Classe ${c.name}`, group: "Classes" })));
-  }
+  if (levels.includes("CLASSROOM")) out.push(...(await classOptions(user)));
   return out;
 }
 
+async function classOptions(user: User): Promise<TargetOption[]> {
+  const where: Prisma.ClassroomWhereInput = isTeacher(user)
+    ? { AND: [classroomWhere(user), { academicYearId: await activeYearId() }] }
+    : { schoolId: user.scope.schoolId ?? "__none__", academicYearId: await activeYearId() };
+  const classes = await db.classroom.findMany({ where, select: { id: true, name: true, level: { select: { order: true } } }, orderBy: [{ level: { order: "asc" } }, { name: "asc" }] });
+  return classes.map((c) => ({ value: `CLASSROOM:${c.id}`, label: `Classe ${c.name}`, group: "Classes" }));
+}
+
+// Explicit recipients an author may pick instead of one target: specific
+// schools of their territory, or specific classes of their school.
+export async function recipientOptions(user: User): Promise<TargetOption[]> {
+  const level = recipientLevel(user.scope.level);
+  if (level === "CLASSROOM") return classOptions(user);
+  if (level !== "SCHOOL") return [];
+  const schools = await db.school.findMany({
+    where: { AND: [schoolWhere(user), { isActive: true }] },
+    select: { id: true, name: true, commune: { select: { name: true } } },
+    orderBy: [{ commune: { name: "asc" } }, { name: "asc" }],
+    take: 2000,
+  });
+  return schools.map((x) => ({ value: `SCHOOL:${x.id}`, label: x.name, group: x.commune.name }));
+}
+
 const OUT_OF_SCOPE = "Cette cible est hors de votre périmètre.";
+
+// Checks explicit recipients against the author's territory and returns one
+// target per recipient. Scoped lookups: every id must be found or the write
+// fails as a whole.
+export async function resolveRecipientsForWrite(user: User, values: string[]): Promise<Required<TargetIds>[]> {
+  const level = recipientLevel(user.scope.level);
+  const unique = [...new Set(values)];
+  if (!level || unique.length > MAX_RECIPIENTS) throw new ForbiddenError(OUT_OF_SCOPE);
+  const parsed = unique.map(parseTargetValue);
+  if (parsed.some((p) => !p || p.level !== level)) throw new ForbiddenError(OUT_OF_SCOPE);
+  const ids = parsed.map((p) => p!.id!);
+  const none = { departmentId: null, communeId: null, schoolId: null, classroomId: null };
+  if (level === "SCHOOL") {
+    const found = await db.school.findMany({ where: { AND: [{ id: { in: ids } }, schoolWhere(user)] }, select: { id: true } });
+    if (found.length !== ids.length) throw new ForbiddenError(OUT_OF_SCOPE);
+    return ids.map((schoolId) => ({ ...none, schoolId }));
+  }
+  const where: Prisma.ClassroomWhereInput = isTeacher(user)
+    ? { AND: [{ id: { in: ids } }, classroomWhere(user), { academicYearId: await activeYearId() }] }
+    : { id: { in: ids }, schoolId: user.scope.schoolId ?? "__none__" };
+  const rooms = await db.classroom.findMany({ where, select: { id: true, schoolId: true } });
+  if (rooms.length !== ids.length) throw new ForbiddenError(OUT_OF_SCOPE);
+  const bySchool = new Map(rooms.map((r) => [r.id, r.schoolId]));
+  return ids.map((classroomId) => ({ ...none, schoolId: bySchool.get(classroomId)!, classroomId }));
+}
 
 // Checks a submitted target against the author's scope and returns the ids
 // to store. Every lookup is scoped: it must find the row or the write fails.

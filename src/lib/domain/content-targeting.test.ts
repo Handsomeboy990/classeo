@@ -2,136 +2,191 @@ import { describe, expect, it } from "vitest";
 
 import {
   allowedTargetLevels,
-  audienceMatches,
-  audiencesOf,
+  audienceFitsTarget,
   canManageTarget,
-  isInReach,
   managerReach,
+  membershipsOf,
   parseTargetValue,
-  readerReach,
+  reaches,
+  readerGroupMatches,
+  readerGroups,
+  recipientLevel,
   requiresTranscript,
   targetLevel,
   targetValue,
+  type AudienceCode,
+  type ReaderProfile,
   type ResolvedTarget,
 } from "./content-targeting";
 
 // Territory used by the tests: department AQ > commune CAL > school CEG >
-// classes 3A and 6B; department AQ > commune OUI > school EPP; department LT.
-const national: ResolvedTarget = { level: "NATIONAL", departmentId: null, communeId: null, schoolId: null, classroomId: null };
-const depAQ: ResolvedTarget = { level: "DEPARTMENT", departmentId: "AQ", communeId: null, schoolId: null, classroomId: null };
-const depLT: ResolvedTarget = { level: "DEPARTMENT", departmentId: "LT", communeId: null, schoolId: null, classroomId: null };
-const comCAL: ResolvedTarget = { level: "COMMUNE", departmentId: "AQ", communeId: "CAL", schoolId: null, classroomId: null };
-const comOUI: ResolvedTarget = { level: "COMMUNE", departmentId: "AQ", communeId: "OUI", schoolId: null, classroomId: null };
-const schCEG: ResolvedTarget = { level: "SCHOOL", departmentId: "AQ", communeId: "CAL", schoolId: "CEG", classroomId: null };
-const schEPP: ResolvedTarget = { level: "SCHOOL", departmentId: "AQ", communeId: "OUI", schoolId: "EPP", classroomId: null };
-const cls3A: ResolvedTarget = { level: "CLASSROOM", departmentId: "AQ", communeId: "CAL", schoolId: "CEG", classroomId: "3A" };
-const cls6B: ResolvedTarget = { level: "CLASSROOM", departmentId: "AQ", communeId: "CAL", schoolId: "CEG", classroomId: "6B" };
-const all = [national, depAQ, depLT, comCAL, comOUI, schCEG, schEPP, cls3A, cls6B];
+// classes 3A and 6B; department AQ > commune OUI > school EPP > class CM1;
+// department LT, with nothing inside.
+const T = {
+  national: { level: "NATIONAL", departmentId: null, communeId: null, schoolId: null, classroomId: null },
+  depAQ: { level: "DEPARTMENT", departmentId: "AQ", communeId: null, schoolId: null, classroomId: null },
+  depLT: { level: "DEPARTMENT", departmentId: "LT", communeId: null, schoolId: null, classroomId: null },
+  comCAL: { level: "COMMUNE", departmentId: "AQ", communeId: "CAL", schoolId: null, classroomId: null },
+  comOUI: { level: "COMMUNE", departmentId: "AQ", communeId: "OUI", schoolId: null, classroomId: null },
+  schCEG: { level: "SCHOOL", departmentId: "AQ", communeId: "CAL", schoolId: "CEG", classroomId: null },
+  schEPP: { level: "SCHOOL", departmentId: "AQ", communeId: "OUI", schoolId: "EPP", classroomId: null },
+  cls3A: { level: "CLASSROOM", departmentId: "AQ", communeId: "CAL", schoolId: "CEG", classroomId: "3A" },
+  cls6B: { level: "CLASSROOM", departmentId: "AQ", communeId: "CAL", schoolId: "CEG", classroomId: "6B" },
+} satisfies Record<string, ResolvedTarget>;
+type TargetName = keyof typeof T;
+const TARGETS = Object.keys(T) as TargetName[];
+const AUDIENCES: AudienceCode[] = ["EVERYONE", "PARENTS", "STUDENTS", "TEACHERS", "STAFF"];
 
-const visible = (reach: ReturnType<typeof readerReach>) => all.filter((t) => isInReach(reach, t));
+const in3A = { departmentId: "AQ", communeId: "CAL", schoolId: "CEG", classroomId: "3A" };
+const inCM1 = { departmentId: "AQ", communeId: "OUI", schoolId: "EPP", classroomId: "CM1" };
+const base = { departmentId: null, communeId: null, schoolId: null, isTeacher: false };
+
+const R = {
+  minister: { ...base, level: "NATIONAL" },
+  partner: { ...base, level: "NATIONAL", isPartner: true },
+  directorAQ: { ...base, level: "DEPARTMENT", departmentId: "AQ" },
+  inspectorCAL: { ...base, level: "COMMUNE", departmentId: "AQ", communeId: "CAL" },
+  secretaryCEG: { ...base, level: "SCHOOL", departmentId: "AQ", communeId: "CAL", schoolId: "CEG" },
+  teacher3A: { ...base, level: "SCHOOL", departmentId: "AQ", communeId: "CAL", schoolId: "CEG", isTeacher: true, teacherClassroomIds: ["3A"] },
+  unlinkedTeacher: { ...base, level: "SCHOOL", departmentId: "AQ", communeId: "CAL", schoolId: "CEG", isTeacher: true },
+  teacherParent: { ...base, level: "SCHOOL", departmentId: "AQ", communeId: "CAL", schoolId: "CEG", isTeacher: true, teacherClassroomIds: ["6B"], children: [inCM1] },
+  parent3A: { ...base, level: "SELF", children: [in3A] },
+  parentTwo: { ...base, level: "SELF", children: [in3A, inCM1] },
+  student3A: { ...base, level: "SELF", own: in3A },
+  familyNoEnrolment: { ...base, level: "SELF", children: [] },
+} satisfies Record<string, ReaderProfile>;
+type ReaderName = keyof typeof R;
+
+// Expected reception, written by hand from the owner's rule ("only those it
+// is meant for"): for each reader, the audiences they receive per target.
+// Anything absent is not received.
+const E = "EVERYONE" as const;
+const family = (a: "PARENTS" | "STUDENTS") => [E, a];
+const EXPECTED: Record<ReaderName, Partial<Record<TargetName, AudienceCode[]>>> = {
+  minister: { national: [E, "STAFF"] },
+  partner: { national: [E] },
+  directorAQ: { national: [E, "STAFF"], depAQ: [E, "STAFF"] },
+  inspectorCAL: { national: [E, "STAFF"], depAQ: [E, "STAFF"], comCAL: [E, "STAFF"] },
+  secretaryCEG: { national: [E, "STAFF"], depAQ: [E, "STAFF"], comCAL: [E, "STAFF"], schCEG: [E, "STAFF"] },
+  teacher3A: { national: [E, "TEACHERS"], depAQ: [E, "TEACHERS"], comCAL: [E, "TEACHERS"], schCEG: [E, "TEACHERS"], cls3A: [E, "TEACHERS"] },
+  unlinkedTeacher: { national: [E, "TEACHERS"], depAQ: [E, "TEACHERS"], comCAL: [E, "TEACHERS"], schCEG: [E, "TEACHERS"] },
+  // Teacher at CEG (class 6B), parent of a pupil of EPP: parents' contents
+  // of EPP reach them, parents' contents of CEG do not.
+  teacherParent: {
+    national: [E, "PARENTS", "TEACHERS"],
+    depAQ: [E, "PARENTS", "TEACHERS"],
+    comCAL: [E, "TEACHERS"],
+    comOUI: [E, "PARENTS"],
+    schCEG: [E, "TEACHERS"],
+    schEPP: [E, "PARENTS"],
+    cls6B: [E, "TEACHERS"],
+  },
+  parent3A: { national: family("PARENTS"), depAQ: family("PARENTS"), comCAL: family("PARENTS"), schCEG: family("PARENTS"), cls3A: family("PARENTS") },
+  parentTwo: {
+    national: family("PARENTS"),
+    depAQ: family("PARENTS"),
+    comCAL: family("PARENTS"),
+    comOUI: family("PARENTS"),
+    schCEG: family("PARENTS"),
+    schEPP: family("PARENTS"),
+    cls3A: family("PARENTS"),
+  },
+  student3A: { national: family("STUDENTS"), depAQ: family("STUDENTS"), comCAL: family("STUDENTS"), schCEG: family("STUDENTS"), cls3A: family("STUDENTS") },
+  familyNoEnrolment: {},
+};
+
+const cases = (Object.keys(R) as ReaderName[]).flatMap((reader) =>
+  TARGETS.flatMap((target) => AUDIENCES.map((audience) => ({ reader, target, audience, expected: (EXPECTED[reader][target] ?? []).includes(audience) }))),
+);
+
+describe("reaches: every reader, target and audience", () => {
+  it.each(cases)("$reader, $target for $audience: $expected", ({ reader, target, audience, expected }) => {
+    const ms = membershipsOf(R[reader]);
+    const content = { target: T[target], audience };
+    expect(reaches(content, ms)).toBe(expected);
+    // The database filter is built from the groups: it must agree with the rule.
+    expect(readerGroups(ms).some((g) => readerGroupMatches(g, content))).toBe(expected);
+  });
+});
+
+describe("the owner's examples", () => {
+  const got = (reader: ReaderName, target: TargetName, audience: AudienceCode) => reaches({ target: T[target], audience }, membershipsOf(R[reader]));
+  it("keeps a national announcement for teachers away from parents and pupils", () => {
+    expect(got("teacher3A", "national", "TEACHERS")).toBe(true);
+    expect(got("parent3A", "national", "TEACHERS")).toBe(false);
+    expect(got("student3A", "national", "TEACHERS")).toBe(false);
+  });
+  it("gives a class resource only to its pupils, their parents and its teachers", () => {
+    const reached = (Object.keys(R) as ReaderName[]).filter((r) => got(r, "cls3A", "EVERYONE"));
+    expect(reached).toEqual(["teacher3A", "parent3A", "parentTwo", "student3A"]);
+  });
+  it("does not send a school's contents up to the commune, the department or the ministry", () => {
+    expect(got("inspectorCAL", "schCEG", "EVERYONE")).toBe(false);
+    expect(got("directorAQ", "schCEG", "EVERYONE")).toBe(false);
+    expect(got("minister", "schCEG", "EVERYONE")).toBe(false);
+  });
+  it("keeps a department's contents inside that department", () => {
+    expect(got("secretaryCEG", "depLT", "EVERYONE")).toBe(false);
+    expect(got("parentTwo", "depLT", "EVERYONE")).toBe(false);
+  });
+});
+
+describe("membershipsOf", () => {
+  it("fails closed on an incomplete scope", () => {
+    expect(membershipsOf({ ...base, level: "DEPARTMENT" })).toEqual([]);
+    expect(membershipsOf({ ...base, level: "COMMUNE" })).toEqual([]);
+    expect(membershipsOf({ ...base, level: "SCHOOL" })).toEqual([]);
+    expect(membershipsOf({ ...base, level: "SELF" })).toEqual([]);
+  });
+});
+
+describe("audienceFitsTarget", () => {
+  it.each([
+    ["CLASSROOM", "STAFF", false],
+    ["CLASSROOM", "PARENTS", true],
+    ["CLASSROOM", "EVERYONE", true],
+    ["SCHOOL", "STAFF", true],
+    ["NATIONAL", "STAFF", true],
+  ] as const)("%s for %s: %s", (level, audience, ok) => {
+    expect(audienceFitsTarget(level, audience)).toBe(ok);
+  });
+});
+
+describe("managerReach", () => {
+  const manageable = (p: ReaderProfile) => TARGETS.filter((t) => canManageTarget(managerReach(p), T[t]));
+  it.each([
+    ["minister", TARGETS],
+    ["directorAQ", ["depAQ", "comCAL", "comOUI", "schCEG", "schEPP", "cls3A", "cls6B"]],
+    ["inspectorCAL", ["comCAL", "schCEG", "cls3A", "cls6B"]],
+    ["secretaryCEG", ["schCEG", "cls3A", "cls6B"]],
+    ["teacher3A", ["cls3A"]],
+    ["unlinkedTeacher", []],
+    ["parent3A", []],
+  ] as [ReaderName, TargetName[]][])("%s manages %j", (reader, expected) => {
+    expect(manageable(R[reader])).toEqual(expected);
+  });
+});
 
 describe("targetLevel", () => {
-  it("treats a content with no target as national", () => {
+  it("treats a content with no target as national and keeps the most specific target", () => {
     expect(targetLevel({})).toBe("NATIONAL");
-  });
-  it("keeps the most specific target", () => {
     expect(targetLevel({ departmentId: "AQ", schoolId: "CEG" })).toBe("SCHOOL");
     expect(targetLevel({ schoolId: "CEG", classroomId: "3A" })).toBe("CLASSROOM");
     expect(targetLevel({ departmentId: "AQ", communeId: "CAL" })).toBe("COMMUNE");
   });
 });
 
-describe("readerReach", () => {
-  it("lets national users see everything", () => {
-    expect(visible(readerReach({ level: "NATIONAL", departmentId: null, communeId: null, schoolId: null, isTeacher: false }))).toEqual(all);
-  });
-
-  it("lets a department see its department, everything inside and national", () => {
-    const r = readerReach({ level: "DEPARTMENT", departmentId: "AQ", communeId: null, schoolId: null, isTeacher: false });
-    expect(visible(r)).toEqual([national, depAQ, comCAL, comOUI, schCEG, schEPP, cls3A, cls6B]);
-  });
-
-  it("lets a commune see inside itself, its department and national, not a sibling commune", () => {
-    const r = readerReach({ level: "COMMUNE", departmentId: "AQ", communeId: "CAL", schoolId: null, isTeacher: false });
-    expect(visible(r)).toEqual([national, depAQ, comCAL, schCEG, cls3A, cls6B]);
-  });
-
-  it("lets school staff see their school and its classes, commune, department and national", () => {
-    const r = readerReach({ level: "SCHOOL", departmentId: "AQ", communeId: "CAL", schoolId: "CEG", isTeacher: false });
-    expect(visible(r)).toEqual([national, depAQ, comCAL, schCEG, cls3A, cls6B]);
-  });
-
-  it("limits a teacher to the classes they teach", () => {
-    const r = readerReach({ level: "SCHOOL", departmentId: "AQ", communeId: "CAL", schoolId: "CEG", isTeacher: true, teacherClassroomIds: ["3A"] });
-    expect(visible(r)).toEqual([national, depAQ, comCAL, schCEG, cls3A]);
-  });
-
-  it("gives a parent the positions of every child", () => {
-    const r = readerReach({
-      level: "SELF",
-      departmentId: null,
-      communeId: null,
-      schoolId: null,
-      isTeacher: false,
-      family: [
-        { departmentId: "AQ", communeId: "CAL", schoolId: "CEG", classroomId: "3A" },
-        { departmentId: "AQ", communeId: "OUI", schoolId: "EPP", classroomId: "CM1" },
-      ],
-    });
-    expect(visible(r)).toEqual([national, depAQ, comCAL, comOUI, schCEG, schEPP, cls3A]);
-  });
-
-  it("gives a family with no enrolment only national contents", () => {
-    const r = readerReach({ level: "SELF", departmentId: null, communeId: null, schoolId: null, isTeacher: false, family: [] });
-    expect(visible(r)).toEqual([national]);
-  });
-});
-
-describe("managerReach", () => {
-  it("lets a national editor manage the nation", () => {
-    const r = managerReach({ level: "NATIONAL", departmentId: null, communeId: null, schoolId: null, isTeacher: false });
-    expect(canManageTarget(r, national)).toBe(true);
-  });
-
-  it("does not let a school director manage national or departmental contents", () => {
-    const r = managerReach({ level: "SCHOOL", departmentId: "AQ", communeId: "CAL", schoolId: "CEG", isTeacher: false });
-    expect(all.filter((t) => canManageTarget(r, t))).toEqual([schCEG, cls3A, cls6B]);
-  });
-
-  it("limits a teacher to their classes", () => {
-    const r = managerReach({ level: "SCHOOL", departmentId: "AQ", communeId: "CAL", schoolId: "CEG", isTeacher: true, teacherClassroomIds: ["3A"] });
-    expect(all.filter((t) => canManageTarget(r, t))).toEqual([cls3A]);
-  });
-
-  it("gives families nothing to manage", () => {
-    const r = managerReach({ level: "SELF", departmentId: null, communeId: null, schoolId: null, isTeacher: false });
-    expect(all.filter((t) => canManageTarget(r, t))).toEqual([]);
-  });
-});
-
-describe("audiences", () => {
-  it("matches parents, students, teachers and staff", () => {
-    const parent = audiencesOf({ level: "SELF", isTeacher: false, isGuardian: true, isStudent: false, isPartner: false });
-    expect(parent).toEqual(["EVERYONE", "PARENTS"]);
-    expect(audienceMatches("PARENTS", parent)).toBe(true);
-    expect(audienceMatches("TEACHERS", parent)).toBe(false);
-    expect(audienceMatches("EVERYONE", [])).toBe(true);
-
-    expect(audiencesOf({ level: "SCHOOL", isTeacher: true, isGuardian: false, isStudent: false, isPartner: false })).toEqual(["EVERYONE", "TEACHERS"]);
-    expect(audiencesOf({ level: "DEPARTMENT", isTeacher: false, isGuardian: false, isStudent: false, isPartner: false })).toEqual(["EVERYONE", "STAFF"]);
-    expect(audiencesOf({ level: "NATIONAL", isTeacher: false, isGuardian: false, isStudent: false, isPartner: true })).toEqual(["EVERYONE"]);
-    expect(audiencesOf({ level: "SELF", isTeacher: false, isGuardian: false, isStudent: true, isPartner: false })).toEqual(["EVERYONE", "STUDENTS"]);
-  });
-});
-
-describe("allowedTargetLevels", () => {
-  it("limits authors to their own scope", () => {
-    expect(allowedTargetLevels("NATIONAL", false)).toEqual(["NATIONAL", "DEPARTMENT"]);
-    expect(allowedTargetLevels("DEPARTMENT", false)).toEqual(["DEPARTMENT", "COMMUNE"]);
-    expect(allowedTargetLevels("COMMUNE", false)).toEqual(["COMMUNE", "SCHOOL"]);
-    expect(allowedTargetLevels("SCHOOL", false)).toEqual(["SCHOOL", "CLASSROOM"]);
-    expect(allowedTargetLevels("SCHOOL", true)).toEqual(["CLASSROOM"]);
-    expect(allowedTargetLevels("SELF", false)).toEqual([]);
+describe("allowedTargetLevels and recipientLevel", () => {
+  it.each([
+    ["NATIONAL", false, ["NATIONAL", "DEPARTMENT"], "SCHOOL"],
+    ["DEPARTMENT", false, ["DEPARTMENT", "COMMUNE"], "SCHOOL"],
+    ["COMMUNE", false, ["COMMUNE", "SCHOOL"], "SCHOOL"],
+    ["SCHOOL", false, ["SCHOOL", "CLASSROOM"], "CLASSROOM"],
+    ["SCHOOL", true, ["CLASSROOM"], "CLASSROOM"],
+    ["SELF", false, [], null],
+  ] as const)("%s (teacher %s)", (level, teacher, levels, recipients) => {
+    expect(allowedTargetLevels(level, teacher)).toEqual(levels);
+    expect(recipientLevel(level)).toBe(recipients);
   });
 });
 

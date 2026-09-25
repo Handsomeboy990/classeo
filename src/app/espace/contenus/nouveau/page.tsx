@@ -3,14 +3,14 @@ import type { Metadata } from "next";
 import { PageHeader } from "@/components/kit/page-header";
 import { Alert } from "@/components/ui/alert";
 import { ContentForm } from "@/features/contents/content-form";
-import { targetOptions } from "@/features/contents/queries";
+import { recipientOptions, targetOptions } from "@/features/contents/queries";
 import { can, requirePermission } from "@/lib/auth/authorize";
 
 export const metadata: Metadata = { title: "Nouveau contenu" };
 
 export default async function NewContentPage() {
   const user = await requirePermission("content:create");
-  const targets = await targetOptions(user);
+  const [targets, recipients] = await Promise.all([targetOptions(user), recipientOptions(user)]);
 
   return (
     <div className="max-w-3xl">
@@ -23,6 +23,7 @@ export default async function NewContentPage() {
         <ContentForm
           canPublish={can(user, "content:publish")}
           targets={targets}
+          recipients={recipients}
           initial={{
             type: "ANNOUNCEMENT",
             title: "",
