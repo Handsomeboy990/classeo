@@ -1,4 +1,5 @@
 import {
+  Award,
   BarChart3,
   Bell,
   BookMarked,
@@ -104,6 +105,7 @@ export const NAVIGATION: NavSection[] = [
       { label: "Notes", href: "/espace/notes", icon: NotebookPen, permission: ["grade:view"], scopes: ["SCHOOL"], tab: { school: 2, teacher: 1 } },
       { label: "Bulletins", href: "/espace/bulletins", icon: FileText, permission: ["report_card:publish", "report_card:export"], scopes: ["SCHOOL"] },
       { label: "Présences", href: "/espace/presences", icon: ClipboardCheck, permission: ["attendance:view"], scopes: ["SCHOOL"], tab: { school: 4, teacher: 2 } },
+      { label: "Examens blancs", href: "/espace/examens-blancs", icon: Award, permission: ["mock_exam:view"] },
     ],
   },
   {

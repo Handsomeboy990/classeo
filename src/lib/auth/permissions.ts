@@ -38,6 +38,7 @@ export const RESOURCES = {
   calendar: "Calendrier scolaire national",
   subject: "Catalogue des matières",
   document_request: "Pièces demandées aux établissements",
+  mock_exam: "Examens blancs",
 } as const;
 export type Resource = keyof typeof RESOURCES;
 
@@ -88,6 +89,10 @@ const APPLICABLE: Record<Resource, Action[]> = {
   // An authority asks for pieces (create) and reviews them (approve); a
   // school uploads and submits them (update).
   document_request: ["view", "create", "update", "approve"],
+  // view: exams and results in scope; create: organise (invite, submit,
+  // close); update: enter results; approve: decide on an exam (hierarchy)
+  // or on an invitation (invited school); export: results sheet.
+  mock_exam: ["view", "create", "update", "export", "approve"],
 };
 
 export const PERMISSIONS: { code: PermissionCode; resource: Resource; action: Action; description: string }[] =
@@ -154,6 +159,7 @@ export const DEFAULT_ROLES: {
       ...only("calendar", "view"),
       ...only("subject", "view"),
       ...only("document_request", "view"),
+      ...only("mock_exam", "view", "export"),
     ],
   },
   {
@@ -181,6 +187,7 @@ export const DEFAULT_ROLES: {
       // Roles of its own department, within the rights it holds.
       ...only("role", "view", "update"),
       ...only("audit", "view"),
+      ...only("mock_exam", "view", "create", "approve", "export"),
     ],
   },
   {
@@ -209,6 +216,7 @@ export const DEFAULT_ROLES: {
       ...only("user", "view", "update"),
       ...only("role", "view", "update"),
       ...only("audit", "view"),
+      ...only("mock_exam", "view", "create", "approve", "export"),
     ],
   },
   {
@@ -240,6 +248,7 @@ export const DEFAULT_ROLES: {
       // rights it holds.
       ...only("role", "view", "update"),
       ...only("audit", "view"),
+      ...all("mock_exam"),
     ],
   },
   {
@@ -263,6 +272,7 @@ export const DEFAULT_ROLES: {
       ...all("message"),
       ...only("request", "view"),
       ...only("statistics", "view"),
+      ...only("mock_exam", "view"),
     ],
   },
   {
@@ -297,6 +307,7 @@ export const DEFAULT_ROLES: {
       ...only("timetable", "view"),
       ...only("content", "view", "create", "update", "publish"),
       ...all("message"),
+      ...only("mock_exam", "view", "update"),
     ],
   },
   {
@@ -315,6 +326,7 @@ export const DEFAULT_ROLES: {
       ...all("message"),
       ...only("fee", "view"),
       ...only("payment", "view"),
+      ...only("mock_exam", "view"),
     ],
   },
   {
@@ -329,6 +341,7 @@ export const DEFAULT_ROLES: {
       ...only("timetable", "view"),
       ...only("content", "view"),
       ...all("message"),
+      ...only("mock_exam", "view"),
     ],
   },
   {
