@@ -15,7 +15,8 @@
     "db:deploy": "prisma migrate deploy",
     "db:seed": "tsx prisma/seed.ts",
     "db:reset": "SEED_RESET=true tsx prisma/seed.ts",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "db:sync-roles": "tsx prisma/sync-roles.ts"
   },
   "dependencies": {
     "@node-rs/argon2": "^2.2.1",
