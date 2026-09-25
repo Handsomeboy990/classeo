@@ -15,6 +15,8 @@ export type ActionState = {
   data?: unknown;
 } | null;
 
+const MUST_CHANGE_PASSWORD = "Choisissez d'abord votre mot de passe personnel.";
+
 type Handler<T> = (input: T, user: NonNullable<CurrentUser>) => Promise<string | { message: string; data?: unknown } | void>;
 
 // Converts FormData to a plain object. Keys ending in [] and repeated keys
@@ -50,6 +52,9 @@ export function createAction<S extends z.ZodType>(options: {
       if (options.permission === null) {
         if (!user) throw new ForbiddenError("Session expirée. Veuillez vous reconnecter.");
       } else authorize(user, options.permission);
+      // A temporary password is known to whoever handed it out: nothing is
+      // written with it, the pages already send the user to change it.
+      if (user.mustChangePassword) throw new ForbiddenError(MUST_CHANGE_PASSWORD);
 
       const raw = input instanceof FormData ? formToObject(input) : input;
       const parsed = options.schema.safeParse(raw);
