@@ -153,19 +153,11 @@ export type TickerItem = { id: string; title: string; summary: string | null; ty
 // audience: published, marked for the band, before its end date, and
 // readable by this user under the same rules as the list (audience and
 // reach). Drafts and the author's own unpublished work never scroll.
+// The scrolling band: the same strict reception rule as the contents list
+// (target and audience both match the reader), limited to contents
+// published as a band that has not expired.
 export async function tickerContents(user: User): Promise<TickerItem[]> {
-  const rows = await db.content.findMany({
-    where: {
-      AND: [
-        { status: "PUBLISHED", ticker: true, tickerUntil: { gt: new Date() } },
-        { audience: { in: audiencesFor(user) } },
-        reachWhere(await readerReachFor(user), { includeNational: true }),
-      ],
-    },
-    select: { id: true, title: true, easyRead: true, type: true },
-    orderBy: { publishedAt: "desc" },
-    take: 6,
-  });
+  const rows = await listTickerContents(user);
   return rows.map((r) => ({ id: r.id, title: r.title, summary: r.easyRead, type: r.type }));
 }
 
