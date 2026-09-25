@@ -2,51 +2,66 @@
 
 import { Languages } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 
 import { cn } from "@/lib/utils";
 
 import { initLanguages, setLanguage, setShowOriginal, useLanguageState } from "./client";
-import { forget, prune, restoreAll, sourceKey, textNodes, translateNode, wasWrittenByLayer } from "./dom";
+import { translateDated } from "./date-words";
+import { applyUnit, ATTRIBUTES, changedRoots, collect, keysOf, prune, restoreAll, sourceOf, type Unit } from "./dom";
 import { bcp47, inLanguage, LANGUAGES, languageLabel, type LanguageCode, type TargetLanguage } from "./languages";
-import { lookupKeys } from "./text";
+import { isQueueable, lookupText, namePattern } from "./text";
 
 type Status = "idle" | "loading" | "done" | "partial" | "unavailable";
 
 // Translations already received in this tab, per language: going back to a
-// page costs no request.
+// page costs no request. `asked` holds the strings already sent for this
+// page, so a string the cache lacks is not asked again at every change.
 const memory = new Map<TargetLanguage, Map<string, string>>();
-const MAX_FOLLOW_UPS = 4;
+const asked = new Map<TargetLanguage, Set<string>>();
+const MAX_TEXTS = 800; // per request, as the route accepts
+const FOLLOW_UP_DELAY = 300;
+const LATER_DELAY = 250;
+const MAX_LATER_TRIES = 40;
 
 async function fetchTranslations(lang: TargetLanguage, texts: string[]) {
   const map = memory.get(lang) ?? new Map<string, string>();
   memory.set(lang, map);
-  const res = await fetch("/api/langues/interface", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ lang, texts: texts.slice(0, 800) }),
-  });
-  if (!res.ok) throw new Error(String(res.status));
-  const body = (await res.json()) as { translations: Record<string, string>; pending: number };
-  for (const [k, v] of Object.entries(body.translations)) map.set(k, v);
-  return { map, pending: body.pending };
+  let pending = 0;
+  for (let i = 0; i < texts.length; i += MAX_TEXTS) {
+    const res = await fetch("/api/langues/interface", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ lang, texts: texts.slice(i, i + MAX_TEXTS) }),
+    });
+    if (!res.ok) throw new Error(String(res.status));
+    const body = (await res.json()) as { translations: Record<string, string>; pending: number };
+    for (const [k, v] of Object.entries(body.translations)) map.set(k, v);
+    pending += body.pending;
+  }
+  return { map, pending };
 }
 
 // Language switcher and interface translation for the users holding
 // translation:view. Mounted once by the private space layout, above the
-// main region. French stays the default; the choice is remembered on this
-// device for this account.
-export function TranslationLayer({ userId, languages, voices }: { userId: string; languages: string[]; voices: string[] }) {
+// main region; translates the whole document (the shell, the page, the
+// dialogs, sheets and toasts rendered in portals) and follows its changes:
+// client side navigation, a refreshed list, a dialog opening. French stays
+// the default; the choice is remembered on this device for this account.
+export function TranslationLayer({ userId, languages, voices, names }: { userId: string; languages: string[]; voices: string[]; names: string[] }) {
   const s = useLanguageState();
   const pathname = usePathname();
   const [status, setStatus] = useState<Status>("idle");
   const selectId = useId();
-  const followUps = useRef(0);
+  const refresh = useRef<(() => void) | null>(null);
 
   // Keyed by value: a refreshed layout sends new arrays with the same
   // content, which must not reset the choice.
   const languagesKey = languages.join(",");
   const voicesKey = voices.join(",");
+  // Names are kept and looked up as template values (see numberTemplate).
+  const namesKey = names.join("\n");
+  const pattern = useMemo(() => namePattern(namesKey.split("\n")), [namesKey]);
   useEffect(() => {
     initLanguages({ allowed: true, userId, languages: languagesKey.split(",").filter(Boolean), voices: voicesKey.split(",").filter(Boolean) });
   }, [userId, languagesKey, voicesKey]);
@@ -55,80 +70,128 @@ export function TranslationLayer({ userId, languages, voices }: { userId: string
 
   useEffect(() => {
     const main = document.getElementById("page-content");
-    if (!main) return;
     // Back to French first: a string missing in the new language must not
     // stay in the previous one.
     restoreAll();
-    main.removeAttribute("lang");
-    if (!active) return;
+    main?.removeAttribute("lang");
+    if (!active) {
+      refresh.current = null;
+      return;
+    }
+    const lang = active;
     let cancelled = false;
-    followUps.current = 0;
-    let map = memory.get(active) ?? new Map<string, string>();
-    let waiting = new Set<string>();
+    let map = memory.get(lang) ?? new Map<string, string>();
+    const sent = asked.get(lang) ?? new Set<string>();
+    asked.set(lang, sent);
+    const waiting = new Set<string>();
     let timer: ReturnType<typeof setTimeout> | undefined;
+    const lookup = (text: string) => lookupText(text, map, (t) => translateDated(t, lang, map), pattern);
 
-    const apply = (nodes: Text[]) => {
-      let missing = 0;
-      for (const n of nodes) {
-        if (!translateNode(n, map)) {
-          missing++;
-          lookupKeys(sourceKey(n)).forEach((k) => waiting.add(k));
-        }
-      }
-      return missing;
+    // Regions React has not hydrated yet (a streamed section) are taken again
+    // a moment later: hydration changes nothing in the document, so no
+    // mutation would bring them back.
+    const later = new Set<Element>();
+    let laterTimer: ReturnType<typeof setTimeout> | undefined;
+    let laterTries = 0;
+    const gather = (root: Node) => collect(root, { onLater: (el) => later.add(el) });
+    // A steady pace, never pushed back by the changes of the page: a region
+    // that React never owns (an element another script added) only costs
+    // a few passes.
+    const retryLater = () => {
+      if (!later.size || laterTries >= MAX_LATER_TRIES || laterTimer !== undefined) return;
+      laterTimer = setTimeout(() => {
+        laterTimer = undefined;
+        laterTries++;
+        const roots = [...later].filter((el) => el.isConnected);
+        later.clear();
+        apply(roots.flatMap(gather));
+        if (waiting.size) followUp();
+        retryLater();
+      }, LATER_DELAY);
+    };
+    // One request for the strings gathered within the delay; a burst of
+    // changes does not keep pushing it back.
+    const followUp = () => {
+      if (timer !== undefined) return;
+      timer = setTimeout(() => {
+        timer = undefined;
+        void ask(false);
+      }, FOLLOW_UP_DELAY);
     };
 
-    const ask = async (texts: string[], first: boolean) => {
+    // Known strings at once; the others wait for the next request. Returns
+    // the number of interface strings left in French (names and figures,
+    // never translated, are not counted).
+    const apply = (units: Unit[]) => {
+      let gaps = 0;
+      for (const u of units) {
+        if (applyUnit(u, lookup)) continue;
+        if (isQueueable(sourceOf(u))) gaps++;
+        for (const k of keysOf(u, pattern)) if (!sent.has(k) && !map.has(k)) waiting.add(k);
+      }
+      return gaps;
+    };
+
+    const ask = async (first: boolean) => {
+      const texts = [...waiting];
+      waiting.clear();
+      texts.forEach((t) => sent.add(t));
       if (first) setStatus("loading");
       try {
-        const result = await fetchTranslations(active, texts);
+        const result = texts.length ? await fetchTranslations(lang, texts) : { map, pending: 0 };
         if (cancelled) return;
         map = result.map;
-        waiting = new Set();
-        const missing = apply(textNodes(main));
-        main.setAttribute("lang", bcp47(active));
-        setStatus(missing > 0 || result.pending > 0 ? "partial" : "done");
+        const gaps = apply(gather(document.body));
+        retryLater();
+        main?.setAttribute("lang", bcp47(lang));
+        setStatus(gaps > 0 || result.pending > 0 ? "partial" : "done");
       } catch {
         if (!cancelled) setStatus("unavailable");
       }
     };
 
-    // First pass: whatever is known already, then one request for the page.
-    const nodes = textNodes(main);
-    apply(nodes);
-    void ask([...new Set(nodes.flatMap((n) => lookupKeys(sourceKey(n))))], true);
+    // First pass: whatever is known already, then one request for the rest.
+    const scan = () => {
+      laterTries = 0;
+      apply(gather(document.body));
+      void ask(true);
+    };
+    scan();
+    // A new page: the strings still missing are asked once more, the
+    // background queue may have translated them since.
+    refresh.current = () => {
+      for (const k of [...sent]) if (!map.has(k)) sent.delete(k);
+      scan();
+    };
 
-    // Later updates (a tab, a refreshed thread, a streamed section): known
-    // strings at once, unknown ones in a grouped follow up request.
+    // Later updates (a tab, a refreshed thread, a dialog, a toast, a new
+    // page): known strings at once, unknown ones in one grouped request.
     const observer = new MutationObserver((records) => {
-      const changed: Text[] = [];
-      for (const r of records) {
-        if (r.type === "characterData" && r.target.nodeType === Node.TEXT_NODE) {
-          const t = r.target as Text;
-          if (wasWrittenByLayer(t)) continue;
-          forget(t);
-          changed.push(...textNodes(t));
-        }
-        r.addedNodes.forEach((n) => changed.push(...textNodes(n)));
-      }
-      if (!changed.length) return;
+      const roots = changedRoots(records);
+      if (!roots.length) return;
       prune();
-      apply(changed);
-      if (waiting.size && followUps.current < MAX_FOLLOW_UPS) {
-        clearTimeout(timer);
-        timer = setTimeout(() => {
-          followUps.current++;
-          void ask([...waiting], false);
-        }, 800);
-      }
+      apply(roots.flatMap(gather));
+      if (waiting.size) followUp();
+      retryLater();
     });
-    observer.observe(main, { subtree: true, childList: true, characterData: true });
+    observer.observe(document.body, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: [...ATTRIBUTES] });
     return () => {
       cancelled = true;
       clearTimeout(timer);
+      clearTimeout(laterTimer);
       observer.disconnect();
+      refresh.current = null;
     };
-  }, [active, pathname]);
+  }, [active, pattern]);
+
+  // Client side navigation: the observer already translated the new page
+  // from the cache; this asks for what it still lacks.
+  const firstPath = useRef(pathname);
+  useEffect(() => {
+    if (firstPath.current === pathname) return;
+    firstPath.current = pathname;
+    refresh.current?.();
+  }, [pathname]);
 
   const label = languageLabel(s.lang);
   const message = !active
@@ -147,7 +210,7 @@ export function TranslationLayer({ userId, languages, voices }: { userId: string
   // for users allowed to translate): appearing after hydration would push
   // the page down under the reader's finger.
   return (
-    <div data-no-translate data-read-skip className="mx-auto w-full max-w-7xl px-4 pt-3 sm:px-6 print:hidden max-lg:[body:has([data-chat])_&]:hidden">
+    <div data-no-translate data-read-skip data-language-bar className="mx-auto w-full max-w-7xl px-4 pt-3 sm:px-6 print:hidden max-lg:[body:has([data-chat])_&]:hidden">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2 rounded-card border border-border bg-surface px-3 py-2">
         <label htmlFor={selectId} className="flex items-center gap-2 text-sm font-semibold">
           <Languages className="size-5 text-primary" aria-hidden />
