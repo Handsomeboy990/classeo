@@ -185,13 +185,13 @@ export function Signatures({ items, marginTop = 18 }: { items: { role: string; n
               <View style={{ marginTop: 4, height: 70, position: "relative", borderWidth: 0.75, borderColor: COLORS.primary, borderRadius: 4, padding: 4, justifyContent: "flex-end" }}>
                 {e.stamp ? (
                   // eslint-disable-next-line jsx-a11y/alt-text
-                  <Image src={e.stamp} style={{ position: "absolute", right: 6, top: 3, width: 62, height: 62, objectFit: "contain", opacity: 0.9 }} />
+                  <Image src={e.stamp} style={{ position: "absolute", right: 5, top: 4, width: 60, height: 60, objectFit: "contain", opacity: 0.9 }} />
                 ) : null}
                 {e.signature ? (
                   // eslint-disable-next-line jsx-a11y/alt-text
-                  <Image src={e.signature} style={{ position: "absolute", left: 6, top: 6, width: 120, height: 44, objectFit: "contain" }} />
+                  <Image src={e.signature} style={{ position: "absolute", left: 6, top: 5, width: 118, height: 42, objectFit: "contain" }} />
                 ) : null}
-                <T style={{ fontSize: 6.5, color: COLORS.primaryDark, fontWeight: 600 }}>Signé électroniquement le {beninDateTime(e.signedAt)}</T>
+                <T style={{ fontSize: 6.5, color: COLORS.primaryDark, fontWeight: 600, maxWidth: "62%" }}>Signé électroniquement le {beninDateTime(e.signedAt)}</T>
               </View>
             ) : (
               <View
