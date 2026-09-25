@@ -46,6 +46,9 @@ export function ReadAloud({
 }: {
   text?: string;
   targetId?: string;
+  // Language of the voice for a French text: "fon" or "yo" plays the local
+  // voice of that source. Defaults to French.
+  lang?: "fr" | "fon" | "yo";
   label?: string;
   className?: string;
   // true: icon only. "mobile": icon only below 40rem, labelled above.
