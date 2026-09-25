@@ -249,8 +249,8 @@ export function GradeGrid({
             {entered} / {rows.length * columns.length}
           </strong>
         </p>
-        <p className="flex items-center gap-2">
-          <span className="text-muted">Moyenne de la classe :</span>
+        <p className="flex flex-wrap items-center gap-x-2 gap-y-1">
+          <span className="whitespace-nowrap text-muted">Moyenne de la classe :</span>
           <AverageLevel average={computed.classAverage} />
         </p>
       </div>
@@ -319,8 +319,8 @@ export function GradeGrid({
                       );
                     })}
                   </div>
-                  <div className="mt-3 flex items-center gap-2 text-sm">
-                    <span className="text-muted">Moyenne :</span>
+                  <div className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
+                    <span className="whitespace-nowrap text-muted">Moyenne :</span>
                     {rowAverage(info.errors, info.average)}
                   </div>
                 </li>
@@ -423,16 +423,19 @@ export function GradeGrid({
       )}
 
       {/* Save bar: beside the summary on a large screen; below lg, last in
-          the card, kept in view above the tab bar while scrolling, with room
-          on the right for the floating accessibility button. */}
+          the card, kept in view above the tab bar while scrolling. It is
+          marked as a phone action bar: the floating accessibility button
+          steps aside while it is on screen (globals.css). With very large
+          text the status takes its own line above the buttons. */}
       {editable ? (
         <div
+          data-action-bar
           className={cn(
             "flex flex-wrap items-center gap-2 lg:col-start-2 lg:row-start-1 lg:justify-end lg:border-b lg:border-border lg:p-4",
-            "sticky bottom-[var(--tab-bar-space)] z-30 rounded-b-card border-t border-border bg-surface/95 p-3 pr-[calc(var(--fab-size)+1.5rem)] lg:pr-4 shadow-[0_-4px_16px_rgb(0_0_0/0.06)] backdrop-blur-sm lg:static lg:z-auto lg:rounded-none lg:border-t-0 lg:bg-surface lg:shadow-none lg:backdrop-blur-none",
+            "sticky bottom-[var(--tab-bar-space)] z-30 rounded-b-card border-t border-border bg-surface/95 p-3 shadow-[0_-4px_16px_rgb(0_0_0/0.06)] backdrop-blur-sm lg:static lg:z-auto lg:rounded-none lg:border-t-0 lg:bg-surface lg:shadow-none lg:backdrop-blur-none",
           )}
         >
-          <p className="min-w-0 flex-1 text-sm text-muted lg:flex-none" aria-live="polite">
+          <p className="min-w-0 flex-1 text-sm text-muted lg:flex-none max-lg:[html[data-text=xl]_&]:basis-full max-lg:[html[data-text=xxl]_&]:basis-full" aria-live="polite">
             {dirty.length ? `${dirty.length} modification${dirty.length > 1 ? "s" : ""} non enregistrée${dirty.length > 1 ? "s" : ""}` : "Tout est enregistré"}
           </p>
           {dirty.length > 0 && (
@@ -440,7 +443,7 @@ export function GradeGrid({
               <RotateCcw aria-hidden /> <span className="max-sm:sr-only">Annuler les modifications</span>
             </Button>
           )}
-          <Button onClick={save} loading={pending} disabled={!dirty.length} aria-keyshortcuts="Control+S">
+          <Button onClick={save} loading={pending} disabled={!dirty.length} aria-keyshortcuts="Control+S" className="max-lg:[html[data-text=xl]_&]:grow max-lg:[html[data-text=xxl]_&]:grow">
             {!pending && <Save aria-hidden />}
             {pending ? (
               "Enregistrement…"
