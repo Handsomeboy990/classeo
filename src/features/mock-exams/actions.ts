@@ -369,7 +369,7 @@ export const submitExam = createAction({
     await notify(await approvers(required, schools), {
       kind: "mock_exam",
       title: "Examen blanc à valider",
-      body: `${exam.organizerName} propose « ${exam.title} » (${exam.level?.name ?? ""}) avec ${plural(schools.length - 1, "établissement partenaire", "établissements partenaires")}.`,
+      body: `${exam.organizerName} propose « ${exam.title} » (${exam.level?.name ?? ""}) avec ${plural(exam.participants.filter((p) => !p.isOrganizer && p.status !== "DECLINED").length, "établissement partenaire", "établissements partenaires")}.`,
       link: link(exam.id),
     });
     return `Examen soumis à ${APPROVER_LABELS[required]}. Vous serez notifié de la décision.`;

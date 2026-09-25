@@ -54,6 +54,7 @@ export default async function MockExamPage({ params }: PageProps<"/espace/examen
   const territoryOrganizer = exam.viewerIsOrganizer && !schoolId && can(user, "mock_exam:create");
   const approvalSchools = exam.participants.filter((p) => p.status !== "DECLINED").map((p) => ({ communeId: p.school.communeId, departmentId: p.school.commune.departmentId }));
   const required = exam.organizerLevel === "SCHOOL" ? approvalLevel(approvalSchools) : null;
+  const partnerCount = exam.participants.filter((p) => !p.isOrganizer && p.status !== "DECLINED").length;
 
   const canAnswer = head && can(user, "mock_exam:approve") && !!mine && canRespond(exam, mine.status as Participation);
   const canDecide = exam.status === "PENDING_APPROVAL" && !!required && can(user, "mock_exam:approve") && canDecideAt(user.scope, required, approvalSchools);
@@ -120,7 +121,7 @@ export default async function MockExamPage({ params }: PageProps<"/espace/examen
           <CardHeader>
             <CardTitle>Validation</CardTitle>
             <CardDescription>
-              Examen proposé par {exam.organizerName} avec {plural(approvalSchools.length - 1, "établissement partenaire", "établissements partenaires")}. Il relève de{" "}
+              Examen proposé par {exam.organizerName} avec {plural(partnerCount, "établissement partenaire", "établissements partenaires")} (acceptés ou sans réponse). Il relève de{" "}
               {APPROVER_LABELS[required!]}.
             </CardDescription>
           </CardHeader>
@@ -492,7 +493,7 @@ function FamilyResults({ exam, items, results }: { exam: ExamDetail; items: Awai
             {c.result && (
               <p className="text-sm">
                 Rang dans l&apos;établissement : <strong>{formatRank(c.result.schoolRank, c.result.schoolTied)}</strong> · Rang général :{" "}
-                <strong>{formatRank(c.result.overallRank, c.result.overallTied)}</strong> sur {formatNumber(results?.overall.candidates ?? 0)}
+                <strong>{formatRank(c.result.overallRank, c.result.overallTied)}</strong> sur {plural(results?.overall.complete ?? 0, "candidat classé", "candidats classés")}
               </p>
             )}
           </CardHeader>
