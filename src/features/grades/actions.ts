@@ -125,7 +125,8 @@ export const deleteSheet = createAction({
     if (grades) throw new DomainError("Cette fiche contient des notes : effacez-les avant de la supprimer.");
     await db.gradeSheet.delete({ where: { id: sheet.id } });
     await audit(user, { action: "delete", resource: "grade", resourceId: sheet.id, summary: `Suppression de la fiche ${sheetLabel(sheet)}`, schoolId: sheet.assignment.classroom.schoolId });
-    return "Fiche supprimée.";
+    // The sheet page no longer exists: back to the list.
+    redirect(`/espace/notes?classe=${sheet.assignment.classroom.id}`);
   },
 });
 

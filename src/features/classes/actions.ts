@@ -1,5 +1,6 @@
 "use server";
 
+import { redirect } from "next/navigation";
 import { z } from "zod";
 
 import { createAction } from "@/lib/action";
@@ -99,7 +100,8 @@ export const deleteClassroom = createAction({
     await db.classroom.delete({ where: { id: classroom.id } });
     await audit(user, { action: "delete", resource: "class", resourceId: classroom.id, summary: `Suppression de la classe ${classroom.name}`, schoolId: classroom.schoolId });
     invalidate(tags.stats);
-    return `Classe ${classroom.name} supprimée.`;
+    // The class page no longer exists: back to the list.
+    redirect("/espace/classes");
   },
 });
 
