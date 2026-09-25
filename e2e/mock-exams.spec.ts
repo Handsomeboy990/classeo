@@ -21,6 +21,12 @@ function isoIn(days: number) {
   return new Date(Date.now() + days * 86_400_000).toISOString().slice(0, 10);
 }
 
+// The date field of the kit takes a typed jj/mm/aaaa date.
+function frIn(days: number) {
+  const [y, m, d] = isoIn(days).split("-");
+  return `${d}/${m}/${y}`;
+}
+
 test.describe.configure({ mode: "serial" });
 
 test("a school proposes an exam, the partner accepts and the district validates it", async ({ pageAs, browser }) => {
@@ -37,8 +43,8 @@ test("a school proposes an exam, the partner accepts and the district validates 
   await director.getByLabel("Classe d'examen").selectOption({ label: "3e" });
   await expect(director.getByRole("checkbox", { name: "Mathématiques" })).toBeChecked();
   await director.getByLabel("Intitulé").fill(title);
-  await director.getByLabel("Premier jour des épreuves").fill(isoIn(20));
-  await director.getByLabel("Dernier jour des épreuves").fill(isoIn(21));
+  await director.getByLabel("Premier jour des épreuves").fill(frIn(20));
+  await director.getByLabel("Dernier jour des épreuves").fill(frIn(21));
   await director.getByRole("checkbox", { name: /CEG Abomey-Calavi/ }).check();
   await shot(director, "02-create-school");
   await director.getByRole("button", { name: "Créer et envoyer les invitations" }).click();
@@ -106,8 +112,8 @@ test("a department imposes an exam on every school of a commune", async ({ pageA
   await page.getByLabel("Classe d'examen").selectOption({ label: "3e" });
   await expect(page.getByRole("checkbox", { name: "Mathématiques" })).toBeChecked();
   await page.getByLabel("Intitulé").fill(title);
-  await page.getByLabel("Premier jour des épreuves").fill(isoIn(30));
-  await page.getByLabel("Dernier jour des épreuves").fill(isoIn(31));
+  await page.getByLabel("Premier jour des épreuves").fill(frIn(30));
+  await page.getByLabel("Dernier jour des épreuves").fill(frIn(31));
   await page.getByRole("radio", { name: "Tous les établissements d'une commune" }).check();
   await page.getByRole("combobox", { name: "Commune" }).selectOption({ label: "Abomey-Calavi" });
   await expect(page.getByText(/établissements? concernés? pour cette classe/)).toBeVisible();
