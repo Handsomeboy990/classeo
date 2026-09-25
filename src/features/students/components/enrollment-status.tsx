@@ -1,6 +1,6 @@
 "use client";
 
-import { UserMinus, UserPlus, UserX } from "lucide-react";
+import { UserPlus, UserX } from "lucide-react";
 import { useState } from "react";
 
 import { ActionForm, SubmitButton } from "@/components/kit/action-form";
@@ -38,9 +38,6 @@ export function EnrollmentStatusActions({ enrollmentId, status, name, className 
     <>
       {status === "ACTIVE" ? (
         <>
-          <Button variant="secondary" onClick={() => setTarget("TRANSFERRED")}>
-            <UserMinus aria-hidden /> Transférer
-          </Button>
           <Button variant="danger" onClick={() => setTarget("WITHDRAWN")}>
             <UserX aria-hidden /> Retirer
           </Button>

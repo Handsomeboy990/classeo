@@ -11,6 +11,7 @@ import { UrlSelect } from "@/components/kit/url-select";
 import { classroomOptions } from "@/features/classes/queries";
 import { DISABILITY_LABELS, ENROLLMENT_STATUS_LABELS, GENDER_LABELS, shortDate } from "@/features/students/labels";
 import { listStudents } from "@/features/students/queries";
+import { StudentAvatar } from "@/features/students/components/student-avatar";
 import { can, requirePermission } from "@/lib/auth/authorize";
 import { listParams, param } from "@/lib/list";
 
@@ -37,18 +38,21 @@ export default async function StudentsPage(props: PageProps<"/espace/eleves">) {
       header: "Élève",
       primary: true,
       cell: (r) => (
-        <div>
-          <Link href={`/espace/eleves/${r.student.id}`} className="font-semibold text-primary hover:underline">
-            {r.student.lastName} {r.student.firstName}
-          </Link>
-          <span className="ml-2 inline-flex flex-wrap gap-1">
-            {r.isRepeating && <Badge>Redoublant</Badge>}
-            {r.student.disabilities.map((d) => (
-              <Badge key={d} tone="info">
-                {DISABILITY_LABELS[d]}
-              </Badge>
-            ))}
-          </span>
+        <div className="flex items-center gap-3">
+          <StudentAvatar name={`${r.student.firstName} ${r.student.lastName}`} photoFileId={r.student.photoFileId} />
+          <div className="min-w-0">
+            <Link href={`/espace/eleves/${r.student.id}`} className="font-semibold text-primary hover:underline">
+              {r.student.lastName} {r.student.firstName}
+            </Link>
+            <span className="ml-2 inline-flex flex-wrap gap-1">
+              {r.isRepeating && <Badge>Redoublant</Badge>}
+              {r.student.disabilities.map((d) => (
+                <Badge key={d} tone="info">
+                  {DISABILITY_LABELS[d]}
+                </Badge>
+              ))}
+            </span>
+          </div>
         </div>
       ),
     },
