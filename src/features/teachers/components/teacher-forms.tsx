@@ -1,7 +1,7 @@
 import { Pencil, Plus } from "lucide-react";
 
 import { FormField } from "@/components/kit/form-field";
-import { Input, Select } from "@/components/ui/input";
+import { Input, Select, Switch } from "@/components/ui/input";
 import { FormDialog } from "@/components/kit/form-dialog";
 
 import { createTeacher, updateTeacher } from "../actions";
@@ -44,10 +44,7 @@ function Fields({ values }: { values?: Values }) {
         <Input type="date" defaultValue={values?.hiredAt ?? ""} />
       </FormField>
       {values && (
-        <label className="inline-flex min-h-10 items-center gap-2 text-sm font-semibold sm:col-span-2">
-          <input type="checkbox" name="isActive" defaultChecked={values.isActive} className="size-5 accent-primary" />
-          En activité dans l&apos;établissement
-        </label>
+        <Switch name="isActive" defaultChecked={values.isActive} label="En activité" description="Un enseignant inactif ne figure plus dans les choix d'enseignant ni dans l'appel du personnel." labelClassName="sm:col-span-2" />
       )}
     </div>
   );

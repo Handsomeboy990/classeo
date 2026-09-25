@@ -1,7 +1,7 @@
 import { Pencil, Plus, UserPlus } from "lucide-react";
 
 import { FormField } from "@/components/kit/form-field";
-import { Input, Select } from "@/components/ui/input";
+import { Checkbox, Input, Select, Switch } from "@/components/ui/input";
 import { FormDialog } from "@/components/kit/form-dialog";
 import { CHANNEL_LABELS, RELATIONSHIPS } from "@/features/students/labels";
 
@@ -44,10 +44,7 @@ function GuardianFields({ values }: { values?: Values }) {
           ))}
         </Select>
       </FormField>
-      <label className="inline-flex min-h-10 items-center gap-2 self-end text-sm font-semibold">
-        <input type="checkbox" name="prefersAudio" defaultChecked={values?.prefersAudio} className="size-5 accent-primary" />
-        Préfère les messages audio
-      </label>
+      <Switch name="prefersAudio" defaultChecked={values?.prefersAudio} label="Messages audio" description="Pour un parent qui lit peu." labelClassName="self-end" />
     </div>
   );
 }
@@ -76,10 +73,7 @@ function ChildFields({ students }: { students: StudentChoice[] }) {
           ))}
         </Select>
       </FormField>
-      <label className="inline-flex min-h-10 items-center gap-2 self-end text-sm font-semibold">
-        <input type="checkbox" name="isPrimary" className="size-5 accent-primary" />
-        Parent principal (appelé en premier)
-      </label>
+      <Checkbox name="isPrimary" label="Parent principal" description="Contacté en premier." labelClassName="self-end" />
     </div>
   );
 }

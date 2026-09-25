@@ -6,7 +6,7 @@ import { ActionForm, SubmitButton, useFormState } from "@/components/kit/action-
 import { FormField } from "@/components/kit/form-field";
 import { ButtonLink } from "@/components/ui/button";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input, Select } from "@/components/ui/input";
+import { Checkbox, ChoiceGroup, Input, Radio, Select } from "@/components/ui/input";
 
 import { createStudent, updateStudent } from "../actions";
 import { CHANNEL_LABELS, DISABILITIES, DISABILITY_LABELS, RELATIONSHIPS } from "../labels";
@@ -30,19 +30,14 @@ function Disabilities({ values }: { values?: string[] }) {
   const state = useFormState();
   const error = state?.fieldErrors?.disabilities?.[0];
   return (
-    <fieldset className="sm:col-span-2">
-      <legend className="text-sm font-semibold">Besoins particuliers</legend>
-      <p className="text-xs text-muted">Permet d&apos;adapter l&apos;accueil, les supports et les évaluations.</p>
-      <div className="mt-2 flex flex-wrap gap-x-5 gap-y-2">
+    <div className="sm:col-span-2">
+      <ChoiceGroup legend="Besoins particuliers" hint="Pour adapter l'accueil, les supports et les évaluations." orientation="horizontal">
         {DISABILITIES.map((d) => (
-          <label key={d} className="inline-flex min-h-10 items-center gap-2 text-sm">
-            <input type="checkbox" name="disabilities[]" value={d} defaultChecked={values?.includes(d)} className="size-5 accent-primary" />
-            {DISABILITY_LABELS[d]}
-          </label>
+          <Checkbox key={d} name="disabilities[]" value={d} defaultChecked={values?.includes(d)} label={DISABILITY_LABELS[d]} aria-invalid={error ? true : undefined} />
         ))}
-      </div>
-      {error && <p className="text-sm font-medium text-danger">{error}</p>}
-    </fieldset>
+      </ChoiceGroup>
+      {error && <p className="mt-1 text-sm font-semibold text-danger">{error}</p>}
+    </div>
   );
 }
 
@@ -96,10 +91,7 @@ export function StudentForm({ classes, guardians, values, cancelHref }: { classe
               })}
             </Select>
           </FormField>
-          <label className="inline-flex min-h-10 items-center gap-2 text-sm font-semibold sm:col-span-2">
-            <input type="checkbox" name="isRepeating" defaultChecked={values?.isRepeating} className="size-5 accent-primary" />
-            Redoublant cette année
-          </label>
+          <Checkbox name="isRepeating" defaultChecked={values?.isRepeating} label="Redoublant cette année" labelClassName="sm:col-span-2" />
           <Disabilities values={values?.disabilities} />
         </CardBody>
       </Card>
@@ -110,27 +102,18 @@ export function StudentForm({ classes, guardians, values, cancelHref }: { classe
             <CardTitle>Parent ou tuteur principal</CardTitle>
           </CardHeader>
           <CardBody className="grid gap-4 sm:grid-cols-2">
-            <fieldset className="sm:col-span-2">
-              <legend className="text-sm font-semibold">Le parent est-il déjà connu de l&apos;établissement ?</legend>
-              <div className="mt-2 flex flex-wrap gap-5">
-                <label className="inline-flex min-h-10 items-center gap-2 text-sm">
-                  <input type="radio" name="guardianMode" value="new" checked={mode === "new"} onChange={() => setMode("new")} className="size-5 accent-primary" />
-                  Nouveau parent
-                </label>
-                <label className="inline-flex min-h-10 items-center gap-2 text-sm">
-                  <input
-                    type="radio"
-                    name="guardianMode"
-                    value="existing"
-                    checked={mode === "existing"}
-                    onChange={() => setMode("existing")}
-                    className="size-5 accent-primary"
-                    disabled={!guardians?.length}
-                  />
-                  Parent déjà inscrit (frère ou sœur dans l&apos;établissement)
-                </label>
-              </div>
-            </fieldset>
+            <ChoiceGroup legend="Le parent est-il déjà connu de l'établissement ?" orientation="horizontal" className="sm:col-span-2">
+              <Radio name="guardianMode" value="new" checked={mode === "new"} onChange={() => setMode("new")} label="Nouveau parent" />
+              <Radio
+                name="guardianMode"
+                value="existing"
+                checked={mode === "existing"}
+                onChange={() => setMode("existing")}
+                disabled={!guardians?.length}
+                label="Parent déjà inscrit"
+                description="Un frère ou une sœur est dans l'établissement."
+              />
+            </ChoiceGroup>
             {mode === "existing" ? (
               <FormField label="Parent" name="guardianId" required className="sm:col-span-2">
                 <Select defaultValue="">
