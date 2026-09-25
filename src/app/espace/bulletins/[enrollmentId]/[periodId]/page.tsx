@@ -12,6 +12,7 @@ import { spokenSummary } from "@/lib/domain/report-card";
 import { schoolIssuer } from "@/lib/pdf/data/common";
 import { PdfDownloadLink } from "@/lib/pdf/download-link";
 import { documentReference } from "@/lib/pdf/format";
+import { headOfClassroomSchool } from "@/lib/pdf/data/report-cards";
 import { PrintReportCard } from "@/lib/pdf/print/report-card";
 
 export const metadata: Metadata = { title: "Bulletin" };
@@ -82,6 +83,7 @@ export default async function ReportCardPage(props: PageProps<"/espace/bulletins
           mode: mode === "preview" ? "preview" : "published",
           student: s,
           classroom: { name: c.name, mainTeacher: mt },
+          headOfSchool: await headOfClassroomSchool(enrollment.classroomId),
           isRepeating: enrollment.isRepeating,
           yearLabel: enrollment.academicYear.label,
           periodName: period.name,

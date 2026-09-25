@@ -48,6 +48,7 @@ export async function loadReportCard(user: PdfUser, key: { enrollmentId: string;
     mode,
     student: enrollment.student,
     classroom: { name: enrollment.classroom.name, mainTeacher: mt ? `${mt.firstName} ${mt.lastName}` : null },
+    headOfSchool: await headOfSchool(school?.id),
     isRepeating: enrollment.isRepeating,
     yearLabel: enrollment.academicYear.label,
     periodName: period.name,
@@ -60,6 +61,22 @@ export async function loadReportCard(user: PdfUser, key: { enrollmentId: string;
     schoolId: school?.id ?? null,
     issuer: schoolIssuer({ ...enrollment.classroom.school, email: school?.email ?? null }),
   };
+}
+
+// Name of the active head of a school, shown in the signature block.
+export async function headOfClassroomSchool(classroomId: string) {
+  const classroom = await db.classroom.findUnique({ where: { id: classroomId }, select: { schoolId: true } });
+  return headOfSchool(classroom?.schoolId);
+}
+
+async function headOfSchool(schoolId: string | null | undefined) {
+  if (!schoolId) return null;
+  const head = await db.user.findFirst({
+    where: { schoolId, isActive: true, role: { code: "SCHOOL_DIRECTOR" } },
+    orderBy: { createdAt: "asc" },
+    select: { firstName: true, lastName: true },
+  });
+  return head ? `${head.firstName} ${head.lastName}` : null;
 }
 
 // Every report card of a class for a period, for staff who may export them.
@@ -96,6 +113,7 @@ export async function loadClassReportCards(user: PdfUser, classroomId: string, p
   const snapshotOf = new Map(snapshots.map((s) => [s.enrollmentId, s]));
   const mt = classroom.mainTeacher ? `${classroom.mainTeacher.firstName} ${classroom.mainTeacher.lastName}` : null;
   const publishedAverage = snapshots.length ? await publishedClassAverage(classroom.id, period.id) : null;
+  const head = await headOfSchool(classroom.school.id);
 
   // Alphabetical order, the order of the class list.
   const cards = [...preview.cards].sort((a, b) => a.name.localeCompare(b.name, "fr"));
@@ -109,6 +127,7 @@ export async function loadClassReportCards(user: PdfUser, classroomId: string, p
       mode: snap ? "published" : "preview",
       student: e.student,
       classroom: { name: classroom.name, mainTeacher: mt },
+      headOfSchool: head,
       isRepeating: e.isRepeating,
       yearLabel: classroom.academicYear.label,
       periodName: period.name,

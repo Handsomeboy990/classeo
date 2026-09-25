@@ -114,7 +114,7 @@ export function PrintReportCard({ data, meta, className, footnote }: { data: Rep
       <PrintSignatures
         items={[
           { role: "Le professeur principal", name: data.classroom.mainTeacher },
-          { role: "Le chef d'établissement", name: data.mode === "published" ? card.publishedBy : null, stamp: true },
+          { role: "Le chef d'établissement", name: data.headOfSchool, stamp: true },
           { role: "Vu par le parent ou tuteur" },
         ]}
       />

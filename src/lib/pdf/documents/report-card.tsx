@@ -16,6 +16,8 @@ export type ReportCardData = {
   mode: "published" | "preview";
   student: { matricule: string; firstName: string; lastName: string; gender: "F" | "M"; birthDate: Date; birthPlace: string | null };
   classroom: { name: string; mainTeacher: string | null };
+  // The head of the school signs the report card, whoever clicked publish.
+  headOfSchool: string | null;
   isRepeating: boolean;
   yearLabel: string;
   periodName: string;
@@ -98,7 +100,7 @@ export function ReportCardPage({ data, meta, issuer }: { data: ReportCardData; m
       <Signatures
         items={[
           { role: "Le professeur principal", name: data.classroom.mainTeacher },
-          { role: "Le chef d'établissement", name: data.mode === "published" ? card.publishedBy : null, stamp: true },
+          { role: "Le chef d'établissement", name: data.headOfSchool, stamp: true },
           { role: "Vu par le parent ou tuteur" },
         ]}
       />
