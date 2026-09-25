@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { Atkinson_Hyperlegible_Next, Bricolage_Grotesque } from "next/font/google";
 
 import { Toaster } from "@/components/kit/toaster";
+import { AccessibilityFab } from "@/components/shell/accessibility-fab";
+import { ThemeColor } from "@/components/shell/theme-color";
 import { OfflineBanner } from "@/features/pwa/offline-banner";
 import { ServiceWorkerRegistration } from "@/features/pwa/service-worker";
 
@@ -25,13 +27,17 @@ export const metadata: Metadata = {
   formatDetection: { telephone: false },
 };
 
+// The first paint uses the app bar surface of each system theme; ThemeColor
+// then follows the page and the theme chosen in Classéo. viewportFit cover
+// exposes the safe areas (home indicator, notch) the shell pads for.
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#006b40" },
-    { media: "(prefers-color-scheme: dark)", color: "#0a1510" },
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#161d19" },
   ],
   width: "device-width",
   initialScale: 1,
+  viewportFit: "cover",
 };
 
 // Applied before the first paint so the chosen theme, contrast and text size
@@ -53,8 +59,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         </a>
         <OfflineBanner />
         {children}
+        <AccessibilityFab />
         <Toaster />
         <ServiceWorkerRegistration />
+        <ThemeColor />
       </body>
     </html>
   );

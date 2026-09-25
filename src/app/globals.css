@@ -1155,3 +1155,176 @@ html[data-lite="on"] img[data-decorative] {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+
+/*
+ * Phone shell (below lg): a top app bar, a tab bar fixed at the bottom above
+ * the home indicator, bottom sheets, and the accessibility button floating
+ * above the tab bar. Sizes are in rem so they grow with the text size
+ * preference.
+ */
+:root {
+  --app-bar-h: 3.5rem;
+  --tab-bar-h: 4rem;
+  --fab-size: 2.75rem;
+  --tab-bar-space: calc(var(--tab-bar-h) + env(safe-area-inset-bottom));
+}
+
+/* Nothing may hide behind the tab bar or the floating button. */
+@media (max-width: 63.999rem) {
+  .app-main {
+    padding-bottom: calc(var(--tab-bar-space) + var(--fab-size) + 2rem);
+  }
+}
+@media (min-width: 64rem) {
+  .app-main {
+    padding-bottom: calc(var(--fab-size) + 3rem);
+  }
+}
+
+/*
+ * Phone widths, two guards against the page scrolling sideways:
+ * - a grid cell may shrink below its content (min-width auto lets one wide
+ *   table or long line widen the whole column, then the page);
+ * - a table scroller is positioned, so the visually hidden labels inside
+ *   its cells (sr-only, absolutely placed) stay within it instead of
+ *   stretching the page to the table's full width.
+ */
+@media (max-width: 63.999rem) {
+  .app-main .grid > * {
+    min-width: 0;
+  }
+}
+div.overflow-x-auto:has(> table) {
+  position: relative;
+}
+
+/* Our own pressed states replace the grey tap flash of mobile browsers. */
+[data-tab-bar] :is(a, button),
+[data-app-bar] :is(a, button),
+.sheet :is(a, button, label),
+.a11y-fab {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* High contrast: the soft pill of the active tab is white on white, outline it. */
+[data-contrast="high"] .tab-pill[data-active] {
+  outline: 2px solid currentColor;
+  outline-offset: -2px;
+}
+
+/*
+ * Accessibility button: bottom right, discreet (surface colour, hairline
+ * border, soft shadow), above the tab bar on phones.
+ */
+.a11y-fab {
+  position: fixed;
+  z-index: 30;
+  right: max(1rem, env(safe-area-inset-right));
+  bottom: max(1rem, env(safe-area-inset-bottom));
+}
+@media (min-width: 64rem) {
+  .a11y-fab {
+    right: 1.5rem;
+    bottom: 1.5rem;
+  }
+}
+@media (max-width: 63.999rem) {
+  body:has([data-tab-bar]) .a11y-fab {
+    bottom: calc(var(--tab-bar-space) + 0.75rem);
+  }
+  /* Toasts rise above the tab bar instead of covering it. */
+  body:has([data-tab-bar]) div.fixed.bottom-4:has(> .contents[aria-live]) {
+    bottom: calc(var(--tab-bar-space) + 0.75rem);
+  }
+}
+
+/*
+ * Bottom sheet (components/shell/sheet.tsx). Motion: the panel slides up in
+ * 280 ms on the iOS sheet curve and down in 200 ms, transform only, and the
+ * backdrop fades. Reduced motion: no animation at all.
+ */
+html:has(dialog[open]) {
+  overflow: hidden;
+}
+dialog.sheet {
+  position: fixed;
+  inset: auto 0 0 0;
+  margin: 0 auto;
+  padding: 0;
+  border: 0;
+  width: 100%;
+  max-width: 40rem;
+  max-height: none;
+  background: transparent;
+  color: var(--text);
+  overflow: visible;
+}
+.sheet-panel {
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100dvh - env(safe-area-inset-top) - 1.5rem);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-bottom: 0;
+  border-radius: 1.25rem 1.25rem 0 0;
+  box-shadow: 0 -8px 32px rgb(0 0 0 / 0.16);
+  transition: transform 200ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+.sheet-full .sheet-panel {
+  height: calc(100dvh - env(safe-area-inset-top) - 0.75rem);
+}
+dialog.sheet::backdrop {
+  background: rgb(8 20 14 / 0.45);
+  animation: sheet-fade 200ms ease-out;
+}
+dialog.sheet[open] .sheet-panel {
+  animation: sheet-up 280ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+dialog.sheet[data-closing] .sheet-panel {
+  animation: sheet-down 200ms cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+dialog.sheet[data-closing]::backdrop {
+  animation: sheet-fade 200ms ease-in reverse forwards;
+}
+@keyframes sheet-up {
+  from {
+    transform: translateY(100%);
+  }
+}
+@keyframes sheet-down {
+  to {
+    transform: translateY(100%);
+  }
+}
+@keyframes sheet-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+/* Top app bar title: a short fade when it switches to the page heading. */
+.app-title-in {
+  animation: sheet-fade 160ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  dialog.sheet[open] .sheet-panel,
+  dialog.sheet[data-closing] .sheet-panel,
+  dialog.sheet::backdrop,
+  .app-title-in {
+    animation: none;
+  }
+}
+
+@media print {
+  [data-tab-bar],
+  [data-app-bar],
+  .a11y-fab {
+    display: none !important;
+  }
+  .app-main {
+    padding-bottom: 0 !important;
+  }
+}

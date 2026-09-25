@@ -6,11 +6,18 @@ import type { ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
 
-export type RenderedSection = { title: string; items: { label: string; href: string; icon: ReactNode }[] };
+export type RenderedItem = { label: string; short?: string; href: string; icon: ReactNode };
+export type RenderedSection = { title: string; items: RenderedItem[] };
+
+// Active entry: the dashboard only on its own path, any other entry on its
+// path and every page below it.
+export function isActiveHref(pathname: string, href: string) {
+  return href === "/espace" ? pathname === "/espace" : pathname === href || pathname.startsWith(`${href}/`);
+}
 
 export function SidebarNav({ sections, onNavigate }: { sections: RenderedSection[]; onNavigate?: () => void }) {
   const pathname = usePathname();
-  const isActive = (href: string) => (href === "/espace" ? pathname === "/espace" : pathname === href || pathname.startsWith(`${href}/`));
+  const isActive = (href: string) => isActiveHref(pathname, href);
 
   return (
     <nav aria-label="Menu principal" className="flex flex-col gap-6">

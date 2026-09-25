@@ -3,26 +3,31 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { Logo } from "@/components/brand/logo";
-import { AccessibilityButton } from "@/components/shell/accessibility-button";
-import { MobileMenu } from "@/components/shell/mobile-menu";
-import { SidebarNav, type RenderedSection } from "@/components/shell/sidebar-nav";
+import { AppBar } from "@/components/shell/app-bar";
+import { SidebarNav, type RenderedItem, type RenderedSection } from "@/components/shell/sidebar-nav";
+import { SignOutButton } from "@/components/shell/sign-out-button";
+import { TabBar } from "@/components/shell/tab-bar";
 import { Avatar } from "@/components/ui/avatar";
-import { logout } from "@/features/auth/actions";
+import { InstallCard } from "@/features/pwa/install-ui";
 import { requireUser } from "@/lib/auth/session";
+import { pushPublicKey } from "@/lib/channels/push";
 import { db } from "@/lib/db";
-import { visibleNavigation } from "@/lib/navigation";
+import { mobileTabs, tabAudience, visibleNavigation, type NavItem } from "@/lib/navigation";
+
+function render(item: NavItem): RenderedItem {
+  return { label: item.label, short: item.short, href: item.href, icon: <item.icon aria-hidden /> };
+}
 
 export default async function SpaceLayout({ children }: LayoutProps<"/espace">) {
   const user = await requireUser();
   if (user.mustChangePassword) redirect("/changer-mot-de-passe");
 
   const unread = await db.notification.count({ where: { userId: user.id, readAt: null } });
-  const sections: RenderedSection[] = visibleNavigation(user).map((s) => ({
-    title: s.title,
-    items: s.items.map((i) => ({ label: i.label, href: i.href, icon: <i.icon aria-hidden /> })),
-  }));
-
-  const nav = <SidebarNav sections={sections} />;
+  const visible = visibleNavigation(user);
+  const sections: RenderedSection[] = visible.map((s) => ({ title: s.title, items: s.items.map(render) }));
+  const tabs = mobileTabs(visible, tabAudience(user)).map(render);
+  const shellUser = { fullName: user.fullName, email: user.email, roleName: user.role.name, scopeLabel: user.scope.label };
+  const pushKey = pushPublicKey();
 
   return (
     <div className="min-h-dvh lg:grid lg:grid-cols-[17rem_1fr]">
@@ -30,53 +35,58 @@ export default async function SpaceLayout({ children }: LayoutProps<"/espace">) 
         <Link href="/espace" className="mb-6 px-3">
           <Logo tone="inverse" />
         </Link>
-        {nav}
+        <SidebarNav sections={sections} />
       </aside>
 
       <div className="flex min-w-0 flex-col">
-        <header className="sticky top-0 z-40 flex min-h-16 flex-wrap items-center gap-3 py-2 border-b border-border bg-surface/95 px-4 backdrop-blur sm:px-6">
-          <MobileMenu>{nav}</MobileMenu>
-          <Link href="/espace" className="lg:hidden" aria-label="Classéo, accueil">
-            <Logo className="[&>span:last-child]:max-[380px]:hidden" />
-          </Link>
-          <p className="hidden items-center gap-1.5 text-sm text-muted md:flex">
-            <MapPin className="size-4" aria-hidden />
-            <span className="sr-only">Périmètre :</span>
-            {user.scope.label}
-          </p>
-          <div className="ml-auto flex items-center gap-2">
-            <AccessibilityButton />
-            <Link
-              href="/espace/notifications"
-              className="relative inline-flex size-10 items-center justify-center rounded-lg border border-border-strong bg-surface hover:bg-surface-2"
-              aria-label={unread ? `Notifications, ${unread} non lue${unread > 1 ? "s" : ""}` : "Notifications"}
-            >
-              <Bell className="size-5" aria-hidden />
-              {unread > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 min-w-5 rounded-full bg-danger px-1 text-center text-xs leading-5 font-bold text-white" aria-hidden>
-                  {unread > 9 ? "9+" : unread}
-                </span>
-              )}
-            </Link>
-            <div className="flex items-center gap-2 border-l border-border pl-3">
-              <Avatar name={user.fullName} />
-              <div className="hidden leading-tight sm:block">
-                <p className="text-sm font-semibold">{user.fullName}</p>
-                <p className="text-xs text-muted">{user.role.name}</p>
-              </div>
-              <form action={logout}>
-                <button type="submit" className="inline-flex size-10 items-center justify-center rounded-lg text-muted hover:bg-surface-2 hover:text-text" aria-label="Se déconnecter" title="Se déconnecter">
+        {/* Overlays never live in here: the blur makes this header the
+            containing block of any fixed descendant. Sheets are portalled. */}
+        <header className="sticky top-0 z-40 border-b border-border bg-surface/95 pt-[env(safe-area-inset-top)] backdrop-blur">
+          <AppBar sections={sections} unread={unread} user={shellUser} pushKey={pushKey} />
+
+          <div className="hidden min-h-16 items-center gap-3 px-6 py-2 lg:flex">
+            <p className="flex items-center gap-1.5 text-sm text-muted">
+              <MapPin className="size-4" aria-hidden />
+              <span className="sr-only">Périmètre :</span>
+              {user.scope.label}
+            </p>
+            <div className="ml-auto flex items-center gap-2">
+              <Link
+                href="/espace/notifications"
+                className="relative inline-flex size-10 items-center justify-center rounded-lg border border-border-strong bg-surface hover:bg-surface-2"
+                aria-label={unread ? `Notifications, ${unread} non lue${unread > 1 ? "s" : ""}` : "Notifications"}
+              >
+                <Bell className="size-5" aria-hidden />
+                {unread > 0 && (
+                  <span className="absolute -top-1.5 -right-1.5 min-w-5 rounded-full bg-danger px-1 text-center text-xs leading-5 font-bold text-bg" aria-hidden>
+                    {unread > 9 ? "9+" : unread}
+                  </span>
+                )}
+              </Link>
+              <div className="flex items-center gap-2 border-l border-border pl-3">
+                <Avatar name={user.fullName} />
+                <div className="leading-tight">
+                  <p className="text-sm font-semibold">{user.fullName}</p>
+                  <p className="text-xs text-muted">{user.role.name}</p>
+                </div>
+                <SignOutButton
+                  label="Se déconnecter"
+                  className="inline-flex size-10 items-center justify-center rounded-lg text-muted hover:bg-surface-2 hover:text-text"
+                >
                   <LogOut className="size-5" aria-hidden />
-                </button>
-              </form>
+                </SignOutButton>
+              </div>
             </div>
           </div>
         </header>
 
-        <main id="page-content" tabIndex={-1} className="mx-auto w-full max-w-7xl flex-1 px-4 py-6 outline-none sm:px-6 lg:py-8">
+        <InstallCard />
+        <main id="page-content" tabIndex={-1} className="app-main mx-auto w-full max-w-7xl flex-1 px-4 pt-5 outline-none sm:px-6 lg:pt-8">
           {children}
         </main>
       </div>
+
+      <TabBar tabs={tabs} sections={sections} />
     </div>
   );
 }

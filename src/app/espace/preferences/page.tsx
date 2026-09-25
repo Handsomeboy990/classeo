@@ -2,19 +2,37 @@ import type { Metadata } from "next";
 
 import { PageHeader } from "@/components/kit/page-header";
 import { AccessibilityControls } from "@/components/shell/accessibility-controls";
-import { Card, CardBody } from "@/components/ui/card";
+import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
+import { PushToggle } from "@/features/push/push-toggle";
+import { pushPublicKey } from "@/lib/channels/push";
 
-export const metadata: Metadata = { title: "Accessibilité" };
+export const metadata: Metadata = { title: "Préférences" };
 
 export default function PreferencesPage() {
+  const pushKey = pushPublicKey();
   return (
     <>
-      <PageHeader title="Accessibilité" description="Adaptez l'affichage et la voix à vos besoins. Les réglages restent enregistrés sur cet appareil." />
-      <Card className="max-w-2xl">
-        <CardBody>
-          <AccessibilityControls />
-        </CardBody>
-      </Card>
+      <PageHeader title="Préférences" description="Adaptez l'affichage, la voix et les notifications à vos besoins. Ces réglages valent pour cet appareil." />
+      <div className="flex max-w-2xl flex-col gap-5">
+        <Card aria-labelledby="prefs-display">
+          <CardHeader>
+            <CardTitle id="prefs-display">Affichage et voix</CardTitle>
+          </CardHeader>
+          <CardBody>
+            <AccessibilityControls />
+          </CardBody>
+        </Card>
+        {pushKey && (
+          <Card aria-labelledby="prefs-push">
+            <CardHeader>
+              <CardTitle id="prefs-push">Notifications</CardTitle>
+            </CardHeader>
+            <CardBody className="px-2 py-2">
+              <PushToggle publicKey={pushKey} explain />
+            </CardBody>
+          </Card>
+        )}
+      </div>
     </>
   );
 }
