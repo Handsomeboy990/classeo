@@ -165,3 +165,31 @@ export function mobileTabs(sections: NavSection[], audience: TabAudience, count 
     .slice(0, count);
   return home ? [home, ...ranked] : ranked;
 }
+
+// Unread notifications per menu entry. A notification belongs to the entry
+// whose href is the longest prefix of its link (a message under
+// /espace/messages/..., an absence under /espace/suivi/...). Links with no
+// entry of their own count on "Notifications" only, which always shows the
+// total. The dashboard never carries a badge: it is not where the item is.
+export function navigationBadges(sections: NavSection[], links: (string | null)[]): Record<string, number> {
+  const hrefs = sections.flatMap((s) => s.items.map((i) => i.href)).filter((h) => h !== "/espace" && h !== "/espace/notifications");
+  const counts: Record<string, number> = {};
+  for (const link of links) {
+    const path = link?.split(/[?#]/)[0] ?? "";
+    let best: string | null = null;
+    for (const h of hrefs) if ((path === h || path.startsWith(`${h}/`)) && (!best || h.length > best.length)) best = h;
+    if (best) counts[best] = (counts[best] ?? 0) + 1;
+  }
+  if (links.length && sections.some((s) => s.items.some((i) => i.href === "/espace/notifications"))) counts["/espace/notifications"] = links.length;
+  return counts;
+}
+
+// "3 non lues", for the accessible name of an entry with a badge.
+export function unreadLabel(n: number) {
+  return `${n} non lue${n > 1 ? "s" : ""}`;
+}
+
+// "9+" beyond nine: a badge stays one or two characters wide.
+export function badgeText(n: number) {
+  return n > 9 ? "9+" : String(n);
+}

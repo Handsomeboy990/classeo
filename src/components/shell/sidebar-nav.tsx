@@ -4,15 +4,30 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 
+import { badgeText, unreadLabel } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
 
-export type RenderedItem = { label: string; short?: string; href: string; icon: ReactNode };
+export type RenderedItem = { label: string; short?: string; href: string; icon: ReactNode; badge?: number };
 export type RenderedSection = { title: string; items: RenderedItem[] };
 
 // Active entry: the dashboard only on its own path, any other entry on its
 // path and every page below it.
 export function isActiveHref(pathname: string, href: string) {
   return href === "/espace" ? pathname === "/espace" : pathname === href || pathname.startsWith(`${href}/`);
+}
+
+// Unread notifications of an entry: a count the eye finds, and the same
+// count in words for screen readers.
+export function NavBadge({ count, className }: { count?: number; className?: string }) {
+  if (!count) return null;
+  return (
+    <>
+      <span className={cn("nav-badge", className)} aria-hidden>
+        {badgeText(count)}
+      </span>
+      <span className="sr-only">, {unreadLabel(count)}</span>
+    </>
+  );
 }
 
 export function SidebarNav({ sections, onNavigate }: { sections: RenderedSection[]; onNavigate?: () => void }) {
@@ -39,7 +54,8 @@ export function SidebarNav({ sections, onNavigate }: { sections: RenderedSection
                     )}
                   >
                     {item.icon}
-                    {item.label}
+                    <span className="min-w-0 flex-1">{item.label}</span>
+                    <NavBadge count={item.badge} />
                   </Link>
                 </li>
               );

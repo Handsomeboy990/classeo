@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 
 import { AccessibilityPanel } from "./accessibility-panel";
 import { Sheet } from "./sheet";
-import { isActiveHref, type RenderedSection } from "./sidebar-nav";
+import { isActiveHref, NavBadge, type RenderedSection } from "./sidebar-nav";
 
 // Accents and case do not matter when searching: "eleves" finds "Élèves".
 function normalize(s: string) {
@@ -89,6 +89,7 @@ export function MenuSheet({ sections, open, onClose }: { sections: RenderedSecti
                         {item.icon}
                       </span>
                       <span className="min-w-0 flex-1">{item.label}</span>
+                      <NavBadge count={item.badge} />
                       <ChevronRight className="size-4 shrink-0 text-muted" aria-hidden />
                     </Link>
                   </li>
