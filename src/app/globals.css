@@ -1328,3 +1328,52 @@ dialog.sheet[data-closing]::backdrop {
     padding-bottom: 0 !important;
   }
 }
+
+/*
+ * Items of a "Plus d'actions" panel (kit/more-actions.tsx): the links and
+ * buttons placed in it read as rows of a menu, whatever button style they
+ * were written with. Unlayered, so it wins over their utility classes; only
+ * direct children are styled, never the controls of a dialog they open.
+ */
+.ds-menu:not([hidden]) {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  padding: 0.375rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--elevation-lg);
+}
+.ds-menu > :is(a, button) {
+  width: 100%;
+  min-height: 2.75rem;
+  justify-content: flex-start;
+  padding: 0.5rem 0.75rem;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  box-shadow: none;
+  color: var(--text);
+  text-align: start;
+  white-space: normal;
+}
+.ds-menu > :is(a, button):hover {
+  background: var(--surface-2);
+  filter: none;
+}
+.ds-menu > :is(a, button) svg {
+  color: var(--text-muted);
+}
+/* A destructive item keeps its colour, as text. */
+.ds-menu > .bg-danger,
+.ds-menu > .bg-danger svg {
+  color: var(--danger);
+}
+.ds-menu > .bg-danger:hover {
+  background: var(--danger-soft);
+}
+[data-contrast="high"] .ds-menu > :is(a, button):hover {
+  outline: 2px solid currentColor;
+  outline-offset: -2px;
+}
