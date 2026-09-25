@@ -98,10 +98,11 @@ export async function seedGovernance(db: PrismaClient, ctx: SeedContext) {
     ],
   });
 
-  // 5. A school of Allada (Atlantique) is suspended. Not in Abomey-Calavi:
-  // the schools there carry the teacher switch, transfer and mock exam demos.
+  // 5. A school of Toffo (Atlantique) is suspended. Not in Abomey-Calavi,
+  // whose schools carry the teacher switch, transfer and mock exam demos,
+  // nor CEG Allada, the partner school of the messaging demo.
   const suspended =
-    (await db.school.findFirst({ where: { id: { notIn: [ctx.schools.ceg, ctx.schools.epp] }, commune: { name: "Allada" } }, orderBy: { code: "asc" }, select: { id: true } })) ??
+    (await db.school.findFirst({ where: { id: { notIn: [ctx.schools.ceg, ctx.schools.epp] }, commune: { name: "Toffo" } }, orderBy: { code: "asc" }, select: { id: true } })) ??
     (await db.school.findFirst({ where: { id: { notIn: [ctx.schools.ceg, ctx.schools.epp] } }, orderBy: { code: "asc" }, select: { id: true } }));
   if (suspended)
     await db.school.update({
