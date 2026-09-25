@@ -141,7 +141,7 @@ export async function resetPasswordWithCode(_prev: ActionState, formData: FormDa
   const rate = await limit("reset-verify", clientIp(await headers()), address, 30, 10);
   if (!rate.allowed) return tooMany(rate.retryAfterMs);
 
-  const user = await db.user.findUnique({ where: { email: address }, select: { id: true, email: true, firstName: true, isActive: true, schoolId: true } });
+  const user = await db.user.findUnique({ where: { email: address }, select: { id: true, username: true, email: true, firstName: true, isActive: true, schoolId: true } });
   const token = user?.isActive
     ? await db.passwordResetToken.findFirst({ where: { userId: user.id, usedAt: null }, orderBy: { createdAt: "desc" }, select: { id: true, codeHash: true, expiresAt: true, usedAt: true, attempts: true } })
     : null;
@@ -173,7 +173,8 @@ export async function resetPasswordWithCode(_prev: ActionState, formData: FormDa
   });
   if (!done) return { ok: false, message: INVALID };
 
-  await Promise.all([resetRateLimit(`login:email:${address}`), resetRateLimit(`reset-verify:email:${address}`)]);
+  // Sign in counts attempts per typed identifier: the address or the username.
+  await Promise.all([resetRateLimit(`login:account:${address}`), resetRateLimit(`login:account:${user.username}`), resetRateLimit(`reset-verify:email:${address}`)]);
   await audit(null, {
     action: "password_reset",
     resource: "user",
