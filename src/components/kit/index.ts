@@ -1,4 +1,4 @@
-export { ActionForm, SubmitButton, useFormState } from "./action-form";
+export { ActionForm, FormMessage, SubmitButton, useFormState } from "./action-form";
 export { BarChart } from "./bar-chart";
 export { DonutChart } from "./donut-chart";
 export { LineChart } from "./line-chart";
@@ -17,5 +17,6 @@ export { SearchInput } from "./search-input";
 export { PageSkeleton, Skeleton, StatsSkeleton, TableSkeleton } from "./skeletons";
 export { StatCard, StatGrid } from "./stat-card";
 export { EmptyState, ErrorState, ForbiddenState } from "./states";
+export { TextProvider, useText } from "./text-provider";
 export { toast, Toaster } from "./toaster";
 export { UrlSelect } from "./url-select";
