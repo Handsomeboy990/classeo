@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { AverageLevel } from "@/components/kit/level";
+import { LineChart } from "@/components/kit/line-chart";
 import { MoreActions } from "@/components/kit/more-actions";
 import { PageHeader } from "@/components/kit/page-header";
 import { StatCard, StatGrid } from "@/components/kit/stat-card";
@@ -283,6 +284,19 @@ export default async function StudentPage(props: PageProps<"/espace/eleves/[id]"
             <CardHeader>
               <CardTitle>Bulletins publiés</CardTitle>
             </CardHeader>
+            {reportCards.length > 1 && (
+              <CardBody className="border-b border-border">
+                <LineChart
+                  label="Évolution de la moyenne générale d'un bulletin à l'autre"
+                  labels={[...reportCards].reverse().map((r) => `${r.period.name.replace(/^Trimestre\s+(\d+)$/i, "T$1")} ${r.period.academicYear.label.slice(2, 4)}-${r.period.academicYear.label.slice(-2)}`)}
+                  series={[{ name: "Moyenne générale", values: [...reportCards].reverse().map((r) => (r.generalAverage === null ? null : Number(r.generalAverage))) }]}
+                  min={0}
+                  max={20}
+                  format={(n) => formatAverage(n).replace(/,00$/, "")}
+                  reference={{ value: 10, label: "Moyenne de passage" }}
+                />
+              </CardBody>
+            )}
             {reportCards.length === 0 ? (
               <EmptyState title="Aucun bulletin publié" />
             ) : (

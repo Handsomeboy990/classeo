@@ -2,6 +2,7 @@ import { ArrowRight, BarChart3, Inbox, KeyRound, Landmark, Map, ScrollText, Shie
 import Link from "next/link";
 
 import { BarChart } from "@/components/kit/bar-chart";
+import { DonutChart } from "@/components/kit/donut-chart";
 import { PageHeader } from "@/components/kit/page-header";
 import { EmptyState } from "@/components/kit/states";
 import { Badge } from "@/components/ui/badge";
@@ -16,7 +17,7 @@ import { formatDate, formatDateTime } from "@/lib/utils";
 
 import { userStatScope } from "../territory/scope";
 import { IndicatorCards } from "./components/indicator-cards";
-import { ABSENCE_SCALE, absenceTone, formatIndicator, indicatorFormatter } from "./format";
+import { ABSENCE_SCALE, absenceTone, indicatorFormatter } from "./format";
 import { CHILD_LABELS, getStatistics, loadYears, type ScopeStatistics } from "./queries";
 
 type User = NonNullable<CurrentUser>;
@@ -60,6 +61,32 @@ export async function StaffDashboard({ user }: { user: User }) {
           <ComparisonCard stats={stats} indicator="passRate" title={`Taux de réussite ${stats.previousYearLabel ?? ""}`} user={user} />
           <ComparisonCard stats={stats} indicator="absenceRate" title="Taux d'absence cette année" user={user} />
         </div>
+      )}
+
+      {stats && stats.total.enrollments > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Élèves inscrits cette année</CardTitle>
+          </CardHeader>
+          <CardBody className="grid gap-6 md:grid-cols-2">
+            <DonutChart
+              label="Filles et garçons parmi les élèves inscrits"
+              total="élèves"
+              data={[
+                { label: "Filles", value: stats.total.girls },
+                { label: "Garçons", value: stats.total.enrollments - stats.total.girls },
+              ]}
+            />
+            <DonutChart
+              label="Élèves en situation de handicap"
+              total="élèves"
+              data={[
+                { label: "En situation de handicap", value: stats.total.disabled, color: "var(--chart-2)" },
+                { label: "Autres élèves", value: stats.total.enrollments - stats.total.disabled, color: "var(--chart-5)" },
+              ]}
+            />
+          </CardBody>
+        </Card>
       )}
 
       <div className="grid gap-4 *:min-w-0 lg:grid-cols-2">
@@ -174,11 +201,8 @@ function ComparisonCard({ stats, indicator, title, user }: { stats: ScopeStatist
             label={`${title} par ${labels.singular.toLowerCase()}`}
             max={indicator === "absenceRate" ? ABSENCE_SCALE : 1}
             format={indicatorFormatter(indicator)}
-            scale={
-              indicator === "absenceRate"
-                ? `Échelle de 0 à 20 %, en rouge au-delà de 10 %. Ensemble du périmètre : ${formatIndicator("absenceRate", stats.total.absenceRate)}.`
-                : `Échelle de 0 à 100 %, en rouge sous 50 %. Ensemble du périmètre : ${formatIndicator("passRate", stats.total.passRate)}.`
-            }
+            reference={stats.total[indicator] !== null ? { value: stats.total[indicator] as number, label: "Ensemble du périmètre" } : undefined}
+            scale={indicator === "absenceRate" ? "Échelle de 0 à 20 %, en rouge au-delà de 10 %." : "Échelle de 0 à 100 %, en rouge sous 50 %."}
             data={rows.map((r) => {
               const value = r.indicators[indicator] as number;
               return {
