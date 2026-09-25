@@ -143,7 +143,9 @@ export function TranslationLayer({ userId, languages, voices }: { userId: string
         unavailable: "Traduction indisponible pour le moment : la page reste en français.",
       }[status];
 
-  if (!s.allowed) return null;
+  // Rendered from the first paint (the server only mounts this component
+  // for users allowed to translate): appearing after hydration would push
+  // the page down under the reader's finger.
   return (
     <div data-no-translate data-read-skip className="mx-auto w-full max-w-7xl px-4 pt-3 sm:px-6 print:hidden max-lg:[body:has([data-chat])_&]:hidden">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2 rounded-card border border-border bg-surface px-3 py-2">
