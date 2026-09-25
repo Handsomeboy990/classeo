@@ -1,4 +1,4 @@
-import { CalendarCheck, Pencil, Trophy, UserMinus, UserPlus, UserX } from "lucide-react";
+import { CalendarCheck, Pencil, Trophy, UserX } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -12,8 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TD, TH, THead, TR } from "@/components/ui/table";
-import { ConfirmButton } from "@/features/classes/components/confirm-button";
-import { setEnrollmentStatus } from "@/features/students/actions";
+import { EnrollmentStatusActions } from "@/features/students/components/enrollment-status";
 import { CHANNEL_LABELS, DISABILITY_LABELS, ENROLLMENT_STATUS_LABELS, GENDER_LABELS, shortDate } from "@/features/students/labels";
 import { getStudentProfile } from "@/features/students/queries";
 import { can, requirePermission } from "@/lib/auth/authorize";
@@ -54,41 +53,7 @@ export default async function StudentPage(props: PageProps<"/espace/eleves/[id]"
               <ButtonLink href={`/espace/eleves/${student.id}/modifier`} variant="secondary">
                 <Pencil aria-hidden /> Modifier
               </ButtonLink>
-              {current.status === "ACTIVE" ? (
-                <>
-                  <ConfirmButton
-                    action={setEnrollmentStatus}
-                    fields={{ enrollmentId: current.id, status: "TRANSFERRED" }}
-                    variant="secondary"
-                    title={`Transférer ${name} ?`}
-                    description="L'élève quitte l'établissement pour un autre. Ses notes et présences restent consultables."
-                    confirmLabel="Transférer"
-                  >
-                    <UserMinus aria-hidden /> Transfert
-                  </ConfirmButton>
-                  <ConfirmButton
-                    action={setEnrollmentStatus}
-                    fields={{ enrollmentId: current.id, status: "WITHDRAWN" }}
-                    title={`Retirer ${name} de l'établissement ?`}
-                    description="L'élève n'apparaîtra plus dans les appels, les fiches de notes ni les bulletins. Vous pourrez le réinscrire."
-                    confirmLabel="Retirer"
-                  >
-                    <UserX aria-hidden /> Retirer
-                  </ConfirmButton>
-                </>
-              ) : (
-                <ConfirmButton
-                  action={setEnrollmentStatus}
-                  fields={{ enrollmentId: current.id, status: "ACTIVE" }}
-                  tone="primary"
-                  variant="primary"
-                  title={`Réinscrire ${name} ?`}
-                  description={`L'élève retrouve sa place en ${current.classroom.name} si la classe n'est pas complète.`}
-                  confirmLabel="Réinscrire"
-                >
-                  <UserPlus aria-hidden /> Réinscrire
-                </ConfirmButton>
-              )}
+              <EnrollmentStatusActions enrollmentId={current.id} status={current.status} name={name} className={current.classroom.name} />
             </>
           )
         }
