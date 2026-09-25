@@ -24,7 +24,9 @@ export function Table({
   wrapperClassName?: string;
 }) {
   return (
-    <div className={cn("ds-table-scroll w-full overflow-x-auto", sticky && "lg:overflow-x-visible", wrapperClassName)} data-sticky={sticky || undefined}>
+    // relative: screen reader only text inside cells is positioned against
+    // the frame, so it never widens the page when the table scrolls.
+    <div className={cn("ds-table-scroll relative w-full overflow-x-auto", sticky && "lg:overflow-x-visible", wrapperClassName)} data-sticky={sticky || undefined}>
       <table
         className={cn("ds-table w-full border-collapse text-sm", className)}
         data-density={density === "compact" ? "compact" : undefined}
