@@ -1,4 +1,4 @@
-import { Download, Receipt } from "lucide-react";
+import { Download, ReceiptText } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 
@@ -51,7 +51,7 @@ export default async function PaymentsPage({ searchParams }: PageProps<"/espace/
       actions: true,
       cell: (r) => (
         <Link href={`/espace/frais/paiements/${r.id}/recu`} className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline">
-          <Receipt className="size-4" aria-hidden />
+          <ReceiptText className="size-4" aria-hidden />
           <span>Reçu</span>
           <span className="sr-only"> du paiement {r.reference}</span>
         </Link>

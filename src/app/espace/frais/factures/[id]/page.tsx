@@ -1,4 +1,4 @@
-import { ArrowLeft, Receipt, Undo2 } from "lucide-react";
+import { ArrowLeft, ReceiptText, Undo2 } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -168,7 +168,7 @@ export default async function InvoicePage({ params }: PageProps<"/espace/frais/f
                     </div>
                     <div className="flex shrink-0 flex-wrap gap-2">
                       <ButtonLink href={`/espace/frais/paiements/${p.id}/recu`} variant="secondary" size="sm">
-                        <Receipt aria-hidden /> Reçu
+                        <ReceiptText aria-hidden /> Reçu
                       </ButtonLink>
                       {canReceipt && <PdfDownloadLink href={`/api/pdf/recu/${p.id}`} label="PDF" size="sm" description={`reçu ${p.reference}`} />}
                       {canCancel && <CancelPaymentButton id={p.id} reference={p.reference} amount={p.amount} />}

@@ -1,6 +1,6 @@
 "use client";
 
-import { Receipt } from "lucide-react";
+import { ReceiptText } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -73,7 +73,7 @@ export function PaymentForm({ invoiceId, remaining, today }: { invoiceId: string
         <p role="status" className="rounded-lg bg-success-soft px-3 py-2 text-sm text-text">
           Paiement {last.reference} enregistré.{" "}
           <Link href={`/espace/frais/paiements/${last.paymentId}/recu`} className="inline-flex items-center gap-1 font-semibold text-primary underline">
-            <Receipt className="size-4" aria-hidden /> Imprimer le reçu
+            <ReceiptText className="size-4" aria-hidden /> Imprimer le reçu
           </Link>
         </p>
       )}
