@@ -12,14 +12,15 @@ export function PrintButton({ label = "Imprimer" }: { label?: string }) {
   );
 }
 
-// Printable pages hide the application shell (sidebar, top bar) on paper.
-export function PrintStyles() {
+// Printable pages hide the application shell (the sticky sidebar and top
+// bar of the layout) on paper, not the headers of the page itself.
+export function PrintStyles({ landscape = false }: { landscape?: boolean }) {
   return (
     <style>{`@media print {
-  body aside, body header, [data-print-hide] { display: none !important; }
+  body aside.sticky, body header.sticky, [data-print-hide] { display: none !important; }
   body main { max-width: none !important; padding: 0 !important; }
-  body { background: #fff !important; }
-  @page { margin: 12mm; }
+  body { background: #fff !important; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  @page { margin: 10mm;${landscape ? " size: A4 landscape;" : ""} }
 }`}</style>
   );
 }
