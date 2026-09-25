@@ -10,11 +10,30 @@
 | Authorization | permission codes checked on the server for every action and page; the menu is only a reflection | `src/lib/auth/authorize.ts`, `src/lib/action.ts` |
 | Object access | every query composes the territorial scope filter; teachers are limited to their own classes | `src/lib/auth/scope.ts` |
 | Privilege escalation | a role can only be assigned or edited by someone holding all its permissions at an equal or higher level | `src/lib/domain/rights.ts` |
+| Role management | a new or duplicated role only receives permissions its creator holds (the others are dropped and reported), at the creator's level or below, never the family level; system roles are never renamed or deleted; a custom role is deleted only by someone able to assign it, when every holder is inside their scope and is moved to a role of the same level they could assign; refusals and changes are audited | `src/lib/domain/rights.ts` (tested), `src/features/roles/actions.ts` |
+| Forgotten password | see the section below | `src/features/auth/reset-actions.ts`, `src/features/auth/reset-code.ts` (tested) |
+| E-mail | SMTP with socket timeouts and a bound per message, never throwing; without `SMTP_HOST` only a summary is logged (masked recipient, subject, never the body, which can hold a temporary password or a code); links are built from `APP_URL`, never from the request Host header; every template value is HTML escaped and only web links are rendered | `src/lib/mail` (tested) |
 | Input | zod validation at every server boundary | each `features/*/schema.ts` or action |
 | Output | React escaping, no raw HTML rendering; CSV export neutralises formula injection | `src/lib/export.ts` |
 | Headers | CSP without third party scripts, HSTS on HTTPS, frame denial, nosniff, referrer and permissions policies | `next.config.ts` |
 | Traceability | audit log of sign ins, failures, writes, exports and rights changes | `src/lib/audit.ts` |
 | Secrets | none in the repository; environment variables only | `.env.example` |
+
+## Forgotten password flow
+
+`/mot-de-passe-oublie` asks for the address, `/mot-de-passe-oublie/code` takes the code and the new password.
+
+| Control | Detail |
+|---|---|
+| No account enumeration | the request always answers the same way and redirects to the code page; the code is created and e-mailed after the response (`after()`), so an existing address costs no extra time. A wrong, expired, used or exhausted code, and an unknown or disabled address, all get the same message |
+| Code | 6 digits from `crypto.randomInt`; only an HMAC-SHA256 keyed with `SESSION_SECRET` and bound to the account is stored; compared in constant time |
+| Lifetime | valid 15 minutes, single use; a new request voids every earlier code of the account |
+| Attempts | 5 per code, counted atomically before the comparison, so parallel guesses cannot exceed the limit |
+| Rate limits | requests: 3 per address and 20 per client address per 15 minutes; code checks: 10 per address and 30 per client address per 15 minutes (`hitRateLimit`); per client limits apply behind a trusted proxy, as for sign in |
+| On success | new argon2id hash, `mustChangePassword` cleared, failed sign in counter and lock cleared, every session revoked, remaining codes voided, sign in limit reset, "password changed" e-mail sent, audited (`password_reset`); requests and failed codes are audited too |
+| Address cookie | the code page is prefilled from a short lived httpOnly cookie limited to `/mot-de-passe-oublie`; it holds only what the visitor typed and grants nothing |
+
+A temporary password sent by e-mail (account created, reset by a manager) is protected by the forced change at first sign in: nothing can be written with it until it is replaced. The SMTP relay should use TLS (port 465 with `SMTP_SECURE=true`, or STARTTLS on 587).
 
 ## Audit of 2026-09-25
 
