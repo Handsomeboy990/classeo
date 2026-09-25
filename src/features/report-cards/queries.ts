@@ -6,10 +6,28 @@ import type { CurrentUser } from "@/lib/auth/session";
 import { db } from "@/lib/db";
 
 import { computeClassCards } from "./compute";
+import { fillLineTeachers } from "./lines";
 
 type User = NonNullable<CurrentUser>;
 
 export type CardLine = { subject: string; coefficient: number; average: number | null; rank: number | null; teacher?: string | null };
+
+// Subject name to the teacher currently assigned in a class.
+export async function currentTeachers(classroomId: string) {
+  const rows = await db.courseAssignment.findMany({
+    where: { classroomId, teacherId: { not: null } },
+    select: { subject: { select: { name: true } }, teacher: { select: { firstName: true, lastName: true } } },
+  });
+  return new Map(rows.map((r) => [r.subject.name, `${r.teacher!.firstName} ${r.teacher!.lastName}`]));
+}
+
+// Lines of a published snapshot, each with its teacher: the one recorded at
+// publication, otherwise the one currently assigned in the class.
+export async function snapshotLines(classroomId: string, lines: unknown, teachers?: ReadonlyMap<string, string>) {
+  const list = lines as CardLine[];
+  if (list.every((l) => l.teacher)) return list;
+  return fillLineTeachers(list, teachers ?? (await currentTeachers(classroomId)));
+}
 
 // Classes of the year with, for one period, how many report cards are
 // published out of the active students.
@@ -97,7 +115,7 @@ export async function printableCard(user: User, enrollmentId: string, periodId: 
         rank: snapshot.rank,
         classSize: snapshot.classSize,
         appreciation: snapshot.appreciation,
-        lines: snapshot.lines as CardLine[],
+        lines: await snapshotLines(enrollment.classroomId, snapshot.lines),
         publishedAt: snapshot.publishedAt,
         publishedBy: `${snapshot.publishedBy.firstName} ${snapshot.publishedBy.lastName}`,
       },

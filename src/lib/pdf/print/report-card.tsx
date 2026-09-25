@@ -1,6 +1,7 @@
+import { hasTeacherColumn } from "@/features/report-cards/lines";
 import { GENDER_LABELS } from "@/features/students/labels";
 import { mention } from "@/lib/domain/grades";
-import { formatAverage } from "@/lib/utils";
+import { formatAverage, plural } from "@/lib/utils";
 
 import type { ReportCardData } from "../documents/report-card";
 import { beninDate, calendarShort, officialName, ordinal } from "../format";
@@ -15,6 +16,7 @@ export function PrintReportCard({ data, meta, className, footnote }: { data: Rep
   const totalCoef = graded.reduce((a, l) => a + l.coefficient, 0);
   const totalPoints = graded.reduce((a, l) => a + (l.average ?? 0) * l.coefficient, 0);
   const m = mention(card.generalAverage);
+  const showTeacher = hasTeacherColumn(card.lines);
 
   return (
     <PrintSheet id="bulletin" meta={meta} className={className}>
@@ -23,8 +25,8 @@ export function PrintReportCard({ data, meta, className, footnote }: { data: Rep
           { label: "Élève", value: officialName(s.lastName, s.firstName) },
           { label: "Matricule", value: s.matricule },
           { label: "Classe", value: `${data.classroom.name}${data.isRepeating ? " (redoublant)" : ""}` },
-          { label: "Effectif", value: `${card.classSize} élèves` },
-          { label: "Né(e) le", value: `${calendarShort(s.birthDate)}${s.birthPlace ? ` à ${s.birthPlace}` : ""}` },
+          { label: "Effectif", value: plural(card.classSize, "élève") },
+          { label: s.gender === "F" ? "Née le" : "Né le", value: `${calendarShort(s.birthDate)}${s.birthPlace ? ` à ${s.birthPlace}` : ""}` },
           { label: "Sexe", value: GENDER_LABELS[s.gender] },
           { label: "Année scolaire", value: data.yearLabel },
           { label: "Professeur principal", value: data.classroom.mainTeacher ?? "Non désigné" },
@@ -42,9 +44,11 @@ export function PrintReportCard({ data, meta, className, footnote }: { data: Rep
           <thead>
             <tr>
               <th scope="col">Matière</th>
-              <th scope="col" className="max-sm:hidden print:table-cell">
-                Enseignant
-              </th>
+              {showTeacher && (
+                <th scope="col" className="max-sm:hidden print:table-cell">
+                  Enseignant
+                </th>
+              )}
               <th scope="col" className="doc-center">
                 Coef.
               </th>
@@ -66,7 +70,7 @@ export function PrintReportCard({ data, meta, className, footnote }: { data: Rep
                 <th scope="row" className="font-semibold">
                   {l.subject}
                 </th>
-                <td className="doc-muted text-xs max-sm:hidden print:table-cell">{l.teacher ?? "–"}</td>
+                {showTeacher && <td className="doc-muted text-xs max-sm:hidden print:table-cell">{l.teacher ?? "–"}</td>}
                 <td className="doc-center tabular-nums">{l.coefficient}</td>
                 <td className="doc-num font-semibold">{formatAverage(l.average)}</td>
                 <td className="doc-num">{l.average === null ? "–" : formatAverage(l.average * l.coefficient)}</td>
@@ -78,7 +82,7 @@ export function PrintReportCard({ data, meta, className, footnote }: { data: Rep
           <tfoot>
             <tr>
               <th scope="row">Total</th>
-              <td className="max-sm:hidden print:table-cell" />
+              {showTeacher && <td className="max-sm:hidden print:table-cell" />}
               <td className="doc-center tabular-nums">{totalCoef}</td>
               <td />
               <td className="doc-num">{formatAverage(totalPoints)}</td>
@@ -97,7 +101,7 @@ export function PrintReportCard({ data, meta, className, footnote }: { data: Rep
         <div className="doc-figure">
           <p className="doc-label">Rang</p>
           <strong>{ordinal(card.rank)}</strong>
-          <p className="doc-muted text-xs">sur {card.classSize} élèves</p>
+          <p className="doc-muted text-xs">sur {plural(card.classSize, "élève")}</p>
         </div>
         {data.classAverage !== undefined ? (
           <div className="doc-figure">

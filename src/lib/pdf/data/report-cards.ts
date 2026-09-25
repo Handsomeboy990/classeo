@@ -1,6 +1,6 @@
 import "server-only";
 
-import { classPreview, printableCard, type CardLine } from "@/features/report-cards/queries";
+import { classPreview, currentTeachers, printableCard, snapshotLines, type CardLine } from "@/features/report-cards/queries";
 import { enrollmentWhere } from "@/lib/auth/scope";
 import { db } from "@/lib/db";
 import { round2 } from "@/lib/domain/grades";
@@ -114,6 +114,7 @@ export async function loadClassReportCards(user: PdfUser, classroomId: string, p
   const mt = classroom.mainTeacher ? `${classroom.mainTeacher.firstName} ${classroom.mainTeacher.lastName}` : null;
   const publishedAverage = snapshots.length ? await publishedClassAverage(classroom.id, period.id) : null;
   const head = await headOfSchool(classroom.school.id);
+  const teachers = await currentTeachers(classroom.id);
 
   // Alphabetical order, the order of the class list.
   const cards = [...preview.cards].sort((a, b) => a.name.localeCompare(b.name, "fr"));
@@ -137,7 +138,7 @@ export async function loadClassReportCards(user: PdfUser, classroomId: string, p
             rank: snap.rank,
             classSize: snap.classSize,
             appreciation: snap.appreciation,
-            lines: snap.lines as CardLine[],
+            lines: await snapshotLines(classroom.id, snap.lines, teachers),
             publishedAt: snap.publishedAt,
             publishedBy: `${snap.publishedBy.firstName} ${snap.publishedBy.lastName}`,
           }

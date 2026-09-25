@@ -1,8 +1,9 @@
 import { View } from "@react-pdf/renderer";
 
+import { hasTeacherColumn } from "@/features/report-cards/lines";
 import { GENDER_LABELS } from "@/features/students/labels";
 import { mention } from "@/lib/domain/grades";
-import { formatAverage } from "@/lib/utils";
+import { formatAverage, plural } from "@/lib/utils";
 
 import { DataTable, Figure, FigureRow, InfoGrid, Notice, Signatures } from "../components";
 import { beninDate, calendarDate, officialName, ordinal } from "../format";
@@ -42,6 +43,7 @@ export function ReportCardPage({ data, meta, issuer }: { data: ReportCardData; m
   const totalPoints = graded.reduce((a, l) => a + (l.average ?? 0) * l.coefficient, 0);
   const m = mention(card.generalAverage);
   const born = `${calendarDate(s.birthDate)}${s.birthPlace ? ` à ${s.birthPlace}` : ""}`;
+  const showTeacher = hasTeacherColumn(card.lines);
 
   return (
     <DocumentPage
@@ -54,8 +56,8 @@ export function ReportCardPage({ data, meta, issuer }: { data: ReportCardData; m
               { label: "Élève", value: officialName(s.lastName, s.firstName) },
               { label: "Matricule", value: s.matricule },
               { label: "Classe", value: `${data.classroom.name}${data.isRepeating ? " (redoublant)" : ""}` },
-              { label: "Effectif", value: `${card.classSize} élèves` },
-              { label: "Né(e) le", value: born },
+              { label: "Effectif", value: plural(card.classSize, "élève") },
+              { label: s.gender === "F" ? "Née le" : "Né le", value: born },
               { label: "Sexe", value: GENDER_LABELS[s.gender] },
               { label: "Année scolaire", value: data.yearLabel },
               { label: "Professeur principal", value: data.classroom.mainTeacher ?? "Non désigné" },
@@ -71,7 +73,8 @@ export function ReportCardPage({ data, meta, issuer }: { data: ReportCardData; m
       <DataTable
         columns={[
           { header: "Matière", flex: 2.6, render: (l: ReportCardLine) => <T style={{ fontSize: 9.5, fontWeight: 600 }}>{l.subject}</T> },
-          { header: "Enseignant", flex: 1.8, render: (l) => <T style={{ fontSize: 8, color: COLORS.muted }}>{l.teacher ?? "–"}</T> },
+          // The teacher column is dropped when no row names a teacher.
+          ...(showTeacher ? [{ header: "Enseignant", flex: 1.8, render: (l: ReportCardLine) => <T style={{ fontSize: 8, color: COLORS.muted }}>{l.teacher ?? "–"}</T> }] : []),
           { header: "Coef.", flex: 0.8, align: "center", render: (l) => String(l.coefficient) },
           { header: "Moyenne /20", flex: 1.3, align: "right", render: (l) => formatAverage(l.average) },
           { header: "Points", flex: 1.1, align: "right", render: (l) => (l.average === null ? "–" : formatAverage(l.average * l.coefficient)) },
@@ -79,14 +82,14 @@ export function ReportCardPage({ data, meta, issuer }: { data: ReportCardData; m
           { header: "Mention", flex: 1.6, render: (l) => mention(l.average)?.label ?? "Non noté" },
         ]}
         rows={card.lines}
-        footer={["Total", "", String(totalCoef), "", formatAverage(totalPoints), "", ""]}
+        footer={["Total", ...(showTeacher ? [""] : []), String(totalCoef), "", formatAverage(totalPoints), "", ""]}
         empty="Aucune matière notée pour cette période."
       />
 
       <View style={{ marginTop: 14 }} wrap={false}>
         <FigureRow>
           <Figure big tone="primary" label="Moyenne générale" value={card.generalAverage === null ? "–" : `${formatAverage(card.generalAverage)} / 20`} hint={m ? `Mention : ${m.label}` : "Aucune moyenne calculée"} />
-          <Figure big label="Rang" value={ordinal(card.rank)} hint={`sur ${card.classSize} élèves`} />
+          <Figure big label="Rang" value={ordinal(card.rank)} hint={`sur ${plural(card.classSize, "élève")}`} />
           {data.classAverage !== undefined ? (
             <Figure big label="Moyenne de la classe" value={data.classAverage === null ? "–" : `${formatAverage(data.classAverage)} / 20`} />
           ) : null}
