@@ -7,6 +7,11 @@
 //   npx tsx scripts/pretranslate.ts --dry-run            list what would be sent
 //   npx tsx scripts/pretranslate.ts --lang fon,yo        translate (default: fon,yo)
 //   npx tsx scripts/pretranslate.ts --lang fon --max 300 at most 300 strings
+//   npx tsx scripts/pretranslate.ts --from strings.json  the strings of a JSON
+//     list instead of the source scan, such as the sentences and templates a
+//     page run collects (the scan cannot rebuild a sentence split by inline
+//     elements, nor a template of names and figures)
+// Then scripts/export-translations.ts writes the new rows into the seed.
 //
 // Strings already cached are never sent again. Requests carry 100 strings
 // and respect the quota of the service (5 requests per minute per token),
@@ -40,6 +45,15 @@ const SOURCES = [
   "src/features/help",
   "src/features/students",
   "src/features/notifications",
+  "src/features/mock-exams",
+  "src/features/online-payment",
+  "src/features/student-history",
+  "src/features/offline",
+  "src/features/pwa",
+  "src/features/push",
+  "src/features/school-status",
+  "src/features/languages/translate-content.tsx",
+  "src/features/languages/voice-info.tsx",
   "src/app/espace/(accueil)",
   "src/app/espace/suivi",
   "src/app/espace/bulletins",
@@ -51,9 +65,21 @@ const SOURCES = [
   "src/app/espace/aide",
   "src/app/espace/notifications",
   "src/app/espace/preferences",
+  "src/app/espace/examens-blancs",
+  "src/app/espace/payer",
+  "src/app/espace/eleves/[id]",
+  "src/app/espace/bulletins/[enrollmentId]",
+  "src/app/espace/frais/factures",
+  "src/app/espace/frais/paiements",
+  "src/app/espace/layout.tsx",
+  "src/app/espace/error.tsx",
+  "src/app/layout.tsx",
+  "src/components/ui",
   "src/components/kit",
   "src/components/shell",
   "src/lib/navigation.ts",
+  "src/lib/action.ts",
+  "src/lib/errors.ts",
   "src/lib/domain",
 ];
 
@@ -120,6 +146,11 @@ async function main() {
   const langs = (arg("lang") ?? "fon,yo").split(",").map((l) => l.trim());
   const max = Number(arg("max") ?? "100000");
   for (const l of langs) if (!isTargetLanguage(l)) throw new Error(`Unknown language: ${l}`);
+  const from = arg("from");
+  if (from) {
+    const list = (JSON.parse(readFileSync(path.resolve(from), "utf8")) as unknown[]).filter((s): s is string => typeof s === "string");
+    strings.splice(0, strings.length, ...new Set(list.map(normalise).filter(isCandidate)));
+  }
 
   const db = new PrismaClient({ adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL! }) });
   const baseUrl = process.env.LANGUES229_API_URL;
