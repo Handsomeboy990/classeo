@@ -11,7 +11,9 @@
 | Object access | every query composes the territorial scope filter; teachers are limited to their own classes | `src/lib/auth/scope.ts` |
 | Privilege escalation | a role can only be assigned or edited by someone holding all its permissions at an equal or higher level | `src/lib/domain/rights.ts` |
 | Role management | a new or duplicated role only receives permissions its creator holds (the others are dropped and reported), at the creator's level or below, never the family level; system roles are never renamed or deleted; a custom role is deleted only by someone able to assign it, when every holder is inside their scope and is moved to a role of the same level they could assign; refusals and changes are audited | `src/lib/domain/rights.ts` (tested), `src/features/roles/actions.ts` |
-| Forgotten password | see the section below | `src/features/auth/reset-actions.ts`, `src/features/auth/reset-code.ts` (tested) |
+| Delegated roles | a school, a commune or a department creates roles for its own level only; they belong to it (`Role.owner*Id`), are invisible elsewhere, edited only by it or the ministry, and assigned only to accounts inside it; national roles are read only below the ministry; the anti escalation rules above still apply | `src/features/roles/ownership.ts` (tested), `src/features/roles/actions.ts`, `src/features/users/actions.ts` |
+| School switcher | the session's school (`Session.activeSchoolId`) is set only to a school the account holds (own school or teaching appointment); the scope then follows it | `src/features/auth/school-actions.ts`, `src/lib/auth/session.ts` |
+| Forgotten password | see the section below | `src/features/password-help`, `src/features/auth/reset-actions.ts`, `src/features/auth/reset-code.ts` (tested) |
 | E-mail | SMTP with socket timeouts and a bound per message, never throwing; without `SMTP_HOST` only a summary is logged (masked recipient, subject, never the body, which can hold a temporary password or a code); links are built from `APP_URL`, never from the request Host header; every template value is HTML escaped and only web links are rendered | `src/lib/mail` (tested) |
 | Input | zod validation at every server boundary | each `features/*/schema.ts` or action |
 | Output | React escaping, no raw HTML rendering; CSV export neutralises formula injection | `src/lib/export.ts` |
@@ -21,7 +23,16 @@
 
 ## Forgotten password flow
 
-`/mot-de-passe-oublie` asks for the address, `/mot-de-passe-oublie/code` takes the code and the new password.
+Most accounts have no e-mail. `/mot-de-passe-oublie` asks for the identifier and an optional phone number and files a help request routed up the hierarchy (`src/features/password-help/routing.ts`, tested): pupils, parents and school staff to their school head, school heads to the communal district, communal inspectors to the departmental direction, departmental and national agents to the ministry.
+
+| Control | Detail |
+|---|---|
+| No account enumeration | same answer for an unknown, disabled or existing identifier; the request is written after the answer (`after()`) |
+| Rate limits | 3 requests per identifier and 20 per client address per 15 minutes; a repeated request updates the waiting one |
+| Handlers | `user:update`, the request routed to their level and territory (`helpRequestWhere`); supervising a lower level is allowed by the hierarchy, a peer of the same level needs the anti escalation rule |
+| Reset | temporary password shown once, forced change at sign in, lock and counters cleared, every session closed, claimed atomically so two handlers cannot both reset, audited; a refusal needs a reason, audited |
+
+Accounts with an address can still use the e-mail code: `/mot-de-passe-oublie/email` asks for the address, `/mot-de-passe-oublie/code` takes the code and the new password.
 
 | Control | Detail |
 |---|---|
