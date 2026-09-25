@@ -27,7 +27,8 @@ test.describe("secretary", () => {
   test.use({ storageState: authFile("secretaire") });
 
   test("gets the 403 page on /espace/frais", async ({ page }) => {
-    await page.goto("/espace/frais");
+    const response = await page.goto("/espace/frais");
+    expect(response?.status()).toBe(403);
     await expectForbidden(page);
     await expect(page.getByRole("heading", { name: "Frais et paiements" })).toHaveCount(0);
   });
