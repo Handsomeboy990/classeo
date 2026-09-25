@@ -243,7 +243,7 @@ export function GradeGrid({
                 return (
                   <tr key={r.enrollmentId} className="group">
                     <th scope="row" className="sticky left-0 z-10 border-b border-border bg-surface px-3 py-1.5 text-left font-medium group-hover:bg-surface-2">
-                      <Link href={`/espace/eleves/${r.studentId}`} className="block max-w-[14rem] truncate hover:underline" tabIndex={-1}>
+                      <Link href={`/espace/eleves/${r.studentId}`} className="block max-w-56 truncate hover:underline" tabIndex={-1}>
                         {r.name}
                       </Link>
                       <span className="block font-mono text-[11px] font-normal text-muted">{r.matricule}</span>
