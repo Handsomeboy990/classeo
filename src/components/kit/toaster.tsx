@@ -35,7 +35,7 @@ export function Toaster() {
     () => EMPTY,
   );
   return (
-    <div className="pointer-events-none fixed inset-x-0 bottom-4 z-50 flex flex-col items-center gap-2 px-4 sm:items-end sm:pr-6">
+    <div className="pointer-events-none fixed inset-x-0 bottom-0 ds-toaster z-50 flex flex-col items-center gap-2 px-3 sm:items-end sm:px-6 print:hidden">
       {(["success", "error"] as const).map((tone) => (
         <div key={tone} role={tone === "error" ? "alert" : "status"} aria-live={tone === "error" ? "assertive" : "polite"} className="contents">
           {list
@@ -43,18 +43,24 @@ export function Toaster() {
             .map((t) => (
               <div
                 key={t.id}
-                className={cn(
-                  "pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-lg border bg-surface px-4 py-3 text-sm shadow-lg",
-                  tone === "error" ? "border-danger" : "border-primary",
-                )}
+                className="ds-toast pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-control border border-border bg-surface py-3 pr-2 pl-3 text-sm shadow-overlay"
               >
-                {tone === "error" ? (
-                  <XCircle className="mt-0.5 size-5 shrink-0 text-danger" aria-hidden />
-                ) : (
-                  <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden />
-                )}
-                <p className="flex-1 text-text">{t.message}</p>
-                <button type="button" onClick={() => dismiss(t.id)} aria-label="Fermer la notification" className="text-muted hover:text-text">
+                <span
+                  className={cn(
+                    "flex size-7 shrink-0 items-center justify-center rounded-full",
+                    tone === "error" ? "bg-danger-soft text-danger" : "bg-success-soft text-success",
+                  )}
+                  aria-hidden
+                >
+                  {tone === "error" ? <XCircle className="size-4" /> : <CheckCircle2 className="size-4" />}
+                </span>
+                <p className="flex-1 self-center leading-snug font-medium text-text">{t.message}</p>
+                <button
+                  type="button"
+                  onClick={() => dismiss(t.id)}
+                  aria-label="Fermer la notification"
+                  className="-my-1 inline-flex size-9 shrink-0 items-center justify-center rounded-control text-muted transition-colors hover:bg-surface-2 hover:text-text"
+                >
                   <X className="size-4" aria-hidden />
                 </button>
               </div>

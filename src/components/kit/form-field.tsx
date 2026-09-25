@@ -1,5 +1,6 @@
 "use client";
 
+import { CircleAlert } from "lucide-react";
 import { useId, type ReactElement, cloneElement } from "react";
 
 import { Label } from "@/components/ui/input";
@@ -48,13 +49,14 @@ export function FormField({
         "aria-describedby": describedBy,
       })}
       {hint && (
-        <p id={`${id}-hint`} className="text-xs text-muted">
+        <p id={`${id}-hint`} className="text-hint text-muted">
           {hint}
         </p>
       )}
       {error && (
-        <p id={`${id}-error`} className="text-sm font-medium text-danger">
-          {error}
+        <p id={`${id}-error`} className="flex items-start gap-1.5 text-sm leading-snug font-semibold text-danger">
+          <CircleAlert className="mt-px size-4 shrink-0" aria-hidden />
+          <span>{error}</span>
         </p>
       )}
     </div>

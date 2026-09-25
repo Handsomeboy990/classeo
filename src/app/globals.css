@@ -38,6 +38,34 @@
   --sidebar-muted: #a9c2b4;
   --focus: #1d4ed8;
   --radius: 0.75rem;
+  /*
+   * Design system tokens (additive). Field borders reach 3:1 against the
+   * surface and the page (WCAG 1.4.11), which the decorative border does not.
+   */
+  --field-bg: #ffffff;
+  --field-border: #8a8d84;
+  --field-border-hover: #5f635b;
+  --field-disabled: #f0f1ea;
+  --field-ring: color-mix(in srgb, var(--primary) 22%, transparent);
+  --field-ring-danger: color-mix(in srgb, var(--danger) 20%, transparent);
+  --on-danger: #ffffff;
+  --overlay: rgb(9 22 15 / 0.52);
+  --radius-sm: 0.375rem;
+  --control-radius: 0.625rem;
+  --sheet-radius: 1.25rem;
+  --control-h: 2.75rem;
+  --elevation-xs: 0 1px 2px rgb(20 32 24 / 0.06);
+  --elevation-sm: 0 1px 2px rgb(20 32 24 / 0.05), 0 2px 6px -1px rgb(20 32 24 / 0.07);
+  --elevation-md: 0 2px 4px -1px rgb(20 32 24 / 0.06), 0 8px 20px -4px rgb(20 32 24 / 0.1);
+  --elevation-lg: 0 4px 10px -2px rgb(20 32 24 / 0.08), 0 20px 44px -10px rgb(20 32 24 / 0.22);
+  --ease-emphasis: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  /* Glyphs drawn inside native controls: check, dash, select chevron. */
+  --chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%23545a52' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 8 4 4 4-4'/%3E%3C/svg%3E");
+  --check: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%23ffffff' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 10.5 3.2 3L15 6.5'/%3E%3C/svg%3E");
+  --dash: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%23ffffff' stroke-width='2.6' stroke-linecap='round'%3E%3Cpath d='M5.5 10h9'/%3E%3C/svg%3E");
+  --switch-thumb: #ffffff;
   color-scheme: light;
 }
 
@@ -65,6 +93,22 @@
   --sidebar: #0a1510;
   --sidebar-hover: #14261d;
   --focus: #7aa2ff;
+  --field-bg: #121815;
+  --field-border: #6b7d71;
+  --field-border-hover: #8fa196;
+  --field-disabled: #1d2621;
+  --field-ring: color-mix(in srgb, var(--primary) 28%, transparent);
+  --field-ring-danger: color-mix(in srgb, var(--danger) 26%, transparent);
+  --on-danger: #1a0508;
+  --overlay: rgb(0 0 0 / 0.62);
+  --elevation-xs: 0 1px 2px rgb(0 0 0 / 0.3);
+  --elevation-sm: 0 1px 2px rgb(0 0 0 / 0.3), 0 2px 6px -1px rgb(0 0 0 / 0.3);
+  --elevation-md: 0 2px 4px -1px rgb(0 0 0 / 0.35), 0 8px 20px -4px rgb(0 0 0 / 0.45);
+  --elevation-lg: 0 4px 10px -2px rgb(0 0 0 / 0.4), 0 24px 48px -12px rgb(0 0 0 / 0.65);
+  --chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%23a8b3ab' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 8 4 4 4-4'/%3E%3C/svg%3E");
+  --check: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%2306140d' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 10.5 3.2 3L15 6.5'/%3E%3C/svg%3E");
+  --dash: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%2306140d' stroke-width='2.6' stroke-linecap='round'%3E%3Cpath d='M5.5 10h9'/%3E%3C/svg%3E");
+  --switch-thumb: #eef2ee;
   color-scheme: dark;
 }
 
@@ -87,6 +131,17 @@
   --sidebar-text: #ffffff;
   --sidebar-muted: #ffffff;
   --focus: #000000;
+  --field-bg: #ffffff;
+  --field-border: #000000;
+  --field-border-hover: #000000;
+  --field-disabled: #ffffff;
+  --field-ring: transparent;
+  --field-ring-danger: transparent;
+  --elevation-xs: none;
+  --elevation-sm: none;
+  --elevation-md: none;
+  --elevation-lg: none;
+  --chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%23000000' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 8 4 4 4-4'/%3E%3C/svg%3E");
 }
 
 [data-theme="dark"][data-contrast="high"] {
@@ -104,6 +159,15 @@
   --warning: #ffd479;
   --info: #a9c4ff;
   --focus: #ffff00;
+  --on-danger: #000000;
+  --field-bg: #000000;
+  --field-border: #ffffff;
+  --field-border-hover: #ffffff;
+  --field-disabled: #000000;
+  --switch-thumb: #ffffff;
+  --chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%23ffffff' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 8 4 4 4-4'/%3E%3C/svg%3E");
+  --check: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%23000000' stroke-width='2.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 10.5 3.2 3L15 6.5'/%3E%3C/svg%3E");
+  --dash: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%23000000' stroke-width='2.8' stroke-linecap='round'%3E%3Cpath d='M5.5 10h9'/%3E%3C/svg%3E");
 }
 
 /* Text size preference, applied to the root so rem based layouts scale. */
@@ -146,6 +210,17 @@ html[data-text="xxl"] {
   --color-sidebar-muted: var(--sidebar-muted);
   --color-focus: var(--focus);
   --radius-card: var(--radius);
+  --radius-control: var(--control-radius);
+  --radius-sheet: var(--sheet-radius);
+  --color-field: var(--field-bg);
+  --color-field-border: var(--field-border);
+  --color-on-danger: var(--on-danger);
+  --shadow-xs: var(--elevation-xs);
+  --shadow-card: var(--elevation-xs);
+  --shadow-raised: var(--elevation-md);
+  --shadow-overlay: var(--elevation-lg);
+  --text-hint: 0.8125rem;
+  --text-hint--line-height: 1.4;
   --font-sans: var(--font-body);
   --font-display: var(--font-display);
 }
@@ -172,6 +247,9 @@ h3 {
 :focus-visible {
   outline: 3px solid var(--focus);
   outline-offset: 2px;
+}
+/* Rounds the ring of plain links and text; controls keep their own radius. */
+:focus-visible:not([class*="rounded"], .ds-field, .ds-check, .ds-switch, input, select, textarea) {
   border-radius: 4px;
 }
 
@@ -186,6 +264,312 @@ label[for] {
 
 button:disabled {
   cursor: not-allowed;
+}
+
+/*
+ * Form controls. The same look for every text field, select and check,
+ * including the raw checkboxes and radios written directly in pages: a
+ * 3:1 border, a calm hover, a green ring on focus. Kept in the components
+ * layer so a utility class passed by a page still wins.
+ */
+@layer components {
+  .ds-field {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    height: var(--control-h);
+    padding-inline: 0.875rem;
+    border: 1px solid var(--field-border);
+    border-radius: var(--control-radius);
+    background-color: var(--field-bg);
+    color: var(--text);
+    font-size: 1rem;
+    line-height: 1.5;
+    box-shadow: var(--elevation-xs);
+    transition:
+      border-color var(--duration-fast) ease,
+      box-shadow var(--duration-fast) ease,
+      background-color var(--duration-fast) ease;
+  }
+  .ds-field::placeholder {
+    color: var(--text-muted);
+    opacity: 0.8;
+  }
+  .ds-field:hover:not(:disabled, [aria-disabled="true"], [readonly]) {
+    border-color: var(--field-border-hover);
+  }
+  .ds-field:focus {
+    border-color: var(--primary);
+    box-shadow:
+      0 0 0 1px var(--primary),
+      0 0 0 4px var(--field-ring);
+  }
+  .ds-field[aria-invalid="true"] {
+    border-color: var(--danger);
+  }
+  .ds-field[aria-invalid="true"]:focus {
+    box-shadow:
+      0 0 0 1px var(--danger),
+      0 0 0 4px var(--field-ring-danger);
+  }
+  .ds-field:disabled,
+  .ds-field[aria-disabled="true"] {
+    background-color: var(--field-disabled);
+    color: var(--text-muted);
+    box-shadow: none;
+    cursor: not-allowed;
+    opacity: 1;
+  }
+  .ds-field[readonly] {
+    background-color: var(--field-disabled);
+  }
+  .ds-field[data-size="sm"] {
+    height: 2.25rem;
+    padding-inline: 0.75rem;
+    font-size: 0.875rem;
+  }
+  .ds-field[data-size="lg"] {
+    height: 3rem;
+    font-size: 1.0625rem;
+  }
+  /* Phones keep 44 px targets and a 16 px text that never triggers zoom. */
+  @media (max-width: 39.999rem) {
+    .ds-field[data-size="sm"] {
+      height: var(--control-h);
+      font-size: 1rem;
+    }
+  }
+  textarea.ds-field {
+    height: auto;
+    min-height: 7rem;
+    padding-block: 0.625rem;
+    resize: vertical;
+  }
+
+  /* Native select, closed state restyled only: the picker stays native. */
+  select.ds-field {
+    appearance: none;
+    padding-inline-end: 2.5rem;
+    background-image: var(--chevron);
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1.125rem;
+    text-overflow: ellipsis;
+  }
+  select.ds-field[multiple],
+  select.ds-field[size]:not([size="1"]) {
+    height: auto;
+    padding-block: 0.375rem;
+    padding-inline-end: 0.875rem;
+    background-image: none;
+  }
+  select.ds-field option {
+    background-color: var(--surface);
+    color: var(--text);
+  }
+
+  /* Date and time fields: aligned text on iOS, a quieter picker icon. */
+  .ds-field::-webkit-date-and-time-value {
+    text-align: start;
+    min-height: 1.5em;
+  }
+  .ds-field::-webkit-datetime-edit {
+    padding: 0;
+  }
+  .ds-field::-webkit-calendar-picker-indicator {
+    padding: 0.25rem;
+    margin-inline-end: -0.25rem;
+    border-radius: var(--radius-sm);
+    opacity: 0.7;
+    cursor: pointer;
+  }
+  .ds-field::-webkit-calendar-picker-indicator:hover {
+    opacity: 1;
+    background-color: var(--surface-2);
+  }
+  input.ds-field[type="search"]::-webkit-search-cancel-button {
+    cursor: pointer;
+  }
+
+  /* Field with a leading icon or a suffix: the frame is the wrapper. */
+  .ds-adorned {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-width: 0;
+  }
+  .ds-adorned > .ds-adornment {
+    position: absolute;
+    inset-block: 0;
+    display: flex;
+    align-items: center;
+    color: var(--text-muted);
+    pointer-events: none;
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+  .ds-adorned > .ds-adornment svg {
+    width: 1.125rem;
+    height: 1.125rem;
+  }
+  .ds-adorned > .ds-adornment[data-side="start"] {
+    inset-inline-start: 0.875rem;
+  }
+  .ds-adorned > .ds-adornment[data-side="end"] {
+    inset-inline-end: 0.875rem;
+  }
+  .ds-adorned > .ds-adornment[data-interactive] {
+    pointer-events: auto;
+  }
+  .ds-adorned[data-start] > .ds-field {
+    padding-inline-start: 2.625rem;
+  }
+  .ds-adorned[data-end] > .ds-field {
+    padding-inline-end: var(--end-pad, 3.75rem);
+  }
+
+  /* Checkbox and radio: custom visual over the native input. */
+  .ds-check,
+  :where(input[type="checkbox"], input[type="radio"]):not(.sr-only, .ds-switch, [class*="appearance-"]) {
+    appearance: none;
+    flex-shrink: 0;
+    display: inline-grid;
+    place-content: center;
+    width: 1.25rem;
+    height: 1.25rem;
+    margin: 0;
+    border: 1.5px solid var(--field-border);
+    border-radius: 0.375rem;
+    background-color: var(--field-bg);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 100%;
+    vertical-align: middle;
+    cursor: pointer;
+    transition:
+      background-color var(--duration-fast) ease,
+      border-color var(--duration-fast) ease,
+      box-shadow var(--duration-fast) ease;
+  }
+  :where(input[type="radio"]):not(.sr-only, [class*="appearance-"]),
+  .ds-check[type="radio"] {
+    border-radius: 999px;
+  }
+  .ds-check:hover:not(:disabled),
+  :where(input[type="checkbox"], input[type="radio"]):not(.sr-only, .ds-switch, [class*="appearance-"]):hover:not(:disabled) {
+    border-color: var(--primary);
+  }
+  .ds-check:checked,
+  :where(input[type="checkbox"]):not(.sr-only, .ds-switch, [class*="appearance-"]):checked {
+    border-color: var(--primary);
+    background-color: var(--primary);
+    background-image: var(--check);
+  }
+  .ds-check:indeterminate,
+  :where(input[type="checkbox"]):not(.sr-only, .ds-switch, [class*="appearance-"]):indeterminate {
+    border-color: var(--primary);
+    background-color: var(--primary);
+    background-image: var(--dash);
+  }
+  .ds-check[type="radio"]:checked,
+  :where(input[type="radio"]):not(.sr-only, [class*="appearance-"]):checked {
+    border-color: var(--primary);
+    background-color: var(--field-bg);
+    background-image: radial-gradient(circle, var(--primary) 0 42%, transparent 46%);
+  }
+  .ds-check[aria-invalid="true"] {
+    border-color: var(--danger);
+  }
+  .ds-check:disabled,
+  :where(input[type="checkbox"], input[type="radio"]):not(.sr-only, .ds-switch, [class*="appearance-"]):disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  /* Switch: a checkbox with role="switch"; the thumb is a gradient. */
+  .ds-switch {
+    appearance: none;
+    flex-shrink: 0;
+    width: 2.75rem;
+    height: 1.5rem;
+    margin: 0;
+    border: 1.5px solid var(--field-border);
+    border-radius: 999px;
+    background-color: var(--field-border);
+    background-image: radial-gradient(circle closest-side, var(--switch-thumb) 0 78%, transparent 84%);
+    background-repeat: no-repeat;
+    background-size: 1.3125rem 1.3125rem;
+    background-position: left 0.03rem center;
+    cursor: pointer;
+    transition:
+      background-position var(--duration-base) var(--ease-emphasis),
+      background-color var(--duration-fast) ease,
+      border-color var(--duration-fast) ease;
+  }
+  .ds-switch:checked {
+    border-color: var(--primary);
+    background-color: var(--primary);
+    background-image: radial-gradient(circle closest-side, var(--on-primary) 0 78%, transparent 84%);
+    background-position: right 0.03rem center;
+  }
+  .ds-switch:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  /* A label row that holds a check: the whole row is the 44 px target. */
+  .ds-choice {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    min-height: 2.75rem;
+    padding-block: 0.625rem;
+    cursor: pointer;
+  }
+  .ds-choice > input {
+    margin-top: 0.125rem;
+  }
+  @media (min-width: 40rem) {
+    .ds-choice {
+      min-height: 2.25rem;
+      padding-block: 0.375rem;
+    }
+  }
+  .ds-choice:has(input:disabled) {
+    cursor: not-allowed;
+  }
+}
+
+/*
+ * Focus on fields is the border and ring above; the generic outline is
+ * kept for high contrast, where the ring is transparent.
+ */
+.ds-field:focus-visible {
+  outline: none;
+}
+[data-contrast="high"] .ds-field:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+.ds-check:focus-visible,
+.ds-switch:focus-visible,
+:where(input[type="checkbox"], input[type="radio"]):not(.sr-only):focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+@media (forced-colors: active) {
+  .ds-check,
+  .ds-switch,
+  select.ds-field,
+  :where(input[type="checkbox"], input[type="radio"]):not(.sr-only) {
+    appearance: auto;
+  }
+}
+
+/* A modal dialog freezes the page behind it. */
+html:has(dialog[open]:modal) {
+  overflow: hidden;
 }
 
 /* Light data mode hides decorative images to save bandwidth. */
@@ -204,11 +588,17 @@ html[data-lite="on"] img[data-decorative] {
   }
 }
 
+/* Loading placeholder: a slow, low contrast sweep, calm on long waits. */
 .skeleton {
-  background: linear-gradient(90deg, var(--surface-2) 25%, var(--border) 37%, var(--surface-2) 63%);
+  background: linear-gradient(90deg, var(--surface-2) 25%, color-mix(in srgb, var(--border) 60%, var(--surface-2)) 37%, var(--surface-2) 63%);
   background-size: 400% 100%;
-  animation: skeleton 1.4s ease infinite;
-  border-radius: 0.5rem;
+  animation: skeleton 1.8s ease-in-out infinite;
+  border-radius: var(--radius-sm);
+}
+[data-contrast="high"] .skeleton {
+  background: transparent;
+  outline: 1px dashed var(--border);
+  animation: none;
 }
 
 @keyframes skeleton {
@@ -221,39 +611,164 @@ html[data-lite="on"] img[data-decorative] {
 }
 
 /*
- * Print. A page that holds a printable document (data-print-root, e.g. a
- * report card) prints that document only: the app shell and the controls
- * marked data-print-hide are left out, colours stay legible on paper.
+ * Print. One stylesheet for every page, so a print view only has to mark
+ * what is specific to it:
+ * - A4 portrait, 14 mm margins; data-print-landscape on any element prints
+ *   its pages in landscape (wide grade sheets, registers).
+ * - The app chrome never prints: sidebar, top bar, toasts, pagination,
+ *   buttons, search boxes and anything marked data-print-hide.
+ * - Paper typography: 10.5 pt body, black on white, no shadows, headings
+ *   kept with what follows.
+ * - Tables: header repeated on every page, footer at the end, rows never
+ *   cut in two; the phone card layout and the sticky header are off.
+ * - Helpers: .print-only (paper only), .print-break-before,
+ *   .print-avoid-break.
+ * A page that holds a printable document (data-print-root, e.g. a report
+ * card) prints that document only.
  */
-@media print {
-  body:has([data-print-root]) aside,
-  body:has([data-print-root]) header:not([data-print-root] header),
-  body:has([data-print-root]) [data-print-hide],
-  body:has([data-print-root]) [data-offline-banner] {
+@page {
+  size: A4;
+  margin: 14mm 12mm 16mm;
+}
+@page landscape {
+  size: A4 landscape;
+  margin: 10mm 12mm 12mm;
+}
+
+@media screen {
+  .print-only {
     display: none !important;
   }
-  /* The shell is a two column grid: with the sidebar gone, collapse it. */
-  body:has([data-print-root]) > div {
-    display: block !important;
+}
+
+@media print {
+  html {
+    font-size: 10.5pt !important;
   }
-  body:has([data-print-root]) main {
+  body {
+    background: #fff !important;
+    color: #000 !important;
+    line-height: 1.4;
+  }
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    animation: none !important;
+    transition: none !important;
+  }
+
+  /* App chrome. */
+  body aside.sticky,
+  body header.sticky,
+  [data-print-hide],
+  [data-offline-banner],
+  .ds-toaster,
+  nav[aria-label="Pagination"],
+  button:not([data-print-keep]),
+  .ds-adorned:has(> input[type="search"]),
+  dialog {
+    display: none !important;
+  }
+  body > div:has(> aside) {
+    display: block !important;
+    min-height: 0 !important;
+  }
+  body main {
     max-width: none !important;
     padding: 0 !important;
   }
-  body:has([data-print-root]) {
-    background: #fff !important;
-    color: #000 !important;
+
+  /* Printable document pages: the document only. */
+  body:has([data-print-root]) aside,
+  body:has([data-print-root]) header:not([data-print-root] header) {
+    display: none !important;
+  }
+  body:has([data-print-root]) > div {
+    display: block !important;
   }
   [data-print-root] {
     border: 0 !important;
     break-inside: auto;
   }
-  [data-print-root] tr {
+
+  [data-print-landscape] {
+    page: landscape;
+  }
+
+  /* Typography. */
+  h1 {
+    font-size: 18pt;
+  }
+  h2 {
+    font-size: 13pt;
+  }
+  h3 {
+    font-size: 11.5pt;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    break-after: avoid;
+    color: #000 !important;
+  }
+  p,
+  li {
+    orphans: 3;
+    widows: 3;
+  }
+  a {
+    color: inherit !important;
+    text-decoration: none !important;
+  }
+  .text-muted {
+    color: #333 !important;
+  }
+  img,
+  svg,
+  figure,
+  .print-avoid-break {
     break-inside: avoid;
   }
-  * {
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
+  .print-break-before {
+    break-before: page;
+  }
+
+  /* Tables. */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  thead {
+    display: table-header-group;
+  }
+  tfoot {
+    display: table-footer-group;
+  }
+  tr,
+  th,
+  td {
+    break-inside: avoid;
+  }
+  .ds-table-scroll {
+    overflow: visible !important;
+  }
+  .ds-table thead th {
+    position: static !important;
+    background: #f2f2f2 !important;
+    color: #000 !important;
+    border-bottom: 1px solid #000;
+  }
+  .ds-table tbody tr {
+    border-top: 1px solid #bbb;
+  }
+  .ds-table :where(th, td) {
+    padding: 0.35rem 0.5rem;
+  }
+  .rounded-card {
+    border-color: #bbb !important;
   }
 }
 
@@ -324,5 +839,319 @@ html[data-lite="on"] img[data-decorative] {
     min-height: 4rem;
     flex-wrap: wrap;
     padding-block: 0.5rem;
+  }
+}
+
+/* High contrast: tinted hairlines become full strength borders. */
+[data-contrast="high"] :is(.border-success\/20, .border-warning\/25, .border-danger\/20, .border-info\/20, .border-primary\/15) {
+  border-color: currentColor;
+}
+
+/*
+ * Dialog. Desktop: a centred panel that settles in (opacity and scale,
+ * 180 ms). Phone: a bottom sheet sliding up (transform, 240 ms), full width,
+ * with a handle, rounded top corners and the home indicator kept clear.
+ * Nothing waits for the motion: the dialog is interactive at once, and
+ * reduced motion removes it.
+ */
+@layer components {
+  .ds-dialog {
+    margin: auto;
+    width: calc(100% - 2rem);
+    max-width: 32rem;
+    max-height: min(88dvh, 52rem);
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: calc(var(--radius) + 0.25rem);
+    background: var(--surface);
+    color: var(--text);
+    box-shadow: var(--elevation-lg);
+    overflow: hidden;
+  }
+  .ds-dialog[data-size="sm"] {
+    max-width: 28rem;
+  }
+  .ds-dialog[data-size="lg"] {
+    max-width: 42rem;
+  }
+  .ds-dialog[data-size="xl"] {
+    max-width: 56rem;
+  }
+  .ds-dialog[open] {
+    display: flex;
+    flex-direction: column;
+    animation: ds-dialog-in 180ms var(--ease-emphasis);
+  }
+  .ds-dialog::backdrop {
+    background: var(--overlay);
+    animation: ds-fade-in 180ms ease-out;
+  }
+  .ds-dialog-body {
+    min-height: 0;
+    flex: 1 1 auto;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 1rem 1.25rem 1.25rem;
+  }
+  .ds-dialog-footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    flex-shrink: 0;
+    padding: 0.875rem 1.25rem;
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+  }
+  .ds-sheet-handle {
+    display: none;
+  }
+
+  @media (max-width: 39.999rem) {
+    .ds-dialog {
+      margin: auto 0 0;
+      width: 100%;
+      max-width: 100%;
+      max-height: calc(100dvh - max(1rem, env(safe-area-inset-top)));
+      border-width: 1px 0 0;
+      border-radius: var(--sheet-radius) var(--sheet-radius) 0 0;
+    }
+    .ds-dialog[data-size] {
+      max-width: 100%;
+    }
+    .ds-dialog[open] {
+      animation: ds-sheet-in 240ms var(--ease-emphasis);
+    }
+    .ds-sheet-handle {
+      display: block;
+      flex-shrink: 0;
+      width: 2.5rem;
+      height: 0.3125rem;
+      margin: 0.5rem auto 0;
+      border-radius: 999px;
+      background: var(--border-strong);
+    }
+    .ds-dialog-body {
+      padding: 1rem 1.25rem calc(1.25rem + env(safe-area-inset-bottom));
+    }
+    .ds-dialog:has(.ds-dialog-footer) .ds-dialog-body {
+      padding-bottom: 1.25rem;
+    }
+    .ds-dialog-footer {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: 1fr;
+      padding-bottom: calc(0.875rem + env(safe-area-inset-bottom));
+    }
+  }
+
+  /*
+   * Actions at the end of a form inside a dialog: they stay in view at the
+   * bottom of the scrolling body, and share the width on a phone.
+   */
+  .ds-dialog-actions {
+    position: sticky;
+    bottom: -1.25rem;
+    z-index: 1;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin: 0.5rem -1.25rem -1.25rem;
+    padding: 0.875rem 1.25rem;
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+  }
+  @media (max-width: 39.999rem) {
+    .ds-dialog-actions {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: 1fr;
+      bottom: calc(-1.25rem - env(safe-area-inset-bottom));
+      margin-bottom: calc(-1.25rem - env(safe-area-inset-bottom));
+      padding-bottom: calc(0.875rem + env(safe-area-inset-bottom));
+    }
+  }
+}
+
+@keyframes ds-dialog-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem) scale(0.98);
+  }
+}
+@keyframes ds-sheet-in {
+  from {
+    transform: translateY(100%);
+  }
+}
+@keyframes ds-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+/*
+ * Tables. Sentence case headers on a quiet band, 1 px row dividers, a hover
+ * tint. Compact density for long lists. From 64rem the header sticks under
+ * the app bar; on a phone, a table marked data-cards shows each row as a
+ * card: the primary cell as title, then label and value pairs, then the
+ * row actions.
+ */
+@layer components {
+  .ds-table :where(th, td) {
+    padding: 0.75rem 1rem;
+    vertical-align: middle;
+  }
+  .ds-table thead th {
+    background: var(--surface-2);
+    color: var(--text-muted);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    line-height: 1.25rem;
+    text-align: start;
+    white-space: nowrap;
+    border-bottom: 1px solid var(--border);
+  }
+  .ds-table tbody tr {
+    border-top: 1px solid var(--border);
+    transition: background-color var(--duration-fast) ease;
+  }
+  .ds-table tbody tr:first-child {
+    border-top: 0;
+  }
+  .ds-table tbody tr:hover {
+    background: color-mix(in srgb, var(--surface-2) 70%, transparent);
+  }
+  .ds-table[data-striped] tbody tr:nth-child(even) {
+    background: color-mix(in srgb, var(--surface-2) 45%, transparent);
+  }
+  .ds-table[data-density="compact"] :where(th, td) {
+    padding: 0.5rem 0.75rem;
+  }
+  .ds-table-scroll:first-child .ds-table thead th:first-child {
+    border-top-left-radius: calc(var(--radius) - 1px);
+  }
+  .ds-table-scroll:first-child .ds-table thead th:last-child {
+    border-top-right-radius: calc(var(--radius) - 1px);
+  }
+
+  @media (min-width: 64rem) {
+    .ds-table[data-sticky] thead th {
+      position: sticky;
+      top: 4rem;
+      z-index: 5;
+    }
+  }
+
+  @media (max-width: 39.999rem) {
+    .ds-table[data-cards],
+    .ds-table[data-cards] tbody {
+      display: block;
+    }
+    .ds-table[data-cards] thead {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+    .ds-table[data-cards] tbody tr {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.625rem 1rem;
+      padding: 0.875rem 1rem 1rem;
+    }
+    .ds-table[data-cards] tbody tr:hover {
+      background: transparent;
+    }
+    .ds-table[data-cards] tbody :is(td, th) {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.125rem;
+      min-width: 0;
+      padding: 0;
+      text-align: start;
+      overflow-wrap: anywhere;
+    }
+    .ds-table[data-cards] tbody :is(td, th)::before {
+      content: attr(data-label);
+      content: attr(data-label) / "";
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      font-weight: 500;
+      line-height: 1rem;
+      overflow-wrap: normal;
+    }
+    .ds-table[data-cards] tbody :is(td, th)[data-primary] {
+      order: -1;
+      grid-column: 1 / -1;
+      display: block;
+      font-size: 1rem;
+    }
+    .ds-table[data-cards] tbody :is(td, th)[data-actions] {
+      order: 99;
+      grid-column: 1 / -1;
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 0.5rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--border);
+    }
+    .ds-table[data-cards] tbody :is(td, th):is([data-primary], [data-actions])::before {
+      content: none;
+    }
+    .ds-table[data-cards] tbody :is(td, th):is([data-card-hidden], [data-empty]) {
+      display: none;
+    }
+  }
+}
+
+/* Very large text: the header can wrap, so the table scrolls in its frame. */
+@media (min-width: 64rem) {
+  html:is([data-text="xl"], [data-text="xxl"]) .ds-table-scroll[data-sticky] {
+    overflow-x: auto;
+  }
+  html:is([data-text="xl"], [data-text="xxl"]) .ds-table[data-sticky] thead th {
+    position: static;
+  }
+}
+
+/* Toasts rise into place: transform and opacity, 200 ms, never blocking. */
+.ds-toast {
+  animation: ds-toast-in var(--duration-base) var(--ease-emphasis);
+}
+@keyframes ds-toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+}
+[data-contrast="high"] .ds-toast {
+  border-width: 2px;
+  border-color: var(--text);
+}
+.ds-toaster {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+@media (min-width: 40rem) {
+  .ds-toaster {
+    padding-bottom: 1.5rem;
+  }
+}
+
+/* Enlarged text on a phone: key figures one per row, never clipped. */
+@media (max-width: 39.999rem) {
+  html:is([data-text="lg"], [data-text="xl"], [data-text="xxl"]) .ds-stat-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 22rem) {
+  .ds-stat-grid {
+    grid-template-columns: minmax(0, 1fr);
   }
 }

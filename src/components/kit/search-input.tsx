@@ -4,6 +4,8 @@ import { Loader2, Search } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState, useTransition } from "react";
 
+import { Input } from "@/components/ui/input";
+
 export function SearchInput({ placeholder = "Rechercher…", paramName = "q" }: { placeholder?: string; paramName?: string }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -29,20 +31,24 @@ export function SearchInput({ placeholder = "Rechercher…", paramName = "q" }: 
   }, [value]);
 
   return (
-    <div className="relative w-full max-w-sm">
+    <div className="w-full sm:max-w-sm">
       <label htmlFor="table-search" className="sr-only">
         {placeholder}
       </label>
-      <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted" aria-hidden />
-      <input
+      <Input
         id="table-search"
         type="search"
         value={value}
         onChange={(e) => setValue(e.target.value)}
         placeholder={placeholder}
-        className="h-11 w-full rounded-lg border border-border-strong bg-surface pr-9 pl-9 text-text"
+        enterKeyHint="search"
+        autoComplete="off"
+        leading={<Search />}
+        trailing={pending ? <Loader2 className="animate-spin" /> : undefined}
       />
-      {pending && <Loader2 className="absolute top-1/2 right-3 size-4 -translate-y-1/2 animate-spin text-muted" aria-label="Recherche en cours" />}
+      <span className="sr-only" role="status">
+        {pending ? "Recherche en cours" : ""}
+      </span>
     </div>
   );
 }
