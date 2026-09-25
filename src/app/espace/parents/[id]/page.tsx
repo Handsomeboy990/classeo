@@ -29,7 +29,7 @@ export default async function ParentPage(props: PageProps<"/espace/parents/[id]"
 
   return (
     <>
-      <nav aria-label="Fil d'Ariane" className="mb-2 text-sm text-muted">
+      <nav aria-label="Fil d'Ariane" className="mb-2 text-sm text-muted max-lg:hidden">
         <Link href="/espace/parents" className="hover:underline">
           Parents
         </Link>{" "}
@@ -100,7 +100,7 @@ export default async function ParentPage(props: PageProps<"/espace/parents/[id]"
             <CardTitle>Contact</CardTitle>
           </CardHeader>
           <CardBody>
-            <dl className="grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
+            <dl className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-3 text-sm [&_dd]:min-w-0 [&_dd]:break-words">
               <dt className="text-muted">Téléphone</dt>
               <dd>
                 <a href={`tel:${g.phone}`} className="font-mono hover:underline">
@@ -112,7 +112,7 @@ export default async function ParentPage(props: PageProps<"/espace/parents/[id]"
               <dt className="text-muted">Messages audio</dt>
               <dd>{g.prefersAudio ? "Oui" : "Non"}</dd>
               <dt className="text-muted">Compte</dt>
-              <dd>{g.user ? g.user.email : "Aucun compte"}</dd>
+              <dd className="break-all">{g.user ? g.user.email : "Aucun compte"}</dd>
               {g.user?.lastLoginAt && (
                 <>
                   <dt className="text-muted">Dernière connexion</dt>

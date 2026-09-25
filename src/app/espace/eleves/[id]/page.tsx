@@ -37,7 +37,7 @@ export default async function StudentPage(props: PageProps<"/espace/eleves/[id]"
 
   return (
     <>
-      <nav aria-label="Fil d'Ariane" className="mb-2 text-sm text-muted">
+      <nav aria-label="Fil d'Ariane" className="mb-2 text-sm text-muted max-lg:hidden">
         <Link href="/espace/eleves" className="hover:underline">
           Élèves
         </Link>{" "}
@@ -105,7 +105,7 @@ export default async function StudentPage(props: PageProps<"/espace/eleves/[id]"
             <CardTitle>Identité</CardTitle>
           </CardHeader>
           <CardBody>
-            <dl className="grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
+            <dl className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-3 text-sm [&_dd]:min-w-0 [&_dd]:break-words">
               <dt className="text-muted">Sexe</dt>
               <dd>{GENDER_LABELS[student.gender]}</dd>
               <dt className="text-muted">Naissance</dt>
@@ -113,7 +113,7 @@ export default async function StudentPage(props: PageProps<"/espace/eleves/[id]"
                 {shortDate(student.birthDate)} ({age} ans){student.birthPlace ? `, ${student.birthPlace}` : ""}
               </dd>
               <dt className="text-muted">Compte élève</dt>
-              <dd>{student.user ? student.user.email : "Aucun"}</dd>
+              <dd className="break-all">{student.user ? student.user.email : "Aucun"}</dd>
               <dt className="text-muted">Besoins particuliers</dt>
               <dd className="flex flex-wrap gap-1">
                 {student.disabilities.length ? (
