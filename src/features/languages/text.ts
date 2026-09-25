@@ -36,7 +36,9 @@ export function isCandidate(text: string) {
 // a name, or carries a figure (a date, a grade, an amount), stays French
 // unless it was pre-translated from the source code.
 export function isQueueable(text: string) {
-  if (!isCandidate(text)) return false;
+  // Interface labels are short; a longer text is content (a message, an
+  // announcement), translated only when a person asks for it.
+  if (!isCandidate(text) || text.length > 80) return false;
   if (DIGIT.test(text)) return false;
   if (PROPER_NAME.test(text)) return false;
   return text.split(" ").length >= 2 || /^[\p{Ll}]/u.test(text);

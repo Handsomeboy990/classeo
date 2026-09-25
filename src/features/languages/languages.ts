@@ -2,13 +2,15 @@
 // the browser: no secret, no server import here.
 
 export const LANGUAGES = [
-  { code: "fr", label: "Français", adjective: "français" },
-  { code: "fon", label: "Fongbe", adjective: "fongbe" },
-  { code: "yo", label: "Yoruba", adjective: "yoruba" },
-  { code: "bab", label: "Bariba", adjective: "bariba" },
-  { code: "adj", label: "Adja", adjective: "adja" },
-  { code: "ee", label: "Ewe", adjective: "ewe" },
-  { code: "ha", label: "Haoussa", adjective: "haoussa" },
+  // bcp47: the tag set on translated regions for screen readers (the
+  // service's own codes differ for Bariba and Adja).
+  { code: "fr", label: "Français", adjective: "français", bcp47: "fr" },
+  { code: "fon", label: "Fongbe", adjective: "fongbe", bcp47: "fon" },
+  { code: "yo", label: "Yoruba", adjective: "yoruba", bcp47: "yo" },
+  { code: "bab", label: "Bariba", adjective: "bariba", bcp47: "bba" },
+  { code: "adj", label: "Adja", adjective: "adja", bcp47: "ajg" },
+  { code: "ee", label: "Ewe", adjective: "ewe", bcp47: "ee" },
+  { code: "ha", label: "Haoussa", adjective: "haoussa", bcp47: "ha" },
 ] as const;
 
 export type LanguageCode = (typeof LANGUAGES)[number]["code"];
@@ -26,6 +28,10 @@ export function isTargetLanguage(value: unknown): value is TargetLanguage {
 
 export function languageLabel(code: LanguageCode) {
   return LANGUAGES.find((l) => l.code === code)?.label ?? "Français";
+}
+
+export function bcp47(code: LanguageCode) {
+  return LANGUAGES.find((l) => l.code === code)?.bcp47 ?? "fr";
 }
 
 // "en fongbe", "en haoussa": the complement used in button labels.
