@@ -9,7 +9,7 @@ import { renderToBuffer } from "@react-pdf/renderer";
 import { encodeQr } from "@/lib/qr";
 
 import { Signatures } from "./components";
-import { SignedContext, VerificationContext } from "./context";
+import { withDocumentScope } from "./context";
 import { prepareFonts } from "./fonts";
 import { DocumentPage, PdfDocument, T } from "./layout";
 import { contactLine, MINISTRIES, ministriesFor, pdfImageFormat } from "./letterhead";
@@ -59,14 +59,15 @@ describe("document rendering", () => {
     const Doc = PdfDocument as unknown as FC<{ title: string; author: string }>;
     const page = createElement(Page, { meta }, createElement(T, null, "Contenu"), createElement(Signatures, { items: [{ role: "Le directeur", stamp: true }] }));
     const doc = createElement(Doc, { title: "t", author: "a" }, page);
-    const element = createElement(
-      VerificationContext.Provider,
-      { value: { code: "K7QD4-M2XPH", url, shortUrl: url.slice(7), qr: encodeQr(url) } },
-      createElement(SignedContext.Provider, { value: { name: "Florentin Agossou", role: "Chef", signedAt: new Date(), signature: null, stamp: null } }, doc),
+    const buffer = await withDocumentScope(
+      {
+        verification: { code: "K7QD4-M2XPH", url, shortUrl: url.slice(7), qr: encodeQr(url) },
+        signed: { name: "Florentin Agossou", role: "Chef", signedAt: new Date(), signature: null, stamp: null },
+      },
+      () => renderToBuffer(doc as unknown as Parameters<typeof renderToBuffer>[0]),
     );
-    const buffer = await renderToBuffer(element as unknown as Parameters<typeof renderToBuffer>[0]);
     expect(buffer.subarray(0, 5).toString()).toBe("%PDF-");
-    // The renderer accepts the context providers above the document root.
+    // The scope reaches the footer and the signature block.
     expect(buffer.length).toBeGreaterThan(8000);
   }, 30_000);
 });

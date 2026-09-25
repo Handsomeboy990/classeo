@@ -1,11 +1,13 @@
-import { createContext, useContext } from "react";
+import { AsyncLocalStorage } from "node:async_hooks";
 
 import type { QrMatrix } from "@/lib/qr";
 
-// Filled by exportPdf() around the document it renders, so every page footer
-// prints the verification code and its QR code, and the signature block of a
-// signed document draws the signer's images, without each document having to
-// carry them.
+// Set by exportPdf() around the render of a document, so every page footer
+// prints the verification code and its QR code, and the signature block of
+// a signed document draws the signer's images, without each document having
+// to carry them. React context is not available to route handlers (they run
+// under the react-server condition), hence an async local store: the
+// renderer calls the components, render props included, inside its scope.
 
 export type PdfImage = { data: Buffer; format: "png" | "jpg" };
 
@@ -24,8 +26,13 @@ export type DocumentSigned = {
   stamp: PdfImage | null;
 };
 
-export const VerificationContext = createContext<DocumentVerification | null>(null);
-export const SignedContext = createContext<DocumentSigned | null>(null);
+type Scope = { verification: DocumentVerification | null; signed: DocumentSigned | null };
 
-export const useVerification = () => useContext(VerificationContext);
-export const useSigned = () => useContext(SignedContext);
+const store = new AsyncLocalStorage<Scope>();
+
+export function withDocumentScope<T>(scope: Scope, render: () => T): T {
+  return store.run(scope, render);
+}
+
+export const currentVerification = () => store.getStore()?.verification ?? null;
+export const currentSigned = () => store.getStore()?.signed ?? null;

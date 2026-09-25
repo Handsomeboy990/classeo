@@ -1,6 +1,6 @@
 import "server-only";
 
-import { createElement, type ReactElement } from "react";
+import type { ReactElement } from "react";
 
 import { renderToBuffer, type DocumentProps } from "@react-pdf/renderer";
 
@@ -11,7 +11,7 @@ import { ForbiddenError } from "@/lib/auth/authorize";
 import type { PermissionCode } from "@/lib/auth/permissions";
 import { getCurrentUser, type CurrentUser } from "@/lib/auth/session";
 
-import { SignedContext, VerificationContext, type DocumentSigned } from "./context";
+import { withDocumentScope, type DocumentSigned } from "./context";
 import { completeIssuer } from "./data/letterhead";
 import { prepareFonts } from "./fonts";
 import { attachmentHeader } from "./format";
@@ -87,14 +87,7 @@ export async function exportPdf<D>(options: {
   // of the exact file sent.
   const subjectId = built.subjectId ?? built.resourceId ?? null;
   const signed = built.signable && subjectId ? await signedIssuance(built.kind, subjectId, contentHash(built.signable.content)) : null;
-  const render = (code: string, signedBy: DocumentSigned | null) =>
-    renderToBuffer(
-      createElement(
-        VerificationContext.Provider,
-        { value: verificationOf(code) },
-        createElement(SignedContext.Provider, { value: signedBy }, built.element),
-      ) as unknown as ReactElement<DocumentProps>,
-    );
+  const render = (code: string, signedBy: DocumentSigned | null) => withDocumentScope({ verification: verificationOf(code), signed: signedBy }, () => renderToBuffer(built.element));
 
   let code = signed?.code ?? newVerificationCode();
   let buffer = await render(code, signed?.signed ?? null);

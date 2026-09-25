@@ -5,7 +5,7 @@ import type { Style } from "@react-pdf/types";
 
 import { qrPath } from "@/lib/qr";
 
-import { useVerification, type PdfImage } from "./context";
+import { currentVerification, type DocumentVerification, type PdfImage } from "./context";
 import { FONT_TITLE } from "./fonts";
 import { beninDate, beninDateTime, pageLabel, pdfText } from "./format";
 import { contactLine, ministriesFor, REPUBLIC, type SchoolCycleCode } from "./letterhead";
@@ -160,7 +160,7 @@ function RunningHeader({ meta }: { meta: DocumentMeta }) {
 
 // The QR code of the verification address, drawn as vector paths so it
 // stays sharp at any print resolution.
-export function QrCode({ matrix, size }: { matrix: NonNullable<ReturnType<typeof useVerification>>["qr"]; size: number }) {
+export function QrCode({ matrix, size }: { matrix: DocumentVerification["qr"]; size: number }) {
   const { d, viewBox } = qrPath(matrix, 2);
   return (
     <Svg viewBox={`0 0 ${viewBox} ${viewBox}`} width={size} height={size}>
@@ -175,7 +175,7 @@ export function QrCode({ matrix, size }: { matrix: NonNullable<ReturnType<typeof
 // registered, the QR code and the verification code sit at its left.
 function Footer({ meta, pageHeight }: { meta: DocumentMeta; pageHeight: number }) {
   const by = meta.generatedBy;
-  const check = useVerification();
+  const check = currentVerification();
   const qrSize = 44;
   return (
     <>

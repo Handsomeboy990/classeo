@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { Image, View } from "@react-pdf/renderer";
 import type { Style } from "@react-pdf/types";
 
-import { useSigned } from "./context";
+import { currentSigned } from "./context";
 import { FONT_TITLE } from "./fonts";
 import { beninDateTime } from "./format";
 import { T } from "./layout";
@@ -171,7 +171,7 @@ export function Notice({ tone = "warning", title, children }: { tone?: "warning"
 // electronically, the first box with a stamp (the head's) shows the signer's
 // signature and stamp images and the date of signature.
 export function Signatures({ items, marginTop = 18 }: { items: { role: string; name?: string | null; stamp?: boolean }[]; marginTop?: number }) {
-  const signed = useSigned();
+  const signed = currentSigned();
   const signedIndex = signed ? items.findIndex((s) => s.stamp) : -1;
   return (
     <View style={{ flexDirection: "row", gap: 16, marginTop }} wrap={false}>
