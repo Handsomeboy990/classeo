@@ -26,7 +26,9 @@ export async function GET(_request: Request, { params }: RouteContext<"/api/file
       allowed = file.ownerUserId === user.id;
       break;
     case "document":
-      allowed = (await db.documentRequestFile.count({ where: { fileId: id, request: { school: schoolWhere(user) } } })) > 0;
+      // Documents schools send to their authorities: staff only, never a
+      // family account whose scope reaches the school through a child.
+      allowed = user.scope.level !== "SELF" && (await db.documentRequestFile.count({ where: { fileId: id, request: { school: schoolWhere(user) } } })) > 0;
       break;
     case "payment_proof":
       allowed = (await db.paymentDeclaration.count({ where: { proofFileId: id, invoice: { enrollment: enrollmentWhere(user) } } })) > 0;
