@@ -10,13 +10,15 @@ import { cn, de, formatAverage, formatDate, formatFcfa, formatPercent } from "@/
 import { ATTENDANCE_STATUS, DAYS, INVOICE_STATUS, rankLabel, spokenTime, timetableGrid, type AttendanceRecord, type SchoolDay } from "../logic";
 import type { ReportCardView, SlotView, termGrades, invoicesOf } from "../queries";
 
+import { StudentAvatar } from "@/features/students/components/student-avatar";
+
 import { Pictogram } from "./blocks";
 
 // ---------------------------------------------------------------------------
 // Report card
 // ---------------------------------------------------------------------------
 
-export function ReportCardSheet({ card, student }: { card: ReportCardView; student: { name: string; matricule: string } }) {
+export function ReportCardSheet({ card, student }: { card: ReportCardView; student: { name: string; matricule: string; photoFileId?: string | null } }) {
   const totalCoef = card.lines.reduce((n, l) => n + l.coefficient, 0);
   const totalPoints = card.lines.reduce((n, l) => n + (l.average ?? 0) * l.coefficient, 0);
   return (
@@ -29,14 +31,17 @@ export function ReportCardSheet({ card, student }: { card: ReportCardView; stude
         </div>
       </div>
       <header className="flex flex-col gap-4 border-b border-border p-5 md:flex-row md:items-start md:justify-between">
-        <div className="min-w-0">
-          <h2 id="report-title" className="text-xl font-bold sm:text-2xl">
-            Bulletin du {card.periodName.toLowerCase()} · {card.yearLabel}
-          </h2>
-          <p className="mt-1 text-sm text-muted">
-            {student.name} · Matricule {student.matricule} · {card.classroom} · {card.school}
-          </p>
-          <p className="text-sm text-muted">Publié le {formatDate(card.publishedAt)}</p>
+        <div className="flex min-w-0 items-start gap-3">
+          <StudentAvatar name={student.name} photoFileId={student.photoFileId} className="size-14 text-lg" />
+          <div className="min-w-0">
+            <h2 id="report-title" className="text-xl font-bold sm:text-2xl">
+              Bulletin du {card.periodName.toLowerCase()} · {card.yearLabel}
+            </h2>
+            <p className="mt-1 text-sm text-muted">
+              {student.name} · Matricule {student.matricule} · {card.classroom} · {card.school}
+            </p>
+            <p className="text-sm text-muted">Publié le {formatDate(card.publishedAt)}</p>
+          </div>
         </div>
         <dl className="grid shrink-0 grid-cols-2 gap-3 sm:flex sm:flex-wrap">
           <div className="rounded-lg bg-surface-2 px-4 py-2">

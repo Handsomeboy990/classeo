@@ -66,6 +66,7 @@ export async function listStudents(
           gender: true,
           birthDate: true,
           disabilities: true,
+          photoFileId: true,
           guardians: { where: { isPrimary: true }, take: 1, select: { guardian: { select: { firstName: true, lastName: true, phone: true } } } },
         },
       },

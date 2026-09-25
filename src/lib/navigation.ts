@@ -31,6 +31,7 @@ import {
   UserSquare2,
   Wallet,
   Baby,
+  ArrowLeftRight,
 } from "lucide-react";
 
 import type { PermissionCode } from "@/lib/auth/permissions";
@@ -90,6 +91,7 @@ export const NAVIGATION: NavSection[] = [
       { label: "Mon établissement", href: "/espace/mon-etablissement", icon: Landmark, permission: ["school:view"], scopes: ["SCHOOL"], short: "Établissement" },
       { label: "Classes", href: "/espace/classes", icon: LayoutGrid, permission: ["class:view"], scopes: ["SCHOOL"], tab: { school: 5, teacher: 5 } },
       { label: "Élèves", href: "/espace/eleves", icon: GraduationCap, permission: ["student:view"], scopes: ["SCHOOL"], tab: { school: 1 } },
+      { label: "Transferts", href: "/espace/transferts", icon: ArrowLeftRight, permission: ["student:view"], scopes: STAFF },
       // A school sees its team, the territory the national registry.
       { label: "Enseignants", href: "/espace/enseignants", icon: UserSquare2, permission: ["teacher:view"], scopes: STAFF },
       { label: "Parents", href: "/espace/parents", icon: Users, permission: ["parent:view"], scopes: ["SCHOOL"] },

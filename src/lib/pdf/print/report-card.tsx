@@ -20,18 +20,26 @@ export function PrintReportCard({ data, meta, className, footnote }: { data: Rep
 
   return (
     <PrintSheet id="bulletin" meta={meta} className={className}>
-      <PrintInfoGrid
-        items={[
-          { label: "Élève", value: officialName(s.lastName, s.firstName) },
-          { label: "Matricule", value: s.matricule },
-          { label: "Classe", value: `${data.classroom.name}${data.isRepeating ? " (redoublant)" : ""}` },
-          { label: "Effectif", value: plural(card.classSize, "élève") },
-          { label: s.gender === "F" ? "Née le" : "Né le", value: `${calendarShort(s.birthDate)}${s.birthPlace ? ` à ${s.birthPlace}` : ""}` },
-          { label: "Sexe", value: GENDER_LABELS[s.gender] },
-          { label: "Année scolaire", value: data.yearLabel },
-          { label: "Professeur principal", value: data.classroom.mainTeacher ?? "Non désigné" },
-        ]}
-      />
+      <div className="flex items-stretch gap-3">
+        {s.photoFileId && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={`/api/files/${s.photoFileId}`} alt="" className="doc-box h-auto w-20 shrink-0 object-cover p-0.5" />
+        )}
+        <div className="min-w-0 flex-1">
+          <PrintInfoGrid
+            items={[
+              { label: "Élève", value: officialName(s.lastName, s.firstName) },
+              { label: "Matricule", value: s.matricule },
+              { label: "Classe", value: `${data.classroom.name}${data.isRepeating ? " (redoublant)" : ""}` },
+              { label: "Effectif", value: plural(card.classSize, "élève") },
+              { label: s.gender === "F" ? "Née le" : "Né le", value: `${calendarShort(s.birthDate)}${s.birthPlace ? ` à ${s.birthPlace}` : ""}` },
+              { label: "Sexe", value: GENDER_LABELS[s.gender] },
+              { label: "Année scolaire", value: data.yearLabel },
+              { label: "Professeur principal", value: data.classroom.mainTeacher ?? "Non désigné" },
+            ]}
+          />
+        </div>
+      </div>
       {data.mode === "preview" && (
         <p className="doc-notice doc-keep mt-3 text-sm">
           <strong>Aperçu non publié.</strong> Calculé à partir des notes actuelles, sans valeur officielle avant la publication du bulletin.

@@ -26,7 +26,7 @@ export default async function ReportCardsPage({ params, searchParams }: PageProp
   const cards = await reportCardsOf(user, studentId);
   const wanted = param(await searchParams, "b");
   const card = cards.find((c) => c.id === wanted) ?? cards[0];
-  const student = { name: `${enrollment.student.firstName} ${enrollment.student.lastName}`, matricule: enrollment.student.matricule };
+  const student = { name: `${enrollment.student.firstName} ${enrollment.student.lastName}`, matricule: enrollment.student.matricule, photoFileId: enrollment.student.photoFileId };
 
   // The certificate of enrollment of the year, for accounts that may see
   // the student record (parents; the route checks it again).

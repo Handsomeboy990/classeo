@@ -6,10 +6,13 @@ import { mention } from "@/lib/domain/grades";
 import { formatAverage, plural } from "@/lib/utils";
 
 import { DataTable, Figure, InfoGrid, Notice, Signatures } from "../components";
+import type { PdfPhoto } from "../data/photo";
 import { FONT_TITLE } from "../fonts";
 import { beninDate, calendarDate, calendarShort, calendarWeekday, officialName } from "../format";
 import { DocumentPage, PdfDocument, T, type DocumentMeta } from "../layout";
 import { COLORS, styles } from "../theme";
+
+import { PhotoFrame } from "./attestation";
 
 // ---------------------------------------------------------------------------
 // Relevé de notes: every grade of the running term, per subject.
@@ -272,6 +275,7 @@ export type CertificateData = {
   school: { name: string; commune: string };
   // The active head of the school, who signs.
   director: { name: string; gender: "F" | "M" | null } | null;
+  photo?: PdfPhoto | null;
 };
 
 function Certificate({ data, meta }: { data: CertificateData; meta: DocumentMeta }) {
@@ -302,15 +306,18 @@ function Certificate({ data, meta }: { data: CertificateData; meta: DocumentMeta
             </>
           )}
         </T>
-        <View style={{ marginVertical: 18, marginHorizontal: 30, paddingVertical: 14, paddingHorizontal: 18, borderLeftWidth: 3, borderLeftColor: COLORS.primary, backgroundColor: COLORS.soft }}>
-          <T style={{ fontFamily: FONT_TITLE, fontWeight: 700, fontSize: 17, color: COLORS.primaryDark }}>{officialName(s.lastName, s.firstName)}</T>
-          <T style={{ fontSize: 10.5, marginTop: 4 }}>
-            {she ? "Née" : "Né"} le {calendarDate(s.birthDate)}
-            {s.birthPlace ? ` à ${s.birthPlace}` : ""}
-          </T>
-          <T style={{ fontSize: 10.5 }}>
-            Matricule {s.matricule} · {GENDER_LABELS[s.gender]}
-          </T>
+        <View style={{ marginVertical: 18, marginHorizontal: 30, paddingVertical: 14, paddingHorizontal: 18, borderLeftWidth: 3, borderLeftColor: COLORS.primary, backgroundColor: COLORS.soft, flexDirection: "row", gap: 14, alignItems: "center" }}>
+          <PhotoFrame photo={data.photo} width={62} />
+          <View style={{ flex: 1 }}>
+            <T style={{ fontFamily: FONT_TITLE, fontWeight: 700, fontSize: 17, color: COLORS.primaryDark }}>{officialName(s.lastName, s.firstName)}</T>
+            <T style={{ fontSize: 10.5, marginTop: 4 }}>
+              {she ? "Née" : "Né"} le {calendarDate(s.birthDate)}
+              {s.birthPlace ? ` à ${s.birthPlace}` : ""}
+            </T>
+            <T style={{ fontSize: 10.5 }}>
+              Matricule {s.matricule} · {GENDER_LABELS[s.gender]}
+            </T>
+          </View>
         </View>
         <T style={[line]}>
           est régulièrement {she ? "inscrite" : "inscrit"} dans notre établissement en classe de <T style={{ fontWeight: 700 }}>{data.classroom}</T> ({data.level}) au titre de

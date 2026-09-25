@@ -15,6 +15,7 @@ import { assertEnrollmentWritable, assertWritable } from "@/lib/guards";
 import { DomainError } from "@/lib/errors";
 
 import { DISABILITIES, ENROLLMENT_STATUS_LABELS } from "./labels";
+import { dropPhotoBlob, optionalPhoto, storeStudentPhoto } from "./photo";
 import { studentWhere } from "./queries";
 
 type User = NonNullable<CurrentUser>;
@@ -39,6 +40,7 @@ const studentFields = {
     .transform((v) => (v === undefined ? [] : Array.isArray(v) ? v : [v])),
   classroomId: id,
   isRepeating: checkbox,
+  photo: optionalPhoto,
 };
 
 async function findClassroomForEnrollment(user: User, classroomId: string, yearId: string) {
@@ -102,6 +104,7 @@ export const createStudent = createAction({
       if (!known) throw new DomainError("Parent introuvable ou hors de votre périmètre.");
     }
 
+    const photoFileId = await storeStudentPhoto(user, input.photo);
     let studentId = "";
     for (let attempt = 0; attempt < 3 && !studentId; attempt++) {
       const matricule = await nextMatricule(year.label);
@@ -116,6 +119,7 @@ export const createStudent = createAction({
               birthDate: isoToDate(input.birthDate),
               birthPlace: input.birthPlace,
               disabilities: input.disabilities,
+              photoFileId,
             },
           });
           await tx.enrollment.create({
@@ -180,6 +184,7 @@ export const updateStudent = createAction({
       classChange = classroom;
     }
 
+    const photoFileId = await storeStudentPhoto(user, input.photo);
     await db.$transaction([
       db.student.update({
         where: { id: student.id },
@@ -190,10 +195,12 @@ export const updateStudent = createAction({
           birthDate: isoToDate(input.birthDate),
           birthPlace: input.birthPlace,
           disabilities: input.disabilities,
+          ...(photoFileId ? { photoFileId } : {}),
         },
       }),
       db.enrollment.update({ where: { id: enrollment.id }, data: { classroomId: input.classroomId, isRepeating: input.isRepeating } }),
     ]);
+    if (photoFileId) await dropPhotoBlob(student.photoFileId);
     await audit(user, {
       action: "update",
       resource: "student",
