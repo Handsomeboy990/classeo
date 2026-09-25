@@ -1,15 +1,19 @@
 "use client";
 
-import { Check, Clock, FileCheck2, Save, UserCheck, X } from "lucide-react";
+import { Check, Clock, CloudUpload, FileCheck2, Save, Trash2, UserCheck, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useMemo, useState, useTransition } from "react";
 
 import { toast } from "@/components/kit/toaster";
+import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { discardEntry, sendOrQueue, useOfflineEntries } from "@/features/offline/client";
+import { draftsOf } from "@/features/offline/queue";
+import type { AttendancePayload, QueueItem } from "@/features/offline/types";
 import { Input } from "@/components/ui/input";
 import type { ActionState } from "@/lib/action";
 import { ATTENDANCE_LABELS, attendanceRate, countStatuses, type AttendanceStatusCode } from "@/lib/domain/attendance";
-import { cn, formatPercent } from "@/lib/utils";
+import { cn, formatDateTime, formatPercent } from "@/lib/utils";
 
 type Row = { id: string; name: string; detail: string; status: AttendanceStatusCode | null; reason: string };
 
@@ -25,6 +29,11 @@ type State = Record<string, { status: AttendanceStatusCode; reason: string }>;
 function initial(rows: Row[]): State {
   // Everyone present by default when nothing was recorded yet.
   return Object.fromEntries(rows.map((r) => [r.id, { status: r.status ?? "PRESENT", reason: r.reason }]));
+}
+
+function fromDraft(rows: Row[], item: QueueItem<"attendance">): State {
+  const marks = new Map(item.payload.records.map((r) => [r.enrollmentId, r]));
+  return Object.fromEntries(rows.map((r) => [r.id, marks.has(r.id) ? { status: marks.get(r.id)!.status, reason: marks.get(r.id)!.reason ?? "" } : { status: r.status ?? "PRESENT", reason: r.reason }]));
 }
 
 // A register: one row per person, four statuses as a native radio group
@@ -53,6 +62,20 @@ export function AttendanceRegister({
     setState(initial(rows));
   }
 
+  // A class register can be taken offline: it waits in the device queue
+  // (src/features/offline) and is sent when the network returns. The
+  // register of the staff is not queued.
+  const offlineTarget = idKey === "enrollmentId" && payload.classroomId && payload.date && payload.half ? `${payload.classroomId}|${payload.date}|${payload.half}` : null;
+  const entries = useOfflineEntries();
+  const drafts = useMemo(() => (offlineTarget ? draftsOf(entries, "attendance", offlineTarget) : { pending: [], rejected: [] }), [entries, offlineTarget]);
+  const latest = [...drafts.pending, ...drafts.rejected].sort((a, b) => b.createdAt - a.createdAt)[0] ?? null;
+  // The last entry typed offline, waiting or refused, is what the user sees.
+  const [shown, setShown] = useState<string | null>(null);
+  if ((latest?.clientId ?? null) !== shown) {
+    setShown(latest?.clientId ?? null);
+    if (latest) setState(fromDraft(rows, latest));
+  }
+
   const counts = useMemo(() => countStatuses(Object.values(state).map((s) => s.status)), [state]);
   const unsaved = rows.some((r) => r.status === null) || rows.some((r) => r.status !== state[r.id]?.status || (r.reason ?? "") !== (state[r.id]?.reason ?? ""));
 
@@ -62,13 +85,47 @@ export function AttendanceRegister({
 
   function save() {
     const records = rows.map((r) => ({ [idKey]: r.id, status: state[r.id]!.status, reason: state[r.id]!.reason }));
+    if (!offlineTarget) {
+      startTransition(async () => {
+        const result = await action(null, { ...payload, records } as never);
+        if (result?.ok) {
+          toast("success", result.message ?? "Appel enregistré.");
+          router.refresh();
+        } else toast("error", result?.message ?? "L'enregistrement a échoué. Réessayez.");
+      });
+      return;
+    }
+    const earlier = [...drafts.pending, ...drafts.rejected];
+    const title = document.querySelector("#page-content h1 + p")?.textContent?.trim();
+    const offlinePayload = { classroomId: payload.classroomId!, date: payload.date!, half: payload.half as AttendancePayload["half"], records: records as AttendancePayload["records"] };
+    // What the device read: the server refuses the register if someone
+    // changed it since.
+    const baseline = { records: rows.map((r) => ({ enrollmentId: r.id, status: r.status, reason: r.reason ?? "" })) };
     startTransition(async () => {
-      const result = await action(null, { ...payload, records } as never);
-      if (result?.ok) {
-        toast("success", result.message ?? "Appel enregistré.");
-        router.refresh();
-      } else toast("error", result?.message ?? "L'enregistrement a échoué. Réessayez.");
+      try {
+        const sent = await sendOrQueue(
+          { kind: "attendance", target: offlineTarget, payload: offlinePayload, baseline, page: window.location.pathname + window.location.search, label: title ?? "Appel" },
+          () => action(null, { ...payload, records } as never),
+        );
+        if (sent.queued) toast("success", "Pas de réseau : l'appel est gardé sur cet appareil. Envoi automatique au retour du réseau.");
+        else if (sent.result?.ok) {
+          toast("success", sent.result.message ?? "Appel enregistré.");
+          router.refresh();
+        } else {
+          toast("error", sent.result?.message ?? "L'enregistrement a échoué. Réessayez.");
+          return;
+        }
+        // This register replaces any earlier one typed offline.
+        for (const d of earlier) await discardEntry(d.clientId);
+      } catch {
+        toast("error", "L'enregistrement a échoué. Vos choix sont conservés, réessayez.");
+      }
     });
+  }
+
+  function abandon(item: QueueItem<"attendance">) {
+    setState(initial(rows));
+    void discardEntry(item.clientId);
   }
 
   if (!rows.length) return <p className="p-8 text-center text-muted">Personne à appeler.</p>;
@@ -76,6 +133,30 @@ export function AttendanceRegister({
   const saveLabel = pending ? "Enregistrement…" : unsaved ? "Enregistrer l'appel" : "Enregistrer à nouveau";
 
   return (
+    <>
+      {drafts.rejected.map((d) => (
+        <Alert
+          key={d.clientId}
+          tone="danger"
+          className="mb-4"
+          title={`Appel saisi hors ligne le ${formatDateTime(new Date(d.createdAt))} refusé`}
+          action={
+            <Button variant="danger-ghost" size="sm" onClick={() => abandon(d)}>
+              <Trash2 aria-hidden /> Abandonner cette saisie
+            </Button>
+          }
+        >
+          <p>{d.error}</p>
+          <p className="mt-1">Vos choix sont remis ci-dessous : vérifiez-les, puis enregistrez l&apos;appel à nouveau.</p>
+        </Alert>
+      ))}
+      {drafts.pending.length > 0 && (
+        <Alert tone="warning" className="mb-4" title="Appel en attente d'envoi">
+          <p className="flex items-center gap-1.5">
+            <CloudUpload className="size-4 shrink-0" aria-hidden /> Saisi sans réseau le {formatDateTime(new Date(drafts.pending[drafts.pending.length - 1]!.createdAt))} et gardé sur cet appareil. Il part automatiquement au retour du réseau.
+          </p>
+        </Alert>
+      )}
     <div className="rounded-card border border-border bg-surface">
       <div className="flex flex-col gap-3 border-b border-border p-4 lg:flex-row lg:items-center lg:justify-between">
         <p className="flex flex-wrap gap-x-4 gap-y-1 text-sm" aria-live="polite">
@@ -174,5 +255,6 @@ export function AttendanceRegister({
         </div>
       )}
     </div>
+    </>
   );
 }
