@@ -124,7 +124,7 @@ export async function narrowStatScope(
   let scope: StatScope = base;
   let departmentId: string | null = user.scope.departmentId;
   let communeId: string | null = user.scope.level === "NATIONAL" || user.scope.level === "DEPARTMENT" ? null : user.scope.communeId;
-  let schoolId: string | null = user.scope.level === "SCHOOL" ? user.scope.schoolId : null;
+  const schoolId: string | null = user.scope.level === "SCHOOL" ? user.scope.schoolId : null;
 
   if (filters.schoolId && user.scope.level !== "SCHOOL") {
     const s = await schoolRef(filters.schoolId);
