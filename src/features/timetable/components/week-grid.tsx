@@ -63,12 +63,12 @@ export function WeekGrid({
           const daySlots = slots.filter((s) => s.dayOfWeek === d.value);
           const sessionDate = addDays(monday, d.value - 1).toISOString().slice(0, 10);
           return (
-            <ol key={d.value} aria-label={`${d.label}, ${daySlots.length} cours`} className="grid gap-y-0 border-l border-border px-1" style={{ ...rowsStyle, ...lines }}>
+            <ol key={d.value} aria-label={`${d.label}, ${daySlots.length} cours`} className="grid min-w-0 grid-cols-[minmax(0,1fr)] border-l border-border px-1" style={{ ...rowsStyle, ...lines }}>
               {daySlots.map((s) => {
                 const { from, to } = gridRows(s, start);
                 return (
-                  <li key={s.id} className="py-0.5" style={{ gridRow: `${from} / ${to}`, gridColumn: 1 }}>
-                    <SlotCard slot={s} showClass={showClass} rights={rights} assignments={assignments} sessionDate={sessionDate} compact={to - from < 4} />
+                  <li key={s.id} className="min-w-0 py-0.5" style={{ gridRow: `${from} / ${to}`, gridColumn: 1 }}>
+                    <SlotCard slot={s} showClass={showClass} rights={rights} assignments={assignments} sessionDate={sessionDate} compact={to - from <= 4} />
                   </li>
                 );
               })}

@@ -45,7 +45,9 @@ function slotLabel(s: SlotView, showClass: boolean) {
 function SlotBody({ slot, showClass, compact }: { slot: SlotView; showClass: boolean; compact?: boolean }) {
   return (
     <>
-      <span className={cn("block font-semibold", slot.cancellation && "line-through")}>{slot.subject}</span>
+      <span className={cn("block truncate font-semibold", slot.cancellation && "line-through")} title={slot.subject}>
+        {slot.subject}
+      </span>
       <span className="block text-xs text-muted">
         {slot.startTime} à {slot.endTime}
       </span>
@@ -56,7 +58,7 @@ function SlotBody({ slot, showClass, compact }: { slot: SlotView; showClass: boo
         </span>
       )}
       {slot.cancellation && (
-        <Badge tone="danger" className="mt-1">
+        <Badge tone="danger" className="mt-1 self-start">
           <Ban aria-hidden /> Annulé
         </Badge>
       )}
@@ -86,7 +88,7 @@ export function SlotCard({
   const [open, setOpen] = useState(false);
   const [mode, setMode] = useState<"view" | "edit">("view");
   const tone = subjectTone(slot.subjectCode);
-  const base = cn("h-full w-full overflow-hidden rounded-lg border border-border p-2 text-left text-sm text-text", tone, slot.cancellation && "opacity-80", className);
+  const base = cn("flex h-full w-full min-w-0 flex-col items-stretch justify-start overflow-hidden rounded-lg border border-border p-2 text-left text-sm leading-snug text-text", tone, slot.cancellation && "opacity-80", className);
   const label = slotLabel(slot, showClass);
 
   if (!rights.update && !rights.delete)
