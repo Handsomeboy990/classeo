@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { PageHeader } from "@/components/kit/page-header";
 import { AccessibilityControls } from "@/components/shell/accessibility-controls";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
+import { NotificationSoundSetting } from "@/features/notifications/sound-setting";
 import { PushToggle } from "@/features/push/push-toggle";
 import { pushPublicKey } from "@/lib/channels/push";
 
@@ -22,15 +23,20 @@ export default function PreferencesPage() {
             <AccessibilityControls />
           </CardBody>
         </Card>
+        <Card aria-labelledby="prefs-push">
+          <CardHeader>
+            <CardTitle id="prefs-push">Notifications</CardTitle>
+          </CardHeader>
+          <CardBody className="flex flex-col divide-y divide-border px-2 py-2">
+            <NotificationSoundSetting />
+            {pushKey && <PushToggle publicKey={pushKey} explain />}
+          </CardBody>
+        </Card>
         {pushKey && (
-          <Card aria-labelledby="prefs-push">
-            <CardHeader>
-              <CardTitle id="prefs-push">Notifications</CardTitle>
-            </CardHeader>
-            <CardBody className="px-2 py-2">
-              <PushToggle publicKey={pushKey} explain />
-            </CardBody>
-          </Card>
+          <p className="text-sm text-muted">
+            Quand Classéo est fermé, les notifications du téléphone ou de l&apos;ordinateur sonnent avec le son choisi dans les réglages de l&apos;appareil : un site ne
+            peut pas le changer.
+          </p>
         )}
       </div>
     </>

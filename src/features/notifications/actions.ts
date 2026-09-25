@@ -42,6 +42,25 @@ export async function markAllNotificationsRead(): Promise<ActionState> {
   }
 }
 
+export type UnreadSnapshot = { count: number; latestAt: number | null; latestTitle: string | null };
+
+// What the open app polls to notice a new notification: the unread count
+// and the newest unread one. A read only query on the user's own rows.
+export async function unreadSnapshot(): Promise<UnreadSnapshot | null> {
+  try {
+    const user = await getCurrentUser();
+    if (!user) return null;
+    const [count, latest] = await Promise.all([
+      db.notification.count({ where: { userId: user.id, readAt: null } }),
+      db.notification.findFirst({ where: { userId: user.id, readAt: null }, orderBy: { createdAt: "desc" }, select: { title: true, createdAt: true } }),
+    ]);
+    return { count, latestAt: latest?.createdAt.getTime() ?? null, latestTitle: latest?.title ?? null };
+  } catch (error) {
+    console.error("notification poll failed", error);
+    return null;
+  }
+}
+
 // Opens the target of a notification and marks it read. Only links inside
 // the private space are followed, never an outside address.
 export async function openNotification(_prev: ActionState, formData: FormData): Promise<ActionState> {

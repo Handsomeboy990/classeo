@@ -14,6 +14,7 @@ import { AUDIENCE_LABELS, requiresTranscript, type AudienceCode } from "@/lib/do
 import { createContent, updateContent } from "./actions";
 import { FormRecovery } from "./form-recovery";
 import { CONTENT_TYPES, MEDIA_LABELS, type ContentTypeCode } from "./meta";
+import { beninToday } from "./schema";
 import type { TargetOption } from "./queries";
 
 export type ContentFormValues = {
@@ -29,6 +30,8 @@ export type ContentFormValues = {
   transcript: string;
   subjectLabel: string;
   eventDate: string;
+  // Last day of the scrolling band (YYYY-MM-DD), empty for none.
+  tickerUntil?: string;
   status?: "DRAFT" | "PUBLISHED" | "ARCHIVED";
 };
 
@@ -43,6 +46,7 @@ export function ContentForm({ initial, targets, canPublish }: { initial: Content
   const alreadyPublished = initial.status === "PUBLISHED";
   const needsTranscript = requiresTranscript(v.mediaType);
   const groups = [...new Set(targets.map((t) => t.group))];
+  const [today] = useState(beninToday);
 
   return (
     <ActionForm action={editing ? updateContent : createContent} className="flex flex-col gap-6">
@@ -129,6 +133,14 @@ export function ContentForm({ initial, targets, canPublish }: { initial: Content
                 </option>
               ))}
             </Select>
+          </FormField>
+          <FormField
+            label="Afficher en bandeau défilant jusqu'au"
+            name="tickerUntil"
+            className="sm:col-span-2"
+            hint="Facultatif, pour une annonce importante : une fois publiée, elle défile en haut des écrans de son public jusqu'à ce jour inclus. Laissez vide pour ne pas l'afficher en bandeau."
+          >
+            <Input type="date" min={today} value={v.tickerUntil ?? ""} onChange={set("tickerUntil")} className="sm:max-w-60" />
           </FormField>
         </CardBody>
       </Card>

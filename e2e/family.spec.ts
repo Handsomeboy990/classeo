@@ -13,7 +13,7 @@ test("dashboard shows the child summary and the listen button @mobile", async ({
   await expect(senami).toBeVisible();
   await expect(senami.getByText("3e A · CEG Godomey")).toBeVisible();
   await expect(senami.getByRole("button", { name: "Écouter le résumé" })).toBeVisible();
-  await expect(senami.getByRole("link", { name: /^Dernier bulletin \d+,\d+\/20/ })).toBeVisible();
+  await expect(senami.getByRole("link", { name: /^Dernier bulletin \d+,\d+ sur 20/ })).toBeVisible();
   await expect(page.getByRole("region", { name: "Mahougnon Hounkpatin" })).toBeVisible();
 });
 

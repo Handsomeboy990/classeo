@@ -17,7 +17,8 @@ for (const role of ROLES) {
     }
     await expect(page).toHaveURL(/\/espace$/);
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-    await expect(page.getByRole("button", { name: "Se déconnecter" })).toBeVisible();
+    // Signed in: the account menu of the top bar names the person.
+    await expect(page.getByRole("button", { name: /^Mon compte/ })).toBeVisible();
     await page.context().storageState({ path: authFile(role) });
   });
 }

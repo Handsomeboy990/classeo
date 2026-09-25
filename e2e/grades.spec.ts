@@ -24,7 +24,7 @@ test("teacher enters a grade, sees the average update, saves it and keeps it aft
   await expect(status).toHaveText("Tout est enregistré");
 
   const original = await cell.inputValue();
-  const average = row.getByText(/\/20|Pas encore de note/);
+  const average = row.getByText(/\d+,\d+\/20|Pas encore de note/);
   const averageBefore = (await average.textContent()) ?? "";
   // A composition equal to the current average would leave it unchanged.
   const before = averageOf(averageBefore) ?? 10;

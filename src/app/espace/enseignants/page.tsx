@@ -86,6 +86,7 @@ async function SchoolTeachers({ user, sp }: { user: User; sp: SearchParams }) {
         rows={rows}
         columns={columns}
         rowKey={(r) => r.id}
+        rowHref={(r) => `/espace/enseignants/${r.id}`}
         total={total}
         page={page}
         pageSize={pageSize}

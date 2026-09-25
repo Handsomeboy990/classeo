@@ -6,6 +6,7 @@ import { Table, TD, TH, THead, TR } from "@/components/ui/table";
 import type { SearchParams } from "@/lib/list";
 import { cn, formatNumber } from "@/lib/utils";
 
+import { RowLinks } from "./row-links";
 import { SearchInput } from "./search-input";
 import { EmptyState } from "./states";
 
@@ -56,10 +57,15 @@ export function DataTable<T>({
   mobile = "cards",
   striped = false,
   stickyHeader = true,
+  rowHref,
 }: {
   rows: T[];
   columns: Column<T>[];
   rowKey: (row: T) => string;
+  // The page a row opens: the whole row becomes clickable (see RowLinks).
+  // The main cell must still hold a link to the same page, for the keyboard
+  // and screen readers.
+  rowHref?: (row: T) => string | undefined;
   total?: number;
   page?: number;
   pageSize?: number;
@@ -132,7 +138,7 @@ export function DataTable<T>({
           </THead>
           <tbody>
             {rows.map((row) => (
-              <TR key={rowKey(row)}>
+              <TR key={rowKey(row)} data-href={rowHref?.(row)}>
                 {columns.map((c, i) => {
                   const m = meta[i]!;
                   const value = c.cell(row);
@@ -155,6 +161,7 @@ export function DataTable<T>({
           </tbody>
         </Table>
       )}
+      {rowHref && rows.length > 0 && <RowLinks />}
       {count > 0 && (
         <nav aria-label="Pagination" className="flex items-center justify-between gap-3 border-t border-border px-4 py-3 text-sm text-muted">
           <p className="min-w-0">

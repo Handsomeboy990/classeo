@@ -105,6 +105,7 @@ export default async function StudentsPage(props: PageProps<"/espace/eleves">) {
         rows={rows}
         columns={columns}
         rowKey={(r) => r.id}
+        rowHref={(r) => `/espace/eleves/${r.student.id}`}
         total={total}
         page={page}
         pageSize={pageSize}

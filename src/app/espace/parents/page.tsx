@@ -68,6 +68,7 @@ export default async function ParentsPage(props: PageProps<"/espace/parents">) {
         rows={rows}
         columns={columns}
         rowKey={(r) => r.id}
+        rowHref={(r) => `/espace/parents/${r.id}`}
         total={total}
         page={page}
         pageSize={pageSize}

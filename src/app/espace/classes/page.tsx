@@ -67,6 +67,7 @@ export default async function ClassesPage(props: PageProps<"/espace/classes">) {
         rows={rows}
         columns={columns}
         rowKey={(r) => r.id}
+        rowHref={(r) => `/espace/classes/${r.id}`}
         total={total}
         page={page}
         pageSize={pageSize}
