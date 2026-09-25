@@ -1,0 +1,155 @@
+import { ChevronLeft, ChevronRight, LayoutList, Plus } from "lucide-react";
+import type { Metadata } from "next";
+import Link from "next/link";
+
+import { PageHeader } from "@/components/kit/page-header";
+import { SearchInput } from "@/components/kit/search-input";
+import { EmptyState } from "@/components/kit/states";
+import { ButtonLink } from "@/components/ui/button";
+import { ContentCard } from "@/features/contents/content-card";
+import { FilterLinks } from "@/features/contents/filter-links";
+import { CONTENT_TYPES, type ContentTypeCode } from "@/features/contents/meta";
+import { listContents, manageableIds } from "@/features/contents/queries";
+import { can, requirePermission } from "@/lib/auth/authorize";
+import { listParams, param } from "@/lib/list";
+import { cn, formatNumber } from "@/lib/utils";
+
+export const metadata: Metadata = { title: "Annonces et ressources" };
+
+const TYPE_PARAM: Record<string, ContentTypeCode> = { annonces: "ANNOUNCEMENT", ressources: "RESOURCE", evenements: "EVENT" };
+const STATUS_PARAM = { brouillons: "DRAFT", publies: "PUBLISHED", archives: "ARCHIVED" } as const;
+
+export default async function ContentsPage({ searchParams }: PageProps<"/espace/contenus">) {
+  const user = await requirePermission("content:view");
+  const sp = await searchParams;
+  const { q, page, skip, take, pageSize } = listParams(sp, 12);
+  const typeKey = param(sp, "type");
+  const type = typeKey ? TYPE_PARAM[typeKey] : undefined;
+  const isEditor = can(user, "content:update") || can(user, "content:create");
+  const statusKey = param(sp, "statut") as keyof typeof STATUS_PARAM | undefined;
+  const status = isEditor && statusKey ? STATUS_PARAM[statusKey] : undefined;
+
+  const { rows, total } = await listContents(user, { type, status, q, skip, take });
+  const editable = await manageableIds(
+    user,
+    rows.map((r) => r.id),
+  );
+  const pages = Math.max(1, Math.ceil(total / pageSize));
+
+  function pageHref(p: number) {
+    const next = new URLSearchParams();
+    for (const [k, v] of Object.entries(sp)) if (typeof v === "string" && k !== "page") next.set(k, v);
+    if (p > 1) next.set("page", String(p));
+    const qs = next.toString();
+    return qs ? `/espace/contenus?${qs}` : "/espace/contenus";
+  }
+
+  return (
+    <>
+      <PageHeader
+        title="Annonces et ressources"
+        description="Les informations de l'école et du ministère qui vous concernent. Chaque contenu peut être écouté."
+        actions={
+          can(user, "content:create") && (
+            <ButtonLink href="/espace/contenus/nouveau">
+              <Plus aria-hidden /> Nouveau contenu
+            </ButtonLink>
+          )
+        }
+      />
+
+      <div className="mb-6 flex flex-col gap-4">
+        <SearchInput placeholder="Rechercher un contenu…" />
+        <FilterLinks
+          label="Filtrer par type"
+          param="type"
+          current={typeKey && type ? typeKey : undefined}
+          searchParams={sp}
+          basePath="/espace/contenus"
+          options={[
+            { value: undefined, label: "Tout", icon: <LayoutList aria-hidden /> },
+            ...Object.entries(TYPE_PARAM).map(([value, code]) => {
+              const { plural, Icon } = CONTENT_TYPES[code];
+              return { value, label: plural, icon: <Icon aria-hidden /> };
+            }),
+          ]}
+        />
+        {isEditor && (
+          <FilterLinks
+            label="Filtrer par statut"
+            param="statut"
+            current={status ? statusKey : undefined}
+            searchParams={sp}
+            basePath="/espace/contenus"
+            options={[
+              { value: undefined, label: "Tous les statuts" },
+              { value: "publies", label: "Publiés" },
+              { value: "brouillons", label: "Brouillons" },
+              { value: "archives", label: "Archivés" },
+            ]}
+          />
+        )}
+      </div>
+
+      {rows.length === 0 ? (
+        <div className="rounded-card border border-border bg-surface">
+          <EmptyState
+            title={q || type || status ? "Aucun contenu ne correspond à votre recherche" : "Aucun contenu pour le moment"}
+            description={q || type || status ? "Essayez un autre mot ou retirez un filtre." : "Les annonces, ressources et événements qui vous concernent apparaîtront ici."}
+          />
+        </div>
+      ) : (
+        <>
+          <p className="sr-only" role="status">
+            {formatNumber(total)} contenu{total > 1 ? "s" : ""}
+          </p>
+          <ul className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {rows.map((c) => {
+              const manage = editable.has(c.id);
+              return (
+                <li key={c.id}>
+                  <ContentCard
+                    content={c}
+                    canEdit={manage && can(user, "content:update")}
+                    canPublish={manage && can(user, "content:publish")}
+                    canDelete={manage && can(user, "content:delete")}
+                  />
+                </li>
+              );
+            })}
+          </ul>
+          {pages > 1 && (
+            <nav aria-label="Pagination" className="mt-6 flex items-center justify-between gap-3 text-sm text-muted">
+              <span>
+                Page {page} sur {pages}
+              </span>
+              <div className="flex gap-2">
+                <PageLink href={pageHref(page - 1)} disabled={page <= 1} label="Page précédente">
+                  <ChevronLeft className="size-5" aria-hidden />
+                </PageLink>
+                <PageLink href={pageHref(page + 1)} disabled={page >= pages} label="Page suivante">
+                  <ChevronRight className="size-5" aria-hidden />
+                </PageLink>
+              </div>
+            </nav>
+          )}
+        </>
+      )}
+    </>
+  );
+}
+
+function PageLink({ href, disabled, label, children }: { href: string; disabled: boolean; label: string; children: React.ReactNode }) {
+  const cls = "inline-flex size-11 items-center justify-center rounded-lg border border-border-strong";
+  if (disabled)
+    return (
+      <span className={cn(cls, "opacity-40")} aria-disabled="true" aria-label={label}>
+        {children}
+      </span>
+    );
+  return (
+    <Link href={href} className={cn(cls, "hover:bg-surface-2")} aria-label={label}>
+      {children}
+    </Link>
+  );
+}
