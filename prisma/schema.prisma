@@ -169,6 +169,7 @@ model User {
   guardian           Guardian?
   auditLogs          AuditLog[]
   notifications      Notification[]
+  pushSubscriptions  PushSubscription[]
   contents           Content[]
   participations     ConversationParticipant[]
   messages           Message[]
@@ -648,6 +649,22 @@ model Notification {
   createdAt DateTime  @default(now())
 
   @@index([userId, readAt])
+}
+
+// A browser or installed app that accepted web push for this user. One row
+// per device; removed when the push service answers that it has expired.
+model PushSubscription {
+  id         String    @id @default(cuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  endpoint   String    @unique
+  p256dh     String
+  auth       String
+  userAgent  String?
+  createdAt  DateTime  @default(now())
+  lastUsedAt DateTime?
+
+  @@index([userId])
 }
 
 enum RequestType {
