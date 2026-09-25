@@ -219,3 +219,36 @@ html[data-lite="on"] img[data-decorative] {
     background-position: 0 50%;
   }
 }
+
+/*
+ * Print. A page that holds a printable document (data-print-root, e.g. a
+ * report card) prints that document only: the app shell and the controls
+ * marked data-print-hide are left out, colours stay legible on paper.
+ */
+@media print {
+  body:has([data-print-root]) aside,
+  body:has([data-print-root]) header:not([data-print-root] header),
+  body:has([data-print-root]) [data-print-hide],
+  body:has([data-print-root]) [data-offline-banner] {
+    display: none !important;
+  }
+  body:has([data-print-root]) main {
+    max-width: none !important;
+    padding: 0 !important;
+  }
+  body:has([data-print-root]) {
+    background: #fff !important;
+    color: #000 !important;
+  }
+  [data-print-root] {
+    border: 0 !important;
+    break-inside: auto;
+  }
+  [data-print-root] tr {
+    break-inside: avoid;
+  }
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
