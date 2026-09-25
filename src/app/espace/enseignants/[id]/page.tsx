@@ -90,7 +90,7 @@ export default async function TeacherPage(props: PageProps<"/espace/enseignants/
               <tbody>
                 {t.assignments.map((a) => (
                   <TR key={a.id}>
-                    <TD>
+                    <TD className="whitespace-nowrap">
                       <Link href={`/espace/classes/${a.classroom.id}`} className="font-semibold text-primary hover:underline">
                         {a.classroom.name}
                       </Link>

@@ -31,10 +31,12 @@ function Disabilities({ values }: { values?: string[] }) {
   const error = state?.fieldErrors?.disabilities?.[0];
   return (
     <div className="sm:col-span-2">
-      <ChoiceGroup legend="Besoins particuliers" hint="Pour adapter l'accueil, les supports et les évaluations." orientation="horizontal">
-        {DISABILITIES.map((d) => (
-          <Checkbox key={d} name="disabilities[]" value={d} defaultChecked={values?.includes(d)} label={DISABILITY_LABELS[d]} aria-invalid={error ? true : undefined} />
-        ))}
+      <ChoiceGroup legend="Besoins particuliers" hint="Pour adapter l'accueil, les supports et les évaluations.">
+        <div className="grid gap-x-6 sm:grid-cols-2">
+          {DISABILITIES.map((d) => (
+            <Checkbox key={d} name="disabilities[]" value={d} defaultChecked={values?.includes(d)} label={DISABILITY_LABELS[d]} aria-invalid={error ? true : undefined} />
+          ))}
+        </div>
       </ChoiceGroup>
       {error && <p className="mt-1 text-sm font-semibold text-danger">{error}</p>}
     </div>
@@ -165,7 +167,7 @@ export function StudentForm({ classes, guardians, values, cancelHref }: { classe
         </Card>
       )}
 
-      <div className="flex justify-end gap-2">
+      <div className="flex justify-end gap-2 max-sm:*:flex-1">
         <ButtonLink href={cancelHref} variant="secondary">
           Annuler
         </ButtonLink>

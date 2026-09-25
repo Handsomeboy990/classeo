@@ -51,6 +51,22 @@ export default async function ClassPage(props: PageProps<"/espace/classes/[id]">
       : [],
     canUpdate ? classFormOptions(user) : null,
   ]);
+  const active = classroom.academicYear.isActive;
+  const documents = [
+    can(user, "student:view") && { href: `/api/pdf/liste-de-classe/${classroom.id}`, label: "Liste de classe", description: `élèves de la ${classroom.name}, en PDF` },
+    can(user, "attendance:view") &&
+      active && { href: `/api/pdf/fiche-appel/${classroom.id}?date=${todayIso()}`, label: "Fiche d'appel", description: `fiche d'appel du jour, ${classroom.name}, en PDF` },
+    can(user, "timetable:view") &&
+      active && { href: `/api/pdf/emploi-du-temps?classe=${classroom.id}`, label: "Emploi du temps", description: `emploi du temps de la ${classroom.name}, en PDF` },
+    can(user, "report_card:export") &&
+      period &&
+      active &&
+      classroom.enrollments.length > 0 && {
+        href: `/api/pdf/bulletins?classe=${classroom.id}&periode=${period.id}`,
+        label: "Bulletins",
+        description: `bulletins de la ${classroom.name}, ${period.name}, en PDF`,
+      },
+  ].filter((d): d is { href: string; label: string; description: string } => !!d);
   const weekRate = attendanceRate(Object.fromEntries(weekStatuses.map((s) => [s.status, s._count._all])));
   const girls = classroom.enrollments.filter((e) => e.student.gender === "F").length;
   const size = classroom.enrollments.length;
@@ -110,7 +126,7 @@ export default async function ClassPage(props: PageProps<"/espace/classes/[id]">
         )}
       </StatGrid>
 
-      <div className="mt-4 flex flex-wrap gap-2">
+      <nav aria-label="Pages de la classe" className="mt-4 grid grid-cols-2 gap-2 *:min-w-0 sm:flex sm:flex-wrap max-sm:[&>*:last-child:nth-child(odd)]:col-span-2">
         {can(user, "grade:view") && (
           <ButtonLink href={`/espace/notes?classe=${classroom.id}`} variant="secondary">
             <NotebookPen aria-hidden /> Fiches de notes
@@ -126,23 +142,19 @@ export default async function ClassPage(props: PageProps<"/espace/classes/[id]">
             <FileText aria-hidden /> Bulletins
           </ButtonLink>
         )}
-        {can(user, "student:view") && (
-          <PdfDownloadLink href={`/api/pdf/liste-de-classe/${classroom.id}`} label="Liste de classe (PDF)" description={`élèves de la ${classroom.name}`} />
-        )}
-        {can(user, "attendance:view") && classroom.academicYear.isActive && (
-          <PdfDownloadLink href={`/api/pdf/fiche-appel/${classroom.id}?date=${todayIso()}`} label="Fiche d'appel (PDF)" description={`fiche d'appel du jour, ${classroom.name}`} />
-        )}
-        {can(user, "timetable:view") && classroom.academicYear.isActive && (
-          <PdfDownloadLink href={`/api/pdf/emploi-du-temps?classe=${classroom.id}`} label="Emploi du temps (PDF)" description={`emploi du temps de la ${classroom.name}`} />
-        )}
-        {can(user, "report_card:export") && period && classroom.academicYear.isActive && size > 0 && (
-          <PdfDownloadLink
-            href={`/api/pdf/bulletins?classe=${classroom.id}&periode=${period.id}`}
-            label="Bulletins (PDF)"
-            description={`bulletins de la ${classroom.name}, ${period.name}`}
-          />
-        )}
-      </div>
+      </nav>
+      {documents.length > 0 && (
+        <section aria-labelledby="class-documents" className="mt-4">
+          <h2 id="class-documents" className="mb-2 text-sm font-semibold text-muted">
+            Documents PDF
+          </h2>
+          <div className="grid grid-cols-2 gap-2 *:min-w-0 sm:flex sm:flex-wrap max-sm:[&>*:last-child:nth-child(odd)]:col-span-2">
+            {documents.map((d) => (
+              <PdfDownloadLink key={d.href} href={d.href} label={d.label} description={d.description} />
+            ))}
+          </div>
+        </section>
+      )}
 
       <div className="mt-6 flex flex-col gap-6">
         <Card>
@@ -153,26 +165,32 @@ export default async function ClassPage(props: PageProps<"/espace/classes/[id]">
           {classroom.assignments.length === 0 ? (
             <EmptyState title="Aucune matière" description="Ajoutez les matières enseignées dans cette classe." />
           ) : (
-            <Table>
+            <Table cards>
               <caption className="sr-only">Matières de la classe</caption>
               <THead>
                 <tr>
                   <TH>Matière</TH>
                   <TH>Enseignant</TH>
                   <TH className="text-right">Coef.</TH>
-                  <TH className="text-right max-sm:hidden">H/sem.</TH>
+                  <TH className="text-right">H/sem.</TH>
                   {options && <TH className="text-right">Actions</TH>}
                 </tr>
               </THead>
               <tbody>
                 {classroom.assignments.map((a) => (
                   <TR key={a.id}>
-                    <TD className="font-medium">{a.subject.name}</TD>
-                    <TD>{a.teacher ? `${a.teacher.firstName} ${a.teacher.lastName}` : <span className="text-muted">À désigner</span>}</TD>
-                    <TD className="text-right tabular-nums">{a.coefficient}</TD>
-                    <TD className="text-right tabular-nums max-sm:hidden">{a.weeklyHours}</TD>
+                    <TD className="font-medium" data-label="Matière" data-primary>
+                      {a.subject.name}
+                    </TD>
+                    <TD data-label="Enseignant">{a.teacher ? `${a.teacher.firstName} ${a.teacher.lastName}` : <span className="text-muted">À désigner</span>}</TD>
+                    <TD className="text-right tabular-nums" data-label="Coefficient">
+                      {a.coefficient}
+                    </TD>
+                    <TD className="text-right tabular-nums" data-label="Heures par semaine">
+                      {a.weeklyHours}
+                    </TD>
                     {options && (
-                      <TD className="text-right whitespace-nowrap">
+                      <TD className="text-right whitespace-nowrap" data-actions>
                         <AssignmentDialog
                           classroomId={classroom.id}
                           options={options}
@@ -237,7 +255,7 @@ export default async function ClassPage(props: PageProps<"/espace/classes/[id]">
                       <TD className="font-mono text-xs max-sm:hidden">{e.student.matricule}</TD>
                       <TD className="whitespace-nowrap tabular-nums max-md:hidden">{shortDate(e.student.birthDate)}</TD>
                       {showGrades && (
-                        <TD>
+                        <TD className="whitespace-nowrap">
                           <AverageLevel average={card?.generalAverage ?? null} />
                         </TD>
                       )}

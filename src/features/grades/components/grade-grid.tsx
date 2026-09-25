@@ -408,12 +408,13 @@ export function GradeGrid({
       )}
 
       {/* Save bar: beside the summary on a large screen; below lg, last in
-          the card and kept in view above the tab bar while scrolling. */}
+          the card, kept in view above the tab bar while scrolling, with room
+          on the right for the floating accessibility button. */}
       {editable ? (
         <div
           className={cn(
             "flex flex-wrap items-center gap-2 lg:col-start-2 lg:row-start-1 lg:justify-end lg:border-b lg:border-border lg:p-4",
-            "sticky bottom-[var(--tab-bar-space)] z-30 rounded-b-card border-t border-border bg-surface/95 p-3 shadow-[0_-4px_16px_rgb(0_0_0/0.06)] backdrop-blur-sm lg:static lg:z-auto lg:rounded-none lg:border-t-0 lg:bg-surface lg:shadow-none lg:backdrop-blur-none",
+            "sticky bottom-[var(--tab-bar-space)] z-30 rounded-b-card border-t border-border bg-surface/95 p-3 pr-[calc(var(--fab-size)+1.5rem)] lg:pr-4 shadow-[0_-4px_16px_rgb(0_0_0/0.06)] backdrop-blur-sm lg:static lg:z-auto lg:rounded-none lg:border-t-0 lg:bg-surface lg:shadow-none lg:backdrop-blur-none",
           )}
         >
           <p className="min-w-0 flex-1 text-sm text-muted lg:flex-none" aria-live="polite">
@@ -426,7 +427,13 @@ export function GradeGrid({
           )}
           <Button onClick={save} loading={pending} disabled={!dirty.length} aria-keyshortcuts="Control+S">
             {!pending && <Save aria-hidden />}
-            {pending ? "Enregistrement…" : "Enregistrer les notes"}
+            {pending ? (
+              "Enregistrement…"
+            ) : (
+              <>
+                Enregistrer<span className="max-sm:sr-only"> les notes</span>
+              </>
+            )}
           </Button>
         </div>
       ) : (

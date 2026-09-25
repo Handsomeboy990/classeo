@@ -55,7 +55,7 @@ export default async function StudentsPage(props: PageProps<"/espace/eleves">) {
     { header: "Matricule", cell: (r) => <span className="font-mono text-xs">{r.student.matricule}</span>, hideBelow: "sm" },
     { header: "Classe", cell: (r) => r.classroom.name },
     ...(multiSchool ? [{ header: "Établissement", cell: (r: Row) => r.school.name, hideBelow: "lg" as const }] : []),
-    { header: "Sexe", cell: (r) => GENDER_LABELS[r.student.gender], hideBelow: "md" },
+    { header: "Sexe", cell: (r) => GENDER_LABELS[r.student.gender], hideBelow: "md", mobileHidden: true },
     { header: "Naissance", cell: (r) => <span className="whitespace-nowrap tabular-nums">{shortDate(r.student.birthDate)}</span>, hideBelow: "lg" },
     {
       header: "Parent principal",
@@ -76,6 +76,8 @@ export default async function StudentsPage(props: PageProps<"/espace/eleves">) {
       header: "Statut",
       cell: (r) => <Badge tone={r.status === "ACTIVE" ? "success" : "warning"}>{ENROLLMENT_STATUS_LABELS[r.status]}</Badge>,
       hideBelow: "sm",
+      // Every row says "Inscrit" under the default filter: not worth a line per card.
+      mobileHidden: status === "ACTIVE",
     },
   ];
 

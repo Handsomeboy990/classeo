@@ -50,7 +50,7 @@ export default async function SheetPage(props: PageProps<"/espace/notes/[sheetId
       </nav>
       <PageHeader
         title={`${a.subject.name} · ${a.classroom.name}`}
-        description={`${sheet.period.name} ${sheet.period.academicYear.label} · coefficient ${a.coefficient} · ${a.teacher ? `${a.teacher.firstName} ${a.teacher.lastName}` : "enseignant non désigné"}`}
+        description={`${sheet.period.name}, ${sheet.period.academicYear.label} · coefficient ${a.coefficient} · ${a.teacher ? `${a.teacher.firstName} ${a.teacher.lastName}` : "enseignant non désigné"}`}
         actions={
           <>
             {sheet.isLocked && (

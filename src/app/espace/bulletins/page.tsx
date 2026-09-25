@@ -39,7 +39,7 @@ export default async function ReportCardsPage(props: PageProps<"/espace/bulletin
   const canView = can(user, "report_card:view");
 
   const filters = (
-    <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end">
+    <div className="mb-6 grid grid-cols-2 gap-3 sm:flex sm:items-end">
       <UrlSelect param="periode" label="Période" value={periodId} options={year.periods.map((p) => ({ value: p.id, label: p.name }))} className="sm:w-52" />
       <UrlSelect param="classe" label="Classe" value={classroomId ?? ""} allLabel="Vue d'ensemble" options={overview.map((c) => ({ value: c.id, label: c.name }))} className="sm:w-52" />
     </div>
@@ -57,7 +57,7 @@ export default async function ReportCardsPage(props: PageProps<"/espace/bulletin
           {overview.length === 0 ? (
             <EmptyState title="Aucune classe" />
           ) : (
-            <Table>
+            <Table cards>
               <caption className="sr-only">État de publication des bulletins par classe</caption>
               <THead>
                 <tr>
@@ -70,9 +70,13 @@ export default async function ReportCardsPage(props: PageProps<"/espace/bulletin
               <tbody>
                 {overview.map((c) => (
                   <TR key={c.id}>
-                    <TD className="font-semibold">{c.name}</TD>
-                    <TD className="text-right tabular-nums">{c.students}</TD>
-                    <TD>
+                    <TD className="font-semibold" data-primary>
+                      {c.name}
+                    </TD>
+                    <TD className="text-right tabular-nums" data-label="Élèves">
+                      {c.students}
+                    </TD>
+                    <TD data-label="Bulletins publiés">
                       {c.published >= c.students && c.students > 0 ? (
                         <Badge tone="success">
                           <CheckCircle2 aria-hidden /> Publiés ({c.published})
@@ -85,7 +89,7 @@ export default async function ReportCardsPage(props: PageProps<"/espace/bulletin
                         <Badge tone="neutral">Non publiés</Badge>
                       )}
                     </TD>
-                    <TD className="text-right">
+                    <TD className="text-right" data-actions>
                       <Link
                         href={`/espace/bulletins?classe=${c.id}&periode=${periodId}`}
                         className={buttonVariants({ variant: "secondary", size: "sm" })}
@@ -189,7 +193,7 @@ export default async function ReportCardsPage(props: PageProps<"/espace/bulletin
         {cards.length === 0 ? (
           <EmptyState title="Aucun élève inscrit" />
         ) : (
-          <Table>
+          <Table cards>
             <caption className="sr-only">Aperçu des bulletins de la classe, par rang</caption>
             <THead>
               <tr>
@@ -197,7 +201,7 @@ export default async function ReportCardsPage(props: PageProps<"/espace/bulletin
                 <TH>Élève</TH>
                 <TH>Moyenne générale</TH>
                 <TH className="max-lg:hidden">Appréciation</TH>
-                <TH className="max-md:hidden">État</TH>
+                <TH className="sm:max-md:hidden">État</TH>
                 <TH className="text-right">Bulletin</TH>
               </tr>
             </THead>
@@ -206,17 +210,23 @@ export default async function ReportCardsPage(props: PageProps<"/espace/bulletin
                 const pub = published.get(c.enrollmentId);
                 return (
                   <TR key={c.enrollmentId}>
-                    <TD className="text-right font-semibold tabular-nums">{formatRank(c.rank, (rankCounts.get(c.rank ?? -1) ?? 0) > 1)}</TD>
-                    <TD>
+                    <TD className="text-right font-semibold tabular-nums" data-label="Rang">
+                      {formatRank(c.rank, (rankCounts.get(c.rank ?? -1) ?? 0) > 1)}
+                    </TD>
+                    <TD data-primary>
                       <span className="font-semibold">{c.name}</span>
                       <span className="block font-mono text-xs text-muted">{c.student.matricule}</span>
                     </TD>
-                    <TD>
+                    <TD data-label="Moyenne générale">
                       <AverageLevel average={c.generalAverage} />
                     </TD>
-                    <TD className="text-muted max-lg:hidden">{c.appreciation ?? "–"}</TD>
-                    <TD className="max-md:hidden">{pub ? <Badge tone="success">Publié</Badge> : <Badge tone="neutral">Aperçu</Badge>}</TD>
-                    <TD className="text-right">
+                    <TD className="text-muted max-lg:hidden" data-card-hidden>
+                      {c.appreciation ?? "–"}
+                    </TD>
+                    <TD className="sm:max-md:hidden" data-label="État">
+                      {pub ? <Badge tone="success">Publié</Badge> : <Badge tone="neutral">Aperçu</Badge>}
+                    </TD>
+                    <TD className="text-right" data-actions>
                       <span className="inline-flex flex-wrap justify-end gap-2">
                         <Link
                           href={`/espace/bulletins/${c.enrollmentId}/${periodId}`}

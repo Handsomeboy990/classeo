@@ -79,7 +79,12 @@ export default async function StudentPage(props: PageProps<"/espace/eleves/[id]"
               <div className="rounded-card border border-border bg-surface p-5">
                 <p className="text-sm font-medium text-muted">Moyenne générale{period ? `, ${period.name}` : ""}</p>
                 <div className="mt-3">
-                  <AverageLevel average={general?.average ?? null} size="lg" />
+                  <span className="sm:hidden">
+                    <AverageLevel average={general?.average ?? null} />
+                  </span>
+                  <span className="max-sm:hidden">
+                    <AverageLevel average={general?.average ?? null} size="lg" />
+                  </span>
                 </div>
               </div>
               <StatCard label="Rang dans la classe" value={general?.rank ? formatRank(general.rank) : "–"} hint={general ? `sur ${general.classSize} élèves` : undefined} icon={Trophy} tone="accent" />
@@ -160,11 +165,11 @@ export default async function StudentPage(props: PageProps<"/espace/eleves/[id]"
                       {g.profession ? ` · ${g.profession}` : ""}
                     </span>
                   </div>
-                  <div className="text-right">
+                  <div className="sm:text-right">
                     <a href={`tel:${g.phone}`} className="font-mono hover:underline">
                       {g.phone}
                     </a>
-                    <span className="flex justify-end gap-1">
+                    <span className="mt-1 flex flex-wrap gap-1 sm:justify-end">
                       {isPrimary && <Badge tone="success">Principal</Badge>}
                       <Badge>{CHANNEL_LABELS[g.preferredChannel]}</Badge>
                       {g.prefersAudio && <Badge tone="info">Préfère l&apos;audio</Badge>}
@@ -210,7 +215,7 @@ export default async function StudentPage(props: PageProps<"/espace/eleves/[id]"
                     <TD className="text-right tabular-nums max-md:hidden">{formatAverage(g.interrogationAverage)}</TD>
                     <TD className="text-right tabular-nums max-md:hidden">{formatAverage(g.devoirAverage)}</TD>
                     <TD className="text-right tabular-nums max-md:hidden">{formatAverage(g.compositionAverage)}</TD>
-                    <TD>{g.hasSheet ? <AverageLevel average={g.average} /> : <span className="text-muted">Fiche non ouverte</span>}</TD>
+                    <TD className="whitespace-nowrap">{g.hasSheet ? <AverageLevel average={g.average} /> : <span className="text-muted">Fiche non ouverte</span>}</TD>
                   </TR>
                 ))}
               </tbody>

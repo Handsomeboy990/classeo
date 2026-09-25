@@ -54,6 +54,8 @@ export default async function NotesPage(props: PageProps<"/espace/notes">) {
   const columns: Column<Row>[] = [
     {
       header: "Classe",
+      // In the phone card the class is part of the title.
+      mobileHidden: true,
       cell: (r) => <span className="font-semibold">{r.assignment.classroom.name}</span>,
     },
     {
@@ -62,6 +64,7 @@ export default async function NotesPage(props: PageProps<"/espace/notes">) {
       cell: (r) => (
         <Link href={`/espace/notes/${r.id}`} className="font-semibold text-primary hover:underline">
           {r.assignment.subject.name}
+          <span className="sm:hidden"> · {r.assignment.classroom.name}</span>
         </Link>
       ),
     },

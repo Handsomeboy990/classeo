@@ -157,7 +157,7 @@ export function AttendanceRegister({
         })}
       </ul>
       {editable && (
-        <div className="sticky bottom-[var(--tab-bar-space)] z-30 flex items-center justify-between gap-3 rounded-b-card border-t border-border bg-surface/95 p-3 shadow-[0_-4px_16px_rgb(0_0_0/0.06)] backdrop-blur-sm lg:static lg:justify-end lg:p-4 lg:shadow-none lg:backdrop-blur-none">
+        <div className="sticky bottom-[var(--tab-bar-space)] z-30 flex items-center justify-between gap-3 rounded-b-card border-t border-border bg-surface/95 p-3 pr-[calc(var(--fab-size)+1.5rem)] shadow-[0_-4px_16px_rgb(0_0_0/0.06)] backdrop-blur-sm lg:static lg:justify-end lg:p-4 lg:pr-4 lg:shadow-none lg:backdrop-blur-none">
           <p className="min-w-0 text-sm text-muted lg:hidden">
             <strong className="text-text tabular-nums">{counts.ABSENT ?? 0}</strong> absent{(counts.ABSENT ?? 0) > 1 ? "s" : ""},{" "}
             <strong className="text-text tabular-nums">{counts.LATE ?? 0}</strong> en retard
