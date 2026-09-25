@@ -866,6 +866,136 @@ html[data-lite="on"] img[data-decorative] {
   }
 }
 
+/*
+ * Tables. Sentence case headers on a quiet band, 1 px row dividers, a hover
+ * tint. Compact density for long lists. From 64rem the header sticks under
+ * the app bar; on a phone, a table marked data-cards shows each row as a
+ * card: the primary cell as title, then label and value pairs, then the
+ * row actions.
+ */
+@layer components {
+  .ds-table :where(th, td) {
+    padding: 0.75rem 1rem;
+    vertical-align: middle;
+  }
+  .ds-table thead th {
+    background: var(--surface-2);
+    color: var(--text-muted);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    line-height: 1.25rem;
+    text-align: start;
+    white-space: nowrap;
+    border-bottom: 1px solid var(--border);
+  }
+  .ds-table tbody tr {
+    border-top: 1px solid var(--border);
+    transition: background-color var(--duration-fast) ease;
+  }
+  .ds-table tbody tr:first-child {
+    border-top: 0;
+  }
+  .ds-table tbody tr:hover {
+    background: color-mix(in srgb, var(--surface-2) 70%, transparent);
+  }
+  .ds-table[data-striped] tbody tr:nth-child(even) {
+    background: color-mix(in srgb, var(--surface-2) 45%, transparent);
+  }
+  .ds-table[data-density="compact"] :where(th, td) {
+    padding: 0.5rem 0.75rem;
+  }
+  .ds-table-scroll:first-child .ds-table thead th:first-child {
+    border-top-left-radius: calc(var(--radius) - 1px);
+  }
+  .ds-table-scroll:first-child .ds-table thead th:last-child {
+    border-top-right-radius: calc(var(--radius) - 1px);
+  }
+
+  @media (min-width: 64rem) {
+    .ds-table[data-sticky] thead th {
+      position: sticky;
+      top: 4rem;
+      z-index: 5;
+    }
+  }
+
+  @media (max-width: 39.999rem) {
+    .ds-table[data-cards],
+    .ds-table[data-cards] tbody {
+      display: block;
+    }
+    .ds-table[data-cards] thead {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+    .ds-table[data-cards] tbody tr {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.625rem 1rem;
+      padding: 0.875rem 1rem 1rem;
+    }
+    .ds-table[data-cards] tbody tr:hover {
+      background: transparent;
+    }
+    .ds-table[data-cards] tbody :is(td, th) {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.125rem;
+      min-width: 0;
+      padding: 0;
+      text-align: start;
+      overflow-wrap: anywhere;
+    }
+    .ds-table[data-cards] tbody :is(td, th)::before {
+      content: attr(data-label);
+      content: attr(data-label) / "";
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      font-weight: 500;
+      line-height: 1rem;
+      overflow-wrap: normal;
+    }
+    .ds-table[data-cards] tbody :is(td, th)[data-primary] {
+      order: -1;
+      grid-column: 1 / -1;
+      display: block;
+      font-size: 1rem;
+    }
+    .ds-table[data-cards] tbody :is(td, th)[data-actions] {
+      order: 99;
+      grid-column: 1 / -1;
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 0.5rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--border);
+    }
+    .ds-table[data-cards] tbody :is(td, th):is([data-primary], [data-actions])::before {
+      content: none;
+    }
+    .ds-table[data-cards] tbody :is(td, th):is([data-card-hidden], [data-empty]) {
+      display: none;
+    }
+  }
+}
+
+/* Very large text: the header can wrap, so the table scrolls in its frame. */
+@media (min-width: 64rem) {
+  html:is([data-text="xl"], [data-text="xxl"]) .ds-table-scroll[data-sticky] {
+    overflow-x: auto;
+  }
+  html:is([data-text="xl"], [data-text="xxl"]) .ds-table[data-sticky] thead th {
+    position: static;
+  }
+}
+
 /* Toasts rise into place: transform and opacity, 200 ms, never blocking. */
 .ds-toast {
   animation: ds-toast-in var(--duration-base) var(--ease-emphasis);

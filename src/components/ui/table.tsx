@@ -2,22 +2,49 @@ import type { ComponentProps } from "react";
 
 import { cn } from "@/lib/utils";
 
-export function Table({ className, ...props }: ComponentProps<"table">) {
+// Table primitives. Spacing, header and row styles live in globals.css
+// (.ds-table) so the density option and the phone card layout apply to the
+// cells without every page repeating classes; a className still wins.
+export function Table({
+  className,
+  density = "comfortable",
+  sticky = false,
+  striped = false,
+  cards = false,
+  wrapperClassName,
+  ...props
+}: ComponentProps<"table"> & {
+  density?: "comfortable" | "compact";
+  // Header stays in view while the page scrolls (large screens).
+  sticky?: boolean;
+  striped?: boolean;
+  // On a phone, each row becomes a card of label and value pairs. Cells need
+  // data-label (DataTable sets it from the column headers).
+  cards?: boolean;
+  wrapperClassName?: string;
+}) {
   return (
-    <div className="w-full overflow-x-auto">
-      <table className={cn("w-full border-collapse text-sm", className)} {...props} />
+    <div className={cn("ds-table-scroll w-full overflow-x-auto", sticky && "lg:overflow-x-visible", wrapperClassName)} data-sticky={sticky || undefined}>
+      <table
+        className={cn("ds-table w-full border-collapse text-sm", className)}
+        data-density={density === "compact" ? "compact" : undefined}
+        data-sticky={sticky || undefined}
+        data-striped={striped || undefined}
+        data-cards={cards || undefined}
+        {...props}
+      />
     </div>
   );
 }
-export function THead(props: ComponentProps<"thead">) {
-  return <thead className="bg-surface-2 text-left text-xs font-semibold tracking-wide text-muted uppercase" {...props} />;
+export function THead({ className, ...props }: ComponentProps<"thead">) {
+  return <thead className={cn("text-left", className)} {...props} />;
 }
 export function TH({ className, ...props }: ComponentProps<"th">) {
-  return <th scope="col" className={cn("px-4 py-3 whitespace-nowrap", className)} {...props} />;
+  return <th scope="col" className={className} {...props} />;
 }
 export function TR({ className, ...props }: ComponentProps<"tr">) {
-  return <tr className={cn("border-t border-border hover:bg-surface-2/60", className)} {...props} />;
+  return <tr className={className} {...props} />;
 }
 export function TD({ className, ...props }: ComponentProps<"td">) {
-  return <td className={cn("px-4 py-3 align-middle", className)} {...props} />;
+  return <td className={className} {...props} />;
 }
