@@ -62,7 +62,8 @@ function Choice({ legend, value, options, onChange }: { legend: string; value: s
           <label
             key={v}
             className={cn(
-              "inline-flex min-h-11 items-center rounded-lg border px-3 text-sm font-medium",
+              // The radio is visually hidden: its keyboard focus is drawn on the label.
+              "inline-flex min-h-11 items-center rounded-lg border px-3 text-sm font-medium has-[:focus-visible]:outline-[3px] has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-focus has-[:focus-visible]:outline-solid",
               value === v ? "border-primary bg-primary-soft text-primary" : "border-border-strong bg-surface text-text hover:bg-surface-2",
             )}
           >
