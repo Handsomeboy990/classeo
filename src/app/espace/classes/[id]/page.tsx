@@ -35,13 +35,19 @@ export default async function ClassPage(props: PageProps<"/espace/classes/[id]">
   const period = await getCurrentPeriod();
   const week = schoolWeek(todayIso());
   const canUpdate = can(user, "class:update");
+  // Averages and attendance need their own rights: seeing a class (accountant,
+  // secretary) is not reading its results.
+  const showGrades = can(user, "grade:view");
+  const showAttendance = can(user, "attendance:view");
   const [computed, weekStatuses, options] = await Promise.all([
-    period && classroom.academicYear.isActive ? computeClassCards(classroom.id, period.id) : null,
-    db.studentAttendance.groupBy({
-      by: ["status"],
-      where: { enrollment: { classroomId: classroom.id, status: "ACTIVE" }, date: { gte: isoToDate(week.from), lte: isoToDate(week.to) } },
-      _count: { _all: true },
-    }),
+    showGrades && period && classroom.academicYear.isActive ? computeClassCards(classroom.id, period.id) : null,
+    showAttendance
+      ? db.studentAttendance.groupBy({
+          by: ["status"],
+          where: { enrollment: { classroomId: classroom.id, status: "ACTIVE" }, date: { gte: isoToDate(week.from), lte: isoToDate(week.to) } },
+          _count: { _all: true },
+        })
+      : [],
     canUpdate ? classFormOptions(user) : null,
   ]);
   const weekRate = attendanceRate(Object.fromEntries(weekStatuses.map((s) => [s.status, s._count._all])));
@@ -86,15 +92,21 @@ export default async function ClassPage(props: PageProps<"/espace/classes/[id]">
 
       <StatGrid>
         <StatCard label="Effectif" value={`${size} / ${classroom.capacity}`} hint={`${girls} filles, ${size - girls} garçons`} icon={Users} />
-        <StatCard
-          label={`Moyenne de classe${period ? `, ${period.name}` : ""}`}
-          value={computed?.summary.classAverage != null ? `${computed.summary.classAverage.toFixed(2).replace(".", ",")}/20` : "–"}
-          hint={computed ? `${computed.summary.ranked} élèves classés` : undefined}
-          icon={TrendingUp}
-          tone="info"
-        />
-        <StatCard label="Taux de réussite" value={formatPercent(computed?.summary.passRate ?? null)} hint="Moyenne générale au moins égale à 10" icon={Percent} tone="accent" />
-        <StatCard label="Présence cette semaine" value={formatPercent(weekRate)} hint={`Du ${formatDate(week.from)} au ${formatDate(week.to)}`} icon={CalendarCheck} tone="warning" />
+        {showGrades && (
+          <>
+            <StatCard
+              label={`Moyenne de classe${period ? `, ${period.name}` : ""}`}
+              value={computed?.summary.classAverage != null ? `${computed.summary.classAverage.toFixed(2).replace(".", ",")}/20` : "–"}
+              hint={computed ? `${computed.summary.ranked} élèves classés` : undefined}
+              icon={TrendingUp}
+              tone="info"
+            />
+            <StatCard label="Taux de réussite" value={formatPercent(computed?.summary.passRate ?? null)} hint="Moyenne générale au moins égale à 10" icon={Percent} tone="accent" />
+          </>
+        )}
+        {showAttendance && (
+          <StatCard label="Présence cette semaine" value={formatPercent(weekRate)} hint={`Du ${formatDate(week.from)} au ${formatDate(week.to)}`} icon={CalendarCheck} tone="warning" />
+        )}
       </StatGrid>
 
       <div className="mt-4 flex flex-wrap gap-2">
@@ -184,7 +196,7 @@ export default async function ClassPage(props: PageProps<"/espace/classes/[id]">
                   <TH>Élève</TH>
                   <TH className="max-sm:hidden">Matricule</TH>
                   <TH className="max-md:hidden">Naissance</TH>
-                  <TH>Moyenne</TH>
+                  {showGrades && <TH>Moyenne</TH>}
                 </tr>
               </THead>
               <tbody>
@@ -207,9 +219,11 @@ export default async function ClassPage(props: PageProps<"/espace/classes/[id]">
                       </TD>
                       <TD className="font-mono text-xs max-sm:hidden">{e.student.matricule}</TD>
                       <TD className="whitespace-nowrap tabular-nums max-md:hidden">{shortDate(e.student.birthDate)}</TD>
-                      <TD>
-                        <AverageLevel average={card?.generalAverage ?? null} />
-                      </TD>
+                      {showGrades && (
+                        <TD>
+                          <AverageLevel average={card?.generalAverage ?? null} />
+                        </TD>
+                      )}
                     </TR>
                   );
                 })}
