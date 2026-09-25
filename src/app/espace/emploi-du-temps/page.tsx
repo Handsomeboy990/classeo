@@ -14,6 +14,7 @@ import { WeekGrid } from "@/features/timetable/components/week-grid";
 import { loadTimetable } from "@/features/timetable/load";
 import { requirePermission } from "@/lib/auth/authorize";
 import { addDays } from "@/lib/domain/timetable";
+import { PdfDownloadLink } from "@/lib/pdf/download-link";
 import { formatDate } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Emploi du temps" };
@@ -62,6 +63,12 @@ export default async function TimetablePage({ searchParams }: PageProps<"/espace
             <ButtonLink href={printHref} variant="secondary">
               <Printer aria-hidden /> Version imprimable
             </ButtonLink>
+            {(t.mode === "teacher" || t.selected) && (
+              <PdfDownloadLink
+                href={`/api/pdf/emploi-du-temps?${new URLSearchParams({ ...(t.selected ? { classe: t.selected.id } : {}), semaine: iso(t.monday) })}`}
+                description={t.mode === "teacher" ? "mon emploi du temps de la semaine" : `emploi du temps de la ${t.selected?.name}`}
+              />
+            )}
             {t.rights.create && t.selected && (
               <FormDialog
                 trigger={

@@ -18,6 +18,7 @@ import { classPreview, publicationOverview } from "@/features/report-cards/queri
 import { can, requirePermission } from "@/lib/auth/authorize";
 import { formatRank } from "@/lib/domain/report-card";
 import { param } from "@/lib/list";
+import { PdfDownloadLink } from "@/lib/pdf/download-link";
 import { formatAverage, formatDateTime, formatPercent } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Bulletins" };
@@ -34,6 +35,7 @@ export default async function ReportCardsPage(props: PageProps<"/espace/bulletin
   const classroomId = overview.find((c) => c.id === param(sp, "classe"))?.id;
   const preview = classroomId ? await classPreview(user, classroomId, periodId) : null;
   const canPublish = can(user, "report_card:publish");
+  const canView = can(user, "report_card:view");
 
   const filters = (
     <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end">
@@ -123,6 +125,13 @@ export default async function ReportCardsPage(props: PageProps<"/espace/bulletin
                 <Download className="size-4" aria-hidden /> Exporter (CSV)
               </a>
             )}
+            {can(user, "report_card:export") && cards.length > 0 && (
+              <PdfDownloadLink
+                href={`/api/pdf/bulletins?classe=${classroom.id}&periode=${periodId}`}
+                label="Bulletins en PDF"
+                description={`les ${cards.length} bulletins de la ${classroom.name}, une page par élève`}
+              />
+            )}
             {canPublish && (
               <ConfirmButton
                 action={publishReportCards}
@@ -203,13 +212,23 @@ export default async function ReportCardsPage(props: PageProps<"/espace/bulletin
                     <TD className="text-muted max-lg:hidden">{c.appreciation ?? "–"}</TD>
                     <TD className="max-md:hidden">{pub ? <Badge tone="success">Publié</Badge> : <Badge tone="neutral">Aperçu</Badge>}</TD>
                     <TD className="text-right">
-                      <Link
-                        href={`/espace/bulletins/${c.enrollmentId}/${periodId}`}
-                        className="inline-flex h-9 items-center rounded-lg border border-border-strong px-3 text-sm font-semibold hover:bg-surface-2"
-                        aria-label={`Voir le bulletin de ${c.name}`}
-                      >
-                        Voir
-                      </Link>
+                      <span className="inline-flex flex-wrap justify-end gap-2">
+                        <Link
+                          href={`/espace/bulletins/${c.enrollmentId}/${periodId}`}
+                          className="inline-flex h-9 items-center rounded-lg border border-border-strong px-3 text-sm font-semibold hover:bg-surface-2"
+                          aria-label={`Voir le bulletin de ${c.name}`}
+                        >
+                          Voir
+                        </Link>
+                        {canView && (
+                          <PdfDownloadLink
+                            href={`/api/pdf/bulletin?inscription=${c.enrollmentId}&periode=${periodId}`}
+                            label="PDF"
+                            size="sm"
+                            description={`bulletin de ${c.name}`}
+                          />
+                        )}
+                      </span>
                     </TD>
                   </TR>
                 );

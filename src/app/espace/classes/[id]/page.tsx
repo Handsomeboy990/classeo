@@ -21,6 +21,7 @@ import { DISABILITY_LABELS } from "@/features/students/labels";
 import { can, requirePermission } from "@/lib/auth/authorize";
 import { attendanceRate, isoToDate, schoolWeek, todayIso } from "@/lib/domain/attendance";
 import { db } from "@/lib/db";
+import { PdfDownloadLink } from "@/lib/pdf/download-link";
 import { formatDate, formatPercent } from "@/lib/utils";
 import { shortDate } from "@/features/students/labels";
 
@@ -124,6 +125,22 @@ export default async function ClassPage(props: PageProps<"/espace/classes/[id]">
           <ButtonLink href={`/espace/bulletins?classe=${classroom.id}`} variant="secondary">
             <FileText aria-hidden /> Bulletins
           </ButtonLink>
+        )}
+        {can(user, "student:view") && (
+          <PdfDownloadLink href={`/api/pdf/liste-de-classe/${classroom.id}`} label="Liste de classe (PDF)" description={`élèves de la ${classroom.name}`} />
+        )}
+        {can(user, "attendance:view") && classroom.academicYear.isActive && (
+          <PdfDownloadLink href={`/api/pdf/fiche-appel/${classroom.id}?date=${todayIso()}`} label="Fiche d'appel (PDF)" description={`fiche d'appel du jour, ${classroom.name}`} />
+        )}
+        {can(user, "timetable:view") && classroom.academicYear.isActive && (
+          <PdfDownloadLink href={`/api/pdf/emploi-du-temps?classe=${classroom.id}`} label="Emploi du temps (PDF)" description={`emploi du temps de la ${classroom.name}`} />
+        )}
+        {can(user, "report_card:export") && period && classroom.academicYear.isActive && size > 0 && (
+          <PdfDownloadLink
+            href={`/api/pdf/bulletins?classe=${classroom.id}&periode=${period.id}`}
+            label="Bulletins (PDF)"
+            description={`bulletins de la ${classroom.name}, ${period.name}`}
+          />
         )}
       </div>
 

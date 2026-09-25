@@ -16,6 +16,7 @@ import { CancelPaymentButton } from "@/features/payments/components/cancel-payme
 import { PaymentForm } from "@/features/payments/components/payment-form";
 import { can, requirePermission } from "@/lib/auth/authorize";
 import { installmentStatus, PAYMENT_METHOD_LABELS, type InvoiceStatusCode } from "@/lib/domain/payments";
+import { PdfDownloadLink } from "@/lib/pdf/download-link";
 import { formatDate, formatFcfa } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Facture" };
@@ -32,6 +33,7 @@ export default async function InvoicePage({ params }: PageProps<"/espace/frais/f
   const remaining = Math.max(0, invoice.totalAmount - invoice.paidAmount);
   const canPay = can(user, "payment:create") && remaining > 0 && invoice.status !== "CANCELLED";
   const canCancel = can(user, "payment:delete") && invoice.status !== "CANCELLED";
+  const canReceipt = can(user, "payment:view");
   const progress = invoice.totalAmount > 0 ? Math.round((invoice.paidAmount / invoice.totalAmount) * 100) : 0;
 
   return (
@@ -42,6 +44,7 @@ export default async function InvoicePage({ params }: PageProps<"/espace/frais/f
       <PageHeader
         title={`Facture ${invoice.number}`}
         description={`${student.lastName} ${student.firstName} · ${invoice.enrollment.classroom.name} · Année ${invoice.enrollment.academicYear.label}`}
+        actions={<PdfDownloadLink href={`/api/pdf/facture/${invoice.id}`} description={`facture ${invoice.number}`} />}
       />
 
       <div className="grid gap-6 lg:grid-cols-[2fr_1fr]">
@@ -163,6 +166,7 @@ export default async function InvoicePage({ params }: PageProps<"/espace/frais/f
                       <ButtonLink href={`/espace/frais/paiements/${p.id}/recu`} variant="secondary" size="sm">
                         <Receipt aria-hidden /> Reçu
                       </ButtonLink>
+                      {canReceipt && <PdfDownloadLink href={`/api/pdf/recu/${p.id}`} label="PDF" size="sm" description={`reçu ${p.reference}`} />}
                       {canCancel && <CancelPaymentButton id={p.id} reference={p.reference} amount={p.amount} />}
                     </div>
                   </li>

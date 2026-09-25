@@ -19,6 +19,7 @@ import { can, requirePermission } from "@/lib/auth/authorize";
 import { ATTENDANCE_LABELS, isoToDate, todayIso } from "@/lib/domain/attendance";
 import { formatRank } from "@/lib/domain/report-card";
 import { param } from "@/lib/list";
+import { PdfDownloadLink } from "@/lib/pdf/download-link";
 import { formatAverage, formatDate, formatNumber, formatPercent } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Élève" };
@@ -46,16 +47,22 @@ export default async function StudentPage(props: PageProps<"/espace/eleves/[id]"
         title={name}
         description={`Matricule ${student.matricule}${current ? ` · ${current.classroom.name}, ${current.school.name} · ${ENROLLMENT_STATUS_LABELS[current.status]}` : ""}`}
         actions={
-          canUpdate &&
-          current &&
-          current.academicYear.isActive && (
-            <>
-              <ButtonLink href={`/espace/eleves/${student.id}/modifier`} variant="secondary">
-                <Pencil aria-hidden /> Modifier
-              </ButtonLink>
-              <EnrollmentStatusActions enrollmentId={current.id} status={current.status} name={name} className={current.classroom.name} />
-            </>
-          )
+          <>
+            {current && current.academicYear.isActive && current.status === "ACTIVE" && (
+              <PdfDownloadLink href={`/api/pdf/attestation/${student.id}`} label="Attestation (PDF)" description={`attestation de scolarité de ${name}`} />
+            )}
+            {rights.grades && current && current.academicYear.isActive && period && (
+              <PdfDownloadLink href={`/api/pdf/releve/${student.id}`} label="Relevé de notes (PDF)" description={`relevé de notes de ${name}, ${period.name}`} />
+            )}
+            {canUpdate && current && current.academicYear.isActive && (
+              <>
+                <ButtonLink href={`/espace/eleves/${student.id}/modifier`} variant="secondary">
+                  <Pencil aria-hidden /> Modifier
+                </ButtonLink>
+                <EnrollmentStatusActions enrollmentId={current.id} status={current.status} name={name} className={current.classroom.name} />
+              </>
+            )}
+          </>
         }
       />
       {param(sp, "inscrit") && (
@@ -275,6 +282,7 @@ export default async function StudentPage(props: PageProps<"/espace/eleves/[id]"
                       >
                         Voir
                       </Link>
+                      <PdfDownloadLink href={`/api/pdf/bulletin?id=${r.id}`} label="PDF" size="sm" description={`bulletin du ${r.period.name} ${r.period.academicYear.label}`} />
                     </div>
                   </li>
                 ))}
