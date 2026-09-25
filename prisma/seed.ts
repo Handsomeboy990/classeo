@@ -742,7 +742,7 @@ async function main() {
       },
       {
         type: "EVENT",
-        title: "Réunion des parents d'élèves du samedi 10 octobre",
+        title: "Réunion des parents d'élèves",
         easyRead: "Réunion des parents le samedi 10 octobre à 10 h, dans la cour du collège.",
         body: "Le chef d'établissement invite tous les parents d'élèves à la réunion de rentrée le samedi 10 octobre 2026 à 10 h, dans la cour du collège. Ordre du jour : organisation de l'année, élection du bureau de l'association des parents, questions diverses. Une interprétation en fon et en langue des signes sera assurée.",
         audience: "PARENTS",
