@@ -56,6 +56,8 @@ describe("words", () => {
     expect(countWord(0, "absence", "absences")).toBe("Aucune absence");
     expect(countWord(1, "absence", "absences")).toBe("Une absence");
     expect(countWord(3, "absence", "absences")).toBe("3 absences");
+    expect(countWord(1, "message", "messages", "m")).toBe("Un message");
+    expect(countWord(0, "message", "messages", "m")).toBe("Aucun message");
     expect(spokenTime("07:00")).toBe("7 h");
     expect(spokenTime("09:15")).toBe("9 h 15");
     expect(rankLabel(1, 34)).toBe("1er sur 34");

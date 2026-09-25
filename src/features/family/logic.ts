@@ -55,9 +55,10 @@ export function presenceRate(summary: AttendanceSummary): number | null {
   return (counted - summary.absences) / counted;
 }
 
-export function countWord(n: number, one: string, many: string, zero = `Aucune ${one}`) {
-  if (n === 0) return zero;
-  if (n === 1) return `Une ${one}`;
+// "Aucune absence", "Une absence", "3 absences"; masculine nouns pass "m".
+export function countWord(n: number, one: string, many: string, gender: "f" | "m" = "f") {
+  if (n === 0) return `${gender === "f" ? "Aucune" : "Aucun"} ${one}`;
+  if (n === 1) return `${gender === "f" ? "Une" : "Un"} ${one}`;
   return `${n} ${many}`;
 }
 
