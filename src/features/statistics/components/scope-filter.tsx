@@ -2,10 +2,11 @@
 
 import { Filter } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
-import { useTransition } from "react";
+import { useSyncExternalStore, useTransition } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Label, Select } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 
 type Option = { id: string; name: string };
 
@@ -28,6 +29,13 @@ export function ScopeFilter({
   const router = useRouter();
   const pathname = usePathname();
   const [pending, startTransition] = useTransition();
+  // Once hydrated, a change applies at once: the submit button only serves
+  // without JavaScript.
+  const hydrated = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
 
   function apply(form: HTMLFormElement, clearCommune: boolean) {
     const data = new FormData(form);
@@ -38,12 +46,12 @@ export function ScopeFilter({
   }
 
   return (
-    <form method="get" className="flex flex-col gap-3 sm:flex-row sm:items-end" aria-busy={pending || undefined}>
+    <form method="get" className="grid grid-cols-2 gap-3 sm:flex sm:flex-row sm:items-end" aria-busy={pending || undefined}>
       {Object.entries(keep).map(([k, v]) => (
         <input key={k} type="hidden" name={k} value={v} />
       ))}
       {departments && (
-        <div className="flex flex-col gap-1.5">
+        <div className={cn("flex min-w-0 flex-col gap-1.5", communes.length === 0 && "max-sm:col-span-2")}>
           <Label htmlFor="filter-department">Département</Label>
           <Select id="filter-department" name="departement" defaultValue={departmentId ?? ""} onChange={(e) => apply(e.currentTarget.form!, true)} className="sm:w-56">
             <option value="">Tout le Bénin</option>
@@ -56,7 +64,7 @@ export function ScopeFilter({
         </div>
       )}
       {communes.length > 0 && (
-        <div className="flex flex-col gap-1.5">
+        <div className={cn("flex min-w-0 flex-col gap-1.5", !departments && "max-sm:col-span-2")}>
           <Label htmlFor="filter-commune">Commune</Label>
           <Select key={`${departmentId}-${communeId}`} id="filter-commune" name="commune" defaultValue={communeId ?? ""} onChange={(e) => apply(e.currentTarget.form!, false)} className="sm:w-56">
             <option value="">Toutes les communes</option>
@@ -68,7 +76,7 @@ export function ScopeFilter({
           </Select>
         </div>
       )}
-      <Button type="submit" variant="secondary" loading={pending}>
+      <Button type="submit" variant="secondary" loading={pending} className={cn("col-span-2", hydrated && "hidden")}>
         <Filter aria-hidden /> Appliquer
       </Button>
     </form>

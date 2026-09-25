@@ -76,9 +76,9 @@ export function Breakdown({
   const flip = direction === "desc" ? "asc" : "desc";
 
   return (
-    <Card>
+    <Card className="min-w-0">
       <CardHeader className="flex-col sm:flex-row sm:items-center">
-        <div>
+        <div className="min-w-0">
           <CardTitle>{title ?? `Comparaison par ${labels.singular.toLowerCase()}`}</CardTitle>
           <p className="mt-0.5 text-sm text-muted">
             {rows.length} {rows.length > 1 ? labels.plural.toLowerCase() : labels.singular.toLowerCase()}, {stats.childLevel === "COMMUNE" || stats.childLevel === "CLASS" ? "triées" : "triés"} par {meta.label.toLowerCase()} ({direction === "desc" ? "décroissant" : "croissant"})
@@ -87,14 +87,14 @@ export function Breakdown({
         <Link
           href={hrefWith(basePath, searchParams, { tri: activeSort, ordre: flip })}
           scroll={false}
-          className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-border-strong px-3 text-sm font-semibold hover:bg-surface-2"
+          className="inline-flex h-11 items-center gap-1.5 rounded-lg border border-border-strong px-3 text-sm font-semibold hover:bg-surface-2 sm:h-9"
         >
           {direction === "desc" ? <ArrowDown className="size-4" aria-hidden /> : <ArrowUp className="size-4" aria-hidden />}
           {direction === "desc" ? "Ordre décroissant" : "Ordre croissant"}
         </Link>
       </CardHeader>
       <CardBody className="flex flex-col gap-6">
-        <nav aria-label="Indicateur de tri" className="flex flex-wrap gap-2">
+        <nav aria-label="Indicateur de tri" className="relative -mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">
           {keys.map((k) => (
             <Link
               key={k}
@@ -102,7 +102,7 @@ export function Breakdown({
               scroll={false}
               aria-current={k === activeSort ? "true" : undefined}
               className={cn(
-                "rounded-full border px-3 py-1 text-sm font-medium",
+                "inline-flex min-h-11 shrink-0 items-center rounded-full border px-3 text-sm font-medium whitespace-nowrap sm:min-h-8",
                 k === activeSort ? "border-primary bg-primary text-on-primary" : "border-border-strong hover:bg-surface-2",
               )}
             >
@@ -120,13 +120,14 @@ export function Breakdown({
             ) : (
               <p className="text-sm text-muted">Aucune valeur disponible pour cet indicateur.</p>
             )}
-            <Table>
+            {/* On a phone the grid scrolls sideways; the name column stays pinned. */}
+            <Table density="compact">
               <caption className="sr-only">
                 Indicateurs par {labels.singular.toLowerCase()}, {stats.childLevel === "COMMUNE" || stats.childLevel === "CLASS" ? "triées" : "triés"} par {meta.label.toLowerCase()}
               </caption>
               <THead>
                 <tr>
-                  <TH>{labels.singular}</TH>
+                  <TH className="max-sm:sticky max-sm:left-0 max-sm:z-1 max-sm:bg-surface-2">{labels.singular}</TH>
                   {keys.map((k) => (
                     <TH key={k} className="text-right" aria-sort={k === activeSort ? (direction === "desc" ? "descending" : "ascending") : undefined}>
                       <Link href={hrefWith(basePath, searchParams, { tri: k, ordre: k === activeSort ? flip : "desc" })} scroll={false} className="hover:underline" title={INDICATORS[k].label}>
@@ -139,7 +140,7 @@ export function Breakdown({
               <tbody>
                 {rows.map((r) => (
                   <TR key={r.id}>
-                    <TH scope="row" className="text-left font-semibold text-text normal-case">
+                    <TH scope="row" className="min-w-32 text-left font-semibold text-text normal-case max-sm:sticky max-sm:left-0 max-sm:z-1 max-sm:bg-surface">
                       {hrefFor ? (
                         <Link href={hrefFor(r.id)} className="text-primary hover:underline">
                           {r.name}
