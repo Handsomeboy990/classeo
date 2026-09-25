@@ -308,3 +308,17 @@ html[data-lite="on"] img[data-decorative] {
 [data-theme="dark"] .bg-accent-soft .text-on-accent {
   color: var(--accent);
 }
+
+/*
+ * Reflow (WCAG 1.4.10): with very large text on a narrow phone, the app
+ * header's controls no longer fit on one 4rem line. Let them wrap instead
+ * of scrolling the whole page sideways.
+ */
+@media (max-width: 40rem) {
+  html:is([data-text="xl"], [data-text="xxl"]) header.sticky.h-16 {
+    height: auto;
+    min-height: 4rem;
+    flex-wrap: wrap;
+    padding-block: 0.5rem;
+  }
+}
