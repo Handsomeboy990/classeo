@@ -25,7 +25,7 @@ export default async function MessagesPage() {
     <>
       <PageHeader
         title="Messagerie"
-        description={unreadCount ? `${unreadCount} conversation${unreadCount > 1 ? "s" : ""} avec un nouveau message.` : "Échangez avec l'école, les enseignants et les familles."}
+        description={unreadCount ? `${unreadCount} conversation${unreadCount > 1 ? "s" : ""} avec un nouveau message.` : "Conversations avec l'école, les enseignants et les familles."}
         actions={canWrite && <NewConversation contacts={contacts} showQuick={!!user.guardianId} />}
       />
       <Card>

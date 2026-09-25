@@ -26,9 +26,9 @@ export function NewConversation({ contacts, showQuick }: { contacts: Contact[]; 
       <Button type="button" onClick={() => setOpen(true)}>
         <MessageSquarePlus aria-hidden /> Nouvelle conversation
       </Button>
-      <Dialog open={open} onClose={() => setOpen(false)} title="Nouvelle conversation" description="Vous pouvez écrire aux personnes liées à votre scolarité ou à votre établissement." className="max-w-xl">
+      <Dialog open={open} onClose={() => setOpen(false)} title="Nouvelle conversation" description="Les destinataires proposés sont les personnes liées à votre scolarité ou à votre établissement." size="lg">
         {contacts.length === 0 ? (
-          <p className="text-sm text-muted">Aucun contact disponible pour le moment. Vos contacts apparaissent dès qu&apos;un enfant ou une classe est rattaché à votre compte.</p>
+          <p className="text-sm text-muted">Aucun contact pour le moment. Vos contacts apparaissent dès qu&apos;un enfant ou une classe est rattaché à votre compte.</p>
         ) : (
           <ActionForm action={startConversation} successToast={false} className="flex flex-col gap-4">
             <FormRecovery selects={{ recipientId }} />
@@ -77,7 +77,7 @@ export function NewConversation({ contacts, showQuick }: { contacts: Contact[]; 
             <FormField label="Message" name="body" required>
               <Textarea value={body} onChange={(e) => setBody(e.target.value)} maxLength={4000} />
             </FormField>
-            <div className="flex justify-end gap-2">
+            <div className="ds-dialog-actions">
               <Button type="button" variant="secondary" onClick={() => setOpen(false)}>
                 Annuler
               </Button>
