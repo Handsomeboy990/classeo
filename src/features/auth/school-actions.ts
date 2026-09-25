@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
@@ -21,6 +22,9 @@ export const switchSchool = createAction({
     if (!count) throw new DomainError("Session expirée. Veuillez vous reconnecter.");
     if (user.scope.schoolId !== school.id)
       await audit(user, { action: "switch_school", resource: "user", resourceId: user.id, schoolId: school.id, summary: `Passage à l'établissement ${school.name}` });
+    // The whole private space changes school, its shared layout included
+    // (the header shows the school): the client router must not reuse it.
+    revalidatePath("/espace", "layout");
     // Same rule as sign in: only a path of the private space, never another
     // site.
     redirect(next && next.startsWith("/espace") && !next.startsWith("//") && !next.startsWith("/espace/choisir-etablissement") ? next : "/espace");
