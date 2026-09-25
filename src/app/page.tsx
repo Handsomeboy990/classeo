@@ -227,7 +227,7 @@ export default function LandingPage() {
           <SunriseMotif className="pointer-events-none absolute -right-24 bottom-3 -z-10 w-[32rem] opacity-25 sm:-right-10 sm:opacity-40 lg:right-0 lg:w-[44rem] lg:opacity-100" />
           <div className="mx-auto max-w-7xl px-5 pt-10 pb-20 sm:px-8 sm:pt-16 lg:pt-24 lg:pb-32">
             <p className="text-sm font-bold tracking-[0.14em] text-accent uppercase">République du Bénin · Plateforme nationale de l&apos;éducation</p>
-            <h1 id="hero-title" className="mt-5 max-w-3xl text-[2.6rem] leading-[1.02] font-extrabold tracking-tight sm:text-6xl lg:text-7xl">
+            <h1 id="hero-title" className="mt-5 max-w-3xl break-words hyphens-auto text-[2.6rem] leading-[1.02] font-extrabold tracking-tight sm:text-6xl lg:text-7xl">
               L&apos;école béninoise, du ministère <span className="text-accent">à la maison.</span>
             </h1>
             <p className="mt-6 max-w-xl text-lg text-sidebar-muted sm:text-xl">
@@ -413,7 +413,7 @@ function ActorGroup({ title, actors }: { title: string; actors: Actor[] }) {
             <span className="relative flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary text-on-primary" aria-hidden>
               <a.icon className="size-6" />
             </span>
-            <div className="min-w-0">
+            <div className="min-w-0 break-words hyphens-auto">
               <h4 className="font-display text-xl font-bold">{a.name}</h4>
               <p className="mt-1 text-text">{a.promise}</p>
               <ul className="mt-3 flex flex-wrap gap-2">

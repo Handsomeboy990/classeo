@@ -57,7 +57,7 @@ export function CachedPages() {
       )}
       <Button type="button" onClick={() => window.location.reload()} className="self-start">
         <RefreshCw aria-hidden />
-        Réessayer la connexion
+        Réessayer
       </Button>
     </div>
   );
