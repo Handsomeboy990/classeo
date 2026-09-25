@@ -40,7 +40,7 @@ export default async function ThreadPage({ params }: PageProps<"/espace/messages
       <h1 className="text-xl leading-tight font-bold text-balance sm:text-3xl">{thread.subject}</h1>
       <p className="mt-1 text-sm text-muted max-lg:line-clamp-2 sm:text-base">
         {onBehalf ? `${onBehalf} avec ` : "Avec "}
-        {others.length ? others.map((o) => `${o.name} (${o.detail})`).join(", ") : "personne d'autre"}
+        {others.length ? others.map((o) => (o.kind === "PERSON" ? `${o.name} (${o.detail})` : o.name)).join(", ") : "personne d'autre"}
       </p>
       {/* Read receipts of the other side for the last message of this side. */}
       {thread.lastMine && others.length > 0 && (
