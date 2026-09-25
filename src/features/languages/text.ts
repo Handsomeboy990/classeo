@@ -53,7 +53,8 @@ function digitsOf(text: string) {
 // never change in translation). Its first letter follows the source's case.
 export function polish(source: string, translated: unknown): string | null {
   if (typeof translated !== "string") return null;
-  let t = normalise(translated);
+  // The model sometimes leaves a space before a full stop or a comma.
+  let t = normalise(translated).replace(/\s+([.,])(?=\s|$)/g, "$1");
   if (!t || t.length > source.length * 4 + 40) return null;
   if (digitsOf(t) !== digitsOf(source)) return null;
   const first = source.charAt(0);
