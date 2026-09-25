@@ -17,19 +17,17 @@ async function install() {
   }
 }
 
-// The Safari steps, with the icons the user will see on screen.
+// The Safari steps, with the icons the user will see on screen. Plain text
+// flow with inline icons, so it wraps naturally at any text size.
 function IosSteps() {
+  const icon = "mx-0.5 inline size-4 -translate-y-px align-middle";
   return (
-    <ol className="mt-1 flex flex-col gap-1 text-sm text-muted">
-      <li className="flex items-center gap-1.5">
-        <span className="font-semibold text-text">1.</span> Touchez
-        <Share className="size-4 text-info" aria-hidden />
-        <span className="font-semibold text-text">Partager</span> dans la barre de Safari.
+    <ol className="mt-1 list-decimal pl-5 text-sm text-muted marker:font-semibold marker:text-text">
+      <li>
+        Touchez <Share className={`${icon} text-info`} aria-hidden /> <span className="font-semibold text-text">Partager</span> dans la barre de Safari.
       </li>
-      <li className="flex flex-wrap items-center gap-1.5">
-        <span className="font-semibold text-text">2.</span> Choisissez
-        <SquarePlus className="size-4 text-text" aria-hidden />
-        <span className="font-semibold text-text">« Sur l&apos;écran d&apos;accueil »</span>.
+      <li className="mt-0.5">
+        Choisissez <SquarePlus className={`${icon} text-text`} aria-hidden /> <span className="font-semibold text-text">Sur l&apos;écran d&apos;accueil</span>.
       </li>
     </ol>
   );
