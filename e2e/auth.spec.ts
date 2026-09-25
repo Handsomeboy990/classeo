@@ -61,7 +61,7 @@ for (const { role, heading, shows, hides } of MENUS) {
 test.describe("sign in", () => {
   test("a wrong password is refused, the right one then signs in", async ({ page }) => {
     await signIn(page, PARTNER_EMAIL, "not-the-password-2026");
-    await expect(page.getByText("Adresse e-mail ou mot de passe incorrect.")).toBeVisible();
+    await expect(page.getByText("Identifiant ou mot de passe incorrect.")).toBeVisible();
     await expect(page).toHaveURL(/\/connexion/);
 
     // A successful sign in resets the failure counter, so repeated runs

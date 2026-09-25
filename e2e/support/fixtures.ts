@@ -37,7 +37,7 @@ export { expect };
 // password journey only.
 export async function signIn(page: Page, email: string, password = PASSWORD) {
   await page.goto("/connexion");
-  await page.getByLabel("Adresse e-mail").fill(email);
+  await page.getByLabel("Identifiant").fill(email);
   await passwordField(page).fill(password);
   await page.getByRole("button", { name: "Se connecter" }).click();
 }
