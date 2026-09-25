@@ -139,7 +139,7 @@ export const changeClass = createAction({
       link: link(transfer.id),
     });
     invalidate(tags.stats);
-    return `${name} est maintenant en ${classroom.name}.`;
+    redirect(link(transfer.id));
   },
 });
 
