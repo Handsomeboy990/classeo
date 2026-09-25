@@ -41,7 +41,18 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   experimental: { authInterrupts: true },
   async headers() {
-    return [{ source: "/:path*", headers: securityHeaders }];
+    return [
+      { source: "/:path*", headers: securityHeaders },
+      // The service worker must never be held back by an HTTP cache, or an
+      // update would wait for the cache to expire.
+      {
+        source: "/sw.js",
+        headers: [
+          { key: "Cache-Control", value: "no-cache, no-store, must-revalidate" },
+          { key: "Service-Worker-Allowed", value: "/" },
+        ],
+      },
+    ];
   },
 };
 
