@@ -13,6 +13,7 @@ import { roleLabel } from "@/features/messages/role-label";
 import { NotificationWatcher } from "@/features/notifications/notification-watcher";
 import { OfflineSession } from "@/features/offline/offline-session";
 import { offlinePages } from "@/features/offline/pages";
+import { LanguageBar } from "@/features/languages/language-bar";
 import { InstallCard } from "@/features/pwa/install-ui";
 import { requireUser, type CurrentUser } from "@/lib/auth/session";
 import { pushPublicKey } from "@/lib/channels/push";
@@ -89,6 +90,7 @@ export default async function SpaceLayout({ children }: LayoutProps<"/espace">) 
         </header>
 
         <InstallCard />
+        <LanguageBar />
         <main id="page-content" tabIndex={-1} className="app-main mx-auto w-full max-w-7xl flex-1 px-4 pt-5 outline-none sm:px-6 lg:pt-8">
           <SchoolStatusBanner user={user} />
           {children}

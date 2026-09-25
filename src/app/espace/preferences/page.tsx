@@ -5,6 +5,7 @@ import { AccessibilityControls } from "@/components/shell/accessibility-controls
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { NotificationSoundSetting } from "@/features/notifications/sound-setting";
 import { OfflinePanel } from "@/features/offline/offline-panel";
+import { VoiceInfo } from "@/features/languages/voice-info";
 import { PushToggle } from "@/features/push/push-toggle";
 import { pushPublicKey } from "@/lib/channels/push";
 
@@ -22,6 +23,7 @@ export default function PreferencesPage() {
           </CardHeader>
           <CardBody>
             <AccessibilityControls />
+            <VoiceInfo />
           </CardBody>
         </Card>
         <Card aria-labelledby="prefs-push">
