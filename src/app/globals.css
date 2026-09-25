@@ -1835,3 +1835,34 @@ dialog.sheet[data-closing]::backdrop {
 [data-contrast="high"] .ticker {
   border-block: 2px solid var(--text);
 }
+
+/*
+ * Clickable rows (DataTable rowHref, kit/row-links.tsx): the whole row opens
+ * its page. Hover tints it, pressing darkens it, and when the keyboard is on
+ * the row's link the whole row is outlined so the target is plain.
+ */
+.ds-table tbody tr[data-href] {
+  cursor: pointer;
+}
+.ds-table tbody tr[data-href]:hover {
+  background: color-mix(in srgb, var(--primary) 6%, var(--surface));
+}
+.ds-table tbody tr[data-href]:active {
+  background: color-mix(in srgb, var(--primary) 11%, var(--surface));
+}
+.ds-table tbody tr[data-href]:has(a:focus-visible) {
+  background: color-mix(in srgb, var(--primary) 6%, var(--surface));
+  box-shadow: inset 3px 0 0 var(--primary);
+}
+@media (max-width: 39.999rem) {
+  .ds-table[data-cards] tbody tr[data-href]:hover {
+    background: transparent;
+  }
+  .ds-table[data-cards] tbody tr[data-href]:active {
+    background: color-mix(in srgb, var(--primary) 8%, var(--surface));
+  }
+}
+[data-contrast="high"] .ds-table tbody tr[data-href]:hover {
+  outline: 2px solid var(--text);
+  outline-offset: -2px;
+}
