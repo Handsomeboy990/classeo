@@ -54,38 +54,87 @@ enum SchoolCycle {
 }
 
 model School {
-  id          String       @id @default(cuid())
-  code        String       @unique
-  name        String
-  sector      SchoolSector
-  cycle       SchoolCycle
-  communeId   String
-  commune     Commune      @relation(fields: [communeId], references: [id])
-  address     String?
-  phone       String?
-  email       String?
-  latitude    Float?
-  longitude   Float?
-  isActive    Boolean      @default(true)
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  id              String       @id @default(cuid())
+  code            String       @unique
+  name            String
+  sector          SchoolSector
+  cycle           SchoolCycle
+  communeId       String
+  commune         Commune      @relation(fields: [communeId], references: [id])
+  address         String?
+  phone           String?
+  email           String?
+  latitude        Float?
+  longitude       Float?
+  postalBox       String?
+  website         String?
+  motto           String?
+  logoFileId      String?
+  logo            FileBlob?    @relation("schoolLogo", fields: [logoFileId], references: [id], onDelete: SetNull)
+  isActive        Boolean      @default(true)
+  // Decided by the ministry chain: a suspended or closed school keeps its
+  // history readable but accepts no new writes.
+  status          SchoolStatus @default(ACTIVE)
+  statusReason    String?
+  statusChangedAt DateTime?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
 
-  users       User[]
-  teachers    Teacher[]
-  classrooms  Classroom[]
-  enrollments Enrollment[]
-  contents    Content[]
-  requests    SchoolRequest[]
-  feeTypes    FeeType[]
-  invoices    Invoice[]
-  paymentPlans PaymentPlan[]
-  events      SchoolEvent[]
-  budgets     Budget[]
-  expenses    Expense[]
-  salaryGrids SalaryGrid[]
-  payrolls    Payroll[]
+  users                  User[]
+  teachers               Teacher[]
+  classrooms             Classroom[]
+  enrollments            Enrollment[]
+  contents               Content[]
+  requests               SchoolRequest[]
+  feeTypes               FeeType[]
+  invoices               Invoice[]
+  paymentPlans           PaymentPlan[]
+  events                 SchoolEvent[]
+  budgets                Budget[]
+  expenses               Expense[]
+  salaryGrids            SalaryGrid[]
+  payrolls               Payroll[]
+  paymentAccounts        SchoolPaymentAccount[]
+  yearExtensions         YearExtension[]
+  transfersOut           StudentTransfer[]      @relation("transferFrom")
+  transfersIn            StudentTransfer[]      @relation("transferTo")
+  recordGrants           StudentRecordAccess[]
+  mockExamsOrganized     MockExam[]
+  mockExamParticipations MockExamParticipant[]
+  documentRequests       DocumentRequest[]
+  subjectsRequested      Subject[]
+  roles                  Role[]
+  activeSessions         Session[]
 
   @@index([communeId])
+}
+
+enum SchoolStatus {
+  ACTIVE
+  SUSPENDED
+  CLOSED
+}
+
+enum PaymentChannel {
+  MOBILE_MONEY
+  BANK
+}
+
+// Where parents can pay the school electronically. Without at least one
+// active account, online payment is not offered to parents.
+model SchoolPaymentAccount {
+  id            String         @id @default(cuid())
+  schoolId      String
+  school        School         @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  channel       PaymentChannel
+  provider      String // "MTN MoMo", "Moov Money", "Celtiis Cash", bank name
+  accountName   String
+  accountNumber String // phone number or IBAN / RIB
+  instructions  String?
+  isActive      Boolean        @default(true)
+  createdAt     DateTime       @default(now())
+
+  @@index([schoolId])
 }
 
 // ---------------------------------------------------------------------------
@@ -112,16 +161,22 @@ model Permission {
 }
 
 model Role {
-  id          String           @id @default(cuid())
-  code        String           @unique
-  name        String
-  description String
-  scopeLevel  ScopeLevel
-  isSystem    Boolean          @default(false)
-  permissions RolePermission[]
-  users       User[]
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
+  id                String           @id @default(cuid())
+  code              String           @unique
+  name              String
+  description       String
+  scopeLevel        ScopeLevel
+  isSystem          Boolean          @default(false)
+  // A role created by a school (or a commune, a department) for its own
+  // staff. Null: a national role available everywhere.
+  ownerSchoolId     String?
+  ownerSchool       School?          @relation(fields: [ownerSchoolId], references: [id], onDelete: Cascade)
+  ownerCommuneId    String?
+  ownerDepartmentId String?
+  permissions       RolePermission[]
+  users             User[]
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
 }
 
 model RolePermission {
@@ -140,7 +195,10 @@ enum Gender {
 
 model User {
   id                 String      @id @default(cuid())
-  email              String      @unique
+  // Sign in identifier generated from first and last name ("afiavi.hounkpatin",
+  // then "afiavi.hounkpatin2"...). The e-mail is optional.
+  username           String      @unique
+  email              String?     @unique
   phone              String?
   passwordHash       String
   firstName          String
@@ -163,24 +221,31 @@ model User {
   createdAt          DateTime    @default(now())
   updatedAt          DateTime    @updatedAt
 
-  sessions           Session[]
   passwordResetTokens PasswordResetToken[]
-  teacher            Teacher?
-  student            Student?
-  guardian           Guardian?
-  auditLogs          AuditLog[]
-  notifications      Notification[]
-  pushSubscriptions  PushSubscription[]
-  contents           Content[]
-  participations     ConversationParticipant[]
-  messages           Message[]
-  gradesEntered      Grade[]
-  attendanceRecorded StudentAttendance[]
-  lockedSheets       GradeSheet[]
-  publishedCards     ReportCard[]
-  requestsFiled      SchoolRequest[] @relation("requestAuthor")
-  requestsDecided    SchoolRequest[] @relation("requestDecider")
-  paymentsRecorded   Payment[]
+  sessions            Session[]
+  teachers            Teacher[]
+  teacherProfile      TeacherProfile?
+  signature           UserSignature?
+  files               FileBlob[]                @relation("fileOwner")
+  helpRequests        PasswordHelpRequest[]     @relation("helpRequester")
+  helpHandled         PasswordHelpRequest[]     @relation("helpHandler")
+  offlineSubmissions  OfflineSubmission[]
+  documentSignatures  DocumentSignature[]
+  student             Student?
+  guardian            Guardian?
+  auditLogs           AuditLog[]
+  notifications       Notification[]
+  pushSubscriptions   PushSubscription[]
+  contents            Content[]
+  participations      ConversationParticipant[]
+  messages            Message[]
+  gradesEntered       Grade[]
+  attendanceRecorded  StudentAttendance[]
+  lockedSheets        GradeSheet[]
+  publishedCards      ReportCard[]
+  requestsFiled       SchoolRequest[]           @relation("requestAuthor")
+  requestsDecided     SchoolRequest[]           @relation("requestDecider")
+  paymentsRecorded    Payment[]
 
   @@index([roleId])
   @@index([schoolId])
@@ -189,14 +254,18 @@ model User {
 }
 
 model Session {
-  id        String    @id @default(cuid())
-  userId    String
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  expiresAt DateTime
-  revokedAt DateTime?
-  ip        String?
-  userAgent String?
-  createdAt DateTime  @default(now())
+  id             String    @id @default(cuid())
+  userId         String
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // For accounts working in several schools (a teacher), the school chosen
+  // for this session. Its rows are the only ones the scope reaches.
+  activeSchoolId String?
+  activeSchool   School?   @relation(fields: [activeSchoolId], references: [id], onDelete: SetNull)
+  expiresAt      DateTime
+  revokedAt      DateTime?
+  ip             String?
+  userAgent      String?
+  createdAt      DateTime  @default(now())
 
   @@index([userId])
 }
@@ -246,17 +315,22 @@ model AuditLog {
 // ---------------------------------------------------------------------------
 
 model AcademicYear {
-  id          String         @id @default(cuid())
-  label       String         @unique // "2025-2026"
-  startDate   DateTime
-  endDate     DateTime
-  isActive    Boolean        @default(false)
-  periods     SchoolPeriod[]
-  classrooms  Classroom[]
-  enrollments Enrollment[]
-  feeTypes    FeeType[]
+  id           String          @id @default(cuid())
+  label        String          @unique // "2025-2026"
+  startDate    DateTime
+  endDate      DateTime
+  isActive     Boolean         @default(false)
+  // Set by the ministry. After endDate (or once closedAt is set) the year is
+  // read only everywhere, except for schools holding an open extension.
+  closedAt     DateTime?
+  extensions   YearExtension[]
+  mockExams    MockExam[]
+  periods      SchoolPeriod[]
+  classrooms   Classroom[]
+  enrollments  Enrollment[]
+  feeTypes     FeeType[]
   paymentPlans PaymentPlan[]
-  budgets     Budget[]
+  budgets      Budget[]
 }
 
 model SchoolPeriod {
@@ -284,32 +358,69 @@ model AcademicLevel {
   feeTypes   FeeType[]
 }
 
-model Subject {
-  id          String             @id @default(cuid())
-  code        String             @unique
-  name        String
-  assignments CourseAssignment[]
+enum SubjectStatus {
+  APPROVED
+  PENDING
+  REJECTED
 }
 
+// The subject catalogue belongs to the ministry. A school proposes a subject
+// (PENDING); once approved it becomes available to every school.
+model Subject {
+  id                  String             @id @default(cuid())
+  code                String             @unique
+  name                String
+  status              SubjectStatus      @default(APPROVED)
+  requestedBySchoolId String?
+  requestedBySchool   School?            @relation(fields: [requestedBySchoolId], references: [id], onDelete: SetNull)
+  decisionNote        String?
+  assignments         CourseAssignment[]
+}
+
+// A teacher's appointment in one school. The same person teaching in two
+// schools has two Teacher rows sharing one TeacherProfile and one account.
 model Teacher {
-  id          String             @id @default(cuid())
-  userId      String?            @unique
-  user        User?              @relation(fields: [userId], references: [id])
+  id          String              @id @default(cuid())
+  userId      String?
+  user        User?               @relation(fields: [userId], references: [id])
+  profileId   String?
+  profile     TeacherProfile?     @relation(fields: [profileId], references: [id])
   schoolId    String
-  school      School             @relation(fields: [schoolId], references: [id])
-  matricule   String             @unique
+  school      School              @relation(fields: [schoolId], references: [id])
+  matricule   String              @unique
   firstName   String
   lastName    String
   gender      Gender?
   phone       String?
   specialty   String?
   hiredAt     DateTime?
-  isActive    Boolean            @default(true)
+  isActive    Boolean             @default(true)
   assignments CourseAssignment[]
   mainClasses Classroom[]
   attendances TeacherAttendance[]
 
+  @@unique([userId, schoolId])
   @@index([schoolId])
+  @@index([profileId])
+}
+
+// The person behind the appointments: found by NPI, phone or names before a
+// school creates a new teacher, so nobody is registered twice.
+model TeacherProfile {
+  id        String    @id @default(cuid())
+  userId    String?   @unique
+  user      User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  npi       String?   @unique
+  firstName String
+  lastName  String
+  gender    Gender?
+  phone     String?
+  email     String?
+  createdAt DateTime  @default(now())
+  teachers  Teacher[]
+
+  @@index([phone])
+  @@index([lastName, firstName])
 }
 
 model Classroom {
@@ -334,17 +445,17 @@ model Classroom {
 
 // A subject taught in a class by a teacher, with its coefficient.
 model CourseAssignment {
-  id           String          @id @default(cuid())
-  classroomId  String
-  classroom    Classroom       @relation(fields: [classroomId], references: [id], onDelete: Cascade)
-  subjectId    String
-  subject      Subject         @relation(fields: [subjectId], references: [id])
-  teacherId    String?
-  teacher      Teacher?        @relation(fields: [teacherId], references: [id])
-  coefficient  Int             @default(1)
-  weeklyHours  Int             @default(2)
-  gradeSheets  GradeSheet[]
-  timetable    TimetableSlot[]
+  id          String          @id @default(cuid())
+  classroomId String
+  classroom   Classroom       @relation(fields: [classroomId], references: [id], onDelete: Cascade)
+  subjectId   String
+  subject     Subject         @relation(fields: [subjectId], references: [id])
+  teacherId   String?
+  teacher     Teacher?        @relation(fields: [teacherId], references: [id])
+  coefficient Int             @default(1)
+  weeklyHours Int             @default(2)
+  gradeSheets GradeSheet[]
+  timetable   TimetableSlot[]
 
   @@unique([classroomId, subjectId])
   @@index([teacherId])
@@ -362,19 +473,24 @@ enum DisabilityType {
 }
 
 model Student {
-  id          String           @id @default(cuid())
-  userId      String?          @unique
-  user        User?            @relation(fields: [userId], references: [id])
-  matricule   String           @unique
-  firstName   String
-  lastName    String
-  gender      Gender
-  birthDate   DateTime
-  birthPlace  String?
+  id           String                @id @default(cuid())
+  userId       String?               @unique
+  user         User?                 @relation(fields: [userId], references: [id])
+  matricule    String                @unique
+  firstName    String
+  lastName     String
+  gender       Gender
+  birthDate    DateTime
+  birthPlace   String?
   disabilities DisabilityType[]
-  createdAt   DateTime         @default(now())
-  guardians   StudentGuardian[]
-  enrollments Enrollment[]
+  photoFileId  String?
+  photo        FileBlob?             @relation("studentPhoto", fields: [photoFileId], references: [id], onDelete: SetNull)
+  npi          String?               @unique
+  createdAt    DateTime              @default(now())
+  transfers    StudentTransfer[]
+  recordAccess StudentRecordAccess[]
+  guardians    StudentGuardian[]
+  enrollments  Enrollment[]
 }
 
 enum ContactChannel {
@@ -384,16 +500,16 @@ enum ContactChannel {
 }
 
 model Guardian {
-  id              String            @id @default(cuid())
-  userId          String?           @unique
-  user            User?             @relation(fields: [userId], references: [id])
-  firstName       String
-  lastName        String
-  phone           String
-  profession      String?
-  preferredChannel ContactChannel   @default(APP)
-  prefersAudio    Boolean           @default(false)
-  students        StudentGuardian[]
+  id               String            @id @default(cuid())
+  userId           String?           @unique
+  user             User?             @relation(fields: [userId], references: [id])
+  firstName        String
+  lastName         String
+  phone            String
+  profession       String?
+  preferredChannel ContactChannel    @default(APP)
+  prefersAudio     Boolean           @default(false)
+  students         StudentGuardian[]
 }
 
 model StudentGuardian {
@@ -591,31 +707,35 @@ enum MediaType {
 // Targeting: the most specific non null target wins. No target at all means
 // national reach.
 model Content {
-  id            String        @id @default(cuid())
-  type          ContentType
-  title         String
-  body          String
-  easyRead      String? // short plain language summary, read aloud first
-  audience      Audience      @default(EVERYONE)
-  mediaType     MediaType     @default(NONE)
-  mediaUrl      String?
-  transcript    String? // mandatory when media is audio or video
-  subjectLabel  String?
-  status        ContentStatus @default(DRAFT)
-  publishedAt   DateTime?
-  eventDate     DateTime?
-  departmentId  String?
-  department    Department?   @relation(fields: [departmentId], references: [id])
-  communeId     String?
-  commune       Commune?      @relation(fields: [communeId], references: [id])
-  schoolId      String?
-  school        School?       @relation(fields: [schoolId], references: [id])
-  classroomId   String?
-  classroom     Classroom?    @relation(fields: [classroomId], references: [id])
-  authorId      String
-  author        User          @relation(fields: [authorId], references: [id])
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  id           String        @id @default(cuid())
+  type         ContentType
+  title        String
+  body         String
+  easyRead     String? // short plain language summary, read aloud first
+  audience     Audience      @default(EVERYONE)
+  mediaType    MediaType     @default(NONE)
+  mediaUrl     String?
+  transcript   String? // mandatory when media is audio or video
+  subjectLabel String?
+  status       ContentStatus @default(DRAFT)
+  // Shown as a scrolling band at the top of the screens it targets until
+  // tickerUntil.
+  ticker       Boolean       @default(false)
+  tickerUntil  DateTime?
+  publishedAt  DateTime?
+  eventDate    DateTime?
+  departmentId String?
+  department   Department?   @relation(fields: [departmentId], references: [id])
+  communeId    String?
+  commune      Commune?      @relation(fields: [communeId], references: [id])
+  schoolId     String?
+  school       School?       @relation(fields: [schoolId], references: [id])
+  classroomId  String?
+  classroom    Classroom?    @relation(fields: [classroomId], references: [id])
+  authorId     String
+  author       User          @relation(fields: [authorId], references: [id])
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
 
   @@index([status, publishedAt])
   @@index([schoolId])
@@ -723,16 +843,16 @@ model SchoolRequest {
 // ---------------------------------------------------------------------------
 
 model FeeType {
-  id             String        @id @default(cuid())
+  id             String         @id @default(cuid())
   schoolId       String
-  school         School        @relation(fields: [schoolId], references: [id])
+  school         School         @relation(fields: [schoolId], references: [id])
   academicYearId String
-  academicYear   AcademicYear  @relation(fields: [academicYearId], references: [id])
+  academicYear   AcademicYear   @relation(fields: [academicYearId], references: [id])
   levelId        String?
   level          AcademicLevel? @relation(fields: [levelId], references: [id])
   name           String
   amount         Int
-  isActive       Boolean       @default(true)
+  isActive       Boolean        @default(true)
   items          InvoiceItem[]
   plans          PaymentPlan[]
 }
@@ -783,6 +903,7 @@ model Invoice {
   items        InvoiceItem[]
   installments InvoiceInstallment[]
   payments     Payment[]
+  declarations PaymentDeclaration[]
   createdAt    DateTime             @default(now())
 
   @@index([schoolId, status])
@@ -838,9 +959,9 @@ model Payment {
 // ---------------------------------------------------------------------------
 
 model TimetableSlot {
-  id           String             @id @default(cuid())
+  id           String               @id @default(cuid())
   assignmentId String
-  assignment   CourseAssignment   @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  assignment   CourseAssignment     @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
   dayOfWeek    Int // 1 = Monday
   startTime    String // "08:00"
   endTime      String
@@ -913,11 +1034,346 @@ model Budget {
 }
 
 model Expense {
+  id       String   @id @default(cuid())
+  schoolId String
+  school   School   @relation(fields: [schoolId], references: [id])
+  category String
+  label    String
+  amount   Int
+  spentAt  DateTime
+}
+
+// ---------------------------------------------------------------------------
+// V3: files, signatures, transfers, mock exams, governance, offline sync
+// ---------------------------------------------------------------------------
+
+// Small uploaded files kept in the database (photos, logos, signatures,
+// stamps, requested documents): no third party storage, served through an
+// authorized route. Images are resized on the client before upload.
+model FileBlob {
   id          String   @id @default(cuid())
+  ownerUserId String?
+  owner       User?    @relation("fileOwner", fields: [ownerUserId], references: [id], onDelete: SetNull)
+  purpose     String // "student_photo", "school_logo", "signature", "stamp", "document", "payment_proof"
+  fileName    String
+  mimeType    String
+  size        Int
+  sha256      String
+  data        Bytes
+  createdAt   DateTime @default(now())
+
+  studentPhotos Student[]             @relation("studentPhoto")
+  schoolLogos   School[]              @relation("schoolLogo")
+  signatures    UserSignature[]       @relation("signatureImage")
+  stamps        UserSignature[]       @relation("stampImage")
+  documentFiles DocumentRequestFile[]
+  paymentProofs PaymentDeclaration[]
+
+  @@index([ownerUserId])
+}
+
+// A signer's handwritten signature and the stamp of their office, uploaded or
+// drawn once, applied to the documents they sign.
+model UserSignature {
+  id              String    @id @default(cuid())
+  userId          String    @unique
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  signatureFileId String?
+  signature       FileBlob? @relation("signatureImage", fields: [signatureFileId], references: [id], onDelete: SetNull)
+  stampFileId     String?
+  stamp           FileBlob? @relation("stampImage", fields: [stampFileId], references: [id], onDelete: SetNull)
+  updatedAt       DateTime  @updatedAt
+}
+
+// A document signed electronically: the reference printed on it, the hash of
+// its content and the signer, so anyone can verify it online.
+model DocumentSignature {
+  id          String    @id @default(cuid())
+  reference   String    @unique
+  kind        String // "attestation", "bulletin", "certificate", "transfer"
+  subjectId   String // student, report card or transfer id
+  contentHash String
+  signedById  String
+  signedBy    User      @relation(fields: [signedById], references: [id])
+  schoolId    String?
+  revokedAt   DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([subjectId])
+}
+
+enum TransferKind {
+  CLASS_CHANGE
+  SCHOOL_CHANGE
+}
+
+enum TransferStatus {
+  PENDING_GUARDIAN
+  PENDING_DESTINATION
+  ACCEPTED
+  REJECTED
+  CANCELLED
+}
+
+// A pupil moving to another class of the same school, or to another school.
+// A school change needs the guardian's consent, then the destination
+// school's acceptance; the history travels only if the guardian agreed.
+model StudentTransfer {
+  id                   String         @id @default(cuid())
+  studentId            String
+  student              Student        @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  kind                 TransferKind
+  fromSchoolId         String
+  fromSchool           School         @relation("transferFrom", fields: [fromSchoolId], references: [id])
+  fromClassroomId      String
+  toSchoolId           String
+  toSchool             School         @relation("transferTo", fields: [toSchoolId], references: [id])
+  toClassroomId        String?
+  reason               String
+  shareHistory         Boolean        @default(true)
+  status               TransferStatus
+  requestedById        String
+  guardianDecisionById String?
+  guardianDecidedAt    DateTime?
+  decidedById          String?
+  decidedAt            DateTime?
+  decisionNote         String?
+  createdAt            DateTime       @default(now())
+
+  @@index([studentId])
+  @@index([toSchoolId, status])
+  @@index([fromSchoolId, status])
+}
+
+// A school allowed to read a pupil's history held by other schools (after a
+// transfer, or a record request approved by the guardian).
+model StudentRecordAccess {
+  id          String    @id @default(cuid())
+  studentId   String
+  student     Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
   schoolId    String
-  school      School   @relation(fields: [schoolId], references: [id])
-  category    String
-  label       String
-  amount      Int
-  spentAt     DateTime
+  school      School    @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  grantedById String?
+  expiresAt   DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@unique([studentId, schoolId])
+}
+
+enum OrganizerLevel {
+  SCHOOL
+  COMMUNE
+  DEPARTMENT
+  NATIONAL
+}
+
+enum MockExamStatus {
+  DRAFT
+  PENDING_APPROVAL
+  APPROVED
+  REJECTED
+  CLOSED
+}
+
+enum ParticipationStatus {
+  INVITED
+  ACCEPTED
+  DECLINED
+  IMPOSED
+}
+
+// A mock examination (examen blanc) for an exam class. A school organises it
+// with invited schools that accept or decline, then the hierarchy approves;
+// when a commune, a department or the ministry organises it, participation
+// is imposed.
+model MockExam {
+  id                    String                @id @default(cuid())
+  title                 String
+  levelId               String
+  academicYearId        String
+  academicYear          AcademicYear          @relation(fields: [academicYearId], references: [id])
+  organizerLevel        OrganizerLevel
+  organizerSchoolId     String?
+  organizerSchool       School?               @relation(fields: [organizerSchoolId], references: [id])
+  organizerCommuneId    String?
+  organizerDepartmentId String?
+  createdById           String
+  startDate             DateTime
+  endDate               DateTime
+  subjects              String[] // subject codes
+  status                MockExamStatus        @default(DRAFT)
+  decidedById           String?
+  decidedAt             DateTime?
+  decisionNote          String?
+  createdAt             DateTime              @default(now())
+  participants          MockExamParticipant[]
+  results               MockExamResult[]
+}
+
+model MockExamParticipant {
+  id            String              @id @default(cuid())
+  examId        String
+  exam          MockExam            @relation(fields: [examId], references: [id], onDelete: Cascade)
+  schoolId      String
+  school        School              @relation(fields: [schoolId], references: [id])
+  status        ParticipationStatus
+  respondedAt   DateTime?
+  respondedById String?
+
+  @@unique([examId, schoolId])
+}
+
+model MockExamResult {
+  id           String   @id @default(cuid())
+  examId       String
+  exam         MockExam @relation(fields: [examId], references: [id], onDelete: Cascade)
+  enrollmentId String
+  subjectCode  String
+  score        Decimal  @db.Decimal(5, 2)
+  enteredById  String
+  updatedAt    DateTime @updatedAt
+
+  @@unique([examId, enrollmentId, subjectCode])
+}
+
+enum ExtensionStatus {
+  ACTIVE
+  ENDED
+}
+
+// The ministry keeps a closed year open for all schools (schoolId null) or
+// for some, until a date. Created directly or by approving a school request.
+model YearExtension {
+  id             String          @id @default(cuid())
+  academicYearId String
+  academicYear   AcademicYear    @relation(fields: [academicYearId], references: [id])
+  schoolId       String?
+  school         School?         @relation(fields: [schoolId], references: [id])
+  until          DateTime
+  reason         String
+  status         ExtensionStatus @default(ACTIVE)
+  grantedById    String
+  requestId      String?
+  createdAt      DateTime        @default(now())
+
+  @@index([academicYearId, schoolId])
+}
+
+enum DocumentRequestStatus {
+  PENDING
+  SUBMITTED
+  ACCEPTED
+  REJECTED
+}
+
+// Pieces the ministry, a department or a commune asks a school to provide
+// (reports, certificates, inventories), answered by uploading files.
+model DocumentRequest {
+  id            String                @id @default(cuid())
+  schoolId      String
+  school        School                @relation(fields: [schoolId], references: [id])
+  title         String
+  description   String
+  dueDate       DateTime?
+  requestedById String
+  status        DocumentRequestStatus @default(PENDING)
+  responseNote  String?
+  reviewedById  String?
+  reviewedAt    DateTime?
+  createdAt     DateTime              @default(now())
+  files         DocumentRequestFile[]
+
+  @@index([schoolId, status])
+}
+
+model DocumentRequestFile {
+  id           String          @id @default(cuid())
+  requestId    String
+  request      DocumentRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  fileId       String
+  file         FileBlob        @relation(fields: [fileId], references: [id], onDelete: Cascade)
+  uploadedById String
+  createdAt    DateTime        @default(now())
+}
+
+enum DeclarationStatus {
+  PENDING
+  CONFIRMED
+  REJECTED
+}
+
+// A payment made by a parent outside the cash desk (Mobile Money, bank
+// transfer) to one of the school's accounts: declared with its transaction
+// reference, confirmed by the accountant, which records the actual Payment.
+model PaymentDeclaration {
+  id             String            @id @default(cuid())
+  invoiceId      String
+  invoice        Invoice           @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  accountId      String?
+  amount         Int
+  method         PaymentMethod
+  payerPhone     String?
+  transactionRef String
+  proofFileId    String?
+  proof          FileBlob?         @relation(fields: [proofFileId], references: [id], onDelete: SetNull)
+  status         DeclarationStatus @default(PENDING)
+  declaredById   String
+  decidedById    String?
+  decidedAt      DateTime?
+  note           String?
+  paymentId      String?
+  createdAt      DateTime          @default(now())
+
+  @@unique([invoiceId, transactionRef])
+  @@index([status])
+}
+
+enum HelpStatus {
+  PENDING
+  RESOLVED
+  REJECTED
+}
+
+// Forgotten password without e-mail: the request goes to the administration
+// one level up (school for pupils, parents and teachers; commune for school
+// heads; department for communes; ministry for departments), which resets it.
+model PasswordHelpRequest {
+  id          String     @id @default(cuid())
+  userId      String
+  user        User       @relation("helpRequester", fields: [userId], references: [id], onDelete: Cascade)
+  status      HelpStatus @default(PENDING)
+  contact     String?
+  handledById String?
+  handler     User?      @relation("helpHandler", fields: [handledById], references: [id], onDelete: SetNull)
+  handledAt   DateTime?
+  note        String?
+  createdAt   DateTime   @default(now())
+
+  @@index([status])
+}
+
+// Writes made offline and replayed later: the client id makes a replay
+// idempotent, the status tells the device what happened.
+model OfflineSubmission {
+  id        String   @id @default(cuid())
+  clientId  String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  kind      String // "grades", "attendance", "message"
+  status    String // "applied", "rejected"
+  error     String?
+  createdAt DateTime @default(now())
+}
+
+// Translations of interface and content strings into Beninese languages,
+// fetched once from the translation service (rate limited) and reused.
+model Translation {
+  id        String   @id @default(cuid())
+  key       String // sha256 of the source text
+  lang      String // "fon", "yo", "bab", "adj", "ee", "ha"
+  source    String
+  text      String
+  createdAt DateTime @default(now())
+
+  @@unique([key, lang])
 }
