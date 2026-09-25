@@ -1,19 +1,24 @@
 "use client";
 
 import { KeyRound, LogOut, Power, PowerOff } from "lucide-react";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 
 import { ActionForm, SubmitButton } from "@/components/kit/action-form";
 import { ConfirmAction } from "@/components/kit/confirm-action";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
+import { cn } from "@/lib/utils";
 
 import { resetUserPassword, revokeUserSessions, setUserActive } from "../actions";
 import { TemporaryPassword, type IssuedPassword } from "./temporary-password";
 
+// Row actions of the accounts table. In the table (from 40rem) they are
+// icon buttons on one line, each naming itself in a label shown on hover
+// and on keyboard focus; on a phone card they share the width of the card,
+// each with its short label under the icon.
 export function UserRowActions({ id, name, isActive, sessions }: { id: string; name: string; isActive: boolean; sessions: number }) {
   return (
-    <div className="flex flex-wrap justify-end gap-1">
+    <div className="grid w-full auto-cols-fr grid-flow-col gap-1.5 sm:flex sm:w-auto sm:justify-end sm:gap-1">
       <ResetPassword id={id} name={name} />
       {sessions > 0 && (
         <ConfirmAction
@@ -24,10 +29,9 @@ export function UserRowActions({ id, name, isActive, sessions }: { id: string; n
           confirmLabel="Fermer les sessions"
           tone="primary"
           trigger={(open) => (
-            <Button variant="ghost" size="sm" onClick={open} aria-label={`Fermer les sessions de ${name}`} title="Fermer les sessions">
+            <RowAction label={`Fermer les sessions de ${name}`} tip="Fermer les sessions" short="Sessions" onClick={open}>
               <LogOut aria-hidden />
-              <span className="max-xl:sr-only">Sessions</span>
-            </Button>
+            </RowAction>
           )}
         />
       )}
@@ -39,13 +43,42 @@ export function UserRowActions({ id, name, isActive, sessions }: { id: string; n
         confirmLabel={isActive ? "Désactiver" : "Réactiver"}
         tone={isActive ? "danger" : "primary"}
         trigger={(open) => (
-          <Button variant="ghost" size="sm" onClick={open} aria-label={`${isActive ? "Désactiver" : "Réactiver"} le compte de ${name}`} title={isActive ? "Désactiver" : "Réactiver"}>
+          <RowAction
+            label={`${isActive ? "Désactiver" : "Réactiver"} le compte de ${name}`}
+            tip={isActive ? "Désactiver le compte" : "Réactiver le compte"}
+            short={isActive ? "Désactiver" : "Réactiver"}
+            onClick={open}
+            danger={isActive}
+          >
             {isActive ? <PowerOff aria-hidden /> : <Power aria-hidden />}
-            <span className="max-xl:sr-only">{isActive ? "Désactiver" : "Réactiver"}</span>
-          </Button>
+          </RowAction>
         )}
       />
     </div>
+  );
+}
+
+function RowAction({ label, tip, short, onClick, danger = false, children }: { label: string; tip: string; short: string; onClick: () => void; danger?: boolean; children: ReactNode }) {
+  return (
+    <span className="group/tip relative flex sm:inline-flex">
+      <Button type="button" variant={danger ? "danger-ghost" : "ghost"} size="sm" onClick={onClick} aria-label={label}
+        className="max-sm:h-auto max-sm:min-h-11 max-sm:w-full max-sm:flex-col max-sm:gap-1 max-sm:px-1 max-sm:py-2 max-sm:text-xs sm:w-9 sm:px-0"
+      >
+        {children}
+        <span className="sm:hidden" aria-hidden>
+          {short}
+        </span>
+      </Button>
+      <span
+        aria-hidden
+        className={cn(
+          "pointer-events-none absolute right-0 bottom-full z-20 mb-1.5 hidden rounded-md bg-text px-2 py-1 text-xs font-semibold whitespace-nowrap text-bg shadow-card",
+          "sm:group-hover/tip:block sm:group-has-[:focus-visible]/tip:block",
+        )}
+      >
+        {tip}
+      </span>
+    </span>
   );
 }
 
@@ -58,16 +91,18 @@ function ResetPassword({ id, name }: { id: string; name: string }) {
   }
   return (
     <>
-      <Button variant="ghost" size="sm" onClick={() => setOpen(true)} aria-label={`Réinitialiser le mot de passe de ${name}`} title="Réinitialiser le mot de passe">
+      <RowAction label={`Réinitialiser le mot de passe de ${name}`} tip="Réinitialiser le mot de passe" short="Mot de passe" onClick={() => setOpen(true)}>
         <KeyRound aria-hidden />
-        <span className="max-xl:sr-only">Mot de passe</span>
-      </Button>
-      <Dialog open={open} onClose={close} title={result ? "Mot de passe réinitialisé" : `Réinitialiser le mot de passe de ${name} ?`}>
+      </RowAction>
+      <Dialog open={open} onClose={close} title={result ? "Mot de passe réinitialisé" : `Réinitialiser le mot de passe de ${name} ?`} size="sm">
         {result ? (
           <TemporaryPassword {...result} onDone={close} />
         ) : (
           <>
-            <p className="text-sm text-muted">Un mot de passe temporaire sera généré, affiché une seule fois et envoyé par e-mail à la personne. Les sessions ouvertes seront fermées et la personne devra le changer à sa prochaine connexion.</p>
+            <p className="text-sm leading-relaxed text-muted">
+              Un mot de passe temporaire sera créé, affiché une seule fois et envoyé par e-mail à la personne. Ses sessions ouvertes seront fermées et elle devra le changer à sa
+              prochaine connexion.
+            </p>
             <ActionForm
               action={resetUserPassword}
               successToast={false}
@@ -75,7 +110,7 @@ function ResetPassword({ id, name }: { id: string; name: string }) {
                 const data = state?.data as IssuedPassword | undefined;
                 if (data) setResult(data);
               }}
-              className="mt-5 flex justify-end gap-2"
+              className="ds-dialog-actions mt-5"
             >
               <input type="hidden" name="id" value={id} />
               <Button type="button" variant="secondary" onClick={close}>
