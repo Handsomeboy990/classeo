@@ -84,15 +84,11 @@ function Statistics({ data, meta }: { data: StatisticsData; meta: DocumentMeta }
         />
       </View>
 
-      <View style={{ marginTop: 8 }} wrap={false}>
-        <T style={{ fontSize: 6.8, color: COLORS.muted }}>
-          {columns.map((k) => `${HEADINGS[k] ?? INDICATORS[k].short} : ${INDICATORS[k].label.toLowerCase()}`).join(" · ")}.
-        </T>
-        <T style={{ marginTop: 3, fontSize: 6.8, color: COLORS.muted }}>
-          Absences : demi-journées absentes ou excusées sur les demi-journées relevées (un retard compte comme présent). Réussite : part des élèves dont la moyenne annuelle de
-          l&apos;année précédente atteint 10 sur 20. Chiffres calculés le {beninDateTime(data.computedAt)}, avec les mêmes règles à chaque niveau du territoire.
-        </T>
-      </View>
+      <T style={{ marginTop: 6, fontSize: 6.8, color: COLORS.muted }}>
+        Absences : demi-journées absentes ou excusées sur les demi-journées relevées, un retard compte comme présent. Réussite : part des élèves dont la moyenne annuelle
+        de l&apos;année précédente atteint 10 sur 20. Élèves/cl. : effectif moyen par classe. Calculé le {beninDateTime(data.computedAt)}, avec les mêmes règles à chaque
+        niveau du territoire.
+      </T>
     </DocumentPage>
   );
 }
