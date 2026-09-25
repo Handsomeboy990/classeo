@@ -64,7 +64,7 @@ export type ReplayRequest = {
   userId: string;
   kind: OfflineKind;
   payload: Record<string, unknown>;
-  baseline: unknown;
+  baseline?: unknown;
   createdAt: number;
 };
 
