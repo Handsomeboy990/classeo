@@ -29,7 +29,7 @@ export default async function TeacherAttendancePage(props: PageProps<"/espace/pr
 
   return (
     <>
-      <nav aria-label="Fil d'Ariane" className="mb-2 text-sm text-muted">
+      <nav aria-label="Fil d'Ariane" className="mb-2 text-sm text-muted max-lg:hidden">
         <Link href={`/espace/presences?date=${date}`} className="hover:underline">
           Présences
         </Link>{" "}

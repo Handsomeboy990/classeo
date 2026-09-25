@@ -57,7 +57,7 @@ export default async function ClassPage(props: PageProps<"/espace/classes/[id]">
 
   return (
     <>
-      <nav aria-label="Fil d'Ariane" className="mb-2 text-sm text-muted">
+      <nav aria-label="Fil d'Ariane" className="mb-2 text-sm text-muted max-lg:hidden">
         <Link href="/espace/classes" className="hover:underline">
           Classes
         </Link>{" "}

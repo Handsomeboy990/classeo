@@ -38,7 +38,7 @@ export default async function SheetPage(props: PageProps<"/espace/notes/[sheetId
 
   return (
     <>
-      <nav aria-label="Fil d'Ariane" className="mb-2 text-sm text-muted">
+      <nav aria-label="Fil d'Ariane" className="mb-2 text-sm text-muted max-lg:hidden">
         <Link href="/espace/notes" className="hover:underline">
           Notes
         </Link>{" "}

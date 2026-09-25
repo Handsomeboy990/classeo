@@ -58,8 +58,9 @@ export default async function ReportCardPage(props: PageProps<"/espace/bulletins
   return (
     <>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3" data-print-hide>
-        <Link href={back} className="text-sm font-semibold text-primary hover:underline">
-          ← Retour
+        {/* Below lg the app bar has the back button. */}
+        <Link href={back} className="text-sm font-semibold text-primary hover:underline max-lg:hidden">
+          Retour
         </Link>
         <div className="flex flex-wrap gap-2">
           <ReadAloud text={summary} label="Écouter le bulletin" />
