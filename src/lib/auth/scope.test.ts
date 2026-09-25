@@ -6,7 +6,7 @@ import { describe, expect, it, vi } from "vitest";
 vi.mock("server-only", () => ({}));
 vi.mock("@/lib/db", () => ({ db: {} }));
 
-const { assignmentWriteWhere, classroomWhere, enrollmentWhere } = await import("./scope");
+const { assignmentWriteWhere, classroomWhere, enrollmentWhere, rosterClassroomWhere } = await import("./scope");
 
 type Fake = Parameters<typeof classroomWhere>[0];
 
@@ -47,5 +47,23 @@ describe("teacher accounts", () => {
     const director = account("SCHOOL_DIRECTOR");
     expect(classroomWhere(director)).toEqual({ school: { id: "s1" } });
     expect(assignmentWriteWhere(director)).toEqual({ classroom: { school: { id: "s1" } } });
+  });
+});
+
+describe("class rosters", () => {
+  it("never opens a whole class to a parent or a student", () => {
+    const parent = account("PARENT", { level: "SELF", guardianId: "g1" });
+    const student = account("STUDENT", { level: "SELF", studentId: "st1" });
+    expect(rosterClassroomWhere(parent)).toEqual({ id: "__none__" });
+    expect(rosterClassroomWhere(student)).toEqual({ id: "__none__" });
+    // Their own child stays reachable through the enrollment filter.
+    expect(enrollmentWhere(parent)).toEqual({ student: { guardians: { some: { guardianId: "g1" } } } });
+  });
+
+  it("matches the class scope for staff and teachers", () => {
+    const director = account("SCHOOL_DIRECTOR");
+    const teacher = account("TEACHER", { teacherId: "t1" });
+    expect(rosterClassroomWhere(director)).toEqual(classroomWhere(director));
+    expect(rosterClassroomWhere(teacher)).toEqual(classroomWhere(teacher));
   });
 });

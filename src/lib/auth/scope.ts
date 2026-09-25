@@ -75,6 +75,14 @@ export function classroomWhere(user: User): Prisma.ClassroomWhereInput {
   return { school: schoolWhere(user) };
 }
 
+// Classes whose whole roster a user may read: the grades, attendance and
+// report cards of every student of the class. Families follow their own
+// child through enrollmentWhere and never see the classmates.
+export function rosterClassroomWhere(user: User): Prisma.ClassroomWhereInput {
+  if (user.scope.level === "SELF") return NOTHING;
+  return classroomWhere(user);
+}
+
 export function enrollmentWhere(user: User): Prisma.EnrollmentWhereInput {
   if (isTeacherRole(user)) return { classroom: classroomWhere(user) };
   if (user.scope.level === "SELF") {

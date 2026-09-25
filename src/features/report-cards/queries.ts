@@ -1,7 +1,7 @@
 import "server-only";
 
 import { can } from "@/lib/auth/authorize";
-import { classroomWhere, enrollmentWhere } from "@/lib/auth/scope";
+import { enrollmentWhere, rosterClassroomWhere } from "@/lib/auth/scope";
 import type { CurrentUser } from "@/lib/auth/session";
 import { db } from "@/lib/db";
 
@@ -15,7 +15,7 @@ export type CardLine = { subject: string; coefficient: number; average: number |
 // published out of the active students.
 export async function publicationOverview(user: User, yearId: string, periodId: string) {
   const classes = await db.classroom.findMany({
-    where: { AND: [classroomWhere(user), { academicYearId: yearId }] },
+    where: { AND: [rosterClassroomWhere(user), { academicYearId: yearId }] },
     orderBy: [{ level: { order: "asc" } }, { name: "asc" }],
     select: {
       id: true,
@@ -43,7 +43,7 @@ export async function publicationOverview(user: User, yearId: string, periodId: 
 
 export async function classPreview(user: User, classroomId: string, periodId: string) {
   const classroom = await db.classroom.findFirst({
-    where: { AND: [{ id: classroomId }, classroomWhere(user)] },
+    where: { AND: [{ id: classroomId }, rosterClassroomWhere(user)] },
     select: { id: true, name: true, academicYearId: true },
   });
   if (!classroom) return null;
