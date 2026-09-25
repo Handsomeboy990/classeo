@@ -11,7 +11,6 @@ import { formatFcfa, formatNumber } from "@/lib/utils";
 
 import { generateInvoices } from "../actions";
 
-import { FocusFirstError } from "./focus-first-error";
 import { announceSuccess } from "./toast-action";
 
 // Confirmation step of the invoice generation. The server recomputes who
@@ -25,7 +24,6 @@ export function GenerateForm({ feeTypeId, toCreate, total, needsDueDate, today }
   const action = useMemo(() => announceSuccess(generateInvoices, () => router.push("/espace/frais/factures")), [router]);
   return (
     <ActionForm action={action} className="flex flex-col gap-4">
-      <FocusFirstError />
       <input type="hidden" name="feeTypeId" value={feeTypeId} />
       {needsDueDate && (
         <FormField label="Date limite de paiement" name="dueDate" required hint="Ce type de frais n'a pas d'échéancier : il sera payable en une fois.">
@@ -33,7 +31,7 @@ export function GenerateForm({ feeTypeId, toCreate, total, needsDueDate, today }
         </FormField>
       )}
       <SubmitButton pendingLabel="Création des factures…" disabled={toCreate === 0}>
-        <FilePlus2 aria-hidden /> Créer {formatNumber(toCreate)} facture(s) pour {formatFcfa(total)}
+        <FilePlus2 aria-hidden /> Créer {formatNumber(toCreate)} facture{toCreate > 1 ? "s" : ""} pour {formatFcfa(total)}
       </SubmitButton>
     </ActionForm>
   );

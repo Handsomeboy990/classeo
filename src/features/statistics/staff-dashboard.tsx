@@ -56,13 +56,13 @@ export async function StaffDashboard({ user }: { user: User }) {
       {stats && <IndicatorCards stats={stats} requestsHref={showRequests ? "/espace/demandes?statut=PENDING" : undefined} />}
 
       {stats && stats.children.length > 0 && (
-        <div className="grid gap-4 lg:grid-cols-2">
+        <div className="grid gap-4 *:min-w-0 lg:grid-cols-2">
           <ComparisonCard stats={stats} indicator="passRate" title={`Taux de réussite ${stats.previousYearLabel ?? ""}`} user={user} />
           <ComparisonCard stats={stats} indicator="absenceRate" title="Taux d'absence cette année" user={user} />
         </div>
       )}
 
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid gap-4 *:min-w-0 lg:grid-cols-2">
         {showRequests && (
           <Card>
             <CardHeader>
@@ -107,7 +107,7 @@ export async function StaffDashboard({ user }: { user: User }) {
                   {activity.map((a) => (
                     <li key={a.id} className="flex items-start justify-between gap-3 py-2.5 text-sm first:pt-0 last:pb-0">
                       <div className="min-w-0">
-                        <p className="text-text">{a.summary}</p>
+                        <p className="text-text [overflow-wrap:anywhere]">{a.summary}</p>
                         <p className="text-xs text-muted">
                           {a.user ? `${a.user.firstName} ${a.user.lastName}` : "Système"} · {formatDateTime(a.createdAt)}
                         </p>
@@ -124,11 +124,11 @@ export async function StaffDashboard({ user }: { user: User }) {
 
       {links.length > 0 && (
         <nav aria-label="Accès rapides">
-          <ul className="grid grid-cols-1 gap-3 min-[420px]:grid-cols-2 lg:grid-cols-4">
+          <ul className="grid grid-cols-2 gap-3 *:min-w-0 lg:grid-cols-4">
             {links.map((l) => (
               <li key={l.href}>
-                <Link href={l.href} className="flex items-center gap-3 rounded-card border border-border bg-surface p-4 font-semibold hover:border-primary">
-                  <l.icon className="size-5 text-primary" aria-hidden />
+                <Link href={l.href} className="flex h-full min-h-14 items-center gap-3 rounded-card border border-border bg-surface p-3 text-sm leading-snug font-semibold hover:border-primary sm:p-4 sm:text-base">
+                  <l.icon className="size-5 shrink-0 text-primary" aria-hidden />
                   {l.label}
                 </Link>
               </li>
@@ -181,7 +181,7 @@ function ComparisonCard({ stats, indicator, title, user }: { stats: ScopeStatist
             }))}
           />
         )}
-        {stats.children.length > 12 && <p className="mt-3 text-xs text-muted">Les 12 premiers sur {stats.children.length}. Voir les statistiques pour la liste complète.</p>}
+        {stats.children.length > 12 && <p className="mt-3 text-xs text-muted">Les 12 premiers sur {stats.children.length}. La liste complète est dans Statistiques.</p>}
       </CardBody>
     </Card>
   );

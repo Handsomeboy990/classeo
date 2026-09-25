@@ -4,6 +4,7 @@ import { Archive, Pencil, Send, Trash2 } from "lucide-react";
 
 import { ActionForm, SubmitButton } from "@/components/kit/action-form";
 import { ConfirmAction } from "@/components/kit/confirm-action";
+import { ConfirmButton } from "@/components/kit/confirm-button";
 import { Button, ButtonLink } from "@/components/ui/button";
 
 import { archiveContent, deleteContent, publishContent } from "./actions";
@@ -59,18 +60,17 @@ export function ContentActions({
         />
       )}
       {canDelete && (
-        <ConfirmAction
+        <ConfirmButton
           action={deleteContent}
           fields={{ id, returnTo }}
           title="Supprimer ce contenu ?"
           description={`« ${title} » sera supprimé définitivement. Cette action ne peut pas être annulée.`}
           confirmLabel="Supprimer"
-          trigger={(open) => (
-            <Button type="button" variant="ghost" onClick={open} className="text-danger" aria-label={`Supprimer « ${title} »`}>
-              <Trash2 aria-hidden /> Supprimer
-            </Button>
-          )}
-        />
+          variant="danger-ghost"
+          label={`Supprimer « ${title} »`}
+        >
+          <Trash2 aria-hidden /> Supprimer
+        </ConfirmButton>
       )}
     </div>
   );

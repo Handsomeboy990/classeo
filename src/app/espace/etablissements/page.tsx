@@ -36,6 +36,7 @@ export default async function SchoolsPage({ searchParams }: PageProps<"/espace/e
   const columns: Column<Row>[] = [
     {
       header: "Établissement",
+      primary: true,
       cell: (s) => (
         <div>
           <Link href={`/espace/etablissements/${s.id}`} className="font-semibold text-primary hover:underline">
@@ -46,10 +47,10 @@ export default async function SchoolsPage({ searchParams }: PageProps<"/espace/e
       ),
     },
     { header: "Commune", cell: (s) => `${s.commune.name} (${s.commune.department.name})`, hideBelow: "md" },
-    { header: "Secteur", cell: (s) => SECTOR_LABELS[s.sector], hideBelow: "lg" },
+    { header: "Secteur", cell: (s) => SECTOR_LABELS[s.sector], hideBelow: "lg", mobileHidden: false },
     { header: "Cycle", cell: (s) => CYCLE_LABELS[s.cycle], hideBelow: "sm" },
     { header: "Statut", cell: (s) => (s.isActive ? <Badge tone="success">Actif</Badge> : <Badge tone="danger">Désactivé</Badge>) },
-    ...(canToggle ? [{ header: "Actions", cell: (s: Row) => <SchoolStatusButton id={s.id} name={s.name} isActive={s.isActive} size="sm" />, className: "text-right" }] : []),
+    ...(canToggle ? [{ header: "Actions", actions: true, cell: (s: Row) => <SchoolStatusButton id={s.id} name={s.name} isActive={s.isActive} size="sm" />, className: "text-right" }] : []),
   ];
 
   const communeChoices = communes.filter((c) => !filters.departmentId || c.department.id === filters.departmentId);
@@ -94,7 +95,7 @@ export default async function SchoolsPage({ searchParams }: PageProps<"/espace/e
     <div className="flex flex-col gap-4">
       <PageHeader
         title="Établissements"
-        description={`Écoles et collèges de votre périmètre : ${user.scope.label}.`}
+        description={`Écoles, collèges et lycées de votre périmètre : ${user.scope.label}.`}
         actions={
           <>
             {can(user, "school:export") && (

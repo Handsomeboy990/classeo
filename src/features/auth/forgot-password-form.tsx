@@ -13,7 +13,7 @@ export function ForgotPasswordForm() {
   return (
     <div className="flex flex-col gap-6">
       <ActionForm action={requestPasswordReset} successToast={false} className="flex flex-col gap-4">
-        <FormField label="Adresse e-mail du compte" name="email" required hint="C'est l'adresse qui vous sert d'identifiant de connexion.">
+        <FormField label="Adresse e-mail du compte" name="email" required hint="L'adresse qui vous sert d'identifiant de connexion.">
           <Input type="email" autoComplete="username" inputMode="email" placeholder="prenom.nom@exemple.bj" maxLength={200} />
         </FormField>
         <SubmitButton size="lg" pendingLabel="Envoi…" className="mt-2 w-full">

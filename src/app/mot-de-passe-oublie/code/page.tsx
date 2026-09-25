@@ -6,6 +6,7 @@ import { AuthShell } from "@/features/auth/auth-shell";
 import { RESET_CODE_MINUTES, RESET_EMAIL_COOKIE } from "@/features/auth/reset-code";
 import { ResetPasswordForm } from "@/features/auth/reset-password-form";
 import { getCurrentUser } from "@/lib/auth/session";
+import { mailEnabled } from "@/lib/mail";
 
 export const metadata: Metadata = { title: "Nouveau mot de passe" };
 
@@ -17,7 +18,7 @@ export default async function ResetCodePage() {
   const email = remembered.length <= 200 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(remembered) ? remembered : "";
   return (
     <AuthShell title="Nouveau mot de passe" description="Saisissez le code reçu par e-mail, puis choisissez votre nouveau mot de passe.">
-      <ResetPasswordForm email={email} minutes={RESET_CODE_MINUTES} />
+      <ResetPasswordForm email={email} minutes={RESET_CODE_MINUTES} mailEnabled={mailEnabled} />
     </AuthShell>
   );
 }

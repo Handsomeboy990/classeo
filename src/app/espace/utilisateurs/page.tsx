@@ -39,6 +39,7 @@ export default async function UsersPage({ searchParams }: PageProps<"/espace/uti
   const columns: Column<Row>[] = [
     {
       header: "Nom",
+      primary: true,
       cell: (u) => (
         <div>
           <p className="font-semibold">
@@ -65,6 +66,7 @@ export default async function UsersPage({ searchParams }: PageProps<"/espace/uti
       ? [
           {
             header: "Actions",
+            actions: true,
             className: "text-right",
             cell: (u: Row) =>
               u.manageable ? (
@@ -87,7 +89,7 @@ export default async function UsersPage({ searchParams }: PageProps<"/espace/uti
     <div className="flex flex-col gap-4">
       <PageHeader
         title="Comptes utilisateurs"
-        description={`Comptes rattachés à votre périmètre : ${user.scope.label}. Vous ne pouvez attribuer que des rôles dont vous détenez tous les droits.`}
+        description={`Comptes de votre périmètre : ${user.scope.label}. Un rôle ne peut être attribué que si vous détenez tous ses droits.`}
         actions={
           <>
             {can(user, "user:export") && (

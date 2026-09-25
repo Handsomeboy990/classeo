@@ -4,13 +4,13 @@ import Link from "next/link";
 import { DataTable, type Column } from "@/components/kit/data-table";
 import { PageHeader } from "@/components/kit/page-header";
 import { Badge } from "@/components/ui/badge";
-import { cn, formatDate, formatNumber } from "@/lib/utils";
 import { RequestFormDialog } from "@/features/requests/components/request-form-dialog";
 import { REQUEST_STATUS_LABELS, REQUEST_STATUS_TONES, REQUEST_STATUSES, REQUEST_TYPE_LABELS, REQUEST_TYPES } from "@/features/requests/labels";
 import { listRequests, requestFilters } from "@/features/requests/queries";
 import { FilterBar } from "@/features/territory/components/filter-bar";
 import { can, requirePermission } from "@/lib/auth/authorize";
 import { listParams } from "@/lib/list";
+import { cn, formatDate, formatNumber } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Demandes" };
 
@@ -27,6 +27,7 @@ export default async function RequestsPage({ searchParams }: PageProps<"/espace/
   const columns: Column<Row>[] = [
     {
       header: "Objet",
+      primary: true,
       cell: (r) => (
         <div>
           <Link href={`/espace/demandes/${r.id}`} className="font-semibold text-primary hover:underline">
@@ -48,10 +49,10 @@ export default async function RequestsPage({ searchParams }: PageProps<"/espace/
     <div className="flex flex-col gap-4">
       <PageHeader
         title="Demandes"
-        description={isSchool ? "Demandes de votre établissement au ministère et décisions reçues." : "Demandes des établissements de votre périmètre. Statuez avec une note motivée."}
+        description={isSchool ? "Demandes de votre établissement au ministère et décisions reçues." : "Demandes des établissements de votre périmètre. Chaque décision est accompagnée d'une note motivée."}
         actions={can(user, "request:create") && isSchool ? <RequestFormDialog /> : null}
       />
-      <nav aria-label="Filtrer par statut" className="flex flex-wrap gap-2">
+      <nav aria-label="Filtrer par statut" className="relative -mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">
         {tabs.map((t) => {
           const current = filters.status === t.value;
           const q = new URLSearchParams();
@@ -62,7 +63,7 @@ export default async function RequestsPage({ searchParams }: PageProps<"/espace/
               key={t.label}
               href={`/espace/demandes${q.size ? `?${q}` : ""}`}
               aria-current={current ? "page" : undefined}
-              className={cn("rounded-full border px-3 py-1.5 text-sm font-semibold", current ? "border-primary bg-primary text-on-primary" : "border-border-strong hover:bg-surface-2")}
+              className={cn("inline-flex min-h-11 shrink-0 items-center rounded-full border px-3 text-sm font-semibold whitespace-nowrap sm:min-h-9", current ? "border-primary bg-primary text-on-primary" : "border-border-strong hover:bg-surface-2")}
             >
               {t.label} <span className="tabular-nums opacity-80">({formatNumber(t.count)})</span>
             </Link>

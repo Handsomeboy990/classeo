@@ -55,7 +55,7 @@ export default async function RightsPage({ searchParams }: PageProps<"/espace/dr
     <div className="flex flex-col gap-6">
       <PageHeader
         title="Rôles et droits"
-        description="Un rôle est un ensemble de droits. Chaque modification est journalisée et s'applique dès la page suivante de chaque titulaire."
+        description="Un rôle regroupe des droits. Chaque modification est inscrite au journal et s'applique aux titulaires dès leur page suivante."
         actions={canUpdate ? <RoleFormDialog mode="create" roles={roleOptions} levels={levels} /> : undefined}
       />
       {!canUpdate && (
@@ -63,17 +63,19 @@ export default async function RightsPage({ searchParams }: PageProps<"/espace/dr
           Votre rôle permet de consulter les droits, pas de les modifier.
         </Alert>
       )}
-      <div className="grid gap-6 lg:grid-cols-[18rem_1fr]">
-        <nav aria-label="Rôles">
-          <ul className="flex flex-col gap-1.5">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[18rem_minmax(0,1fr)]">
+        {/* Phone: the roles scroll sideways above the matrix instead of
+            pushing it a screen down. */}
+        <nav aria-label="Rôles" className="min-w-0">
+          <ul className="relative -mx-4 flex gap-1.5 overflow-x-auto px-4 pb-1 sm:-mx-6 sm:px-6 lg:mx-0 lg:flex-col lg:overflow-visible lg:px-0 lg:pb-0">
             {roles.map((r) => {
               const current = r.id === selected?.id;
               return (
-                <li key={r.id}>
+                <li key={r.id} className="max-lg:w-56 max-lg:shrink-0">
                   <Link
                     href={`/espace/droits?role=${r.id}`}
                     aria-current={current ? "page" : undefined}
-                    className={cn("flex flex-col gap-1 rounded-lg border px-3 py-2.5 text-sm", current ? "border-primary bg-primary-soft" : "border-border bg-surface hover:bg-surface-2")}
+                    className={cn("flex h-full flex-col gap-1 rounded-lg border px-3 py-2.5 text-sm", current ? "border-primary bg-primary-soft" : "border-border bg-surface hover:bg-surface-2")}
                   >
                     <span className="flex items-center justify-between gap-2">
                       <span className={cn(current && "font-semibold")}>{r.name}</span>
@@ -95,7 +97,7 @@ export default async function RightsPage({ searchParams }: PageProps<"/espace/dr
         </nav>
 
         {selected ? (
-          <Card>
+          <Card className="min-w-0">
             <CardHeader className="flex-col">
               <div className="min-w-0">
                 <CardTitle className="flex items-center gap-2">
@@ -129,7 +131,7 @@ export default async function RightsPage({ searchParams }: PageProps<"/espace/dr
                 {!selected.isSystem && editable && (
                   <DeleteRoleDialog role={{ id: selected.id, name: selected.name, users: selected.users }} targets={targets} blockedReason={blockedReason} />
                 )}
-                {selected.isSystem && <p className="text-xs text-muted">Rôle système : il ne peut être ni renommé ni supprimé, ses droits restent modifiables.</p>}
+                {selected.isSystem && <p className="text-xs text-muted">Rôle système : ni renommable ni supprimable, mais ses droits se modifient.</p>}
               </div>
             )}
             <CardBody className="px-0 py-0">

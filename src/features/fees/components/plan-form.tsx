@@ -3,17 +3,13 @@
 import { Plus, Trash2 } from "lucide-react";
 import { useId, useState } from "react";
 
-import { ActionForm, SubmitButton, useFormState } from "@/components/kit/action-form";
+import { useFormState } from "@/components/kit/action-form";
 import { FormField } from "@/components/kit/form-field";
 import { Button } from "@/components/ui/button";
 import { Input, Label } from "@/components/ui/input";
 import { planPercentError, splitByPlan } from "@/lib/domain/payments";
 import { cn, formatFcfa } from "@/lib/utils";
 
-import { savePlan } from "../actions";
-
-import { FocusFirstError } from "./focus-first-error";
-import { useCloseDialog } from "./form-dialog";
 
 type Row = { key: number; label: string; percent: string; dueDate: string };
 type Initial = { id: string; name: string; installments: { label: string; percent: number; dueDate: string }[] };
@@ -21,11 +17,11 @@ type Initial = { id: string; name: string; installments: { label: string; percen
 let seq = 0;
 const row = (label = "", percent = "", dueDate = ""): Row => ({ key: ++seq, label, percent, dueDate });
 
-// Payment plan editor: installments with a share of the fee and a due date.
-// The live total tells the user when the shares reach 100 %; the server
-// checks it again.
-export function PlanForm({ feeTypeId, amount, initial }: { feeTypeId: string; amount: number; initial?: Initial }) {
-  const close = useCloseDialog();
+// Payment plan editor: installments with a share of the fee and a due date,
+// placed in a kit FormDialog that holds the action and the buttons. The live
+// total tells the user when the shares reach 100 %; the server checks it
+// again.
+export function PlanFields({ feeTypeId, amount, initial }: { feeTypeId: string; amount: number; initial?: Initial }) {
   const [name, setName] = useState(initial?.name ?? "Paiement en trois tranches");
   const [rows, setRows] = useState<Row[]>(() =>
     initial?.installments.length
@@ -43,8 +39,7 @@ export function PlanForm({ feeTypeId, amount, initial }: { feeTypeId: string; am
   }
 
   return (
-    <ActionForm action={savePlan} onSuccess={close} className="flex flex-col gap-4">
-      <FocusFirstError />
+    <>
       <input type="hidden" name="feeTypeId" value={feeTypeId} />
       {initial && <input type="hidden" name="planId" value={initial.id} />}
       <FormField label="Nom de l'échéancier" name="name" required>
@@ -52,7 +47,7 @@ export function PlanForm({ feeTypeId, amount, initial }: { feeTypeId: string; am
       </FormField>
 
       <fieldset className="flex flex-col gap-3">
-        <legend className="mb-2 text-sm font-semibold">Tranches, dans l&apos;ordre des échéances</legend>
+        <legend className="mb-2 text-sm font-semibold">Tranches, de la première à la dernière échéance</legend>
         {rows.map((r, i) => (
           <InstallmentRow
             key={r.key}
@@ -64,20 +59,16 @@ export function PlanForm({ feeTypeId, amount, initial }: { feeTypeId: string; am
             onRemove={() => setRows((list) => list.filter((x) => x.key !== r.key))}
           />
         ))}
-        <Button type="button" variant="secondary" size="sm" className="self-start" onClick={() => {
-            const next = row(`Tranche ${rows.length + 1}`);
-            setRows((list) => [...list, next]);
-          }}>
+        <Button type="button" variant="secondary" size="sm" className="self-start" onClick={() => setRows((list) => [...list, row(`Tranche ${list.length + 1}`)])}>
           <Plus aria-hidden /> Ajouter une tranche
         </Button>
       </fieldset>
 
       <p role="status" className={cn("rounded-lg px-3 py-2 text-sm font-semibold", error ? "bg-warning-soft text-warning" : "bg-success-soft text-success")}>
-        Total : {sum} % {error ? `· ${error}` : `· ${formatFcfa(amount)} répartis sur ${rows.length} tranche(s)`}
+        Total : {sum} % {error ? `· ${error}` : `· ${formatFcfa(amount)} en ${rows.length} tranche${rows.length > 1 ? "s" : ""}`}
       </p>
       <PlanError />
-      <SubmitButton className="self-end">Enregistrer l&apos;échéancier</SubmitButton>
-    </ActionForm>
+    </>
   );
 }
 
@@ -85,7 +76,7 @@ function PlanError() {
   const state = useFormState();
   const message = state?.fieldErrors?.installments?.[0] ?? state?.fieldErrors?.label?.[0] ?? state?.fieldErrors?.percent?.[0] ?? state?.fieldErrors?.dueDate?.[0];
   if (!message) return null;
-  return <p className="text-sm font-medium text-danger">{message}</p>;
+  return <p role="alert" className="text-sm font-semibold text-danger">{message}</p>;
 }
 
 function InstallmentRow({
@@ -111,8 +102,8 @@ function InstallmentRow({
         <Input id={`${id}-label`} name="label[]" value={r.label} onChange={(e) => onChange({ label: e.target.value })} maxLength={80} required />
       </div>
       <div className="flex flex-col gap-1">
-        <Label htmlFor={`${id}-percent`}>Part (%)</Label>
-        <Input id={`${id}-percent`} name="percent[]" type="number" inputMode="numeric" min={1} max={100} step={1} value={r.percent} onChange={(e) => onChange({ percent: e.target.value })} required />
+        <Label htmlFor={`${id}-percent`}>Part</Label>
+        <Input id={`${id}-percent`} name="percent[]" type="number" inputMode="numeric" min={1} max={100} step={1} value={r.percent} onChange={(e) => onChange({ percent: e.target.value })} required trailing="%" />
       </div>
       <div className="flex flex-col gap-1">
         <Label htmlFor={`${id}-due`}>Échéance</Label>

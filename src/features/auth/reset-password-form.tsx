@@ -12,14 +12,17 @@ import { Input } from "@/components/ui/input";
 
 import { resetPasswordWithCode } from "./reset-actions";
 
-export function ResetPasswordForm({ email, minutes }: { email: string; minutes: number }) {
-  const [done, setDone] = useState(false);
+// mailEnabled: whether this server sends e-mail at all. Without it, no page
+// may say that a code or a confirmation was sent.
+export function ResetPasswordForm({ email, minutes, mailEnabled }: { email: string; minutes: number; mailEnabled: boolean }) {
+  const [done, setDone] = useState<{ mailSent: boolean } | null>(null);
 
   if (done)
     return (
       <div className="flex flex-col gap-5" role="status">
         <Alert tone="success" title="Mot de passe modifié">
-          Toutes les sessions ouvertes avec ce compte ont été fermées. Une confirmation vous a été envoyée par e-mail.
+          Toutes les sessions ouvertes avec ce compte ont été fermées.
+          {done.mailSent ? " Une confirmation a été envoyée à l'adresse du compte." : ""}
         </Alert>
         <ButtonLink href="/connexion" size="lg" className="w-full">
           <LogIn aria-hidden /> Se connecter
@@ -29,13 +32,25 @@ export function ResetPasswordForm({ email, minutes }: { email: string; minutes: 
 
   return (
     <div className="flex flex-col gap-6">
-      {email && (
-        <Alert tone="info">
-          Si un compte actif correspond à cette adresse, un code à 6 chiffres vient d&apos;y être envoyé. Il est valable {minutes} minutes. Pensez à
-          regarder dans les courriers indésirables.
+      {!mailEnabled ? (
+        <Alert tone="warning" title="Aucun e-mail ne peut être envoyé">
+          L&apos;envoi d&apos;e-mails n&apos;est pas configuré sur ce serveur : aucun code n&apos;a été envoyé. Demandez à votre administrateur de réinitialiser votre mot de
+          passe depuis « Comptes utilisateurs ».
         </Alert>
+      ) : (
+        email && (
+          <Alert tone="info">
+            Si un compte actif correspond à cette adresse, un code à 6 chiffres vient d&apos;y être envoyé. Il est valable {minutes} minutes. Vérifiez aussi les
+            courriers indésirables.
+          </Alert>
+        )
       )}
-      <ActionForm action={resetPasswordWithCode} successToast={false} onSuccess={() => setDone(true)} className="flex flex-col gap-4">
+      <ActionForm
+        action={resetPasswordWithCode}
+        successToast={false}
+        onSuccess={(state) => setDone({ mailSent: (state?.data as { mailSent?: boolean } | undefined)?.mailSent === true })}
+        className="flex flex-col gap-4"
+      >
         <FormField label="Adresse e-mail du compte" name="email" required>
           <Input type="email" autoComplete="username" inputMode="email" defaultValue={email} maxLength={200} />
         </FormField>

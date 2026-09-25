@@ -2,6 +2,7 @@
 
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { after } from "next/server";
 import { z } from "zod";
 
 import type { ActionState } from "@/lib/action";
@@ -9,6 +10,8 @@ import { audit } from "@/lib/audit";
 import { dummyVerify, hashPassword, verifyPassword } from "@/lib/auth/password";
 import { clientIp, createSession, destroySession, getCurrentUser } from "@/lib/auth/session";
 import { db } from "@/lib/db";
+import { platformUrl, sendMail } from "@/lib/mail";
+import { passwordChangedEmail } from "@/lib/mail/templates";
 import { hitRateLimit, resetRateLimit } from "@/lib/rate-limit";
 
 const MAX_FAILED = 5;
@@ -115,5 +118,15 @@ export async function changePassword(_prev: ActionState, formData: FormData): Pr
     db.session.updateMany({ where: { userId: user.id, id: { not: current.sessionId }, revokedAt: null }, data: { revokedAt: new Date() } }),
   ]);
   await audit(current, { action: "update", resource: "user", resourceId: user.id, summary: "Changement de mot de passe" });
+  // Security notice to the account's address, as after a reset by code. Sent
+  // once the answer has left, so a slow mail server never delays the page.
+  const at = new Date();
+  after(() =>
+    sendMail({
+      to: user.email,
+      tag: "password_changed",
+      ...passwordChangedEmail({ firstName: user.firstName, email: user.email, at, signInUrl: platformUrl("/connexion"), forgotUrl: platformUrl("/mot-de-passe-oublie") }),
+    }),
+  );
   redirect("/espace");
 }

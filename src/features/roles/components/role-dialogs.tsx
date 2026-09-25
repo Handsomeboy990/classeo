@@ -103,7 +103,7 @@ export function RoleFormDialog({
               ))}
             </Select>
           </FormField>
-          <div className="flex justify-end gap-2 pt-2">
+          <div className="ds-dialog-actions">
             <Button type="button" variant="secondary" onClick={() => setOpen(false)}>
               Annuler
             </Button>
@@ -131,7 +131,7 @@ export function EditRoleDialog({ role }: { role: { id: string; name: string; des
           <FormField label="Description" name="description" hint="300 caractères maximum.">
             <Textarea maxLength={300} rows={3} defaultValue={role.description} />
           </FormField>
-          <div className="flex justify-end gap-2 pt-2">
+          <div className="ds-dialog-actions">
             <Button type="button" variant="secondary" onClick={() => setOpen(false)}>
               Annuler
             </Button>
@@ -158,14 +158,14 @@ export function DeleteRoleDialog({
   const plural = role.users > 1;
   return (
     <>
-      <Button variant="ghost" size="sm" className="text-danger" onClick={() => setOpen(true)}>
+      <Button variant="danger-ghost" size="sm" onClick={() => setOpen(true)}>
         <Trash2 aria-hidden /> Supprimer
       </Button>
       <Dialog open={open} onClose={() => setOpen(false)} title={`Supprimer le rôle ${role.name} ?`}>
         {blockedReason ? (
           <div className="flex flex-col gap-4">
             <Alert tone="warning">{blockedReason}</Alert>
-            <div className="flex justify-end">
+            <div className="ds-dialog-actions">
               <Button type="button" variant="secondary" onClick={() => setOpen(false)}>
                 Fermer
               </Button>
@@ -196,7 +196,7 @@ export function DeleteRoleDialog({
             ) : (
               <p className="text-sm text-muted">Aucun compte n&apos;utilise ce rôle. Sa suppression est définitive et sera inscrite au journal.</p>
             )}
-            <div className="flex justify-end gap-2 pt-2">
+            <div className="ds-dialog-actions">
               <Button type="button" variant="secondary" onClick={() => setOpen(false)}>
                 Annuler
               </Button>

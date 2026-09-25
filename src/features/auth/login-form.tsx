@@ -36,7 +36,7 @@ export function LoginForm({ next, showDemo }: { next?: string; showDemo: boolean
           <button
             type="button"
             onClick={() => setVisible((v) => !v)}
-            className="absolute right-2 bottom-1.5 rounded-md p-2 text-muted hover:text-text"
+            className="absolute top-[1.625rem] right-0 inline-flex size-11 items-center justify-center rounded-md text-muted hover:text-text"
             aria-label={visible ? "Masquer le mot de passe" : "Afficher le mot de passe"}
             aria-pressed={visible}
           >
@@ -57,7 +57,7 @@ export function LoginForm({ next, showDemo }: { next?: string; showDemo: boolean
             Comptes de démonstration
           </h2>
           <p className="mt-1 text-xs text-muted">
-            Choisissez un rôle pour remplir le formulaire. Mot de passe commun : <code className="font-semibold text-text">{DEMO_PASSWORD}</code>
+            Un rôle remplit le formulaire. Mot de passe commun : <code className="font-semibold text-text">{DEMO_PASSWORD}</code>
           </p>
           <ul className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
             {DEMO_ACCOUNTS.map((a) => (

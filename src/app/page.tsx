@@ -65,7 +65,7 @@ async function Figures() {
     figures = null;
   }
   if (!figures) {
-    return <p className="text-sidebar-muted">Les chiffres sont momentanément indisponibles. Réessayez dans quelques minutes.</p>;
+    return <p className="text-sidebar-muted">Chiffres indisponibles pour le moment. Réessayez dans quelques minutes.</p>;
   }
   const items = [
     { label: "établissements", value: figures.schools },
@@ -122,13 +122,13 @@ const STEERING: Actor[] = [
   {
     icon: MapIcon,
     name: "Directions départementales",
-    promise: "Suivent les douze départements, comparent leurs communes et arbitrent les demandes.",
+    promise: "Suivent leur département, comparent ses communes et statuent sur les demandes des écoles.",
     does: ["Statistiques du département", "Demandes des écoles"],
   },
   {
     icon: MapPin,
     name: "Circonscriptions scolaires",
-    promise: "Accompagnent les écoles de leur commune au plus près du terrain.",
+    promise: "Suivent les écoles de leur commune : effectifs, présences, résultats et demandes.",
     does: ["Suivi école par école", "Présences et résultats"],
   },
 ];
@@ -138,7 +138,7 @@ const FIELD: Actor[] = [
     icon: School,
     name: "Écoles",
     promise: "Inscriptions, classes, bulletins, frais et emploi du temps au même endroit.",
-    does: ["Bulletins publiés en un clic", "Frais et échéanciers"],
+    does: ["Publication des bulletins", "Frais et échéanciers"],
   },
   {
     icon: Presentation,
@@ -169,15 +169,15 @@ const PARTNERS: Actor = {
 
 const COMMITMENTS: { icon: LucideIcon; title: string; text: string }[] = [
   { icon: Shapes, title: "Pictogrammes et peu de mots", text: "Chaque information a son image, sa couleur et son mot. Jamais la couleur seule." },
-  { icon: Contrast, title: "Contraste élevé et grand texte", text: "Un réglage suffit : contraste renforcé, texte agrandi jusqu'à 150 %, thème sombre." },
+  { icon: Contrast, title: "Contraste élevé et grand texte", text: "Contraste renforcé, texte agrandi jusqu'à 150 % et thème sombre, réglés une fois par appareil." },
   { icon: Captions, title: "Transcriptions pour tous", text: "Toute vidéo ou tout audio publié est accompagné de son texte. Les alertes sont écrites." },
   { icon: WifiOff, title: "Fonctionne hors ligne", text: "Les pages déjà ouvertes restent lisibles sans réseau : bulletins, notes, emploi du temps." },
   { icon: Zap, title: "Pages légères", text: "Pas d'image lourde, pas de vidéo automatique. Pensé pour la 3G et les petits forfaits." },
-  { icon: Keyboard, title: "Utilisable au clavier", text: "Tout se fait sans souris, avec un repère visible à chaque étape et des lecteurs d'écran." },
+  { icon: Keyboard, title: "Clavier et lecteurs d'écran", text: "Tout se fait sans souris, avec un cadre visible sur l'élément actif. Titres et repères guident les lecteurs d'écran." },
 ];
 
 const PITCH =
-  "Classéo relie le ministère, les directions départementales, les circonscriptions, les écoles, les enseignants, les parents et les élèves du Bénin sur un seul système. Chaque écran peut être lu à voix haute par Kora, fonctionne hors ligne et s'adapte aux personnes qui voient mal, qui entendent mal ou qui lisent peu.";
+  "Classéo relie le ministère, les directions départementales, les circonscriptions, les écoles, les enseignants, les parents et les élèves du Bénin sur une même plateforme. Chaque écran se lit à voix haute, reste consultable hors ligne et s'adapte aux personnes qui voient mal, entendent mal ou lisent peu.";
 
 const KORA_SAMPLE = "Sènami, classe de 3e A. Dernier bulletin : 13,25 sur 20, assez bien. Une absence cette semaine. Aujourd'hui, le premier cours est mathématiques, à 7 heures.";
 
@@ -189,8 +189,8 @@ export default function LandingPage() {
   return (
     <>
       <header className="bg-sidebar text-sidebar-text">
-        <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-3 px-5 py-4 sm:px-8">
-          <Link href="/" aria-label="Classéo, accueil" className="rounded-lg">
+        <div className="mx-auto flex max-w-7xl items-center gap-2 px-4 py-3 sm:gap-3 sm:px-8 sm:py-4">
+          <Link href="/" aria-label="Classéo, accueil" className="min-w-0 shrink rounded-lg">
             <Logo tone="inverse" />
           </Link>
           <nav aria-label="Sections de la page" className="ml-6 hidden md:block">
@@ -208,11 +208,11 @@ export default function LandingPage() {
               ))}
             </ul>
           </nav>
-          <div className="ml-auto flex items-center gap-2">
+          <div className="ml-auto flex shrink-0 items-center gap-2">
             <AccessibilityButton />
             <Link
               href="/connexion"
-              className="inline-flex h-10 items-center gap-2 rounded-lg bg-accent px-4 text-sm font-bold text-on-accent hover:brightness-95"
+              className="inline-flex h-11 items-center gap-2 rounded-lg bg-accent px-3 text-sm font-bold whitespace-nowrap text-on-accent hover:brightness-95 sm:h-10 sm:px-4"
             >
               <LogIn className="size-4" aria-hidden />
               <span>Se connecter</span>
@@ -227,11 +227,12 @@ export default function LandingPage() {
           <SunriseMotif className="pointer-events-none absolute -right-24 bottom-3 -z-10 w-[32rem] opacity-25 sm:-right-10 sm:opacity-40 lg:right-0 lg:w-[44rem] lg:opacity-100" />
           <div className="mx-auto max-w-7xl px-5 pt-10 pb-20 sm:px-8 sm:pt-16 lg:pt-24 lg:pb-32">
             <p className="text-sm font-bold tracking-[0.14em] text-accent uppercase">République du Bénin · Plateforme nationale de l&apos;éducation</p>
-            <h1 id="hero-title" className="mt-5 max-w-3xl break-words hyphens-auto text-[2.6rem] leading-[1.02] font-extrabold tracking-tight sm:text-6xl lg:text-7xl">
+            <h1 id="hero-title" className="mt-5 max-w-3xl text-[2.125rem] leading-[1.05] font-extrabold tracking-tight text-balance break-words min-[400px]:text-[2.5rem] sm:text-6xl lg:text-7xl">
               L&apos;école béninoise, du ministère <span className="text-accent">à la maison.</span>
             </h1>
             <p className="mt-6 max-w-xl text-lg text-sidebar-muted sm:text-xl">
-              Un seul système pour ceux qui pilotent, ceux qui enseignent et ceux qui apprennent. Écouté, compris et utilisé par tous, même sans réseau.
+              Statistiques, établissements, notes, bulletins, présences, frais et messagerie : le ministère, les écoles et les familles travaillent sur les mêmes
+              données.
             </p>
             <div className="mt-8 flex flex-col gap-3 min-[420px]:flex-row min-[420px]:flex-wrap">
               <Link
@@ -249,7 +250,7 @@ export default function LandingPage() {
             </div>
             <ul className="mt-10 flex flex-wrap gap-2 text-sm" aria-label="En bref">
               {[
-                [Volume2, "Voix Kora sur chaque écran"],
+                [Volume2, "Lecture à voix haute"],
                 [WifiOff, "Lecture hors ligne"],
                 [Contrast, "Contraste élevé"],
               ].map(([Icon, label]) => {
@@ -272,10 +273,10 @@ export default function LandingPage() {
             <div className="lg:sticky lg:top-8 lg:self-start">
               <p className="text-sm font-bold tracking-[0.14em] text-primary uppercase">Qui utilise Classéo</p>
               <h2 id="actors-title" className="mt-3 text-3xl leading-tight font-extrabold sm:text-4xl">
-                Du bureau du ministre à la cour de l&apos;école.
+                Un espace par rôle, du ministère à la famille.
               </h2>
               <p className="mt-4 text-muted">
-                Chacun voit ce qui le concerne, rien de plus. Les droits suivent la carte du pays : nation, département, commune, école, famille.
+                Chacun ne voit que ce qui le concerne. Les droits suivent le découpage du pays : nation, département, commune, école, famille.
               </p>
             </div>
             <div className="flex flex-col gap-10">
@@ -290,11 +291,11 @@ export default function LandingPage() {
         <section id="inclusion" aria-labelledby="inclusion-title" className="scroll-mt-4 border-y border-border bg-surface">
           <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 lg:py-24">
             <div className="max-w-2xl">
-              <p className="text-sm font-bold tracking-[0.14em] text-primary uppercase">Nos engagements</p>
+              <p className="text-sm font-bold tracking-[0.14em] text-primary uppercase">Accessibilité</p>
               <h2 id="inclusion-title" className="mt-3 text-3xl leading-tight font-extrabold sm:text-4xl">
-                Personne ne reste à la porte de l&apos;école.
+                Utilisable avec un handicap ou sans savoir bien lire.
               </h2>
-              <p className="mt-4 text-muted">Classéo est conçu dès le départ pour les personnes aveugles ou malvoyantes, sourdes ou malentendantes, et pour celles qui lisent peu.</p>
+              <p className="mt-4 text-muted">Classéo est conçu pour les personnes aveugles ou malvoyantes, sourdes ou malentendantes, et pour celles qui lisent peu.</p>
             </div>
 
             <div className="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,26rem)_1fr]">
@@ -303,14 +304,17 @@ export default function LandingPage() {
                   <Volume2 className="size-7" />
                 </span>
                 <h3 id="kora-title" className="mt-5 text-2xl font-extrabold">
-                  Kora lit chaque écran à voix haute
+                  Chaque écran se lit à voix haute
                 </h3>
-                <p className="mt-2 text-sidebar-muted">Bulletins, absences, annonces : un bouton, et la voix de Classéo explique l&apos;essentiel en français. Sans téléchargement, même hors ligne.</p>
+                <p className="mt-2 text-sidebar-muted">
+                  Bulletins, absences, annonces : le bouton « Écouter » fait lire le résumé en français par la voix du téléphone. Rien à installer, et cela fonctionne hors
+                  ligne.
+                </p>
                 <figure className="mt-6 rounded-xl border border-sidebar-muted/40 bg-sidebar-hover p-4">
                   <figcaption className="text-xs font-bold tracking-wider text-accent uppercase">Exemple pour un parent</figcaption>
                   <blockquote className="mt-2 text-lg leading-snug">« {KORA_SAMPLE} »</blockquote>
                 </figure>
-                <ReadAloud text={KORA_SAMPLE} label="Écouter Kora" className="relative mt-5 h-12 border-accent bg-accent px-5 text-base text-on-accent hover:bg-accent hover:brightness-95" />
+                <ReadAloud text={KORA_SAMPLE} label="Écouter l'exemple" className="relative mt-5 h-12 border-accent bg-accent px-5 text-base text-on-accent hover:bg-accent hover:brightness-95" />
               </article>
 
               <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -319,7 +323,7 @@ export default function LandingPage() {
                     <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary" aria-hidden>
                       <c.icon className="size-6" />
                     </span>
-                    <div className="min-w-0 break-words hyphens-auto">
+                    <div className="min-w-0 break-words">
                       <h3 className="font-sans text-lg font-bold">{c.title}</h3>
                       <p className="mt-1 text-muted">{c.text}</p>
                     </div>
@@ -335,9 +339,9 @@ export default function LandingPage() {
           <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 lg:py-24">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
               <div>
-                <p className="text-sm font-bold tracking-[0.14em] text-accent uppercase">En direct</p>
+                <p className="text-sm font-bold tracking-[0.14em] text-accent uppercase">Chiffres</p>
                 <h2 id="figures-title" className="mt-3 text-3xl leading-tight font-extrabold sm:text-4xl">
-                  Le système éducatif, sur un seul écran.
+                  La plateforme aujourd&apos;hui
                 </h2>
               </div>
               <p className="max-w-sm text-sm text-sidebar-muted">Chiffres agrégés de la plateforme de démonstration, actualisés toutes les cinq minutes. Aucune donnée personnelle.</p>
@@ -355,9 +359,9 @@ export default function LandingPage() {
           <div className="mx-auto flex max-w-7xl flex-col items-start gap-6 px-5 py-16 sm:px-8 md:flex-row md:items-center md:justify-between lg:py-20">
             <div>
               <h2 id="cta-title" className="text-3xl leading-tight font-extrabold sm:text-4xl">
-                Votre espace vous attend.
+                Se connecter à Classéo
               </h2>
-              <p className="mt-2 max-w-xl text-muted">Connectez-vous avec l&apos;adresse et le mot de passe remis par votre établissement ou votre direction.</p>
+              <p className="mt-2 max-w-xl text-muted">Utilisez l&apos;adresse e-mail et le mot de passe remis par votre établissement ou votre direction.</p>
             </div>
             <Link href="/connexion" className="inline-flex h-13 shrink-0 items-center gap-2 rounded-xl bg-primary px-6 text-base font-bold text-on-primary hover:bg-primary-hover">
               Se connecter
@@ -413,7 +417,7 @@ function ActorGroup({ title, actors }: { title: string; actors: Actor[] }) {
             <span className="relative flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary text-on-primary" aria-hidden>
               <a.icon className="size-6" />
             </span>
-            <div className="min-w-0 break-words hyphens-auto">
+            <div className="min-w-0 break-words">
               <h4 className="font-display text-xl font-bold">{a.name}</h4>
               <p className="mt-1 text-text">{a.promise}</p>
               <ul className="mt-3 flex flex-wrap gap-2">

@@ -3,6 +3,8 @@ import type { ReactNode } from "react";
 
 import { Logo } from "@/components/brand/logo";
 
+import { RESET_CODE_MINUTES } from "./reset-code";
+
 // Frame of the signed out pages that sit next to the sign in page: the same
 // brand panel on large screens, the form alone on phones.
 export function AuthShell({ title, description, children }: { title: string; description: string; children: ReactNode }) {
@@ -12,12 +14,12 @@ export function AuthShell({ title, description, children }: { title: string; des
         <Logo tone="inverse" />
         <div className="relative z-10 max-w-md">
           <p className="font-display text-4xl leading-tight font-bold">
-            Un accès perdu
-            <span className="text-accent"> se retrouve en quelques minutes.</span>
+            Mot de passe oublié :
+            <span className="text-accent"> un code par e-mail.</span>
           </p>
           <p className="mt-4 text-sidebar-muted">
-            Un code à usage unique est envoyé à l&apos;adresse e-mail de votre compte. Il reste valable un quart d&apos;heure et ferme toutes les
-            sessions ouvertes une fois le mot de passe changé.
+            Le code est à usage unique et reste valable {RESET_CODE_MINUTES} minutes. Une fois le mot de passe changé, toutes les sessions ouvertes avec le compte
+            sont fermées.
           </p>
         </div>
         <div className="flex h-2 overflow-hidden rounded-full">

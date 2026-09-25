@@ -21,7 +21,7 @@ export function SchoolStatusButton({ id, name, isActive, size = "md" }: { id: st
       confirmLabel={isActive ? "Désactiver" : "Réactiver"}
       tone={isActive ? "danger" : "primary"}
       trigger={(open) => (
-        <Button variant={isActive ? "ghost" : "secondary"} size={size} onClick={open} aria-label={`${isActive ? "Désactiver" : "Réactiver"} ${name}`}>
+        <Button variant={isActive ? "danger-ghost" : "secondary"} size={size} onClick={open} aria-label={`${isActive ? "Désactiver" : "Réactiver"} ${name}`}>
           {isActive ? <PowerOff aria-hidden /> : <Power aria-hidden />}
           {isActive ? "Désactiver" : "Réactiver"}
         </Button>

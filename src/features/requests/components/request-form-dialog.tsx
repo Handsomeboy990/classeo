@@ -19,7 +19,7 @@ export function RequestFormDialog() {
       <Button onClick={() => setOpen(true)}>
         <Send aria-hidden /> Nouvelle demande
       </Button>
-      <Dialog open={open} onClose={() => setOpen(false)} title="Nouvelle demande au ministère" description="La circonscription, la direction départementale ou le ministère statuera et vous serez notifié.">
+      <Dialog open={open} onClose={() => setOpen(false)} title="Nouvelle demande au ministère" description="La circonscription, la direction départementale ou le ministère statue ; la décision vous est notifiée.">
         <ActionForm action={createRequest} onSuccess={() => setOpen(false)} resetOnSuccess className="flex flex-col gap-4">
           <FormField label="Type de demande" name="type" required>
             <Select defaultValue="">
@@ -39,7 +39,7 @@ export function RequestFormDialog() {
           <FormField label="Détail de la demande" name="body" required hint="Contexte, besoin chiffré, échéance souhaitée.">
             <Textarea rows={6} maxLength={4000} />
           </FormField>
-          <div className="flex justify-end gap-2 pt-2">
+          <div className="ds-dialog-actions">
             <Button type="button" variant="secondary" onClick={() => setOpen(false)}>
               Annuler
             </Button>

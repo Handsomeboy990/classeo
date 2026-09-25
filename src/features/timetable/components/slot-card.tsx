@@ -4,13 +4,12 @@ import { Ban, Clock, DoorOpen, Pencil, RotateCcw, Trash2, User } from "lucide-re
 import { useState } from "react";
 
 import { ActionForm, SubmitButton } from "@/components/kit/action-form";
-import { ConfirmAction } from "@/components/kit/confirm-action";
+import { ConfirmButton } from "@/components/kit/confirm-button";
 import { FormField } from "@/components/kit/form-field";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { FocusFirstError } from "@/features/fees/components/focus-first-error";
 import { DAYS } from "@/lib/domain/timetable";
 import { cn } from "@/lib/utils";
 
@@ -148,18 +147,16 @@ export function SlotCard({
 
             <div className="flex flex-wrap justify-end gap-2 border-t border-border pt-4">
               {rights.delete && (
-                <ConfirmAction
+                <ConfirmButton
                   action={deleteSlot}
                   fields={{ id: slot.id }}
                   title="Retirer ce cours ?"
                   description={`${slot.subject}, ${DAYS[slot.dayOfWeek - 1]?.label.toLowerCase()} de ${slot.startTime} à ${slot.endTime}, sera retiré de toutes les semaines.`}
                   confirmLabel="Retirer le cours"
-                  trigger={(openConfirm) => (
-                    <Button type="button" variant="ghost" className="text-danger" onClick={openConfirm}>
-                      <Trash2 aria-hidden /> Retirer le cours
-                    </Button>
-                  )}
-                />
+                  variant="danger-ghost"
+                >
+                  <Trash2 aria-hidden /> Retirer le cours
+                </ConfirmButton>
               )}
               {rights.update && (
                 <Button type="button" variant="secondary" onClick={() => setMode("edit")}>
@@ -179,7 +176,6 @@ function CancelSessionForm({ slotId, defaultDate, onDone }: { slotId: string; de
   const [note, setNote] = useState("");
   return (
     <ActionForm action={cancelSlotOnDate} onSuccess={onDone} className="flex flex-col gap-3">
-      <FocusFirstError />
       <p className="text-sm font-semibold">Annuler une séance</p>
       <input type="hidden" name="slotId" value={slotId} />
       <div className="grid gap-3 sm:grid-cols-2">

@@ -27,7 +27,7 @@ export default async function ThreadPage({ params }: PageProps<"/espace/messages
 
   return (
     <div className="max-w-3xl">
-      <Link href="/espace/messages" className="mb-3 inline-flex h-11 items-center gap-2 text-sm font-semibold text-primary hover:underline">
+      <Link href="/espace/messages" className="mb-3 inline-flex h-11 max-lg:hidden items-center gap-2 text-sm font-semibold text-primary hover:underline">
         <ArrowLeft className="size-4" aria-hidden /> Toutes les conversations
       </Link>
       <h1 className="text-2xl font-bold sm:text-3xl">{thread.subject}</h1>

@@ -53,7 +53,7 @@ export default async function AuditPage({ searchParams }: PageProps<"/espace/jou
     },
     { header: "Action", cell: (r) => <Badge tone={TONES[r.action] ?? "neutral"}>{actionLabel(r.action)}</Badge> },
     { header: "Ressource", cell: (r) => resourceLabel(r.resource), hideBelow: "md" },
-    { header: "Détail", cell: (r) => <span className="text-sm">{r.summary}</span> },
+    { header: "Détail", primary: true, cell: (r) => <span className="text-sm max-sm:font-semibold">{r.summary}</span> },
     { header: "Adresse IP", cell: (r) => <span className="text-xs text-muted">{r.ip ?? "–"}</span>, hideBelow: "lg" },
   ];
 
@@ -74,7 +74,7 @@ export default async function AuditPage({ searchParams }: PageProps<"/espace/jou
     <div className="flex flex-col gap-4">
       <PageHeader
         title="Journal d'activité"
-        description={`Qui a fait quoi, quand et d'où. ${scopeText}`}
+        description={`Chaque action enregistrée : son auteur, sa date et son adresse IP. ${scopeText}`}
         actions={
           can(user, "audit:export") ? (
             <ButtonLink href={`/api/export/journal${exportQuery.size ? `?${exportQuery}` : ""}`} variant="secondary" prefetch={false}>

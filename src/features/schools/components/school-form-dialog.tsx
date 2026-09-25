@@ -112,7 +112,7 @@ export function SchoolFormDialog({ communes, school }: { communes: CommuneOption
               <Input type="email" defaultValue={school?.email ?? ""} />
             </FormField>
           </div>
-          <div className="flex justify-end gap-2 pt-2">
+          <div className="ds-dialog-actions">
             <Button type="button" variant="secondary" onClick={() => setOpen(false)}>
               Annuler
             </Button>

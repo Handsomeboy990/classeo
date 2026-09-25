@@ -4,7 +4,7 @@ import Link from "next/link";
 
 import { EmptyState } from "@/components/kit/states";
 import { SpokenSummary } from "@/features/family/components/blocks";
-import { PrintButton } from "@/features/family/components/print-button";
+import { PrintButton } from "@/components/kit/print-button";
 import { ReportCardSheet } from "@/features/family/components/sections";
 import { reportSentence } from "@/features/family/logic";
 import { reportCardsOf, requireStudentSection } from "@/features/family/queries";

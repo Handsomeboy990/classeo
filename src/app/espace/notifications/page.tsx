@@ -42,7 +42,7 @@ export default async function NotificationsPage({ searchParams }: PageProps<"/es
     <div className="max-w-4xl">
       <PageHeader
         title="Notifications"
-        description={unread ? `${unread} notification${unread > 1 ? "s" : ""} non lue${unread > 1 ? "s" : ""}.` : "Vous êtes à jour."}
+        description={unread ? `${unread} notification${unread > 1 ? "s" : ""} non lue${unread > 1 ? "s" : ""}.` : "Aucune notification non lue."}
         actions={unread > 0 && <MarkAllRead />}
       />
       <div className="mb-4">

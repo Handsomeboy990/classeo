@@ -47,7 +47,7 @@ export function CreateUserDialog({ roles, entities }: { roles: RoleOption[]; ent
       <Button onClick={() => setOpen(true)} disabled={roles.length === 0} title={roles.length === 0 ? "Aucun rôle ne peut être attribué avec vos droits actuels." : undefined}>
         <UserPlus aria-hidden /> Nouveau compte
       </Button>
-      <Dialog open={open} onClose={close} title={created ? "Compte créé" : "Nouveau compte"} description={created ? undefined : "Seuls les rôles que vos droits permettent d'attribuer sont proposés."}>
+      <Dialog open={open} onClose={close} title={created ? "Compte créé" : "Nouveau compte"} description={created ? undefined : "La liste ne propose que les rôles que vos droits permettent d'attribuer."}>
         {created ? (
           <TemporaryPassword {...created} onDone={close} />
         ) : (
@@ -68,7 +68,7 @@ export function CreateUserDialog({ roles, entities }: { roles: RoleOption[]; ent
                 <Input autoComplete="off" maxLength={80} />
               </FormField>
             </div>
-            <FormField label="Adresse e-mail" name="email" required hint="Elle sert d'identifiant de connexion.">
+            <FormField label="Adresse e-mail" name="email" required hint="Identifiant de connexion de la personne.">
               <Input type="email" autoComplete="off" maxLength={200} />
             </FormField>
             <FormField label="Téléphone" name="phone">
@@ -109,7 +109,7 @@ export function CreateUserDialog({ roles, entities }: { roles: RoleOption[]; ent
               </FormField>
             )}
             {level === "NATIONAL" && <p className="text-sm text-muted">Ce rôle agit sur tout le territoire national.</p>}
-            <div className="flex justify-end gap-2 pt-2">
+            <div className="ds-dialog-actions">
               <Button type="button" variant="secondary" onClick={close}>
                 Annuler
               </Button>

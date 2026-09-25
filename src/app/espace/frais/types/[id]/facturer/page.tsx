@@ -27,7 +27,7 @@ export default async function GenerateInvoicesPage({ params }: PageProps<"/espac
 
   return (
     <>
-      <Link href="/espace/frais/types" className="mb-3 inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline">
+      <Link href="/espace/frais/types" className="mb-3 inline-flex max-lg:hidden items-center gap-1.5 text-sm font-semibold text-primary hover:underline">
         <ArrowLeft className="size-4" aria-hidden /> Types de frais
       </Link>
       <PageHeader
@@ -45,7 +45,7 @@ export default async function GenerateInvoicesPage({ params }: PageProps<"/espac
 
         {!feeType.isActive && <Alert tone="warning" title="Type de frais désactivé">Réactivez-le avant de générer des factures.</Alert>}
 
-        <div className="grid gap-6 lg:grid-cols-[3fr_2fr]">
+        <div className="grid grid-cols-1 gap-6 *:min-w-0 lg:grid-cols-[3fr_2fr]">
           <Card>
             <CardHeader>
               <CardTitle>Répartition par classe</CardTitle>

@@ -425,7 +425,7 @@ export function InvoiceCard({ invoice }: { invoice: Awaited<ReturnType<typeof in
 
 export function BackToChildren() {
   return (
-    <Link href="/espace/suivi" className="inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-primary underline-offset-4 hover:underline" data-print-hide>
+    <Link href="/espace/suivi" className="inline-flex min-h-11 max-lg:hidden items-center gap-1.5 text-sm font-semibold text-primary underline-offset-4 hover:underline" data-print-hide>
       <ArrowLeft className="size-4" aria-hidden />
       Mes enfants
     </Link>
