@@ -9,10 +9,13 @@ import { FormField } from "@/components/kit/form-field";
 import { Button } from "@/components/ui/button";
 import { Input, Select } from "@/components/ui/input";
 import { FocusFirstError } from "@/features/fees/components/focus-first-error";
+import { announceSuccess } from "@/features/fees/components/toast-action";
 import { PAYMENT_METHOD_LABELS, PAYMENT_METHODS, type PaymentMethodCode } from "@/lib/domain/payments";
 import { formatFcfa } from "@/lib/utils";
 
 import { recordPayment } from "../actions";
+
+const submitPayment = announceSuccess(recordPayment);
 
 const TRANSACTION_LABEL: Record<PaymentMethodCode, string> = {
   CASH: "Référence (facultatif)",
@@ -34,7 +37,7 @@ export function PaymentForm({ invoiceId, remaining, today }: { invoiceId: string
 
   return (
     <ActionForm
-      action={recordPayment}
+      action={submitPayment}
       onSuccess={(state) => {
         setAmount("");
         setMethod("CASH");

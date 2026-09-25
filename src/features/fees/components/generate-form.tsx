@@ -2,7 +2,7 @@
 
 import { FilePlus2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import { ActionForm, SubmitButton } from "@/components/kit/action-form";
 import { FormField } from "@/components/kit/form-field";
@@ -12,6 +12,7 @@ import { formatFcfa, formatNumber } from "@/lib/utils";
 import { generateInvoices } from "../actions";
 
 import { FocusFirstError } from "./focus-first-error";
+import { announceSuccess } from "./toast-action";
 
 // Confirmation step of the invoice generation. The server recomputes who
 // must be billed at submit time, so a preview that became stale cannot
@@ -19,8 +20,11 @@ import { FocusFirstError } from "./focus-first-error";
 export function GenerateForm({ feeTypeId, toCreate, total, needsDueDate, today }: { feeTypeId: string; toCreate: number; total: number; needsDueDate: boolean; today: string }) {
   const router = useRouter();
   const [dueDate, setDueDate] = useState("");
+  // The preview re-renders with nothing left to create and unmounts this
+  // form, so the redirect happens from the action result itself.
+  const action = useMemo(() => announceSuccess(generateInvoices, () => router.push("/espace/frais/factures")), [router]);
   return (
-    <ActionForm action={generateInvoices} onSuccess={() => router.push("/espace/frais/factures")} className="flex flex-col gap-4">
+    <ActionForm action={action} className="flex flex-col gap-4">
       <FocusFirstError />
       <input type="hidden" name="feeTypeId" value={feeTypeId} />
       {needsDueDate && (
