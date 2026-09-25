@@ -13,7 +13,7 @@ import { recentPendingRequests } from "@/features/requests/queries";
 import { can } from "@/lib/auth/authorize";
 import type { CurrentUser } from "@/lib/auth/session";
 import { sortByIndicator, type IndicatorKey } from "@/lib/domain/indicators";
-import { formatDate, formatDateTime } from "@/lib/utils";
+import { formatDate, formatDateTime, formatPercent } from "@/lib/utils";
 
 import { userStatScope } from "../territory/scope";
 import { IndicatorCards } from "./components/indicator-cards";
@@ -201,6 +201,7 @@ function ComparisonCard({ stats, indicator, title, user }: { stats: ScopeStatist
             label={`${title} par ${labels.singular.toLowerCase()}`}
             max={indicator === "absenceRate" ? ABSENCE_SCALE : 1}
             format={indicatorFormatter(indicator)}
+            tickFormat={(n) => formatPercent(n)}
             reference={stats.total[indicator] !== null ? { value: stats.total[indicator] as number, label: "Ensemble du périmètre" } : undefined}
             scale={indicator === "absenceRate" ? "Échelle de 0 à 20 %, en rouge au-delà de 10 %." : "Échelle de 0 à 100 %, en rouge sous 50 %."}
             data={rows.map((r) => {

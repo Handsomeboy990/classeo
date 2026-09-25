@@ -25,6 +25,7 @@ export function BarChart({
   className,
   label,
   reference,
+  tickFormat,
 }: {
   data: BarDatum[];
   format?: (n: number) => string;
@@ -33,6 +34,8 @@ export function BarChart({
   className?: string;
   label: string;
   reference?: { value: number; label: string };
+  // Labels of the scale, when they need fewer decimals than the values.
+  tickFormat?: (n: number) => string;
 }) {
   const top = max ?? Math.max(1, ...data.map((d) => d.value));
   const pct = (v: number) => Math.max(0, Math.min(100, (v / top) * 100));
@@ -81,7 +84,7 @@ export function BarChart({
           <span className="ds-bars-ticks">
             {ticks.map((f) => (
               <span key={f} style={{ left: `${f * 100}%` }} data-edge={f === 0 ? "start" : f === 1 ? "end" : undefined}>
-                {format(top * f)}
+                {(tickFormat ?? format)(top * f)}
               </span>
             ))}
           </span>

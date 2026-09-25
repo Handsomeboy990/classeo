@@ -1785,9 +1785,8 @@ dialog.sheet[data-closing]::backdrop {
   background: var(--accent);
 }
 .ticker-link {
-  display: inline-flex;
-  align-items: center;
-  min-height: 2.5rem;
+  display: inline-block;
+  line-height: 2.5rem;
   color: inherit;
 }
 .ticker-link:hover {
@@ -1952,7 +1951,10 @@ a.ds-bars-row:hover .ds-bars-label {
 .ds-bars-value {
   position: absolute;
   top: 50%;
-  transform: translate(0.5rem, -50%);
+  transform: translate(0.25rem, -50%);
+  padding-inline: 0.25rem;
+  border-radius: 0.25rem;
+  background: var(--surface);
   font-size: 0.8125rem;
   font-weight: 700;
   white-space: nowrap;
