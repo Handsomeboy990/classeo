@@ -88,3 +88,8 @@ export function defaultTerms(start: Date, end: Date): PeriodInput[] {
     { name: "Trimestre 3", startDate: new Date(b.getTime() + day), endDate: end },
   ];
 }
+
+// A date some days from now, as the default value of a date field.
+export function isoInDays(days: number, from = new Date()) {
+  return toIso(new Date(from.getTime() + days * 86_400_000));
+}
