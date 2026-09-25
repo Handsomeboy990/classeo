@@ -72,9 +72,9 @@ export function DataTable<R>({
             return (
               <View key={i} style={[cellBox(c), { justifyContent: "center" }]}>
                 {typeof content === "string" || typeof content === "number" ? (
-                  <T style={[styles.cell, alignOf(c.align), fontSize ? { fontSize } : {}, dense ? { paddingVertical: 2.5 } : {}]}>{String(content)}</T>
+                  <T style={[styles.cell, alignOf(c.align), fontSize ? { fontSize } : {}, dense ? { paddingVertical: 2 } : {}]}>{String(content)}</T>
                 ) : (
-                  <View style={{ paddingVertical: dense ? 2.5 : 3.5, paddingHorizontal: 5 }}>{content}</View>
+                  <View style={{ paddingVertical: dense ? 2 : 3.5, paddingHorizontal: 5 }}>{content}</View>
                 )}
               </View>
             );
@@ -123,19 +123,21 @@ export function Figure({
   hint,
   tone = "plain",
   big = false,
+  compact = false,
 }: {
   label: string;
   value: string;
   hint?: string | null;
   tone?: "plain" | "primary" | "warning" | "danger";
   big?: boolean;
+  compact?: boolean;
 }) {
   const bg = tone === "primary" ? COLORS.primarySoft : tone === "warning" ? COLORS.warningSoft : tone === "danger" ? COLORS.dangerSoft : COLORS.white;
   const border = tone === "primary" ? COLORS.primary : tone === "warning" ? COLORS.warning : tone === "danger" ? COLORS.danger : COLORS.border;
   return (
-    <View style={{ flex: 1, backgroundColor: bg, borderWidth: 0.75, borderColor: border, borderRadius: 4, paddingVertical: 7, paddingHorizontal: 9 }}>
+    <View style={{ flex: 1, backgroundColor: bg, borderWidth: 0.75, borderColor: border, borderRadius: 4, paddingVertical: compact ? 5 : 7, paddingHorizontal: compact ? 7 : 9 }}>
       <T style={styles.label}>{label}</T>
-      <View style={{ height: big ? 26 : 19, justifyContent: "center", marginTop: 1 }}>
+      <View style={{ height: big ? 26 : compact ? 17 : 19, justifyContent: "center", marginTop: 1 }}>
         <T style={{ fontFamily: FONT_TITLE, fontWeight: 700, fontSize: big ? 20 : 14, lineHeight: 1, color: COLORS.primaryDark }}>{value}</T>
       </View>
       {hint ? <T style={[styles.small, styles.muted]}>{hint}</T> : null}
