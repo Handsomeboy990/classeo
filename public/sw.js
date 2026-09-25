@@ -13,7 +13,7 @@
  * - Push notifications are shown here and open their link when touched.
  */
 
-const VERSION = "2026-09-25.3";
+const VERSION = "2026-09-26.1";
 const SHELL = `classeo-shell-${VERSION}`;
 const ASSETS = `classeo-assets-${VERSION}`;
 const PAGES = `classeo-pages-${VERSION}`;
@@ -172,16 +172,28 @@ self.addEventListener("push", (event) => {
   } catch {
     data = { body: event.data ? event.data.text() : "" };
   }
+  // Sound: a web page cannot choose the sound of a system notification.
+  // silent: false asks for the device's own notification sound, the one the
+  // person chose in the phone's settings; Android also vibrates with the
+  // short pattern below. An open Classéo window is told at once, so it
+  // plays its own soft chime and updates its counters.
   event.waitUntil(
-    self.registration.showNotification(data.title || "Classéo", {
-      body: data.body || "Une nouvelle notification vous attend.",
-      icon: "/icons/icon-192.png",
-      badge: BADGE,
-      tag: data.tag || undefined,
-      renotify: Boolean(data.tag),
-      lang: "fr",
-      data: { link: safeLink(data.link) },
-    }),
+    Promise.all([
+      self.registration.showNotification(data.title || "Classéo", {
+        body: data.body || "Une nouvelle notification vous attend.",
+        icon: "/icons/icon-192.png",
+        badge: BADGE,
+        tag: data.tag || undefined,
+        renotify: Boolean(data.tag),
+        silent: false,
+        vibrate: [120, 60, 120],
+        lang: "fr",
+        data: { link: safeLink(data.link) },
+      }),
+      self.clients
+        .matchAll({ type: "window", includeUncontrolled: true })
+        .then((windows) => windows.forEach((w) => w.postMessage({ type: "push-received" }))),
+    ]),
   );
 });
 
