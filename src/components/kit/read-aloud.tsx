@@ -38,7 +38,8 @@ export function ReadAloud({
   targetId?: string;
   label?: string;
   className?: string;
-  compact?: boolean;
+  // true: icon only. "mobile": icon only below 40rem, labelled above.
+  compact?: boolean | "mobile";
 }) {
   const [speaking, setSpeaking] = useState(false);
 
@@ -68,14 +69,14 @@ export function ReadAloud({
       aria-pressed={speaking}
       title={speaking ? "Arrêter la lecture" : label}
       className={cn(
-        "inline-flex items-center gap-2 rounded-lg border border-border-strong bg-surface font-semibold text-text hover:bg-surface-2",
-        compact ? "size-9 justify-center" : "h-10 px-3 text-sm",
+        "inline-flex shrink-0 items-center justify-center gap-2 rounded-control border border-border-strong bg-surface font-semibold text-text shadow-xs transition-colors hover:border-field-border hover:bg-surface-2",
+        compact === true ? "size-9" : compact === "mobile" ? "size-11 sm:h-11 sm:w-auto sm:px-3.5 sm:text-sm" : "h-10 px-3 text-sm",
         speaking && "border-primary bg-primary-soft text-primary",
         className,
       )}
     >
       {speaking ? <Square className="size-4" aria-hidden /> : <Volume2 className="size-4" aria-hidden />}
-      <span className={compact ? "sr-only" : undefined}>{speaking ? "Arrêter" : label}</span>
+      <span className={compact === true ? "sr-only" : compact === "mobile" ? "max-sm:sr-only" : undefined}>{speaking ? "Arrêter" : label}</span>
     </button>
   );
 }
