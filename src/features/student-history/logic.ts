@@ -39,17 +39,3 @@ export function historyReach(viewer: HistoryViewer, pupilSchools: string[], now 
 export function reaches(reach: HistoryReach, schoolId: string) {
   return reach.all || reach.schoolIds.has(schoolId);
 }
-
-// Until the data model allows two enrollments of a pupil in one school year,
-// a school change during the year moves the enrollment to the new school.
-// The part of that year spent in the previous school is told apart by the
-// date of the accepted transfer: this gives, for a moment in the year, the
-// school the pupil attended then.
-export type YearMove = { at: Date; fromSchoolId: string; toSchoolId: string };
-
-export function schoolAt(currentSchoolId: string, moves: YearMove[], at: Date) {
-  // Moves sorted oldest first; the school at a date is the origin of the
-  // first move that happened after it.
-  const later = [...moves].sort((a, b) => a.at.getTime() - b.at.getTime()).find((m) => m.at > at);
-  return later ? later.fromSchoolId : currentSchoolId;
-}

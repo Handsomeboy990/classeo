@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { historyReach, reaches, recordAccessValid, schoolAt } from "./logic";
+import { historyReach, reaches, recordAccessValid } from "./logic";
 
 const now = new Date("2026-10-10T12:00:00Z");
 
@@ -39,14 +39,5 @@ describe("recordAccessValid", () => {
   it("treats a missing expiry as permanent", () => {
     expect(recordAccessValid({ expiresAt: null }, now)).toBe(true);
     expect(recordAccessValid(null, now)).toBe(false);
-  });
-});
-
-describe("schoolAt", () => {
-  it("gives the previous school before a move of the year", () => {
-    const moves = [{ at: new Date("2026-10-05"), fromSchoolId: "a", toSchoolId: "b" }];
-    expect(schoolAt("b", moves, new Date("2026-09-20"))).toBe("a");
-    expect(schoolAt("b", moves, new Date("2026-10-06"))).toBe("b");
-    expect(schoolAt("b", [], new Date("2026-09-20"))).toBe("b");
   });
 });
