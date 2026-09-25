@@ -37,6 +37,44 @@ const createSchema = z.object({
     .transform((v) => v || null),
 });
 
+const fold = (v: string) =>
+  v
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .trim()
+    .toLowerCase();
+
+// A teacher account only reaches the classes of its teacher record (see
+// scope.ts). The account is linked to the school's unlinked record with the
+// same name when there is exactly one, otherwise a record is created, so the
+// account works at once and the teacher can be assigned to courses.
+async function linkTeacherRecord(
+  tx: Prisma.TransactionClient,
+  account: { id: string; firstName: string; lastName: string; phone: string | null },
+  schoolId: string,
+) {
+  const candidates = await tx.teacher.findMany({
+    where: { schoolId, userId: null, isActive: true },
+    select: { id: true, firstName: true, lastName: true },
+  });
+  const matches = candidates.filter((t) => fold(t.firstName) === fold(account.firstName) && fold(t.lastName) === fold(account.lastName));
+  if (matches.length === 1) {
+    await tx.teacher.update({ where: { id: matches[0]!.id }, data: { userId: account.id } });
+    return "linked" as const;
+  }
+  await tx.teacher.create({
+    data: {
+      userId: account.id,
+      schoolId,
+      matricule: `ENS-${Date.now().toString(36).toUpperCase()}${Math.floor(Math.random() * 1296).toString(36).toUpperCase()}`,
+      firstName: account.firstName,
+      lastName: account.lastName,
+      phone: account.phone,
+    },
+  });
+  return "created" as const;
+}
+
 // Resolves the entity chosen for a role into its position in the territory.
 async function resolveTarget(level: ScopeLevel, entityId: string | null): Promise<{ ref: ScopeRef; label: string }> {
   if (level === "NATIONAL") return { ref: { level: "NATIONAL" }, label: "Bénin" };
@@ -70,7 +108,9 @@ export const createUser = createAction({
 
     const password = generateTemporaryPassword();
     try {
-      const created = await db.user.create({
+      let teacherLink: "linked" | "created" | null = null;
+      const created = await db.$transaction(async (tx) => {
+        const account = await tx.user.create({
         data: {
           email: input.email,
           firstName: input.firstName,
@@ -84,7 +124,10 @@ export const createUser = createAction({
           communeId: role.scopeLevel === "COMMUNE" ? target.ref.communeId : null,
           schoolId: role.scopeLevel === "SCHOOL" ? target.ref.schoolId : null,
         },
-        select: { id: true, email: true },
+        select: { id: true, email: true, firstName: true, lastName: true, phone: true },
+        });
+        if (role.code === "TEACHER" && target.ref.schoolId) teacherLink = await linkTeacherRecord(tx, account, target.ref.schoolId);
+        return account;
       });
       await audit(user, {
         action: "create",
@@ -94,7 +137,13 @@ export const createUser = createAction({
         summary: `Création du compte ${created.email} : ${role.name}, ${SCOPE_LABELS[role.scopeLevel].toLowerCase()} ${target.label}`,
         metadata: { role: role.code, scopeLevel: role.scopeLevel },
       });
-      return { message: "Compte créé.", data: { email: created.email, password } };
+      const message =
+        teacherLink === "linked"
+          ? "Compte créé et rattaché à la fiche enseignant existante."
+          : teacherLink === "created"
+            ? "Compte créé avec sa fiche enseignant. Affectez-lui des cours depuis la page de la classe."
+            : "Compte créé.";
+      return { message, data: { email: created.email, password } };
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") throw new DomainError("Un compte existe déjà avec cette adresse e-mail.");
       throw error;
