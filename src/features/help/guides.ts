@@ -108,7 +108,7 @@ export const FAQ: { icon: LucideIcon; q: string; a: string }[] = [
   {
     icon: Volume2,
     q: "Comment faire lire une page à voix haute ?",
-    a: "Appuyez sur un bouton « Écouter », en haut de chaque page ou sur une carte, puis sur « Arrêter » pour couper. La voix est celle de votre téléphone ou de votre ordinateur ; si aucune voix française n'est installée, un message vous l'indique.",
+    a: "Appuyez sur un bouton « Écouter », en haut de chaque page ou sur une carte, puis sur « Arrêter » pour couper. La voix est la même sur tous les appareils ; sans connexion, c'est celle de votre téléphone ou de votre ordinateur, et si aucune voix française n'y est installée, un message vous l'indique.",
   },
   {
     icon: Accessibility,

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { genderOf, isSynthetic, pickVoice, splitSentences, voiceSettings } from "./kora";
+import { genderOf, isSynthetic, NORMAL_RATE, pickVoice, playbackRateFor, splitSentences, storedRate, voiceSettings } from "./kora";
 
 const v = (name: string, lang = "fr-FR", localService = true) => ({ name, lang, localService, default: false, voiceURI: name }) as SpeechSynthesisVoice;
 
@@ -56,5 +56,23 @@ describe("desktop voices", () => {
 describe("splitSentences", () => {
   it("cuts on sentence ends and keeps numbers together", () => {
     expect(splitSentences("Sènami, classe de 3e A. Moyenne : 13,25 sur 20. Bien !")).toEqual(["Sènami, classe de 3e A.", "Moyenne : 13,25 sur 20.", "Bien !"]);
+  });
+});
+
+describe("speed", () => {
+  it("reads the old normal pace as the new, slower one", () => {
+    expect(storedRate(null)).toBe(NORMAL_RATE);
+    expect(storedRate("0.95")).toBe(NORMAL_RATE);
+    expect(storedRate("0.75")).toBe("0.75");
+    expect(Number(NORMAL_RATE)).toBeLessThan(0.9);
+  });
+  it("slows a synthetic voice below the chosen pace", () => {
+    expect(voiceSettings(v("French (France)"), Number(NORMAL_RATE)).rate).toBeLessThan(Number(NORMAL_RATE));
+  });
+  it("plays server clips at the normal pace, scaled by the setting", () => {
+    expect(playbackRateFor(Number(NORMAL_RATE))).toBe(1);
+    expect(playbackRateFor(0.75)).toBeLessThan(1);
+    expect(playbackRateFor(1.2)).toBeGreaterThan(1);
+    expect(playbackRateFor(5)).toBe(1.5);
   });
 });

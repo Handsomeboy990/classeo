@@ -3,9 +3,10 @@
 import { useId, useSyncExternalStore } from "react";
 
 import { cn } from "@/lib/utils";
+import { NORMAL_RATE, storedRate } from "@/lib/voice/kora";
 
 type Prefs = { theme: string; contrast: string; text: string; lite: string; rate: string };
-const DEFAULTS: Prefs = { theme: "system", contrast: "normal", text: "md", lite: "off", rate: "0.95" };
+const DEFAULTS: Prefs = { theme: "system", contrast: "normal", text: "md", lite: "off", rate: NORMAL_RATE };
 
 const listeners = new Set<() => void>();
 let cache: { key: string; value: Prefs } | null = null;
@@ -29,7 +30,7 @@ function read(): Prefs {
       contrast: localStorage.getItem("classeo:contrast") ?? DEFAULTS.contrast,
       text: localStorage.getItem("classeo:text") ?? DEFAULTS.text,
       lite: localStorage.getItem("classeo:lite") ?? DEFAULTS.lite,
-      rate: localStorage.getItem("classeo:voice-rate") ?? DEFAULTS.rate,
+      rate: storedRate(localStorage.getItem("classeo:voice-rate")),
     };
   } catch {
     return DEFAULTS;
@@ -127,7 +128,7 @@ export function AccessibilityControls() {
         onChange={(rate) => update({ rate })}
         options={[
           ["0.75", "Lente"],
-          ["0.95", "Normale"],
+          [NORMAL_RATE, "Normale"],
           ["1.2", "Rapide"],
         ]}
       />
