@@ -61,3 +61,11 @@ describe("e-mail templates", () => {
     for (const m of all) expect(m.html + m.text).not.toContain(String.fromCharCode(0x2014));
   });
 });
+
+describe("passwordChangedEmail after a change while signed in", () => {
+  it("says the current session stays open and offers no sign in button", () => {
+    const mail = passwordChangedEmail({ firstName: "P", email: "p@a.bj", at: new Date("2026-09-25T10:30:00Z"), signInUrl: "https://a.bj/connexion", forgotUrl: "https://a.bj/mot-de-passe-oublie", keptSession: true });
+    expect(mail.text).toContain("reste active");
+    expect(mail.text).not.toContain("Reconnectez-vous");
+  });
+});

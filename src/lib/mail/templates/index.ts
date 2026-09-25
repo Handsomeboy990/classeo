@@ -88,16 +88,21 @@ export function resetCodeEmail(input: { firstName: string; code: string; minutes
   });
 }
 
-export function passwordChangedEmail(input: { firstName: string; email: string; at: Date; signInUrl: string; forgotUrl: string }): RenderedEmail {
+// keptSession: the change was made while signed in, so that session stays
+// open and only the other ones were closed (see changePassword).
+export function passwordChangedEmail(input: { firstName: string; email: string; at: Date; signInUrl: string; forgotUrl: string; keptSession?: boolean }): RenderedEmail {
+  const sessions = input.keptSession
+    ? "Par sécurité, les autres sessions ouvertes avec ce compte ont été fermées. La session depuis laquelle vous avez fait la modification reste active."
+    : "Par sécurité, toutes les sessions ouvertes avec ce compte ont été fermées. Reconnectez-vous avec votre nouveau mot de passe.";
   return renderEmail({
     subject: "Votre mot de passe Classéo a été modifié",
-    preheader: "Confirmation de sécurité : vos sessions ouvertes ont été fermées.",
+    preheader: input.keptSession ? "Confirmation de sécurité : vos autres sessions ont été fermées." : "Confirmation de sécurité : vos sessions ouvertes ont été fermées.",
     eyebrow: "Sécurité du compte",
     title: "Mot de passe modifié",
     blocks: [
       { type: "paragraph", text: `Bonjour ${input.firstName}, le mot de passe du compte ${input.email} a été modifié le ${dateTime.format(input.at)}.` },
-      { type: "paragraph", text: "Par sécurité, toutes les sessions ouvertes avec ce compte ont été fermées. Reconnectez-vous avec votre nouveau mot de passe." },
-      { type: "button", label: "Se connecter", href: input.signInUrl },
+      { type: "paragraph", text: sessions },
+      ...(input.keptSession ? [] : [{ type: "button" as const, label: "Se connecter", href: input.signInUrl }]),
       {
         type: "notice",
         tone: "warning",
