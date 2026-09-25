@@ -1,4 +1,4 @@
-import { Bell, LogOut, MapPin } from "lucide-react";
+import { ArrowLeftRight, Bell, LogOut, MapPin } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
@@ -9,10 +9,12 @@ import { SidebarNav, type RenderedItem, type RenderedSection } from "@/component
 import { SignOutButton } from "@/components/shell/sign-out-button";
 import { TabBar } from "@/components/shell/tab-bar";
 import { Avatar } from "@/components/ui/avatar";
+import { SchoolLogo } from "@/features/auth/school-picker";
 import { InstallCard } from "@/features/pwa/install-ui";
 import { requireUser } from "@/lib/auth/session";
 import { pushPublicKey } from "@/lib/channels/push";
 import { db } from "@/lib/db";
+import { fileUrl } from "@/lib/files";
 import { mobileTabs, tabAudience, visibleNavigation, type NavItem } from "@/lib/navigation";
 import { roleLabel } from "@/features/messages/role-label";
 
@@ -28,7 +30,13 @@ export default async function SpaceLayout({ children }: LayoutProps<"/espace">) 
   const visible = visibleNavigation(user);
   const sections: RenderedSection[] = visible.map((s) => ({ title: s.title, items: s.items.map(render) }));
   const tabs = mobileTabs(visible, tabAudience(user)).map(render);
-  const shellUser = { fullName: user.fullName, email: user.email ?? user.username, roleName: roleLabel(user.role.name, user.gender), scopeLabel: user.scope.label };
+  const shellUser = {
+    fullName: user.fullName,
+    email: user.email ?? user.username,
+    roleName: roleLabel(user.role.name, user.gender),
+    scopeLabel: user.scope.label,
+    canSwitchSchool: user.schools.length > 1,
+  };
   const pushKey = pushPublicKey();
 
   return (
@@ -47,11 +55,26 @@ export default async function SpaceLayout({ children }: LayoutProps<"/espace">) 
           <AppBar sections={sections} unread={unread} user={shellUser} pushKey={pushKey} />
 
           <div className="hidden min-h-16 items-center gap-3 px-6 py-2 lg:flex">
-            <p className="flex items-center gap-1.5 text-sm text-muted">
-              <MapPin className="size-4" aria-hidden />
-              <span className="sr-only">Périmètre :</span>
-              {user.scope.label}
-            </p>
+            {user.schools.length > 1 ? (
+              // An account working in several schools switches from here.
+              <Link
+                href="/espace/choisir-etablissement"
+                className="flex items-center gap-2 rounded-lg border border-border px-2 py-1 text-sm hover:bg-surface-2"
+                aria-label={`Établissement : ${user.scope.label}. Changer d'établissement`}
+              >
+                <SchoolLogo url={fileUrl(user.scope.logoFileId)} className="size-8 rounded-md" />
+                <span className="font-semibold">{user.scope.label}</span>
+                <span className="inline-flex items-center gap-1 text-muted">
+                  <ArrowLeftRight className="size-4" aria-hidden /> Changer
+                </span>
+              </Link>
+            ) : (
+              <p className="flex items-center gap-1.5 text-sm text-muted">
+                <MapPin className="size-4" aria-hidden />
+                <span className="sr-only">Périmètre :</span>
+                {user.scope.label}
+              </p>
+            )}
             <div className="ml-auto flex items-center gap-2">
               {/* Docked here on a large screen instead of floating over tables
                   and values (see .a11y-fab in globals.css). */}

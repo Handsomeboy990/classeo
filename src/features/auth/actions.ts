@@ -8,7 +8,7 @@ import { z } from "zod";
 import type { ActionState } from "@/lib/action";
 import { audit } from "@/lib/audit";
 import { dummyVerify, hashPassword, verifyPassword } from "@/lib/auth/password";
-import { clientIp, createSession, destroySession, getCurrentUser } from "@/lib/auth/session";
+import { accountSchoolCount, clientIp, createSession, destroySession, getCurrentUser } from "@/lib/auth/session";
 import { db } from "@/lib/db";
 import { platformUrl, sendMail } from "@/lib/mail";
 import { passwordChangedEmail } from "@/lib/mail/templates";
@@ -82,7 +82,13 @@ export async function login(_prev: ActionState, formData: FormData): Promise<Act
   await createSession(user.id);
   await audit(null, { action: "login", resource: "user", resourceId: user.id, summary: `Connexion ${de(`${user.firstName} ${user.lastName}`)}`, schoolId: user.schoolId });
 
-  redirect(user.mustChangePassword ? "/changer-mot-de-passe" : safeNext(next));
+  if (user.mustChangePassword) redirect("/changer-mot-de-passe");
+  // An account working in several schools first chooses one.
+  if ((await accountSchoolCount(user.id)) > 1) {
+    const target = safeNext(next);
+    redirect(target === "/espace" ? "/espace/choisir-etablissement" : `/espace/choisir-etablissement?next=${encodeURIComponent(target)}`);
+  }
+  redirect(safeNext(next));
 }
 
 export async function logout() {
@@ -133,5 +139,5 @@ export async function changePassword(_prev: ActionState, formData: FormData): Pr
         ...passwordChangedEmail({ firstName: user.firstName, email: to, at, signInUrl: platformUrl("/connexion"), forgotUrl: platformUrl("/mot-de-passe-oublie"), keptSession: true }),
       }),
     );
-  redirect("/espace");
+  redirect((await accountSchoolCount(user.id)) > 1 ? "/espace/choisir-etablissement" : "/espace");
 }

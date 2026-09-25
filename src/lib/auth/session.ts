@@ -154,7 +154,8 @@ async function loadUser(sessionId: string) {
       logoFileId: u.scopeLevel === "SCHOOL" ? (active?.logoFileId ?? null) : null,
     },
     // Schools the account can switch between (several for a teacher).
-    schools: schools.map((sc) => ({ id: sc.id, name: sc.name })),
+    schools: schools.map((sc) => ({ id: sc.id, name: sc.name, logoFileId: sc.logoFileId })),
+    activeSchoolId: u.scopeLevel === "SCHOOL" ? (active?.id ?? null) : null,
     teacherId: teacher?.id ?? null,
     studentId: u.student?.id ?? null,
     guardianId: u.guardian?.id ?? null,
@@ -174,4 +175,12 @@ export async function requireUser() {
   const user = await getCurrentUser();
   if (!user) redirect("/connexion");
   return user;
+}
+
+// Number of schools an account works in (its own school and its teaching
+// appointments). Above one, the account chooses its school after sign in.
+export async function accountSchoolCount(userId: string) {
+  const u = await db.user.findUnique({ where: { id: userId }, select: { schoolId: true, teachers: { where: { isActive: true }, select: { schoolId: true } } } });
+  if (!u) return 0;
+  return new Set([...(u.schoolId ? [u.schoolId] : []), ...u.teachers.map((t) => t.schoolId)]).size;
 }
