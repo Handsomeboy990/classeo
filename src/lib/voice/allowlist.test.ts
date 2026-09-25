@@ -11,7 +11,8 @@ const LANDING =
 
 describe("isPublicSpeechText", () => {
   it("accepts the public texts, whatever their spacing", () => {
-    expect(PUBLIC_SPEECH_TEXTS).toContain(LANDING);
+    // The public pages join the lines of a text with line breaks.
+    expect(PUBLIC_SPEECH_TEXTS.map((t) => t.replace(/\s+/g, " "))).toContain(LANDING);
     expect(isPublicSpeechText(LANDING)).toBe(true);
     expect(isPublicSpeechText(`  ${LANDING.replace(/ /g, "  ")}\n`)).toBe(true);
   });
