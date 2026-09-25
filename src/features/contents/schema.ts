@@ -14,9 +14,11 @@ const optionalText = (max: number, message: string) =>
     .transform((v) => (v ? v : null));
 
 // Relative paths on the platform or http(s) links only: never javascript: or
-// data: URLs, which would run in the reader's browser.
+// data: URLs, which would run in the reader's browser. A relative path may not
+// hold a backslash: browsers read "/\host" as "//host", another site, which
+// the page would then embed as if it were platform media.
 const mediaUrl = optionalText(500, "L'adresse est trop longue (500 caractères au plus).").refine(
-  (v) => v === null || /^https?:\/\/[^\s]+$/i.test(v) || /^\/[^\s/][^\s]*$/.test(v),
+  (v) => v === null || /^https?:\/\/[^\s]+$/i.test(v) || /^\/[^\s/\\][^\s\\]*$/.test(v),
   "Saisissez une adresse qui commence par https:// ou par /.",
 );
 
