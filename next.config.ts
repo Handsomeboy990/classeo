@@ -13,10 +13,12 @@ const csp = [
   "default-src 'self'",
   `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob:",
+  // Media and images from https sources: teachers link hosted audio, video
+  // and pictures. Scripts, styles and connections stay same origin.
+  "img-src 'self' data: blob: https:",
   "font-src 'self'",
   "connect-src 'self'",
-  "media-src 'self' data: blob:",
+  "media-src 'self' data: blob: https:",
   "frame-ancestors 'none'",
   "form-action 'self'",
   "base-uri 'self'",
