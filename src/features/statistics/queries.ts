@@ -24,7 +24,8 @@ import { statScopeKey, type StatScope } from "../territory/scope";
 
 export type ChildLevel = "DEPARTMENT" | "COMMUNE" | "SCHOOL" | "CLASS";
 
-export type ChildRow = { id: string; name: string; indicators: Indicators };
+// status: set for schools, so a suspended or closed one is flagged.
+export type ChildRow = { id: string; name: string; indicators: Indicators; status?: "ACTIVE" | "SUSPENDED" | "CLOSED" };
 
 export type ScopeStatistics = {
   scope: StatScope;
@@ -65,6 +66,7 @@ type SchoolCountsRow = {
   communeId: string;
   departmentId: string;
   isActive: boolean;
+  status: "ACTIVE" | "SUSPENDED" | "CLOSED";
   enrollments: number;
   girls: number;
   disabled: number;
@@ -97,7 +99,7 @@ async function schoolCounts(scope: StatScope, years: Years): Promise<SchoolCount
   const prevId = years.previous?.id ?? "";
   return db.$queryRaw<SchoolCountsRow[]>`
     WITH sc AS (
-      SELECT s.id, s.name, s."communeId", c."departmentId", s."isActive"
+      SELECT s.id, s.name, s."communeId", c."departmentId", s."isActive", s.status::text AS status
       FROM "School" s JOIN "Commune" c ON c.id = s."communeId"
       WHERE ${schoolFilter(scope)}
     ),
@@ -138,7 +140,7 @@ async function schoolCounts(scope: StatScope, years: Years): Promise<SchoolCount
       SELECT r."schoolId" AS sid, count(*)::int AS n FROM "SchoolRequest" r
       WHERE r.status = 'PENDING' AND r."schoolId" IN (SELECT id FROM sc) GROUP BY 1
     )
-    SELECT sc.id, sc.name, sc."communeId", sc."departmentId", sc."isActive",
+    SELECT sc.id, sc.name, sc."communeId", sc."departmentId", sc."isActive", sc.status,
            coalesce(enr.total, 0) AS enrollments, coalesce(enr.girls, 0) AS girls, coalesce(enr.disabled, 0) AS disabled,
            coalesce(tea.n, 0) AS teachers, coalesce(cla.n, 0) AS classes,
            coalesce(att.total, 0) AS "attendanceRecords", coalesce(att.absent, 0) AS absences,
@@ -265,7 +267,7 @@ async function computeStatistics(scope: StatScope, yearId: string | null): Promi
       return {
         ...base,
         childLevel: "SCHOOL",
-        children: schools.map((r) => ({ id: r.id, name: r.name, indicators: computeIndicators(countsOfSchool(r)) })),
+        children: schools.map((r) => ({ id: r.id, name: r.name, status: r.status, indicators: computeIndicators(countsOfSchool(r)) })),
       };
     case "SCHOOL": {
       const classes = await classCounts(scope.id, years);
@@ -285,7 +287,7 @@ async function computeStatistics(scope: StatScope, yearId: string | null): Promi
 // Cached per territorial scope and shared by every user of that scope. The
 // key is the scope, never the user. Invalidated through tags.stats by every
 // action that changes an input (schools, requests, enrollments, attendance).
-const cachedStatistics = cached((_key: string, scope: StatScope, yearId: string | null) => computeStatistics(scope, yearId), ["statistics", "v2"], {
+const cachedStatistics = cached((_key: string, scope: StatScope, yearId: string | null) => computeStatistics(scope, yearId), ["statistics", "v3"], {
   tags: [tags.stats],
   revalidate: 600,
 });
