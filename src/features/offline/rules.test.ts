@@ -4,7 +4,7 @@ import { attendanceConflicts, gradeConflicts, listNames, outcomeOfExisting } fro
 import type { GradeCell } from "./types";
 
 const cell = (value: number | null, over: Partial<GradeCell> = {}): GradeCell => ({ enrollmentId: "e1", type: "INTERROGATION", sequence: 1, value, ...over });
-const server = (value: number, over: Partial<GradeCell> = {}) => ({ enrollmentId: "e1", type: "INTERROGATION", sequence: 1, value, ...over });
+const server = (value: number, over: Partial<Omit<GradeCell, "value">> = {}) => ({ enrollmentId: "e1", type: "INTERROGATION", sequence: 1, ...over, value });
 
 describe("gradeConflicts", () => {
   it("applies when the server still holds what the device read", () => {
