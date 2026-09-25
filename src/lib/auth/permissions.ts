@@ -160,6 +160,8 @@ export const DEFAULT_ROLES: {
       ...only("request", "view", "approve"),
       ...all("statistics"),
       ...only("user", "view", "create", "update"),
+      // Roles of its own department, within the rights it holds.
+      ...only("role", "view", "update"),
       ...only("audit", "view"),
     ],
   },
@@ -181,6 +183,10 @@ export const DEFAULT_ROLES: {
       ...all("message"),
       ...only("request", "view", "approve"),
       ...all("statistics"),
+      // Handles the password help requests of the school heads of its
+      // commune, and creates roles for its own staff.
+      ...only("user", "view", "update"),
+      ...only("role", "view", "update"),
       ...only("audit", "view"),
     ],
   },
@@ -206,6 +212,9 @@ export const DEFAULT_ROLES: {
       ...all("fee"),
       ...all("payment"),
       ...only("user", "view", "create", "update"),
+      // Roles of its own school (a supervisor, a bursar...), within the
+      // rights it holds.
+      ...only("role", "view", "update"),
       ...only("audit", "view"),
     ],
   },

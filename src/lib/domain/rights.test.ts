@@ -143,8 +143,8 @@ describe("planRoleCreate", () => {
     expect(r).toEqual({ ok: true, permissions: [...role("NATIONAL_ANALYST").permissions].sort(), dropped: [] });
   });
   it("drops and reports the source permissions the actor does not hold", () => {
-    const r = planRoleCreate({ actor: director, scopeLevel: "DEPARTMENT", source: ["school:view", "fee:delete", "role:update"], catalogue });
-    expect(r).toEqual({ ok: true, permissions: ["school:view"], dropped: ["fee:delete", "role:update"] });
+    const r = planRoleCreate({ actor: director, scopeLevel: "DEPARTMENT", source: ["school:view", "fee:delete", "audit:export"], catalogue });
+    expect(r).toEqual({ ok: true, permissions: ["school:view"], dropped: ["audit:export", "fee:delete"] });
   });
   it("ignores unknown codes and duplicates, and starts empty without a source", () => {
     expect(planRoleCreate({ actor: admin, scopeLevel: "SCHOOL", source: ["school:view", "school:view", "school:fly"], catalogue })).toEqual({
