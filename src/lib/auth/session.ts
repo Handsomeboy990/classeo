@@ -126,6 +126,7 @@ async function loadUser(sessionId: string) {
     firstName: u.firstName,
     lastName: u.lastName,
     fullName: `${u.firstName} ${u.lastName}`,
+    gender: u.gender,
     mustChangePassword: u.mustChangePassword,
     role: { id: u.role.id, code: u.role.code, name: u.role.name },
     permissions: new Set((await rolePermissions(u.role.id)) as PermissionCode[]),
