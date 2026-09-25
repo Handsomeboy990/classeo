@@ -1,0 +1,45 @@
+# Local stack. Development: `docker compose up -d db` then `npm run dev`.
+# Full platform in one command: `docker compose --profile app up --build`.
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: classeo
+      POSTGRES_PASSWORD: classeo
+      POSTGRES_DB: classeo
+    ports:
+      - "${DB_PORT:-55432}:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U classeo"]
+      interval: 5s
+      retries: 10
+
+  # Applies migrations, then seeds demo data if the database is empty.
+  migrate:
+    build:
+      context: .
+      target: builder
+    profiles: ["app"]
+    command: sh -c "npx prisma migrate deploy && npx tsx prisma/seed.ts"
+    environment:
+      DATABASE_URL: postgresql://classeo:classeo@db:5432/classeo
+    depends_on:
+      db:
+        condition: service_healthy
+
+  app:
+    build: .
+    profiles: ["app"]
+    environment:
+      DATABASE_URL: postgresql://classeo:classeo@db:5432/classeo
+      SESSION_SECRET: ${SESSION_SECRET:-change-me-local-only-0123456789abcdef0123}
+    ports:
+      - "3000:3000"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+volumes:
+  db-data:

@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: postgresql://classeo:classeo@localhost:5432/classeo
+      SESSION_SECRET: ci-only-secret-0123456789abcdef0123456789
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: classeo
+          POSTGRES_PASSWORD: classeo
+          POSTGRES_DB: classeo
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U classeo" --health-interval 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm test
+      - run: npx prisma migrate deploy
+      - run: npx next build
+      # High advisories currently come only from the Prisma CLI tree
+      # (deepmerge-ts in config loading, mysql2 driver unused with
+      # PostgreSQL); neither runs in the deployed app and the only fix is a
+      # downgrade to Prisma 6. Accepted and tracked in docs/security.md.
+      # The build still fails on any critical advisory.
+      - run: npm audit --omit=dev --audit-level=critical
