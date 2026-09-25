@@ -76,7 +76,7 @@ async function notifyReaders(user: User, c: { id: string; title: string; audienc
     ids.push(...rows.map((r) => r.userId!));
   }
   if (wants("STAFF")) {
-    const rows = await db.user.findMany({ where: { schoolId: c.schoolId, scopeLevel: "SCHOOL", teacher: null, isActive: true }, select: { id: true }, take: 100 });
+    const rows = await db.user.findMany({ where: { schoolId: c.schoolId, scopeLevel: "SCHOOL", teachers: { none: {} }, isActive: true }, select: { id: true }, take: 100 });
     ids.push(...rows.map((r) => r.id));
   }
   await notify(

@@ -56,7 +56,7 @@ export async function allowedContacts(user: User): Promise<Contact[]> {
     const schoolIds = [...new Set(enrollments.map((e) => e.schoolId))];
     if (!classroomIds.length) return [];
     const teachers = users(
-      { AND: [notMe, { teacher: { OR: [{ assignments: { some: { classroomId: { in: classroomIds } } } }, { mainClasses: { some: { id: { in: classroomIds } } } }] } }] },
+      { AND: [notMe, { teachers: { some: { OR: [{ assignments: { some: { classroomId: { in: classroomIds } } } }, { mainClasses: { some: { id: { in: classroomIds } } } }] } } }] },
       () => "Enseignants",
     );
     lists = await Promise.all(user.guardianId ? [teachers, users({ AND: [notMe, isDirector, { schoolId: { in: schoolIds } }] }, () => "Direction")] : [teachers]);
