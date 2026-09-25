@@ -155,6 +155,7 @@ async function replayAll() {
   const items = await replayable(idbStore, owner);
   if (!items.length) return;
   let applied = 0;
+  let refused = 0;
   let askedToSignIn = false;
   for (const item of items) {
     if (userId !== owner) break;
@@ -166,15 +167,16 @@ async function replayAll() {
     }
     const result = await settle(idbStore, item, outcome);
     if (result === "applied") applied++;
+    if (result === "rejected") refused++;
     if (result === "rejected" && outcome.outcome === "rejected") toast("error", `Saisie refusée, ${item.label} : ${outcome.reason} Vos valeurs sont gardées dans « À revoir ».`);
     if (outcome.outcome === "auth") askedToSignIn = true;
     if (outcome.outcome === "auth" || outcome.outcome === "retry") break;
   }
   await changed();
-  if (applied) {
-    toast("success", applied > 1 ? `${applied} saisies faites hors ligne ont été enregistrées.` : "Votre saisie faite hors ligne a été enregistrée.");
-    appliedListeners.forEach((l) => l());
-  }
+  if (applied) toast("success", applied > 1 ? `${applied} saisies faites hors ligne ont été enregistrées.` : "Votre saisie faite hors ligne a été enregistrée.");
+  // Fresh data either way: the saved values, or the current ones to compare
+  // a refused entry with.
+  if (applied || refused) appliedListeners.forEach((l) => l());
   if (askedToSignIn) toast("error", "Reconnectez-vous pour envoyer les saisies en attente. Elles restent gardées sur cet appareil.");
 }
 
@@ -182,7 +184,7 @@ async function replayAll() {
 // Pages kept for offline use (downloaded by the service worker).
 // ---------------------------------------------------------------------------
 
-export type OfflinePage = { url: string; title: string | null; at: number };
+export type OfflinePage = { url: string; title: string | null; heading?: string | null; detail?: string | null; at: number };
 export type OfflineState = {
   userId: string;
   updatedAt: number;

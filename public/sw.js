@@ -152,14 +152,29 @@ async function trim(cacheName, max, keep) {
   if (over > 0) await Promise.all(keys.slice(0, over).map((k) => cache.delete(k)));
 }
 
-function pageTitle(html) {
-  const m = html.match(/<title>([^<]{1,200})<\/title>/);
-  if (!m) return null;
-  return m[1]
-    .replace(/ · Classéo$/, "")
+function plain(text) {
+  return text
+    .replace(/<[^>]*>/g, "")
     .replace(/&#x27;|&#39;/g, "'")
     .replace(/&amp;/g, "&")
-    .replace(/&quot;/g, '"');
+    .replace(/&quot;/g, '"')
+    .replace(/&nbsp;|&#xa0;/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 160);
+}
+
+// Names a kept page for the lists: its title, its heading and the line
+// under it (the class and the day of a register, the subject of a sheet).
+function pageInfo(html) {
+  const title = html.match(/<title>([^<]{1,200})<\/title>/);
+  const main = html.match(/<main[\s\S]*$/);
+  const heading = main && main[0].match(/<h1[^>]*>([\s\S]{1,400}?)<\/h1>\s*(?:<p[^>]*>([\s\S]{1,400}?)<\/p>)?/);
+  return {
+    title: title ? plain(title[1]).replace(/ · Classéo$/, "") : null,
+    heading: heading ? plain(heading[1]) : null,
+    detail: heading && heading[2] ? plain(heading[2]) : null,
+  };
 }
 
 // Keeps a private page only when it was rendered for the account the
@@ -303,7 +318,7 @@ async function downloadPages(userId, rawUrls, { force, saveData }) {
         break;
       }
     }
-    pages.push({ url, title: pageTitle(html), at: Date.now() });
+    pages.push({ url, ...pageInfo(html), at: Date.now() });
     await writeState({ ...state, pages: mergePages(state.pages, pages) });
     if (stopped) break;
   }
