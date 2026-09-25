@@ -35,6 +35,9 @@ export const RESOURCES = {
   role: "Rôles et droits",
   audit: "Journal d'activité",
   translation: "Traduction en langues locales",
+  calendar: "Calendrier scolaire national",
+  subject: "Catalogue des matières",
+  document_request: "Pièces demandées aux établissements",
 } as const;
 export type Resource = keyof typeof RESOURCES;
 
@@ -55,7 +58,8 @@ export const ACTION_LABELS: Record<Action, string> = {
 // these cells.
 const APPLICABLE: Record<Resource, Action[]> = {
   territory: ["view", "create", "update", "delete", "export"],
-  school: ["view", "create", "update", "delete", "export"],
+  // lock: suspend, close or reactivate a school (ministry chain only).
+  school: ["view", "create", "update", "delete", "export", "lock"],
   class: ["view", "create", "update", "delete", "export"],
   student: ["view", "create", "update", "delete", "export"],
   teacher: ["view", "create", "update", "delete", "export"],
@@ -76,6 +80,14 @@ const APPLICABLE: Record<Resource, Action[]> = {
   // Interface and content in Fon, Yoruba, Bariba... Parents by default; the
   // ministry extends it to other profiles from the rights matrix.
   translation: ["view"],
+  // The ministry sets the years and their periods (create, update), closes a
+  // year (lock) and grants extensions (approve). Everyone else reads it.
+  calendar: ["view", "create", "update", "lock", "approve"],
+  // The ministry owns the catalogue; schools propose through request:create.
+  subject: ["view", "create", "update", "delete", "approve"],
+  // An authority asks for pieces (create) and reviews them (approve); a
+  // school uploads and submits them (update).
+  document_request: ["view", "create", "update", "approve"],
 };
 
 export const PERMISSIONS: { code: PermissionCode; resource: Resource; action: Action; description: string }[] =
@@ -139,6 +151,9 @@ export const DEFAULT_ROLES: {
       ...all("statistics"),
       ...only("content", "view"),
       ...only("request", "view"),
+      ...only("calendar", "view"),
+      ...only("subject", "view"),
+      ...only("document_request", "view"),
     ],
   },
   {
@@ -148,7 +163,10 @@ export const DEFAULT_ROLES: {
     scopeLevel: "DEPARTMENT",
     permissions: [
       ...only("territory", "view", "export"),
-      ...only("school", "view", "create", "update", "export"),
+      ...only("school", "view", "create", "update", "export", "lock"),
+      ...only("calendar", "view"),
+      ...only("subject", "view"),
+      ...only("document_request", "view", "create", "approve"),
       ...only("class", "view"),
       ...only("student", "view", "export"),
       ...only("teacher", "view", "export"),
@@ -170,7 +188,10 @@ export const DEFAULT_ROLES: {
     scopeLevel: "COMMUNE",
     permissions: [
       ...only("territory", "view"),
-      ...only("school", "view", "update", "export"),
+      ...only("school", "view", "update", "export", "lock"),
+      ...only("calendar", "view"),
+      ...only("subject", "view"),
+      ...only("document_request", "view", "create", "approve"),
       ...only("class", "view"),
       ...only("student", "view"),
       ...only("teacher", "view"),
@@ -191,6 +212,9 @@ export const DEFAULT_ROLES: {
     scopeLevel: "SCHOOL",
     permissions: [
       ...only("school", "view", "update"),
+      ...only("calendar", "view"),
+      ...only("subject", "view"),
+      ...only("document_request", "view", "update"),
       ...all("class"),
       ...all("student"),
       ...all("teacher"),
@@ -216,6 +240,9 @@ export const DEFAULT_ROLES: {
     scopeLevel: "SCHOOL",
     permissions: [
       ...only("school", "view"),
+      ...only("calendar", "view"),
+      ...only("subject", "view"),
+      ...only("document_request", "view", "update"),
       ...only("class", "view"),
       ...only("student", "view", "create", "update", "export"),
       ...only("teacher", "view"),
@@ -236,6 +263,7 @@ export const DEFAULT_ROLES: {
     scopeLevel: "SCHOOL",
     permissions: [
       ...only("school", "view"),
+      ...only("calendar", "view"),
       ...only("class", "view"),
       ...only("student", "view"),
       ...only("parent", "view"),
@@ -251,6 +279,7 @@ export const DEFAULT_ROLES: {
     description: "Saisit les notes et les présences de ses classes, publie des ressources pour ses élèves.",
     scopeLevel: "SCHOOL",
     permissions: [
+      ...only("calendar", "view"),
       ...only("class", "view"),
       ...only("student", "view"),
       ...only("grade", "view", "create", "update", "delete", "export"),
