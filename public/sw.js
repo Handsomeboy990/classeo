@@ -1,26 +1,40 @@
 /*
  * Classéo service worker. Hand written, no library.
  *
- * - Pages: network first. A copy of the pages a family reads most (dashboard,
- *   student files, guide) is kept so they stay readable offline. Any other
- *   page falls back to /hors-ligne when the network is down.
+ * - Pages: network first. Private pages are kept in a cache of the signed in
+ *   account only (classeo-user-<version>-<account id>), after checking that
+ *   the page was rendered for that account (data-offline-user marker). Any
+ *   other page falls back to /hors-ligne when the network is down.
+ * - After sign in the page sends the list of the key pages of the account's
+ *   role; they are downloaded in the background, one at a time, with a low
+ *   priority and a size budget, even if never opened (see precachePages).
  * - Static assets (scripts, styles, fonts, icons): stale while revalidate.
  * - Never cached: anything that is not GET (server actions are POST), React
- *   Server Component payloads, prefetches, development endpoints, other
- *   origins.
- * - Private copies are deleted when the user signs out or the session ends.
+ *   Server Component payloads, prefetches, API routes, development
+ *   endpoints, other origins.
+ * - Private copies are deleted when the sign in page is reached (sign out,
+ *   expired session, account switch).
+ * - Entries typed offline wait in IndexedDB (src/features/offline); Background
+ *   Sync replays them when the network returns (see replayQueue).
  * - Caches are versioned: a new VERSION removes the previous ones.
  * - Push notifications are shown here and open their link when touched.
  */
 
-const VERSION = "2026-09-26.1";
+const VERSION = "2026-09-26.2";
 const SHELL = `classeo-shell-${VERSION}`;
 const ASSETS = `classeo-assets-${VERSION}`;
-const PAGES = `classeo-pages-${VERSION}`;
-const CURRENT = [SHELL, ASSETS, PAGES];
+const META = `classeo-meta-${VERSION}`;
+const USER_PREFIX = `classeo-user-${VERSION}-`;
+const CURRENT = [SHELL, ASSETS, META];
 const OFFLINE_URL = "/hors-ligne";
 const PRECACHE = [OFFLINE_URL, "/icon.svg", "/icons/icon-192.png", "/manifest.webmanifest"];
-const MAX_PAGES = 40;
+const STATE_KEY = "/__classeo/offline-state";
+const MAX_PAGES = 80;
+// Background download budget per account: pages and the scripts they need.
+const BUDGET_BYTES = 6 * 1024 * 1024;
+// Key pages are downloaded again at most this often.
+const REFRESH_MS = 30 * 60 * 1000;
+const USER_MARKER = /data-offline-user="([\w-]{1,64})"/;
 
 // The offline page must render with no network at all: keep its HTML and
 // every script and stylesheet it references.
@@ -28,8 +42,11 @@ async function precache() {
   const shell = await caches.open(SHELL);
   await shell.addAll(PRECACHE.map((url) => new Request(url, { cache: "reload" })));
   const html = await (await shell.match(OFFLINE_URL)).text();
-  const assets = [...new Set(html.match(/\/_next\/static\/[^"'\s)\\]+/g) || [])];
-  await (await caches.open(ASSETS)).addAll(assets);
+  await (await caches.open(ASSETS)).addAll(assetsOf(html));
+}
+
+function assetsOf(html) {
+  return [...new Set(html.match(/\/_next\/static\/[^"'\s)\\]+/g) || [])];
 }
 
 self.addEventListener("install", (event) => {
@@ -40,17 +57,59 @@ self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches
       .keys()
-      .then((keys) => Promise.all(keys.filter((k) => k.startsWith("classeo-") && !CURRENT.includes(k)).map((k) => caches.delete(k))))
+      .then((keys) => Promise.all(keys.filter((k) => k.startsWith("classeo-") && !CURRENT.includes(k) && !k.startsWith(USER_PREFIX)).map((k) => caches.delete(k))))
       .then(() => self.clients.claim()),
   );
 });
 
+/* ---------------------------------------------------------------------------
+ * Account state: which account the private cache belongs to, and what was
+ * downloaded for it. Stored in a cache entry so it survives the worker
+ * being stopped.
+ * ------------------------------------------------------------------------ */
+
+async function readState() {
+  const hit = await (await caches.open(META)).match(STATE_KEY);
+  return hit ? hit.json().catch(() => null) : null;
+}
+
+async function writeState(state) {
+  await (await caches.open(META)).put(STATE_KEY, new Response(JSON.stringify(state), { headers: { "Content-Type": "application/json" } }));
+  const windows = await self.clients.matchAll({ type: "window" });
+  for (const w of windows) w.postMessage({ type: "offline-precache", state });
+}
+
+function userCache(userId) {
+  return USER_PREFIX + userId;
+}
+
+async function purgePrivate() {
+  const keys = await caches.keys();
+  await Promise.all(keys.filter((k) => k.startsWith("classeo-user-") || k.startsWith("classeo-pages-")).map((k) => caches.delete(k)));
+  await (await caches.open(META)).delete(STATE_KEY);
+}
+
+// A page rendered for another account than the one the private cache
+// belongs to means the account changed: the previous copies go.
+async function switchTo(userId) {
+  const state = await readState();
+  if (state && state.userId === userId) return state;
+  await purgePrivate();
+  const fresh = { userId, updatedAt: 0, pages: [], running: false };
+  await writeState(fresh);
+  return fresh;
+}
+
 self.addEventListener("message", (event) => {
-  if (event.data && event.data.type === "purge-private") event.waitUntil(caches.delete(PAGES));
+  const data = event.data || {};
+  if (data.type === "purge-private") event.waitUntil(purgePrivate());
+  if (data.type === "precache" && typeof data.userId === "string" && Array.isArray(data.urls)) {
+    event.waitUntil(precachePages(data.userId, data.urls, { force: data.force === true, saveData: data.saveData === true }));
+  }
 });
 
 function isPrivatePage(pathname) {
-  return pathname === "/espace" || pathname === "/espace/aide" || pathname === "/espace/suivi" || pathname.startsWith("/espace/suivi/");
+  return pathname === "/espace" || pathname.startsWith("/espace/");
 }
 
 function isPublicPage(pathname) {
@@ -74,6 +133,7 @@ function isFrameworkData(request, url) {
     request.headers.has("next-action") ||
     request.headers.has("next-router-prefetch") ||
     url.searchParams.has("_rsc") ||
+    url.pathname.startsWith("/api/") ||
     url.pathname.startsWith("/_next/webpack-hmr") ||
     url.pathname.startsWith("/__nextjs")
   );
@@ -85,10 +145,48 @@ function servable(response) {
   return new Response(response.body, { status: response.status, statusText: response.statusText, headers: response.headers });
 }
 
-async function trim(cacheName, max) {
+async function trim(cacheName, max, keep) {
   const cache = await caches.open(cacheName);
-  const keys = await cache.keys();
-  await Promise.all(keys.slice(0, Math.max(0, keys.length - max)).map((k) => cache.delete(k)));
+  const keys = (await cache.keys()).filter((k) => !keep.has(new URL(k.url).pathname + new URL(k.url).search));
+  const over = keys.length - max;
+  if (over > 0) await Promise.all(keys.slice(0, over).map((k) => cache.delete(k)));
+}
+
+function plain(text) {
+  return text
+    .replace(/<[^>]*>/g, "")
+    .replace(/&#x27;|&#39;/g, "'")
+    .replace(/&amp;/g, "&")
+    .replace(/&quot;/g, '"')
+    .replace(/&nbsp;|&#xa0;/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 160);
+}
+
+// Names a kept page for the lists: its title, its heading and the line
+// under it (the class and the day of a register, the subject of a sheet).
+function pageInfo(html) {
+  const title = html.match(/<title>([^<]{1,200})<\/title>/);
+  const main = html.match(/<main[\s\S]*$/);
+  const heading = main && main[0].match(/<h1[^>]*>([\s\S]{1,400}?)<\/h1>\s*(?:<p[^>]*>([\s\S]{1,400}?)<\/p>)?/);
+  return {
+    title: title ? plain(title[1]).replace(/ · Classéo$/, "") : null,
+    heading: heading ? plain(heading[1]) : null,
+    detail: heading && heading[2] ? plain(heading[2]) : null,
+  };
+}
+
+// Keeps a private page only when it was rendered for the account the
+// private cache belongs to.
+async function keepPrivate(key, response) {
+  const html = await response.clone().text();
+  const marker = html.match(USER_MARKER);
+  if (!marker) return;
+  const state = await switchTo(marker[1]);
+  const cache = await caches.open(userCache(state.userId));
+  await cache.put(key, response);
+  await trim(userCache(state.userId), MAX_PAGES, new Set(state.pages.map((p) => p.url)));
 }
 
 async function handlePage(event, url) {
@@ -96,16 +194,10 @@ async function handlePage(event, url) {
     const response = await fetch(event.request);
     if (url.pathname === "/connexion" && response.ok) {
       // Reaching the sign in page means no session: drop private copies.
-      event.waitUntil(caches.delete(PAGES));
+      event.waitUntil(purgePrivate());
     } else if (response.ok && response.type === "basic" && !response.redirected) {
       if (isPrivatePage(url.pathname)) {
-        const copy = response.clone();
-        event.waitUntil(
-          caches
-            .open(PAGES)
-            .then((cache) => cache.put(url.pathname + url.search, copy))
-            .then(() => trim(PAGES, MAX_PAGES)),
-        );
+        event.waitUntil(keepPrivate(url.pathname + url.search, response.clone()).catch(() => undefined));
       } else if (isPublicPage(url.pathname)) {
         const copy = response.clone();
         event.waitUntil(caches.open(SHELL).then((cache) => cache.put(url.pathname, copy)));
@@ -114,7 +206,9 @@ async function handlePage(event, url) {
     return response;
   } catch {
     const key = url.pathname + url.search;
-    const cached = (await caches.match(key, { cacheName: PAGES })) || (await caches.match(url.pathname, { cacheName: SHELL }));
+    const state = await readState();
+    const own = state && isPrivatePage(url.pathname) ? await caches.match(key, { cacheName: userCache(state.userId) }) : null;
+    const cached = own || (await caches.match(url.pathname, { cacheName: SHELL }));
     if (cached) return servable(cached);
     const offline = await caches.match(OFFLINE_URL, { cacheName: SHELL });
     return offline ? servable(offline) : new Response("Hors ligne", { status: 503, headers: { "Content-Type": "text/plain; charset=utf-8" } });
@@ -150,6 +244,165 @@ self.addEventListener("fetch", (event) => {
   }
   if (isStaticAsset(url)) event.respondWith(handleAsset(event));
 });
+
+/* ---------------------------------------------------------------------------
+ * Key pages downloaded after sign in (list from src/features/offline/pages.ts).
+ * One page at a time, low priority, within a size budget. With data saver on,
+ * only the dashboard is downloaded unless the user asks for all of it.
+ * ------------------------------------------------------------------------ */
+
+let precaching = null;
+
+function precachePages(userId, urls, options) {
+  precaching = (precaching || Promise.resolve()).then(() => downloadPages(userId, urls, options)).catch(() => undefined);
+  return precaching;
+}
+
+function sameList(a, b) {
+  return a.length === b.length && a.every((u, i) => u === b[i]);
+}
+
+async function downloadPages(userId, rawUrls, { force, saveData }) {
+  const urls = rawUrls.filter((u) => typeof u === "string" && isPrivatePage(new URL(u, self.location.origin).pathname) && u.startsWith("/")).slice(0, 60);
+  let state = await switchTo(userId);
+  const fresh = Date.now() - (state.updatedAt || 0) < REFRESH_MS;
+  if (!force && fresh && state.complete && sameList(state.requested || [], urls)) return;
+
+  const wanted = saveData && !force ? urls.slice(0, 1) : urls;
+  const cache = await caches.open(userCache(userId));
+  const assets = await caches.open(ASSETS);
+  const pages = [];
+  let bytes = 0;
+  let stopped = null;
+  state = { ...state, running: true, requested: urls, saveData: saveData && !force };
+  await writeState(state);
+
+  for (const url of wanted) {
+    if (bytes > BUDGET_BYTES) {
+      stopped = "budget";
+      break;
+    }
+    let response;
+    try {
+      response = await fetch(url, { credentials: "same-origin", cache: "no-store", priority: "low", redirect: "follow" });
+    } catch {
+      stopped = "network";
+      break;
+    }
+    // Redirected to the sign in page: the session ended, nothing to keep.
+    if (response.redirected || response.type !== "basic") {
+      stopped = "session";
+      break;
+    }
+    if (!response.ok) continue;
+    const html = await response.text();
+    const marker = html.match(USER_MARKER);
+    if (!marker || marker[1] !== userId) {
+      stopped = "session";
+      break;
+    }
+    bytes += html.length;
+    await cache.put(url, new Response(html, { status: 200, headers: { "Content-Type": "text/html; charset=utf-8" } }));
+    // The scripts and styles the page needs to come alive without network.
+    for (const asset of assetsOf(html)) {
+      if (await assets.match(asset)) continue;
+      try {
+        const res = await fetch(asset, { priority: "low" });
+        if (res.ok) {
+          const blob = await res.clone().blob();
+          bytes += blob.size;
+          await assets.put(asset, res);
+        }
+      } catch {
+        stopped = "network";
+        break;
+      }
+    }
+    pages.push({ url, ...pageInfo(html), at: Date.now() });
+    await writeState({ ...state, pages: mergePages(state.pages, pages) });
+    if (stopped) break;
+  }
+
+  // Pages downloaded earlier that are no longer in the list go.
+  const keep = new Set(urls);
+  const merged = mergePages(state.pages, pages).filter((p) => keep.has(p.url));
+  await writeState({ ...state, running: false, complete: !stopped && wanted.length === urls.length, stopped, updatedAt: Date.now(), pages: merged });
+}
+
+function mergePages(before, after) {
+  const map = new Map((before || []).map((p) => [p.url, p]));
+  for (const p of after) map.set(p.url, p);
+  return [...map.values()];
+}
+
+/* ---------------------------------------------------------------------------
+ * Background Sync. An open window replays the queue itself (it can show the
+ * results); with no window open the worker sends the pending entries of the
+ * signed in account through the same route. Refused entries stay in the
+ * queue with their reason, for the "À revoir" list.
+ * ------------------------------------------------------------------------ */
+
+const OFFLINE_DB = "classeo-offline";
+const OFFLINE_STORE = "items";
+
+self.addEventListener("sync", (event) => {
+  if (event.tag === "classeo-replay") event.waitUntil(replayQueue());
+});
+
+function openQueue() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(OFFLINE_DB, 1);
+    req.onupgradeneeded = () => {
+      const db = req.result;
+      if (!db.objectStoreNames.contains(OFFLINE_STORE)) db.createObjectStore(OFFLINE_STORE, { keyPath: "clientId" }).createIndex("userId", "userId");
+    };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function queueOp(db, mode, fn) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(OFFLINE_STORE, mode);
+    const req = fn(tx.objectStore(OFFLINE_STORE));
+    tx.oncomplete = () => resolve(req.result);
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+async function replayQueue() {
+  const windows = await self.clients.matchAll({ type: "window" });
+  if (windows.length) {
+    for (const w of windows) w.postMessage({ type: "offline-replay" });
+    return;
+  }
+  const state = await readState();
+  if (!state || !state.userId) return;
+  const db = await openQueue();
+  const items = (await queueOp(db, "readonly", (s) => s.getAll()))
+    .filter((i) => i.userId === state.userId && !i.sealed && i.status === "pending")
+    .sort((a, b) => a.createdAt - b.createdAt);
+  for (const item of items) {
+    let outcome;
+    try {
+      const res = await fetch("/api/offline/replay", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ clientId: item.clientId, userId: item.userId, kind: item.kind, payload: item.payload, baseline: item.baseline, createdAt: item.createdAt }),
+      });
+      outcome = await res.json();
+    } catch {
+      // Still offline: the browser fires the sync event again later.
+      throw new Error("offline");
+    }
+    const now = Date.now();
+    if (outcome.outcome === "applied") await queueOp(db, "readwrite", (s) => s.delete(item.clientId));
+    else if (outcome.outcome === "rejected") await queueOp(db, "readwrite", (s) => s.put({ ...item, status: "rejected", error: outcome.reason, attempts: item.attempts + 1, updatedAt: now }));
+    else if (outcome.outcome === "other-user") await queueOp(db, "readwrite", (s) => s.put({ ...item, sealed: true, updatedAt: now }));
+    else break;
+  }
+}
 
 /*
  * Push notifications (see src/lib/channels/push.ts). The payload carries a

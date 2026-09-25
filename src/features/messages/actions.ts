@@ -11,6 +11,7 @@ import { db } from "@/lib/db";
 import { excerpt } from "@/lib/domain/messaging";
 import { DomainError } from "@/lib/errors";
 import { notify } from "@/lib/notify";
+import { withSubmission } from "@/features/offline/submission";
 
 import { allowedContacts } from "./queries";
 
@@ -53,8 +54,11 @@ export const startConversation = createAction({
 
 export const sendMessage = createAction({
   permission: "message:create",
-  schema: z.object({ conversationId: z.string().min(1).max(40), body }),
-  handler: async (input, user) => {
+  // clientId: one per message typed, so a message sent again after a lost
+  // answer or replayed from the offline queue is written once.
+  schema: z.object({ conversationId: z.string().min(1).max(40), body, clientId: z.uuid().optional() }),
+  handler: (input, user) =>
+    withSubmission(user, input.clientId, "message", async () => {
     // Scoped lookup: only a participant finds the conversation.
     const conversation = await db.conversation.findFirst({ where: { id: input.conversationId, participants: { some: { userId: user.id } } }, select: { id: true } });
     if (!conversation) throw new DomainError("Cette conversation est introuvable.");
@@ -65,5 +69,5 @@ export const sendMessage = createAction({
     await audit(user, { action: "create", resource: "message", resourceId: message.id, summary: "Message envoyé", metadata: { conversationId: conversation.id } });
     await notifyOthers(user, conversation.id, input.body);
     return "Message envoyé.";
-  },
+    }),
 });

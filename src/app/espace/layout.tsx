@@ -11,6 +11,8 @@ import { TopBar } from "@/components/shell/top-bar";
 import { tickerContents } from "@/features/contents/queries";
 import { roleLabel } from "@/features/messages/role-label";
 import { NotificationWatcher } from "@/features/notifications/notification-watcher";
+import { OfflineSession } from "@/features/offline/offline-session";
+import { offlinePages } from "@/features/offline/pages";
 import { InstallCard } from "@/features/pwa/install-ui";
 import { requireUser, type CurrentUser } from "@/lib/auth/session";
 import { pushPublicKey } from "@/lib/channels/push";
@@ -42,9 +44,10 @@ export default async function SpaceLayout({ children }: LayoutProps<"/espace">) 
   const user = await requireUser();
   if (user.mustChangePassword) redirect("/changer-mot-de-passe");
 
-  const [unreadRows, ticker] = await Promise.all([
+  const [unreadRows, ticker, pages] = await Promise.all([
     db.notification.findMany({ where: { userId: user.id, readAt: null }, select: { link: true, createdAt: true }, orderBy: { createdAt: "desc" }, take: 200 }),
     isEnabled("contents.ticker").then((on) => (on ? tickerContents(user).catch(() => []) : [])),
+    offlinePages(user),
   ]);
   const unread = unreadRows.length;
   const visible = visibleNavigation(user);
@@ -82,6 +85,7 @@ export default async function SpaceLayout({ children }: LayoutProps<"/espace">) 
           <AppBar sections={sections} unread={unread} user={shellUser} pushKey={pushKey} scope={scope} />
           <TopBar scope={scope} unread={unread} user={shellUser} pushKey={pushKey} />
           <NewsTicker items={ticker} />
+          <OfflineSession userId={user.id} pages={pages} />
         </header>
 
         <InstallCard />

@@ -14,6 +14,7 @@ import { assertWritable } from "@/lib/guards";
 import { DomainError } from "@/lib/errors";
 import { notify } from "@/lib/notify";
 import { plural } from "@/features/classes/text";
+import { withSubmission } from "@/features/offline/submission";
 
 const status = z.enum(["PRESENT", "ABSENT", "LATE", "EXCUSED"]);
 const reason = z
@@ -45,8 +46,11 @@ export const saveAttendance = createAction({
     date,
     half: z.enum(["MORNING", "AFTERNOON"]),
     records: z.array(z.object({ enrollmentId: id, status, reason })).min(1, "Aucun élève dans l'appel.").max(200),
+    // Set by a register taken offline and replayed (/api/offline/replay).
+    clientId: z.uuid().optional(),
   }),
-  handler: async (input, user) => {
+  handler: (input, user) =>
+    withSubmission(user, input.clientId, "attendance", async () => {
     const year = await assertSchoolDay(input.date);
     const classroom = await db.classroom.findFirst({
       where: { AND: [{ id: input.classroomId }, classroomWhere(user), { academicYearId: year.id }] },
@@ -110,7 +114,7 @@ export const saveAttendance = createAction({
     return `Appel enregistré pour la ${classroom.name} : ${plural(input.records.length - absent, "présent ou excusé", "présents ou excusés")}, ${plural(absent, "absent", "absents")}.${
       fresh.length ? ` ${plural(fresh.length, "famille prévenue", "familles prévenues")}.` : ""
     }`;
-  },
+    }),
 });
 
 // Staff attendance. Recording it is a staff management task: it needs the
