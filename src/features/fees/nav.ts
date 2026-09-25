@@ -8,7 +8,9 @@ export function feesTabs(user: NonNullable<CurrentUser>) {
     { href: "/espace/frais", label: "Vue d'ensemble", show: true },
     { href: "/espace/frais/factures", label: "Factures", show: can(user, "fee:view") },
     { href: "/espace/frais/paiements", label: "Paiements", show: can(user, "payment:view") },
+    { href: "/espace/frais/declarations", label: "Paiements des parents", show: can(user, "payment:view") },
     { href: "/espace/frais/types", label: "Types de frais et échéanciers", show: can(user, "fee:view") },
+    { href: "/espace/frais/comptes", label: "Comptes de paiement", show: can(user, "fee:view") },
   ]
     .filter((t) => t.show)
     .map(({ href, label }) => ({ href, label }));
