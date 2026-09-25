@@ -264,6 +264,12 @@
 "text": "Fíziki‚ sinmɛ kpodo nunywɛ xwitixwiti kpo"
 },
 {
+"key": "0a00eb556d5908b12760411f05d2e98b0a9eff49de0a384d6411d51794cec5ab",
+"lang": "fon",
+"source": "Voix de lecture",
+"text": "Gbè xixa tɔn"
+},
+{
 "key": "0a0e39d17b506a4b701c82ecd60cdf92fe588ab8feed1ffede0308997dbf9374",
 "lang": "fon",
 "source": "Demande transmise",
@@ -498,6 +504,12 @@
 "text": "Hun :"
 },
 {
+"key": "137cfbb9ee78da9e2b42eb84a91d373b9ce4b3ac4b5a1ac2c80c27bbae3df5aa",
+"lang": "fon",
+"source": "La voix française qui lit les pages à voix haute.",
+"text": "Gbè Flanségbe tɔn e ɖò wema lɛ xà wɛ syɛnsyɛn é."
+},
+{
 "key": "13a150e3fd0a2ae38c39acfec1368bbd67ef59ffe3678d925d45b12af8530e9d",
 "lang": "fon",
 "source": "Profession",
@@ -724,6 +736,12 @@
 "lang": "fon",
 "source": "Type de frais modifié :",
 "text": "Akwɛ alɔkpa e è nɔ sú é ɖyɔ:"
+},
+{
+"key": "1dfe9009cbb57c7fdcfeb21ac93bdeecc1c182ae67bde20174fa61feddb73b9d",
+"lang": "fon",
+"source": "Photographies",
+"text": "Fótó lɛ"
 },
 {
 "key": "1e67adfaa8edf85cd9f96454dbaa3d44041ccdbd3d3544eeacf2497cbf11ca88",
@@ -2934,6 +2952,12 @@
 "text": "Xóɖɔɖókpɔ́ xá wemaxɔmɛ ɔ."
 },
 {
+"key": "5f559b04e4a568c9ccc88045871f444d6ae746cccb4780b65c694e24e1ee9acc",
+"lang": "fon",
+"source": "Voir la source",
+"text": "Kpɔ́n fí e é gosín é"
+},
+{
 "key": "5f6baab4dbe152fc766bb04ed09724a86f6c3651f3d966d25a786ac43cae45a9",
 "lang": "fon",
 "source": "Langue",
@@ -3196,6 +3220,12 @@
 "lang": "fon",
 "source": "Écouter les notes",
 "text": "Ðǒtó nǔwlanwlán lɛ ."
+},
+{
+"key": "66e7f05facae2810551759f6c6bc72d71ae5b68f0559515691fd511b61375f1e",
+"lang": "fon",
+"source": "Aucune : la voix est utilisée telle quelle, sur le serveur de Classéo.",
+"text": "Mɛɖebǔ: è nɔ zán gbè ɔ lee é ɖè gbɔn é, ɖò Classéo sín serveur jí."
 },
 {
 "key": "6744d39b990c8c960bd2e964f34545ab78502f0c4cbbbbd7807f19dd42fc37ec",
@@ -7860,6 +7890,12 @@
 "text": "Tẹtisi awọn idiyele"
 },
 {
+"key": "0a00eb556d5908b12760411f05d2e98b0a9eff49de0a384d6411d51794cec5ab",
+"lang": "yo",
+"source": "Voix de lecture",
+"text": "Kika ohun"
+},
+{
 "key": "0a0e39d17b506a4b701c82ecd60cdf92fe588ab8feed1ffede0308997dbf9374",
 "lang": "yo",
 "source": "Demande transmise",
@@ -8068,6 +8104,12 @@
 "lang": "yo",
 "source": "Ouvrir :",
 "text": "Ṣii:"
+},
+{
+"key": "137cfbb9ee78da9e2b42eb84a91d373b9ce4b3ac4b5a1ac2c80c27bbae3df5aa",
+"lang": "yo",
+"source": "La voix française qui lit les pages à voix haute.",
+"text": "Ohùn Faranse kika awọn oju-iwe naa ni ariwo."
 },
 {
 "key": "13a150e3fd0a2ae38c39acfec1368bbd67ef59ffe3678d925d45b12af8530e9d",
@@ -8284,6 +8326,12 @@
 "lang": "yo",
 "source": "Type de frais modifié :",
 "text": "Iru ọya ti yipada:"
+},
+{
+"key": "1dfe9009cbb57c7fdcfeb21ac93bdeecc1c182ae67bde20174fa61feddb73b9d",
+"lang": "yo",
+"source": "Photographies",
+"text": "Awọn aworan"
 },
 {
 "key": "1e67adfaa8edf85cd9f96454dbaa3d44041ccdbd3d3544eeacf2497cbf11ca88",
@@ -10368,6 +10416,12 @@
 "text": "Wakati"
 },
 {
+"key": "5f559b04e4a568c9ccc88045871f444d6ae746cccb4780b65c694e24e1ee9acc",
+"lang": "yo",
+"source": "Voir la source",
+"text": "Wo orisun"
+},
+{
 "key": "5f6baab4dbe152fc766bb04ed09724a86f6c3651f3d966d25a786ac43cae45a9",
 "lang": "yo",
 "source": "Langue",
@@ -10600,6 +10654,12 @@
 "lang": "yo",
 "source": "Écouter les notes",
 "text": "Gbọ awọn akọsilẹ"
+},
+{
+"key": "66e7f05facae2810551759f6c6bc72d71ae5b68f0559515691fd511b61375f1e",
+"lang": "yo",
+"source": "Aucune : la voix est utilisée telle quelle, sur le serveur de Classéo.",
+"text": "Ko si: a lo ohun bi o ti ri, lori olupin Classéo."
 },
 {
 "key": "6744d39b990c8c960bd2e964f34545ab78502f0c4cbbbbd7807f19dd42fc37ec",
