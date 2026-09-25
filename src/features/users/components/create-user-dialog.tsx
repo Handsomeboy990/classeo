@@ -10,7 +10,7 @@ import { Dialog } from "@/components/ui/dialog";
 import { Input, Select } from "@/components/ui/input";
 
 import { createUser } from "../actions";
-import { TemporaryPassword } from "./temporary-password";
+import { TemporaryPassword, type IssuedPassword } from "./temporary-password";
 
 type Level = "NATIONAL" | "DEPARTMENT" | "COMMUNE" | "SCHOOL" | "SELF";
 type RoleOption = { id: string; name: string; scopeLevel: Level };
@@ -28,7 +28,7 @@ const ENTITY_LABEL: Record<"DEPARTMENT" | "COMMUNE" | "SCHOOL", string> = {
 export function CreateUserDialog({ roles, entities }: { roles: RoleOption[]; entities: Record<"DEPARTMENT" | "COMMUNE" | "SCHOOL", EntityOption[]> }) {
   const [open, setOpen] = useState(false);
   const [roleId, setRoleId] = useState("");
-  const [created, setCreated] = useState<{ email: string; password: string } | null>(null);
+  const [created, setCreated] = useState<IssuedPassword | null>(null);
   const level = roles.find((r) => r.id === roleId)?.scopeLevel;
   const entityLevel = level === "DEPARTMENT" || level === "COMMUNE" || level === "SCHOOL" ? level : null;
   const options = entityLevel ? entities[entityLevel] : [];
@@ -49,13 +49,13 @@ export function CreateUserDialog({ roles, entities }: { roles: RoleOption[]; ent
       </Button>
       <Dialog open={open} onClose={close} title={created ? "Compte créé" : "Nouveau compte"} description={created ? undefined : "Seuls les rôles que vos droits permettent d'attribuer sont proposés."}>
         {created ? (
-          <TemporaryPassword email={created.email} password={created.password} onDone={close} />
+          <TemporaryPassword {...created} onDone={close} />
         ) : (
           <ActionForm
             action={createUser}
             successToast={false}
             onSuccess={(state) => {
-              const data = state?.data as { email: string; password: string } | undefined;
+              const data = state?.data as IssuedPassword | undefined;
               if (data) setCreated(data);
             }}
             className="flex flex-col gap-4"

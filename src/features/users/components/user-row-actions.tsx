@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 
 import { resetUserPassword, revokeUserSessions, setUserActive } from "../actions";
-import { TemporaryPassword } from "./temporary-password";
+import { TemporaryPassword, type IssuedPassword } from "./temporary-password";
 
 export function UserRowActions({ id, name, isActive, sessions }: { id: string; name: string; isActive: boolean; sessions: number }) {
   return (
@@ -51,7 +51,7 @@ export function UserRowActions({ id, name, isActive, sessions }: { id: string; n
 
 function ResetPassword({ id, name }: { id: string; name: string }) {
   const [open, setOpen] = useState(false);
-  const [result, setResult] = useState<{ email: string; password: string } | null>(null);
+  const [result, setResult] = useState<IssuedPassword | null>(null);
   function close() {
     setOpen(false);
     setResult(null);
@@ -64,15 +64,15 @@ function ResetPassword({ id, name }: { id: string; name: string }) {
       </Button>
       <Dialog open={open} onClose={close} title={result ? "Mot de passe réinitialisé" : `Réinitialiser le mot de passe de ${name} ?`}>
         {result ? (
-          <TemporaryPassword email={result.email} password={result.password} onDone={close} />
+          <TemporaryPassword {...result} onDone={close} />
         ) : (
           <>
-            <p className="text-sm text-muted">Un mot de passe temporaire sera généré et affiché une seule fois. Les sessions ouvertes seront fermées et la personne devra le changer à sa prochaine connexion.</p>
+            <p className="text-sm text-muted">Un mot de passe temporaire sera généré, affiché une seule fois et envoyé par e-mail à la personne. Les sessions ouvertes seront fermées et la personne devra le changer à sa prochaine connexion.</p>
             <ActionForm
               action={resetUserPassword}
               successToast={false}
               onSuccess={(state) => {
-                const data = state?.data as { email: string; password: string } | undefined;
+                const data = state?.data as IssuedPassword | undefined;
                 if (data) setResult(data);
               }}
               className="mt-5 flex justify-end gap-2"
