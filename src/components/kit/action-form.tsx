@@ -48,17 +48,23 @@ export function ActionForm({
   successToast?: boolean;
   className?: string;
 } & Omit<ComponentProps<"form">, "action" | "onSubmit">) {
-  const [state, formAction, pending] = useActionState(action, null);
+  // Toasts fire as soon as the server answers, inside the dispatch: when the
+  // action revalidates, the refreshed tree can unmount this form before any
+  // effect runs, and the message would be lost.
+  const [state, formAction, pending] = useActionState(async (prev: ActionState, formData: FormData) => {
+    const result = await action(prev, formData);
+    if (result?.ok && successToast && result.message) toast("success", result.message);
+    if (result && !result.ok && result.message) toast("error", result.message);
+    return result;
+  }, null);
   const formRef = useRef<HTMLFormElement>(null);
   const router = useRouter();
   const handleResult = useEffectEvent((result: NonNullable<ActionState>) => {
     if (result.ok) {
-      if (successToast && result.message) toast("success", result.message);
       if (resetOnSuccess) formRef.current?.reset();
       onSuccess?.(result);
       router.refresh();
     } else {
-      if (result.message) toast("error", result.message);
       requestAnimationFrame(() => formRef.current?.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus());
     }
   });
