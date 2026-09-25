@@ -3,16 +3,20 @@ import "server-only";
 import { computeReportCards, summarizeClass, type SheetInput } from "@/lib/domain/report-card";
 import type { GradeInput } from "@/lib/domain/grades";
 import { db } from "@/lib/db";
+import { sortByName } from "@/lib/utils";
 
 // Loads the grades of a class for a period and computes every report card.
 // The caller has already checked that the class is in the user's scope.
 export async function computeClassCards(classroomId: string, periodId: string) {
   const [enrollments, assignments] = await Promise.all([
-    db.enrollment.findMany({
-      where: { classroomId, status: "ACTIVE" },
-      orderBy: [{ student: { lastName: "asc" } }, { student: { firstName: "asc" } }],
-      select: { id: true, student: { select: { id: true, matricule: true, firstName: true, lastName: true, gender: true, userId: true } } },
-    }),
+    db.enrollment
+      .findMany({
+        where: { classroomId, status: "ACTIVE" },
+        orderBy: { id: "asc" },
+        select: { id: true, student: { select: { id: true, matricule: true, firstName: true, lastName: true, gender: true, userId: true } } },
+      })
+      // French alphabetical order, whatever the database collation.
+      .then((rows) => sortByName(rows, (e) => e.student)),
     db.courseAssignment.findMany({
       where: { classroomId },
       orderBy: [{ coefficient: "desc" }, { subject: { name: "asc" } }],

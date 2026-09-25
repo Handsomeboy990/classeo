@@ -9,6 +9,7 @@ import type { CurrentUser } from "@/lib/auth/session";
 import { attendanceRate } from "@/lib/domain/attendance";
 import { subjectAverage, type GradeInput } from "@/lib/domain/grades";
 import { db } from "@/lib/db";
+import { sortByName } from "@/lib/utils";
 
 type User = NonNullable<CurrentUser>;
 
@@ -36,35 +37,42 @@ export async function listStudents(
         : {},
     ],
   };
-  const [rows, total] = await Promise.all([
-    db.enrollment.findMany({
-      where,
-      orderBy: [{ student: { lastName: "asc" } }, { student: { firstName: "asc" } }],
-      skip: opts.skip,
-      take: opts.take,
-      select: {
-        id: true,
-        status: true,
-        isRepeating: true,
-        classroom: { select: { id: true, name: true } },
-        school: { select: { name: true } },
-        student: {
-          select: {
-            id: true,
-            matricule: true,
-            firstName: true,
-            lastName: true,
-            gender: true,
-            birthDate: true,
-            disabilities: true,
-            guardians: { where: { isPrimary: true }, take: 1, select: { guardian: { select: { firstName: true, lastName: true, phone: true } } } },
-          },
+  // French alphabetical order whatever the database collation: a C collation
+  // puts "Adéoti" after "Adjovi". Prisma cannot order by a collation, so the
+  // names of every matching enrollment (a few short columns) are sorted here,
+  // the requested page is cut from that order, and only that page is loaded
+  // in full. Pagination stays exact: skip and take apply to the sorted list,
+  // and the total is its length.
+  const keys = sortByName(
+    await db.enrollment.findMany({ where, orderBy: { id: "asc" }, select: { id: true, student: { select: { lastName: true, firstName: true } } } }),
+    (e) => e.student,
+  );
+  const pageIds = keys.slice(opts.skip, opts.skip + opts.take).map((k) => k.id);
+  const position = new Map(pageIds.map((id, i) => [id, i]));
+  const page = await db.enrollment.findMany({
+    where: { id: { in: pageIds } },
+    select: {
+      id: true,
+      status: true,
+      isRepeating: true,
+      classroom: { select: { id: true, name: true } },
+      school: { select: { name: true } },
+      student: {
+        select: {
+          id: true,
+          matricule: true,
+          firstName: true,
+          lastName: true,
+          gender: true,
+          birthDate: true,
+          disabilities: true,
+          guardians: { where: { isPrimary: true }, take: 1, select: { guardian: { select: { firstName: true, lastName: true, phone: true } } } },
         },
       },
-    }),
-    db.enrollment.count({ where }),
-  ]);
-  return { rows, total };
+    },
+  });
+  const rows = page.sort((a, b) => position.get(a.id)! - position.get(b.id)!);
+  return { rows, total: keys.length };
 }
 
 // A student is visible when at least one of their enrollments is in scope.
@@ -173,12 +181,13 @@ async function subjectGrades(enrollmentId: string, classroomId: string, periodId
 // Guardians already known in the user's scope, for the "existing guardian"
 // choice of the enrollment form.
 export async function guardianOptions(user: User) {
-  return db.guardian.findMany({
+  const guardians = await db.guardian.findMany({
     where: { students: { some: { student: studentWhere(user) } } },
     orderBy: [{ lastName: "asc" }, { firstName: "asc" }],
     select: { id: true, firstName: true, lastName: true, phone: true },
     take: 1000,
   });
+  return sortByName(guardians, (g) => g);
 }
 
 export async function getStudentForEdit(user: User, studentId: string) {

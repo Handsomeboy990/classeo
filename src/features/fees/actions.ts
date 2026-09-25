@@ -9,7 +9,7 @@ import { invalidate, tags } from "@/lib/cache";
 import { db } from "@/lib/db";
 import { formatReference, installmentStatus, invoiceStatus, planPercentError, splitByPlan } from "@/lib/domain/payments";
 import { DomainError } from "@/lib/errors";
-import { formatFcfa } from "@/lib/utils";
+import { compareNames, formatFcfa } from "@/lib/utils";
 
 import { activeYear, feeTypeWhere, requireSchoolId, startOfToday } from "./access";
 import { feeTypeSchema, generateSchema, idSchema, planSchema, updateFeeTypeSchema } from "./schema";
@@ -197,9 +197,11 @@ export const generateInvoices = createAction({
             ...(feeType.levelId ? { classroom: { levelId: feeType.levelId } } : {}),
             invoices: { none: { status: { not: "CANCELLED" }, items: { some: { feeTypeId: feeType.id } } } },
           },
-          orderBy: [{ classroom: { name: "asc" } }, { student: { lastName: "asc" } }, { student: { firstName: "asc" } }],
-          select: { id: true },
+          select: { id: true, classroom: { select: { name: true } }, student: { select: { lastName: true, firstName: true } } },
         });
+        // Invoice numbers follow the class, then the French alphabetical
+        // order of the pupils, whatever the database collation.
+        enrollments.sort((a, b) => a.classroom.name.localeCompare(b.classroom.name, "fr", { numeric: true }) || compareNames(a.student, b.student));
         if (!enrollments.length) return 0;
 
         const [{ max }] = await tx.$queryRaw<{ max: number }[]>`
