@@ -74,7 +74,7 @@ function onFailure(error: unknown) {
 
 // Whether translation is on for this language (option switched on, language
 // listed in the option, service configured).
-export async function translationAvailable(lang: string): Promise<lang is TargetLanguage> {
+export async function translationAvailable(lang: string): Promise<boolean> {
   if (!isTargetLanguage(lang) || !(await isEnabled("languages.translation"))) return false;
   const { languages } = await featureConfig("languages.translation");
   return (languages as readonly string[]).includes(lang);
