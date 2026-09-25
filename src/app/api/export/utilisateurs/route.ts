@@ -15,6 +15,7 @@ export async function GET(request: Request) {
     columns: [
       { header: "Prénom", value: (u) => u.firstName },
       { header: "Nom", value: (u) => u.lastName },
+      { header: "Identifiant", value: (u) => u.username },
       { header: "E-mail", value: (u) => u.email },
       { header: "Téléphone", value: (u) => u.phone },
       { header: "Rôle", value: (u) => u.role.name },

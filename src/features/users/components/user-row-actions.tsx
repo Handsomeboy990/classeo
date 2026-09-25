@@ -119,7 +119,7 @@ function ResetPassword({ id, name }: { id: string; name: string }) {
         ) : (
           <>
             <p className="text-sm leading-relaxed text-muted">
-              Un mot de passe temporaire sera créé, affiché une seule fois et envoyé par e-mail à la personne. Ses sessions ouvertes seront fermées et elle devra le changer à sa
+              Un mot de passe temporaire sera créé et affiché une seule fois, avec l&apos;identifiant du compte ; il est aussi envoyé par e-mail si le compte a une adresse. Ses sessions ouvertes seront fermées et elle devra le changer à sa
               prochaine connexion.
             </p>
             <ActionForm

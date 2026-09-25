@@ -42,7 +42,7 @@ export default async function LoginPage({ searchParams }: PageProps<"/connexion"
             <Logo />
           </Link>
           <h1 className="mt-8 text-3xl font-bold lg:mt-0">Connexion</h1>
-          <p className="mt-1 mb-6 text-muted">Avec l&apos;adresse e-mail et le mot de passe remis par votre établissement ou votre administration.</p>
+          <p className="mt-1 mb-6 text-muted">Avec l&apos;identifiant et le mot de passe remis par votre établissement ou votre administration.</p>
           <LoginForm next={param(sp, "next")} showDemo={showDemo} />
         </div>
       </section>
