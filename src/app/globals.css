@@ -1193,6 +1193,20 @@ html[data-lite="on"] img[data-decorative] {
 }
 
 /*
+ * Phone conversation (data-chat): the chat fills the window between the app
+ * bar and the tab bar, its thread scrolls inside, the composer sits right
+ * above the tab bar and nothing is left empty under it.
+ */
+@media (max-width: 63.999rem) {
+  :root {
+    --chat-h: calc(100dvh - env(safe-area-inset-top) - var(--app-bar-h) - 1px - var(--tab-bar-space) - 2rem);
+  }
+  .app-main:has([data-chat]) {
+    padding-bottom: 0.75rem;
+  }
+}
+
+/*
  * Phone widths, two guards against the page scrolling sideways:
  * - a grid cell may shrink below its content (min-width auto lets one wide
  *   table or long line widen the whole column, then the page);
