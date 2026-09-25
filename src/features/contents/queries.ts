@@ -86,7 +86,8 @@ const NATIONAL_TARGET: Prisma.ContentWhereInput = { departmentId: null, communeI
 // Mirrors isInReach() from the domain rules as a database filter: the most
 // specific target decides, so every clause pins the more specific ids to null.
 export function reachWhere(reach: Reach, { includeNational }: { includeNational: boolean }): Prisma.ContentWhereInput {
-  if (reach.all) return {};
+  // Explicit "every row": an empty {} inside an OR matches nothing in Prisma.
+  if (reach.all) return { id: { not: "" } };
   const { exact, subtree } = reach;
   const or: Prisma.ContentWhereInput[] = [];
   if (includeNational) or.push(NATIONAL_TARGET);
