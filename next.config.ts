@@ -39,7 +39,13 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   output: "standalone",
   poweredByHeader: false,
-  experimental: { authInterrupts: true },
+  experimental: {
+    authInterrupts: true,
+    // Visited pages are reused from the client cache for a minute, so going
+    // back to a page is instant. Every server action refreshes the router,
+    // which clears this cache, so users still see their own changes at once.
+    staleTimes: { dynamic: 60, static: 300 },
+  },
   async headers() {
     return [
       { source: "/:path*", headers: securityHeaders },
