@@ -38,14 +38,18 @@ export function formToObject(formData: FormData) {
 // responsible for scoping its queries (lib/auth/scope.ts), auditing and
 // invalidating caches.
 export function createAction<S extends z.ZodType>(options: {
-  permission: PermissionCode;
+  // null: any signed in user, for actions on their own records (their
+  // notifications, their preferences). The handler must then scope by user id.
+  permission: PermissionCode | null;
   schema: S;
   handler: Handler<z.infer<S>>;
 }) {
   return async function action(_prev: ActionState, input: FormData | z.input<S>): Promise<ActionState> {
     try {
       const user = await getCurrentUser();
-      authorize(user, options.permission);
+      if (options.permission === null) {
+        if (!user) throw new ForbiddenError("Session expirée. Veuillez vous reconnecter.");
+      } else authorize(user, options.permission);
 
       const raw = input instanceof FormData ? formToObject(input) : input;
       const parsed = options.schema.safeParse(raw);
