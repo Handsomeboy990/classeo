@@ -76,7 +76,7 @@ export function ResetPasswordForm({ email, minutes, mailEnabled }: { email: stri
         </SubmitButton>
       </ActionForm>
       <div className="flex flex-col gap-2 text-sm">
-        <Link href="/mot-de-passe-oublie" className="font-semibold text-primary underline-offset-4 hover:underline">
+        <Link href="/mot-de-passe-oublie/email" className="font-semibold text-primary underline-offset-4 hover:underline">
           Recevoir un nouveau code
         </Link>
         <Link href="/connexion" className="inline-flex items-center gap-1.5 text-muted hover:text-text">

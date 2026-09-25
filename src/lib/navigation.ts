@@ -10,6 +10,7 @@ import {
   Inbox,
   KeyRound,
   Landmark,
+  LifeBuoy,
   LayoutGrid,
   type LucideIcon,
   Map,
@@ -109,6 +110,7 @@ export const NAVIGATION: NavSection[] = [
     title: "Administration",
     items: [
       { label: "Comptes utilisateurs", href: "/espace/utilisateurs", icon: KeyRound, permission: ["user:view"], short: "Comptes" },
+      { label: "Demandes de réinitialisation", href: "/espace/aide-connexion", icon: LifeBuoy, permission: ["user:update"], scopes: STAFF, short: "Mots de passe" },
       { label: "Rôles et droits", href: "/espace/droits", icon: ShieldCheck, permission: ["role:view"], short: "Droits" },
       { label: "Journal d'activité", href: "/espace/journal", icon: ScrollText, permission: ["audit:view"], short: "Journal" },
     ],

@@ -7,20 +7,46 @@ import { RESET_CODE_MINUTES } from "./reset-code";
 
 // Frame of the signed out pages that sit next to the sign in page: the same
 // brand panel on large screens, the form alone on phones.
-export function AuthShell({ title, description, children }: { title: string; description: string; children: ReactNode }) {
+export function AuthShell({
+  title,
+  description,
+  children,
+  aside = "code",
+}: {
+  title: string;
+  description: string;
+  children: ReactNode;
+  // The brand panel's message: the e-mail code, or help from the school.
+  aside?: "code" | "help";
+}) {
   return (
     <main className="grid min-h-dvh lg:grid-cols-[1.1fr_1fr]">
       <section className="relative hidden overflow-hidden bg-sidebar p-12 text-sidebar-text lg:flex lg:flex-col lg:justify-between" aria-hidden>
         <Logo tone="inverse" />
         <div className="relative z-10 max-w-md">
-          <p className="font-display text-4xl leading-tight font-bold">
-            Mot de passe oublié :
-            <span className="text-accent"> un code par e-mail.</span>
-          </p>
-          <p className="mt-4 text-sidebar-muted">
-            Le code est à usage unique et reste valable {RESET_CODE_MINUTES} minutes. Une fois le mot de passe changé, toutes les sessions ouvertes avec le compte
-            sont fermées.
-          </p>
+          {aside === "help" ? (
+            <>
+              <p className="font-display text-4xl leading-tight font-bold">
+                Mot de passe oublié :
+                <span className="text-accent"> votre école vous aide.</span>
+              </p>
+              <p className="mt-4 text-sidebar-muted">
+                Pas besoin d&apos;adresse e-mail. Votre demande arrive chez la personne qui gère votre compte : elle vous remet un mot de passe temporaire, que vous
+                remplacez à la connexion.
+              </p>
+            </>
+          ) : (
+            <>
+              <p className="font-display text-4xl leading-tight font-bold">
+                Mot de passe oublié :
+                <span className="text-accent"> un code par e-mail.</span>
+              </p>
+              <p className="mt-4 text-sidebar-muted">
+                Le code est à usage unique et reste valable {RESET_CODE_MINUTES} minutes. Une fois le mot de passe changé, toutes les sessions ouvertes avec le
+                compte sont fermées.
+              </p>
+            </>
+          )}
         </div>
         <div className="flex h-2 overflow-hidden rounded-full">
           <span className="w-2/5 bg-[#008751]" />
