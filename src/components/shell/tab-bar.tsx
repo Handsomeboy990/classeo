@@ -9,7 +9,7 @@ import { badgeText, unreadLabel } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
 
 import { MenuSheet } from "./menu-sheet";
-import { isActiveHref, type RenderedItem, type RenderedSection } from "./sidebar-nav";
+import { badgeId, isActiveHref, type RenderedItem, type RenderedSection } from "./sidebar-nav";
 import { prefersReducedMotion } from "./use-compact";
 
 function Tab({ active, icon, label, badge, dot }: { active: boolean; icon: ReactNode; label: string; badge?: number; dot?: boolean }) {
@@ -33,8 +33,6 @@ function Tab({ active, icon, label, badge, dot }: { active: boolean; icon: React
         {dot && !badge && <span className="nav-dot absolute top-0 left-1/2 ml-2.5" aria-hidden />}
       </span>
       <span className={cn("max-w-full truncate text-[0.6875rem] leading-tight font-medium tracking-[-0.01em]", active ? "text-primary" : "text-muted")}>{label}</span>
-      {!!badge && <span className="sr-only">, {unreadLabel(badge)}</span>}
-      {dot && !badge && <span className="sr-only">, nouvelles notifications</span>}
     </>
   );
 }
@@ -71,6 +69,7 @@ export function TabBar({ tabs, sections }: { tabs: RenderedItem[]; sections: Ren
                 <Link
                   href={tab.href}
                   aria-current={active ? "page" : undefined}
+                  aria-describedby={tab.badge ? badgeId("tab", tab.href) : undefined}
                   className={TAB}
                   onClick={(e) => {
                     if (pathname !== tab.href) return;
@@ -79,13 +78,21 @@ export function TabBar({ tabs, sections }: { tabs: RenderedItem[]; sections: Ren
                   }}
                 >
                   <Tab active={active} icon={tab.icon} label={tab.short ?? tab.label} badge={tab.badge} />
+                  {!!tab.badge && (
+                    <span id={badgeId("tab", tab.href)} hidden>
+                      {unreadLabel(tab.badge)}
+                    </span>
+                  )}
                 </Link>
               </li>
             );
           })}
           <li className="min-w-0 flex-1">
-            <button type="button" className={TAB} onClick={() => setMenu(true)} aria-haspopup="dialog" aria-expanded={menu}>
+            <button type="button" className={TAB} onClick={() => setMenu(true)} aria-haspopup="dialog" aria-expanded={menu} aria-describedby={menuHasNews ? "tab-menu-news" : undefined}>
               <Tab active={!current || menu} icon={<LayoutGrid aria-hidden />} label="Menu" dot={menuHasNews} />
+              <span id="tab-menu-news" hidden>
+                Nouvelles notifications dans le menu
+              </span>
             </button>
           </li>
         </ul>
