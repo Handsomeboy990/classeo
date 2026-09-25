@@ -234,6 +234,9 @@ body {
   color: var(--text);
   font-family: var(--font-body), system-ui, sans-serif;
   line-height: 1.5;
+  /* A word longer than its line (large text on a phone) breaks instead of
+     widening the page. */
+  overflow-wrap: break-word;
 }
 
 h1,
