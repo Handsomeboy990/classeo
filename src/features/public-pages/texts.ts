@@ -98,6 +98,9 @@ export const PUBLIC = {
     changes: "Modifications",
     publicDomain: "Domaine public",
     publicDomainNote: "Voir le statut sur la page source.",
+    photos: "Photographies",
+    voices: "Voix de lecture",
+    voiceSource: "Voir la source",
   },
   // Answers of the sign in and forgotten password actions, written in French
   // on the server (features/auth/actions.ts, features/password-help/actions.ts)

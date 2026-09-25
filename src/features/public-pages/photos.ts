@@ -110,17 +110,41 @@ export function shortCredit(p: Photo) {
   return `${p.credit}, ${LICENCES[p.licence].name}`;
 }
 
-// The French texts of the photographs shown on the public pages, for the
+// Other works used by the platform that call for a credit: the French
+// reading voice (Piper, self-hosted, trained on the SIWIS database).
+export type OtherCredit = {
+  id: string;
+  kind: "voice";
+  subject: string;
+  author: string;
+  sourceUrl: string;
+  licence: keyof typeof LICENCES;
+  changes: string;
+};
+
+export const OTHER_CREDITS = [
+  {
+    id: "voix-siwis",
+    kind: "voice",
+    subject: "La voix française qui lit les pages à voix haute.",
+    author: "Piper (Rhasspy), voix siwis entraînée sur la base SIWIS de Pierre-Edouard Honnet, Alexandros Lazaridis, Philip N. Garner et Junichi Yamagishi",
+    sourceUrl: "https://huggingface.co/rhasspy/piper-voices/tree/main/fr/fr_FR/siwis",
+    licence: "CC BY 4.0",
+    changes: "Aucune : la voix est utilisée telle quelle, sur le serveur de Classéo.",
+  },
+] as const satisfies readonly OtherCredit[];
+
+// The French texts of the credits shown on the public pages, for the
 // translation list.
 export function photoTexts(): string[] {
-  return PHOTOS.flatMap((p) => [p.caption, p.subject, p.alt, p.changes]);
+  return [...PHOTOS.flatMap((p) => [p.caption, p.subject, p.alt, p.changes]), ...OTHER_CREDITS.flatMap((c) => [c.subject, c.changes])];
 }
 
 // public/images/CREDITS.md, written from the list above.
 export function creditsMarkdown() {
   const rows = PHOTOS.map((p) => `| \`${p.file}\` | ${p.subject} | ${p.author} | ${p.sourceUrl} | ${p.licence} | ${p.changes} |`);
   return [
-    "# Photo credits",
+    "# Credits",
     "",
     "Photographs of school life in Benin, from Wikimedia Commons, shown on the",
     "public pages and credited at /credits. Each file here is a resized WebP",
@@ -134,6 +158,12 @@ export function creditsMarkdown() {
     "| File | Subject | Author | Source | Licence | Changes |",
     "|---|---|---|---|---|---|",
     ...rows,
+    "",
+    "## Voices",
+    "",
+    "| Voice | Use | Author | Source | Licence | Changes |",
+    "|---|---|---|---|---|---|",
+    ...OTHER_CREDITS.map((c) => `| \`${c.id}\` | ${c.subject} | ${c.author} | ${c.sourceUrl} | ${c.licence} | ${c.changes} |`),
     "",
     "Licences: CC BY 4.0 https://creativecommons.org/licenses/by/4.0/ and",
     "CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0/.",
