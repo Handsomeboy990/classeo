@@ -51,7 +51,7 @@ export default async function ReportCardPage(props: PageProps<"/espace/bulletins
     subtitle: `${period.name} · ${enrollment.academicYear.label}`,
     reference: documentReference("BUL", now, enrollment.id, period.id, mode),
     generatedAt: now,
-    generatedBy: { name: user.fullName, role: user.role.name, email: user.email },
+    generatedBy: { name: user.fullName, role: user.role.name, email: user.username },
     issuer: schoolIssuer(c.school),
   };
 

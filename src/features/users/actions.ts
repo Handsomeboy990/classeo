@@ -16,6 +16,7 @@ import { credentialsEmail } from "@/lib/mail/templates";
 import { communeRef, departmentRef, schoolRef, userScopeRef } from "../territory/scope";
 import { actorOf, userScopeWhere } from "./queries";
 import { nextTeacherMatricule } from "../teachers/matricule";
+import { allocateUsername } from "@/lib/auth/username";
 
 type User = NonNullable<CurrentUser>;
 
@@ -24,7 +25,15 @@ const id = z.string().trim().min(1).max(64);
 const createSchema = z.object({
   firstName: z.string().trim().min(2, "Prénom trop court.").max(80, "80 caractères maximum."),
   lastName: z.string().trim().min(2, "Nom trop court.").max(80, "80 caractères maximum."),
-  email: z.string().trim().toLowerCase().max(200).pipe(z.email("Adresse e-mail invalide.")),
+  // Optional: accounts sign in with the identifier generated from their names.
+  email: z
+    .string()
+    .trim()
+    .toLowerCase()
+    .max(200)
+    .optional()
+    .transform((v) => v || null)
+    .refine((v) => v === null || z.email().safeParse(v).success, "Adresse e-mail invalide."),
   phone: z
     .string()
     .trim()
@@ -89,9 +98,11 @@ function scopeLabel(level: ScopeLevel, entity: string | null | undefined) {
 function sendCredentials(
   reason: "created" | "reset",
   user: User,
-  account: { email: string; firstName: string; roleName: string; scope: string },
+  account: { email: string | null; firstName: string; roleName: string; scope: string },
   password: string,
 ): Promise<MailStatus> {
+  // Accounts without an e-mail get their details from the manager only.
+  if (!account.email) return Promise.resolve("skipped");
   const mail = credentialsEmail({
     reason,
     firstName: account.firstName,
@@ -142,6 +153,7 @@ export const createUser = createAction({
       const created = await db.$transaction(async (tx) => {
         const account = await tx.user.create({
         data: {
+          username: await allocateUsername(tx, input.firstName, input.lastName),
           email: input.email,
           firstName: input.firstName,
           lastName: input.lastName,
@@ -154,7 +166,7 @@ export const createUser = createAction({
           communeId: role.scopeLevel === "COMMUNE" ? target.ref.communeId : null,
           schoolId: role.scopeLevel === "SCHOOL" ? target.ref.schoolId : null,
         },
-        select: { id: true, email: true, firstName: true, lastName: true, phone: true },
+        select: { id: true, username: true, email: true, firstName: true, lastName: true, phone: true },
         });
         if (role.code === "TEACHER" && target.ref.schoolId) teacherLink = await linkTeacherRecord(tx, account, target.ref.schoolId);
         return account;

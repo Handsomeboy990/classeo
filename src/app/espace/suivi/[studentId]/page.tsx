@@ -54,7 +54,7 @@ export default async function ReportCardsPage({ params, searchParams }: PageProp
     subtitle: `${card.periodName} · ${card.yearLabel}`,
     reference: documentReference("BUL", now, printable?.data.enrollmentId, printable?.periodId, "published"),
     generatedAt: now,
-    generatedBy: { name: user.fullName, role: user.role.name, email: user.email },
+    generatedBy: { name: user.fullName, role: user.role.name, email: user.username },
   };
 
   const byYear = new Map<string, typeof cards>();

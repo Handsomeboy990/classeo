@@ -28,7 +28,7 @@ export default async function SpaceLayout({ children }: LayoutProps<"/espace">) 
   const visible = visibleNavigation(user);
   const sections: RenderedSection[] = visible.map((s) => ({ title: s.title, items: s.items.map(render) }));
   const tabs = mobileTabs(visible, tabAudience(user)).map(render);
-  const shellUser = { fullName: user.fullName, email: user.email, roleName: roleLabel(user.role.name, user.gender), scopeLabel: user.scope.label };
+  const shellUser = { fullName: user.fullName, email: user.email ?? user.username, roleName: roleLabel(user.role.name, user.gender), scopeLabel: user.scope.label };
   const pushKey = pushPublicKey();
 
   return (

@@ -1,5 +1,7 @@
 "use server";
 
+// The flow finds the account by its e-mail, so user.email is set wherever
+// it is read below (hence the non-null assertions).
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { after } from "next/server";
@@ -66,7 +68,7 @@ async function issueCode(userId: string) {
       });
     });
     const status = await sendMail({
-      to: user.email,
+      to: user.email!,
       tag: "password_reset_code",
       ...resetCodeEmail({ firstName: user.firstName, code, minutes: RESET_CODE_MINUTES, maxAttempts: RESET_MAX_ATTEMPTS, codeUrl: platformUrl("/mot-de-passe-oublie/code") }),
     });
@@ -75,7 +77,7 @@ async function issueCode(userId: string) {
       resource: "user",
       resourceId: user.id,
       schoolId: user.schoolId,
-      summary: `Demande de réinitialisation du mot de passe ${de(user.email)}`,
+      summary: `Demande de réinitialisation du mot de passe ${de(user.email!)}`,
       metadata: { tokenId: token.id, mail: status },
     });
   } catch (error) {
@@ -155,7 +157,7 @@ export async function resetPasswordWithCode(_prev: ActionState, formData: FormDa
   if (claimed.count === 0) return { ok: false, message: INVALID };
 
   if (!matchesResetCode(token.codeHash, code, user.id, resetSecret(process.env))) {
-    await audit(null, { action: "password_reset_failed", resource: "user", resourceId: user.id, schoolId: user.schoolId, summary: `Code de réinitialisation incorrect pour ${user.email}` });
+    await audit(null, { action: "password_reset_failed", resource: "user", resourceId: user.id, schoolId: user.schoolId, summary: `Code de réinitialisation incorrect pour ${user.email!}` });
     return { ok: false, message: INVALID };
   }
 
@@ -177,13 +179,13 @@ export async function resetPasswordWithCode(_prev: ActionState, formData: FormDa
     resource: "user",
     resourceId: user.id,
     schoolId: user.schoolId,
-    summary: `Réinitialisation du mot de passe ${de(user.email)} par code e-mail, sessions fermées`,
+    summary: `Réinitialisation du mot de passe ${de(user.email!)} par code e-mail, sessions fermées`,
   });
   after(() =>
     sendMail({
-      to: user.email,
+      to: user.email!,
       tag: "password_changed",
-      ...passwordChangedEmail({ firstName: user.firstName, email: user.email, at: now, signInUrl: platformUrl("/connexion"), forgotUrl: platformUrl("/mot-de-passe-oublie") }),
+      ...passwordChangedEmail({ firstName: user.firstName, email: user.email!, at: now, signInUrl: platformUrl("/connexion"), forgotUrl: platformUrl("/mot-de-passe-oublie") }),
     }),
   );
   (await cookies()).delete({ name: RESET_EMAIL_COOKIE, path: COOKIE_PATH });

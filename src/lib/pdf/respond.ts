@@ -60,7 +60,7 @@ export async function exportPdf<D>(options: {
   const ctx: PdfContext = {
     user,
     generatedAt: new Date(),
-    generatedBy: { name: user.fullName, role: user.role.name, email: user.email },
+    generatedBy: { name: user.fullName, role: user.role.name, email: user.username },
   };
   const built = await options.build(data, ctx);
   await prepareFonts();
