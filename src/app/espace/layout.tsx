@@ -34,7 +34,7 @@ export default async function SpaceLayout({ children }: LayoutProps<"/espace">) 
       </aside>
 
       <div className="flex min-w-0 flex-col">
-        <header className="sticky top-0 z-40 flex h-16 items-center gap-3 border-b border-border bg-surface/95 px-4 backdrop-blur sm:px-6">
+        <header className="sticky top-0 z-40 flex min-h-16 flex-wrap items-center gap-3 py-2 border-b border-border bg-surface/95 px-4 backdrop-blur sm:px-6">
           <MobileMenu>{nav}</MobileMenu>
           <Link href="/espace" className="lg:hidden" aria-label="Classéo, accueil">
             <Logo className="[&>span:last-child]:max-[380px]:hidden" />

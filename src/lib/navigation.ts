@@ -66,6 +66,7 @@ export const NAVIGATION: NavSection[] = [
   {
     title: "Vie scolaire",
     items: [
+      { label: "Mon établissement", href: "/espace/mon-etablissement", icon: Landmark, permission: ["school:view"], scopes: ["SCHOOL"] },
       { label: "Classes", href: "/espace/classes", icon: LayoutGrid, permission: ["class:view"], scopes: ["SCHOOL"] },
       { label: "Élèves", href: "/espace/eleves", icon: GraduationCap, permission: ["student:view"], scopes: ["SCHOOL"] },
       { label: "Enseignants", href: "/espace/enseignants", icon: UserSquare2, permission: ["teacher:view"], scopes: ["SCHOOL"] },
