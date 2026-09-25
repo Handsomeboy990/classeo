@@ -29,8 +29,8 @@ function shellScope(user: NonNullable<CurrentUser>): ShellScope {
   const school = level === "SCHOOL";
   return {
     kind: school ? "school" : level === "SELF" ? "family" : "territory",
-    name: level === "NATIONAL" ? "Bénin" : user.scope.label,
-    caption: CAPTIONS[level],
+    name: level === "NATIONAL" ? "Bénin" : level === "SELF" ? "Espace famille" : user.scope.label,
+    caption: level === "SELF" ? user.scope.label : CAPTIONS[level],
     logoUrl: school ? fileUrl(user.scope.logoFileId) : null,
     schools: school ? user.schools : [],
     activeSchoolId: school ? user.scope.schoolId : null,
