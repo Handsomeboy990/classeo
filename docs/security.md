@@ -16,6 +16,23 @@
 | Traceability | audit log of sign ins, failures, writes, exports and rights changes | `src/lib/audit.ts` |
 | Secrets | none in the repository; environment variables only | `.env.example` |
 
+## Audit of 2026-09-25
+
+An audit of the integrated platform found seven exploitable issues, all fixed with a proof before and after:
+
+| # | Severity | Issue | Fix |
+|---|---|---|---|
+| 1 | High | A teacher account not linked to a teacher record fell back to the whole school's scope | the teacher limit follows the role; an unlinked account reaches no class (`src/lib/auth/scope.ts`, tested) |
+| 2 | High | Parents and students could read the rosters of their child's class (grades and attendance of classmates) | family accounts use `rosterClassroomWhere`, which reaches no roster (tested) |
+| 3 | Medium | Student file sections were shown without their own permission (grades to the accountant) | each section checks its permission (`src/features/family/sections.ts`, tested) |
+| 4 | Medium | Student profile loaded results for anyone with `student:view` | results load only with `grade:view`, `attendance:view` or `report_card:view` |
+| 5 | Medium | Class page showed averages and attendance with `class:view` alone | shown only with the matching permissions |
+| 6 | Low | Sign in answers revealed which accounts exist after repeated failures | same answer for existing and unknown addresses |
+| 7 | Low | Actions and exports ran under a temporary password | refused until the password is changed |
+| 8 | Low | A media address starting with a backslash was taken as a platform path | refused (tested) |
+
+Residual, by design: offline copies on a shared phone stay readable until the sign in page is opened online; a manager can reset the password of an account with the same rights; the partner role sees school director contacts.
+
 ## Accepted advisories
 
 | Advisory | Package path | Why accepted | Review |
