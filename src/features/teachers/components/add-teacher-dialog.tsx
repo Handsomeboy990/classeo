@@ -1,13 +1,14 @@
 "use client";
 
 import { ArrowLeft, Plus, Search, UserPlus } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 
 import { ActionForm, SubmitButton } from "@/components/kit/action-form";
 import { FormField } from "@/components/kit/form-field";
 import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
-import { Button, ButtonLink } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 import { Checkbox, Input } from "@/components/ui/input";
 import { TemporaryPassword, type IssuedPassword } from "@/features/users/components/temporary-password";
@@ -63,10 +64,13 @@ export function AddTeacherDialog() {
       >
         {issued ? (
           <div className="flex flex-col gap-4">
+            <p className="text-sm">
+              La fiche est créée au registre national et dans votre établissement.{" "}
+              <Link href={`/espace/enseignants/${issued.teacherId}`} onClick={close} className="font-semibold text-primary underline-offset-4 hover:underline">
+                Ouvrir la fiche
+              </Link>
+            </p>
             <TemporaryPassword {...issued} onDone={close} />
-            <ButtonLink href={`/espace/enseignants/${issued.teacherId}`} variant="secondary" onClick={close}>
-              Ouvrir la fiche de l&apos;enseignant
-            </ButtonLink>
           </div>
         ) : step === "search" ? (
           <div className="flex flex-col gap-5">

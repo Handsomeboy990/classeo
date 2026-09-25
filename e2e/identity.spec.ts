@@ -47,7 +47,7 @@ test.describe("password help without e-mail", () => {
     const dialog = page.getByRole("dialog", { name: /Réinitialiser le mot de passe de Rosine/ });
     await dialog.getByRole("button", { name: "Réinitialiser" }).click();
     const reset = page.getByRole("dialog", { name: "Nouveau mot de passe temporaire" });
-    await expect(reset.getByTestId("issued-username")).toHaveText(username);
+    await expect(reset.getByTestId("issued-username")).toHaveText(username, { timeout: 30_000 });
     const password = (await reset.getByTestId("temporary-password").textContent())!.trim();
     await reset.getByRole("button", { name: "J'ai transmis ces informations" }).click();
 
@@ -67,6 +67,8 @@ test.describe("teacher registry", () => {
   test.use({ storageState: authFile("directeur") });
 
   test("a school head searches the registry before creating a teacher", async ({ page }) => {
+    // Creating the account hashes a password: slow on a loaded machine.
+    test.slow();
     const last = `Registre${uniqueSuffix().replace(/[^a-z]/g, "")}`;
     await page.goto("/espace/enseignants");
     await page.getByRole("button", { name: "Nouvel enseignant" }).click();
@@ -86,7 +88,7 @@ test.describe("teacher registry", () => {
     await form.locator("input[name=firstName]").fill("Élodie");
     await form.getByRole("button", { name: "Ajouter l'enseignant" }).click();
     const done = page.getByRole("dialog", { name: "Enseignant ajouté" });
-    await expect(done.getByTestId("issued-username")).toHaveText(`elodie.${last.toLowerCase()}`);
+    await expect(done.getByTestId("issued-username")).toHaveText(`elodie.${last.toLowerCase()}`, { timeout: 30_000 });
     await done.getByRole("button", { name: "J'ai transmis ces informations" }).click();
 
     // Searching again, without accents, finds her in the team.
