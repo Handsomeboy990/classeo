@@ -4,6 +4,7 @@ import { EmptyState } from "@/components/kit/states";
 import { addDays, DAYS } from "@/lib/domain/timetable";
 import { cn } from "@/lib/utils";
 
+import { overlapCount } from "../layout";
 import type { SlotView } from "../queries";
 
 import { SlotCard, type SlotRights } from "./slot-card";
@@ -61,7 +62,7 @@ export function DayList({
         <ol aria-label={`Cours du ${current.label.toLowerCase()}`} className="flex flex-col gap-2">
           {daySlots.map((s) => (
             <li key={s.id}>
-              <SlotCard slot={s} showClass={showClass} rights={rights} assignments={assignments} sessionDate={sessionDate} className="p-3" />
+              <SlotCard slot={s} showClass={showClass} rights={rights} assignments={assignments} sessionDate={sessionDate} overlapping={overlapCount(s, daySlots)} className="p-3" />
             </li>
           ))}
         </ol>

@@ -1,6 +1,9 @@
+import { AlertTriangle } from "lucide-react";
+
 import { addDays, DAYS, fromMinutes, gridBounds, gridRows } from "@/lib/domain/timetable";
 import { cn } from "@/lib/utils";
 
+import { layoutDay } from "../layout";
 import type { SlotView } from "../queries";
 
 import { SlotCard, type SlotRights } from "./slot-card";
@@ -12,6 +15,11 @@ const dayDate = new Intl.DateTimeFormat("fr-FR", { day: "2-digit", month: "2-dig
 // Weekly grid, Monday to Saturday, one list per day placed on a shared time
 // scale. Each day is a labelled list, so screen readers get the courses in
 // order instead of a maze of cells.
+//
+// Courses at the same time are never drawn on top of each other: two share
+// the slot side by side; three or more become one conflict cell: a warning
+// badge with the count and the hours, then one chip per course naming its
+// class, each opening the course as a card would (see ../layout.ts).
 export function WeekGrid({
   slots,
   monday,
@@ -64,11 +72,59 @@ export function WeekGrid({
           const sessionDate = addDays(monday, d.value - 1).toISOString().slice(0, 10);
           return (
             <ol key={d.value} aria-label={`${d.label}, ${daySlots.length} cours`} className="grid min-w-0 grid-cols-[minmax(0,1fr)] border-l border-border px-1" style={{ ...rowsStyle, ...lines }}>
-              {daySlots.map((s) => {
-                const { from, to } = gridRows(s, start);
+              {layoutDay(daySlots).map((item) => {
+                if (item.kind === "slot") {
+                  const s = item.slot;
+                  const { from, to } = gridRows(s, start);
+                  const width = 100 / item.lanes;
+                  return (
+                    <li
+                      key={s.id}
+                      className={cn("min-w-0 py-0.5", item.lanes > 1 && "px-px")}
+                      style={{ gridRow: `${from} / ${to}`, gridColumn: 1, marginLeft: `${item.lane * width}%`, width: `${width}%` }}
+                    >
+                      <SlotCard
+                        slot={s}
+                        showClass={showClass}
+                        rights={rights}
+                        assignments={assignments}
+                        sessionDate={sessionDate}
+                        compact={to - from <= 4 || item.lanes > 1}
+                      />
+                    </li>
+                  );
+                }
+                const { from, to } = gridRows({ ...item.slots[0]!, startTime: item.startTime, endTime: item.endTime }, start);
                 return (
-                  <li key={s.id} className="min-w-0 py-0.5" style={{ gridRow: `${from} / ${to}`, gridColumn: 1 }}>
-                    <SlotCard slot={s} showClass={showClass} rights={rights} assignments={assignments} sessionDate={sessionDate} compact={to - from <= 4} />
+                  <li key={item.slots[0]!.id} className="min-w-0 py-0.5" style={{ gridRow: `${from} / ${to}`, gridColumn: 1 }}>
+                    <div className="flex h-full min-h-0 flex-col gap-1 rounded-lg border border-warning/40 bg-warning-soft p-1.5">
+                      <p className="flex items-start gap-1 px-0.5 text-xs leading-snug font-semibold text-warning">
+                        <AlertTriangle className="mt-px size-3.5 shrink-0" aria-hidden />
+                        <span className="min-w-0">
+                          {item.slots.length} cours en même temps, {item.startTime} à {item.endTime}
+                        </span>
+                      </p>
+                      {/* Scrolls if the chips outgrow the slot; focusable so the keyboard can scroll it too. */}
+                      <ol
+                        tabIndex={0}
+                        aria-label={`${item.slots.length} cours en même temps, de ${item.startTime} à ${item.endTime}`}
+                        className="flex min-h-0 flex-1 flex-wrap content-start gap-1 overflow-y-auto overscroll-contain rounded-md"
+                      >
+                        {item.slots.map((s) => (
+                          <li key={s.id} className="max-w-full">
+                            <SlotCard
+                              slot={s}
+                              showClass={showClass}
+                              rights={rights}
+                              assignments={assignments}
+                              sessionDate={sessionDate}
+                              line
+                              overlapping={item.slots.length - 1}
+                            />
+                          </li>
+                        ))}
+                      </ol>
+                    </div>
                   </li>
                 );
               })}
