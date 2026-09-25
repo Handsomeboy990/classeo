@@ -22,7 +22,19 @@ export default async function RequestPage({ params }: PageProps<"/espace/demande
   const { id } = await params;
   const request = id.length <= 64 ? await getRequest(user, id) : null;
   if (!request) notFound();
-  const canDecide = can(user, "request:approve") && request.status === "PENDING" && ["NATIONAL", "DEPARTMENT", "COMMUNE"].includes(user.scope.level);
+  const canDecide = can(user, "request:approve") && ["NATIONAL", "DEPARTMENT", "COMMUNE"].includes(user.scope.level);
+
+  const decision =
+    request.status === "PENDING" ? null : (
+      <Alert tone={request.status === "APPROVED" ? "success" : "danger"} title={`${REQUEST_STATUS_LABELS[request.status]} le ${request.decidedAt ? formatDateTime(request.decidedAt) : ""}`}>
+        <p className="mt-1 whitespace-pre-line">{request.decisionNote}</p>
+        {request.decider && (
+          <p className="mt-2 text-xs">
+            Par {request.decider.firstName} {request.decider.lastName}, {request.decider.role.name}
+          </p>
+        )}
+      </Alert>
+    );
 
   return (
     <div className="flex flex-col gap-6">
@@ -53,19 +65,10 @@ export default async function RequestPage({ params }: PageProps<"/espace/demande
             <CardTitle>Décision</CardTitle>
           </CardHeader>
           <CardBody>
-            {request.status !== "PENDING" ? (
-              <Alert tone={request.status === "APPROVED" ? "success" : "danger"} title={`${REQUEST_STATUS_LABELS[request.status]} le ${request.decidedAt ? formatDateTime(request.decidedAt) : ""}`}>
-                <p className="mt-1 whitespace-pre-line">{request.decisionNote}</p>
-                {request.decider && (
-                  <p className="mt-2 text-xs">
-                    Par {request.decider.firstName} {request.decider.lastName}, {request.decider.role.name}
-                  </p>
-                )}
-              </Alert>
-            ) : canDecide ? (
-              <DecisionForm id={request.id} />
+            {canDecide ? (
+              <DecisionForm id={request.id} decided={decision} />
             ) : (
-              <p className="text-sm text-muted">En attente d&apos;examen par la circonscription, la direction départementale ou le ministère.</p>
+              (decision ?? <p className="text-sm text-muted">En attente d&apos;examen par la circonscription, la direction départementale ou le ministère.</p>)
             )}
           </CardBody>
         </Card>

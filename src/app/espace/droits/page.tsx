@@ -87,7 +87,7 @@ export default async function RightsPage({ searchParams }: PageProps<"/espace/dr
                 </Alert>
               )}
               <RightsMatrix
-                key={`${selected.id}-${selected.updatedAt.toISOString()}`}
+                key={selected.id}
                 role={{ id: selected.id, name: selected.name, permissions: selected.permissions }}
                 held={[...user.permissions]}
                 editable={editable}
