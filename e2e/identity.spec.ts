@@ -19,7 +19,10 @@ test.describe("password help without e-mail", () => {
     const create = page.getByRole("dialog", { name: "Nouveau compte" });
     await create.getByLabel("Prénom").fill("Rosine");
     await create.locator("input[name=lastName]").fill(last);
-    await create.getByLabel("Rôle").selectOption({ label: "Secrétaire" });
+    // A long list: the searchable field, type to filter then pick.
+    const role = create.getByRole("combobox", { name: "Rôle" });
+    await role.fill("secré");
+    await page.getByRole("option", { name: "Secrétaire", exact: true }).click();
     await create.getByRole("button", { name: "Créer le compte" }).click();
     const username = (await page.getByTestId("issued-username").textContent())!.trim();
     expect(username).toBe(`rosine.${last.toLowerCase()}`);
