@@ -5,14 +5,7 @@
 // spend the speech quota on arbitrary text. For Fon, Yoruba and Hausa the
 // browser sends the same French source text and the server translates it:
 // the French strings are the whole list.
-//
-// A public page reading a text aloud must add its exact string here. No
-// import from src/app: the pages import this module, not the reverse.
 
-const LANDING_PURPOSE =
-  "Classéo réunit le ministère, les directions départementales, les écoles et les familles autour des mêmes informations sur chaque élève, pour que chacun voie ce qui le concerne, au bon moment.";
+import { PUBLIC_SPEECH } from "@/features/public-pages/texts";
 
-export const PUBLIC_SPEECH_TEXTS: string[] = [
-  // Landing page, hero.
-  `L'école béninoise, du ministère à la maison. ${LANDING_PURPOSE}`,
-];
+export const PUBLIC_SPEECH_TEXTS: string[] = [PUBLIC_SPEECH.landing, PUBLIC_SPEECH.signIn, PUBLIC_SPEECH.help];
