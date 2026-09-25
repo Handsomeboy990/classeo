@@ -15,6 +15,7 @@ import { credentialsEmail } from "@/lib/mail/templates";
 
 import { communeRef, departmentRef, schoolRef, userScopeRef } from "../territory/scope";
 import { actorOf, userScopeWhere } from "./queries";
+import { nextTeacherMatricule } from "../teachers/matricule";
 
 type User = NonNullable<CurrentUser>;
 
@@ -68,7 +69,7 @@ async function linkTeacherRecord(
     data: {
       userId: account.id,
       schoolId,
-      matricule: `ENS-${Date.now().toString(36).toUpperCase()}${Math.floor(Math.random() * 1296).toString(36).toUpperCase()}`,
+      matricule: await nextTeacherMatricule(tx),
       firstName: account.firstName,
       lastName: account.lastName,
       phone: account.phone,
