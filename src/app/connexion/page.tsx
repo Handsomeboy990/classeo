@@ -30,7 +30,7 @@ export default async function LoginPage({ searchParams }: PageProps<"/connexion"
           fill
           priority
           sizes="(min-width: 1024px) 60vw, 1px"
-          className="object-cover object-[20%_50%]"
+          className="object-cover object-[8%_50%]"
           placeholder="blur"
         />
         <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/40 to-transparent px-12 pt-32 pb-10 text-white">

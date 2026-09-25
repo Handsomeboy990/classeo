@@ -15,7 +15,7 @@ export function AuthShell({ title, description, children }: { title: string; des
   return (
     <main id="page-content" tabIndex={-1} className="grid min-h-dvh bg-bg outline-none lg:grid-cols-[minmax(0,1fr)_minmax(28rem,36rem)]">
       <section className="relative hidden overflow-hidden bg-sidebar lg:sticky lg:top-0 lg:block lg:h-dvh" aria-hidden>
-        <Image src={cour} alt="" fill sizes="(min-width: 1024px) 60vw, 1px" className="object-cover object-[20%_50%]" placeholder="blur" />
+        <Image src={cour} alt="" fill sizes="(min-width: 1024px) 60vw, 1px" className="object-cover object-[8%_50%]" placeholder="blur" />
         <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/40 to-transparent px-12 pt-32 pb-10 text-white">
           <p className="max-w-lg font-display text-3xl leading-tight font-bold text-balance">Mot de passe oublié : un code par e-mail.</p>
           <p className="mt-3 max-w-lg text-white/85">
