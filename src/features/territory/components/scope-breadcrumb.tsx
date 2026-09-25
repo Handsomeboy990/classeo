@@ -44,7 +44,7 @@ async function crumbsOf(scope: StatScope): Promise<Crumb[]> {
   }
 }
 
-function hrefOf(c: Crumb, basePath: "/espace/statistiques" | "/espace/territoire") {
+function hrefOf(c: Crumb, basePath: "/espace/statistiques" | "/espace/territoire" | "/espace/comparaison") {
   if (basePath === "/espace/territoire") {
     if (c.level === "NATIONAL") return "/espace/territoire";
     if (c.level === "DEPARTMENT") return `/espace/territoire/${c.departmentId}`;
@@ -65,7 +65,7 @@ export async function ScopeBreadcrumb({
   user,
 }: {
   scope: StatScope;
-  basePath: "/espace/statistiques" | "/espace/territoire";
+  basePath: "/espace/statistiques" | "/espace/territoire" | "/espace/comparaison";
   user: NonNullable<CurrentUser>;
 }) {
   const crumbs = await crumbsOf(scope);
