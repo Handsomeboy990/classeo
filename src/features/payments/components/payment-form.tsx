@@ -8,7 +8,6 @@ import { ActionForm, SubmitButton } from "@/components/kit/action-form";
 import { FormField } from "@/components/kit/form-field";
 import { Button } from "@/components/ui/button";
 import { Input, Select } from "@/components/ui/input";
-import { FocusFirstError } from "@/features/fees/components/focus-first-error";
 import { announceSuccess } from "@/features/fees/components/toast-action";
 import { PAYMENT_METHOD_LABELS, PAYMENT_METHODS, type PaymentMethodCode } from "@/lib/domain/payments";
 import { formatFcfa } from "@/lib/utils";
@@ -47,10 +46,9 @@ export function PaymentForm({ invoiceId, remaining, today }: { invoiceId: string
       }}
       className="flex flex-col gap-4"
     >
-      <FocusFirstError />
       <input type="hidden" name="invoiceId" value={invoiceId} />
-      <FormField label="Montant versé (FCFA)" name="amount" required hint={`Reste à payer : ${formatFcfa(remaining)}`}>
-        <Input type="number" inputMode="numeric" min={1} max={remaining} step={1} value={amount} onChange={(e) => setAmount(e.target.value)} />
+      <FormField label="Montant versé" name="amount" required hint={`Reste à payer : ${formatFcfa(remaining)}`}>
+        <Input type="number" inputMode="numeric" min={1} max={remaining} step={1} value={amount} onChange={(e) => setAmount(e.target.value)} trailing="FCFA" />
       </FormField>
       <Button type="button" variant="ghost" size="sm" className="-mt-2 self-start" onClick={() => setAmount(String(remaining))}>
         Solder la facture ({formatFcfa(remaining)})

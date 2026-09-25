@@ -79,7 +79,7 @@ export const deleteFeeType = createAction({
     });
     if (!feeType) throw new DomainError("Type de frais introuvable.");
     if (feeType._count.items > 0)
-      throw new DomainError(`Impossible de supprimer « ${feeType.name} » : il figure déjà sur ${feeType._count.items} facture(s). Désactivez-le plutôt.`);
+      throw new DomainError(`Impossible de supprimer « ${feeType.name} » : il figure déjà sur ${feeType._count.items} facture${feeType._count.items > 1 ? "s" : ""}. Désactivez-le plutôt.`);
     await db.$transaction([db.paymentPlan.deleteMany({ where: { feeTypeId: feeType.id } }), db.feeType.delete({ where: { id: feeType.id } })]);
     await audit(user, { action: "delete", resource: "fee", resourceId: feeType.id, summary: `Type de frais supprimé : ${feeType.name}`, schoolId: feeType.schoolId });
     return `Type de frais « ${feeType.name} » supprimé.`;
@@ -239,10 +239,10 @@ export const generateInvoices = createAction({
       action: "create",
       resource: "fee",
       resourceId: feeType.id,
-      summary: `${created} facture(s) générée(s) pour ${feeType.name}, total ${formatFcfa(created * feeType.amount)}`,
+      summary: `${created} facture${created > 1 ? "s générées" : " générée"} pour ${feeType.name}, total ${formatFcfa(created * feeType.amount)}`,
       schoolId: feeType.schoolId,
     });
     invalidate(tags.stats);
-    return { message: `${created} facture(s) créée(s) pour « ${feeType.name} ».`, data: { created } };
+    return { message: `${created} facture${created > 1 ? "s créées" : " créée"} pour « ${feeType.name} ».`, data: { created } };
   },
 });

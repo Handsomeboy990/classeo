@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { EmptyState } from "@/components/kit/states";
-import { PrintButton } from "@/features/fees/components/print";
+import { PrintButton } from "@/components/kit/print-button";
 import { requirePermission } from "@/lib/auth/authorize";
 import { loadTimetablePdf } from "@/lib/pdf/data/timetable";
 import { PdfDownloadLink } from "@/lib/pdf/download-link";
@@ -59,7 +59,7 @@ export default async function PrintTimetablePage({ searchParams }: PageProps<"/e
   return (
     <>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3" data-print-hide>
-        <Link href={back} className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline">
+        <Link href={back} className="inline-flex items-center gap-1.5 max-lg:hidden text-sm font-semibold text-primary hover:underline">
           <ArrowLeft className="size-4" aria-hidden /> Retour à l&apos;emploi du temps
         </Link>
         <div className="flex flex-wrap gap-2">

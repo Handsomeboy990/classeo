@@ -3,10 +3,10 @@
 import { useState } from "react";
 
 import { ActionForm, SubmitButton } from "@/components/kit/action-form";
+import { useCloseDialog } from "@/components/kit/form-dialog";
 import { FormField } from "@/components/kit/form-field";
+import { Button } from "@/components/ui/button";
 import { Input, Select } from "@/components/ui/input";
-import { FocusFirstError } from "@/features/fees/components/focus-first-error";
-import { useCloseDialog } from "@/features/fees/components/form-dialog";
 import { DAYS } from "@/lib/domain/timetable";
 
 import { createSlot, updateSlot } from "../actions";
@@ -15,6 +15,7 @@ type Initial = { id: string; assignmentId: string; dayOfWeek: number; startTime:
 
 // Create or edit a weekly slot. Conflicts (class or teacher already busy)
 // are detected on the server and reported in a toast; the input stays.
+// Placed in a dialog: the submit button stays at the bottom of the sheet.
 export function SlotForm({
   assignments,
   initial,
@@ -35,7 +36,6 @@ export function SlotForm({
 
   return (
     <ActionForm action={initial ? updateSlot : createSlot} onSuccess={onDone ?? closeDialog} className="flex flex-col gap-4">
-      <FocusFirstError />
       {initial && <input type="hidden" name="id" value={initial.id} />}
       <FormField label="Matière et enseignant" name="assignmentId" required>
         <Select value={assignmentId} onChange={(e) => setAssignmentId(e.target.value)}>
@@ -69,7 +69,12 @@ export function SlotForm({
       <FormField label="Salle" name="room">
         <Input value={room} onChange={(e) => setRoom(e.target.value)} maxLength={60} autoComplete="off" />
       </FormField>
-      <SubmitButton className="self-end">{initial ? "Enregistrer le cours" : "Ajouter le cours"}</SubmitButton>
+      <div className="ds-dialog-actions">
+        <Button type="button" variant="secondary" onClick={onDone ?? closeDialog}>
+          Annuler
+        </Button>
+        <SubmitButton>{initial ? "Enregistrer le cours" : "Ajouter le cours"}</SubmitButton>
+      </div>
     </ActionForm>
   );
 }

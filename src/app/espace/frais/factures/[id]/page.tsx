@@ -38,7 +38,7 @@ export default async function InvoicePage({ params }: PageProps<"/espace/frais/f
 
   return (
     <>
-      <Link href="/espace/frais/factures" className="mb-3 inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline print:hidden">
+      <Link href="/espace/frais/factures" className="mb-3 inline-flex max-lg:hidden items-center gap-1.5 text-sm font-semibold text-primary hover:underline print:hidden">
         <ArrowLeft className="size-4" aria-hidden /> Toutes les factures
       </Link>
       <PageHeader
@@ -47,7 +47,7 @@ export default async function InvoicePage({ params }: PageProps<"/espace/frais/f
         actions={<PdfDownloadLink href={`/api/pdf/facture/${invoice.id}`} description={`facture ${invoice.number}`} />}
       />
 
-      <div className="grid gap-6 lg:grid-cols-[2fr_1fr]">
+      <div className="grid grid-cols-1 gap-6 *:min-w-0 lg:grid-cols-[2fr_1fr]">
         <div className="flex min-w-0 flex-col gap-6">
           <Card>
             <CardHeader>
@@ -94,7 +94,7 @@ export default async function InvoicePage({ params }: PageProps<"/espace/frais/f
               <THead>
                 <tr>
                   <TH>Tranche</TH>
-                  <TH>Échéance</TH>
+                  <TH className="max-sm:hidden">Échéance</TH>
                   <TH className="text-right">Montant</TH>
                   <TH className="text-right max-sm:hidden">Payé</TH>
                   <TH>Statut</TH>
@@ -103,8 +103,12 @@ export default async function InvoicePage({ params }: PageProps<"/espace/frais/f
               <tbody>
                 {invoice.installments.map((i) => (
                   <TR key={i.id}>
-                    <TD className="font-medium">{i.label}</TD>
-                    <TD>{formatDate(i.dueDate)}</TD>
+                    <TD className="font-medium">
+                      <span className="block">{i.label}</span>
+                      {/* Phone: the due date under the label, one column less. */}
+                      <span className="block text-xs font-normal text-muted sm:hidden">{formatDate(i.dueDate)}</span>
+                    </TD>
+                    <TD className="max-sm:hidden">{formatDate(i.dueDate)}</TD>
                     <TD className="text-right tabular-nums">{formatFcfa(i.amount)}</TD>
                     <TD className="text-right tabular-nums max-sm:hidden">{formatFcfa(i.paidAmount)}</TD>
                     <TD>
@@ -125,8 +129,8 @@ export default async function InvoicePage({ params }: PageProps<"/espace/frais/f
               <THead>
                 <tr>
                   <TH>Désignation</TH>
-                  <TH className="text-right">Quantité</TH>
-                  <TH className="text-right">Prix unitaire</TH>
+                  <TH className="text-right max-sm:hidden">Quantité</TH>
+                  <TH className="text-right max-sm:hidden">Prix unitaire</TH>
                   <TH className="text-right">Total</TH>
                 </tr>
               </THead>
@@ -134,8 +138,8 @@ export default async function InvoicePage({ params }: PageProps<"/espace/frais/f
                 {invoice.items.map((item) => (
                   <TR key={item.id}>
                     <TD>{item.description}</TD>
-                    <TD className="text-right tabular-nums">{item.quantity}</TD>
-                    <TD className="text-right tabular-nums">{formatFcfa(item.unitPrice)}</TD>
+                    <TD className="text-right tabular-nums max-sm:hidden">{item.quantity}</TD>
+                    <TD className="text-right tabular-nums max-sm:hidden">{formatFcfa(item.unitPrice)}</TD>
                     <TD className="text-right font-semibold tabular-nums">{formatFcfa(item.unitPrice * item.quantity)}</TD>
                   </TR>
                 ))}

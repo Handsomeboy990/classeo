@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { PrintButton } from "@/features/fees/components/print";
+import { PrintButton } from "@/components/kit/print-button";
 import { requirePermission } from "@/lib/auth/authorize";
 import { PAYMENT_METHOD_LABELS } from "@/lib/domain/payments";
 import { loadReceipt } from "@/lib/pdf/data/payments";
@@ -36,7 +36,7 @@ export default async function ReceiptPage({ params }: PageProps<"/espace/frais/p
   return (
     <>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3" data-print-hide>
-        <Link href={`/espace/frais/factures/${invoiceId}`} className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline">
+        <Link href={`/espace/frais/factures/${invoiceId}`} className="inline-flex items-center max-lg:hidden gap-1.5 text-sm font-semibold text-primary hover:underline">
           <ArrowLeft className="size-4" aria-hidden /> Retour à la facture {data.invoice.number}
         </Link>
         <div className="flex flex-wrap gap-2">

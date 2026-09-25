@@ -2,12 +2,12 @@ import { CalendarDays, ChevronLeft, ChevronRight, Plus, Printer } from "lucide-r
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { FormDialog } from "@/components/kit/form-dialog";
 import { PageHeader } from "@/components/kit/page-header";
 import { EmptyState } from "@/components/kit/states";
+import { UrlSelect } from "@/components/kit/url-select";
 import { ButtonLink } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { FilterSelect } from "@/features/fees/components/filter-select";
-import { FormDialog } from "@/features/fees/components/form-dialog";
 import { DayList } from "@/features/timetable/components/day-list";
 import { SlotForm } from "@/features/timetable/components/slot-form";
 import { WeekGrid } from "@/features/timetable/components/week-grid";
@@ -88,7 +88,7 @@ export default async function TimetablePage({ searchParams }: PageProps<"/espace
 
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         {t.mode === "class" && t.classes.length > 0 ? (
-          <FilterSelect param="classe" label="Classe affichée" options={t.classes.map((c) => ({ value: c.id, label: c.name }))} />
+          <UrlSelect param="classe" label="Classe affichée" hideLabel replace resetParams={["page", "jour"]} value={t.selected?.id} options={t.classes.map((c) => ({ value: c.id, label: c.name }))} className="sm:w-56" />
         ) : (
           <span />
         )}
