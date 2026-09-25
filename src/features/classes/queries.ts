@@ -95,8 +95,8 @@ export async function classFormOptions(user: User) {
     }),
     // Subjects taught in schools of the same cycle: primary and secondary
     // curricula differ.
-    db.subject.findMany({ where: { assignments: { some: { classroom: { school: { cycle: school.cycle } } } } }, orderBy: { name: "asc" } }),
+    db.subject.findMany({ where: { status: "APPROVED", assignments: { some: { classroom: { school: { cycle: school.cycle } } } } }, orderBy: { name: "asc" } }),
   ]);
-  const subjects = usedSubjects.length ? usedSubjects : await db.subject.findMany({ orderBy: { name: "asc" } });
+  const subjects = usedSubjects.length ? usedSubjects : await db.subject.findMany({ where: { status: "APPROVED" }, orderBy: { name: "asc" } });
   return { levels, teachers, subjects };
 }

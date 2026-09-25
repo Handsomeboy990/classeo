@@ -122,6 +122,8 @@ export const saveAssignment = createAction({
     const classroom = await findScopedClassroom(user, input.classroomId);
     const subject = await db.subject.findUnique({ where: { id: input.subjectId } });
     if (!subject) throw new DomainError("Matière introuvable.");
+    // Only subjects of the national catalogue approved by the ministry.
+    if (subject.status !== "APPROVED") throw new DomainError("Cette matière attend la validation du ministère.");
     await assertTeacherOfSchool(input.teacherId, classroom.schoolId);
     const data = { teacherId: input.teacherId, coefficient: input.coefficient, weeklyHours: input.weeklyHours };
     const assignment = await db.courseAssignment.upsert({
