@@ -5,6 +5,7 @@ import { createAction } from "@/lib/action";
 import { audit } from "@/lib/audit";
 import { invalidate, tags } from "@/lib/cache";
 import { db } from "@/lib/db";
+import { assertInvoiceWritable } from "@/lib/guards";
 import { assertPaymentAllowed, distributePaid, formatReference, invoiceStatus, PAYMENT_METHOD_LABELS } from "@/lib/domain/payments";
 import { DomainError } from "@/lib/errors";
 import { formatFcfa } from "@/lib/utils";
@@ -47,6 +48,7 @@ export const recordPayment = createAction({
   handler: async (input, user) => {
     const found = await db.invoice.findFirst({ where: { AND: [{ id: input.invoiceId }, invoiceWhere(user)] }, select: { id: true } });
     if (!found) throw new DomainError("Facture introuvable.");
+    await assertInvoiceWritable(found.id);
     const today = startOfToday();
     const year = today.getUTCFullYear();
     const prefix = `PAY-${year}-`;
@@ -109,6 +111,7 @@ export const cancelPayment = createAction({
       include: { invoice: { select: { id: true, number: true, status: true, schoolId: true } } },
     });
     if (!payment) throw new DomainError("Paiement introuvable.");
+    await assertInvoiceWritable(payment.invoice.id);
     if (payment.invoice.status === "CANCELLED") throw new DomainError("La facture est annulée : ses paiements ne peuvent plus être modifiés.");
     const today = startOfToday();
 

@@ -10,6 +10,7 @@ import { assignmentWriteWhere, classroomWhere } from "@/lib/auth/scope";
 import type { CurrentUser } from "@/lib/auth/session";
 import { invalidate, tags } from "@/lib/cache";
 import { db } from "@/lib/db";
+import { assertClassroomWritable, assertSheetWritable, assertWritable } from "@/lib/guards";
 import { DomainError } from "@/lib/errors";
 import { plural } from "@/lib/utils";
 
@@ -38,6 +39,9 @@ const sheetInclude = {
 async function findWritableSheet(user: User, sheetId: string) {
   const sheet = await db.gradeSheet.findFirst({ where: { AND: [{ id: sheetId }, sheetWriteWhere(user)] }, include: sheetInclude });
   if (!sheet) throw new DomainError("Fiche de notes introuvable ou hors de votre périmètre.");
+  // Every write on a sheet goes through here: refused for a closed year or a
+  // suspended school.
+  await assertSheetWritable(sheet.id);
   return sheet;
 }
 
@@ -56,6 +60,7 @@ export const createSheet = createAction({
       include: { subject: true, classroom: { select: { name: true, schoolId: true } } },
     });
     if (!assignment) throw new DomainError("Matière introuvable ou hors de votre périmètre.");
+    await assertWritable({ schoolId: assignment.classroom.schoolId, academicYearId: year.id });
     const period = year.periods.find((p) => p.id === input.periodId);
     if (!period) throw new DomainError("Période inconnue pour l'année scolaire active.");
     if (period.isClosed) throw new DomainError("Cette période est clôturée.");
@@ -223,6 +228,7 @@ export const setClassLock = createAction({
   handler: async (input, user) => {
     const classroom = await db.classroom.findFirst({ where: { AND: [{ id: input.classroomId }, classroomWhere(user)] }, select: { id: true, name: true, schoolId: true } });
     if (!classroom) throw new DomainError("Classe introuvable ou hors de votre périmètre.");
+    await assertClassroomWritable(classroom.id);
     const { count } = await db.gradeSheet.updateMany({
       where: { AND: [sheetWriteWhere(user), { periodId: input.periodId, isLocked: !input.lock, assignment: { classroomId: classroom.id } }] },
       data: input.lock ? { isLocked: true, lockedAt: new Date(), lockedById: user.id } : { isLocked: false, lockedAt: null, lockedById: null },

@@ -10,6 +10,7 @@ import { classroomWhere, schoolWhere } from "@/lib/auth/scope";
 import { invalidate, tags } from "@/lib/cache";
 import { ATTENDANCE_LABELS, isIsoDate, isoToDate, newAbsences, todayIso } from "@/lib/domain/attendance";
 import { db } from "@/lib/db";
+import { assertWritable } from "@/lib/guards";
 import { DomainError } from "@/lib/errors";
 import { notify } from "@/lib/notify";
 import { plural } from "@/features/classes/text";
@@ -52,6 +53,7 @@ export const saveAttendance = createAction({
       select: { id: true, name: true, schoolId: true },
     });
     if (!classroom) throw new DomainError("Classe introuvable ou hors de votre périmètre.");
+    await assertWritable({ schoolId: classroom.schoolId, academicYearId: year.id });
     const ids = [...new Set(input.records.map((r) => r.enrollmentId))];
     if (ids.length !== input.records.length) throw new DomainError("Un élève apparaît deux fois dans l'appel.");
     const enrollments = await db.enrollment.findMany({
@@ -121,10 +123,11 @@ export const saveTeacherAttendance = createAction({
   }),
   handler: async (input, user) => {
     if (!can(user, "attendance:create")) throw new DomainError("Vous n'avez pas le droit d'enregistrer les présences.");
-    await assertSchoolDay(input.date);
+    const year = await assertSchoolDay(input.date);
     const ids = [...new Set(input.records.map((r) => r.teacherId))];
     const teachers = await db.teacher.findMany({ where: { id: { in: ids }, isActive: true, school: schoolWhere(user) }, select: { id: true, schoolId: true } });
     if (teachers.length !== ids.length || ids.length !== input.records.length) throw new DomainError("Un enseignant est hors de votre périmètre.");
+    for (const schoolId of new Set(teachers.map((t) => t.schoolId))) await assertWritable({ schoolId, academicYearId: year.id });
     const day = isoToDate(input.date);
     await db.$transaction(
       input.records.map((r) => {
