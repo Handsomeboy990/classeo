@@ -36,39 +36,63 @@ function IosSteps() {
 // Invitation shown once, above the page content of the private space (and
 // outside the region read aloud), when this browser can install the app.
 // Dismissed for good with the close button.
+//
+// On a phone it is one compact line (mark, one action button, close) so it
+// never fills the first screen, even with very large text; the title stays
+// for screen readers and the Safari steps open on demand. From 40rem the
+// card shows the title and the explanation at once.
 export function InstallCard() {
   const offer = useInstallOffer();
   const mode = useInstallMode();
+  const [steps, setSteps] = useState(false);
   if (!offer) return null;
 
   return (
-    <div className="mx-auto w-full max-w-7xl px-4 pt-4 sm:px-6 lg:pt-6">
-      <section aria-labelledby="install-card-title" className="flex items-start gap-3 rounded-card border border-border bg-surface p-3 pr-1.5 shadow-sm sm:p-4 sm:pr-2">
-        <LogoMark className="size-11" />
-        <div className="min-w-0 flex-1">
-          <h2 id="install-card-title" className="font-sans text-base font-bold">
-            Installer Classéo sur cet appareil
-          </h2>
+    <div className="mx-auto w-full max-w-7xl px-4 pt-3 sm:px-6 sm:pt-4 lg:pt-6">
+      <section aria-labelledby="install-card-title" className="rounded-card border border-border bg-surface p-2 pl-3 shadow-sm sm:p-4 sm:pr-2">
+        <div className="flex items-center gap-3 sm:items-start">
+          <LogoMark className="size-8 sm:size-11" />
+          <div className="min-w-0 flex-1 max-sm:hidden">
+            <h2 id="install-card-title" className="font-sans text-base font-bold">
+              Installer Classéo sur cet appareil
+            </h2>
+            {mode === "ios" ? (
+              <IosSteps />
+            ) : (
+              <div>
+                <p className="text-sm text-muted">Ouverture depuis l&apos;écran d&apos;accueil, en plein écran, et pages consultables sans réseau.</p>
+                <Button type="button" className="mt-3" onClick={install}>
+                  <Download aria-hidden />
+                  Installer
+                </Button>
+              </div>
+            )}
+          </div>
           {mode === "ios" ? (
-            <IosSteps />
+            <Button type="button" variant="soft" size="sm" className="min-w-0 flex-1 sm:hidden" aria-expanded={steps} onClick={() => setSteps((v) => !v)}>
+              <Download aria-hidden />
+              Installer Classéo
+            </Button>
           ) : (
-            <>
-              <p className="text-sm text-muted">Ouverture depuis l&apos;écran d&apos;accueil, en plein écran, et pages consultables sans réseau.</p>
-              <Button type="button" className="mt-3" onClick={install}>
-                <Download aria-hidden />
-                Installer
-              </Button>
-            </>
+            <Button type="button" variant="soft" size="sm" className="min-w-0 flex-1 sm:hidden" onClick={install}>
+              <Download aria-hidden />
+              Installer Classéo
+            </Button>
           )}
+          <button
+            type="button"
+            onClick={dismissInstallOffer}
+            className="inline-flex size-11 shrink-0 items-center justify-center rounded-full text-muted hover:bg-surface-2 hover:text-text"
+            aria-label="Ne plus proposer l'installation"
+          >
+            <X className="size-5" aria-hidden />
+          </button>
         </div>
-        <button
-          type="button"
-          onClick={dismissInstallOffer}
-          className="inline-flex size-11 shrink-0 items-center justify-center rounded-full text-muted hover:bg-surface-2 hover:text-text"
-          aria-label="Ne plus proposer l'installation"
-        >
-          <X className="size-5" aria-hidden />
-        </button>
+        {mode === "ios" && steps && (
+          <div className="mt-1 mr-1 mb-1 rounded-lg bg-surface-2 px-3 py-2 sm:hidden">
+            <IosSteps />
+          </div>
+        )}
       </section>
     </div>
   );
