@@ -1,446 +1,166 @@
-import {
-  ArrowRight,
-  Backpack,
-  Captions,
-  Contrast,
-  HandHeart,
-  Handshake,
-  Keyboard,
-  Landmark,
-  LogIn,
-  Map as MapIcon,
-  MapPin,
-  Presentation,
-  School,
-  Shapes,
-  Volume2,
-  WifiOff,
-  Zap,
-  type LucideIcon,
-} from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
-import { connection } from "next/server";
-import { Suspense } from "react";
 
+import { BeninFlag } from "@/components/brand/flag";
 import { Logo } from "@/components/brand/logo";
-import { FlagStripe, SunriseMotif } from "@/components/brand/sunrise";
 import { ReadAloud } from "@/components/kit/read-aloud";
-import { cached, tags } from "@/lib/cache";
-import { db } from "@/lib/db";
-import { cn, formatNumber } from "@/lib/utils";
+
+import chemin from "../../public/images/chemin-de-l-ecole.webp";
+import classe from "../../public/images/classe-lecture.webp";
+import cour from "../../public/images/cour-de-recreation.webp";
+import lecture from "../../public/images/lecture-a-plusieurs.webp";
 
 export const metadata: Metadata = {
   title: { absolute: "Classéo, l'école béninoise du ministère à la maison" },
   description:
-    "Plateforme nationale inclusive de l'éducation au Bénin : ministère, directions départementales, circonscriptions, écoles, enseignants, parents et élèves sur un seul système. Lecture à voix haute, pictogrammes, hors ligne.",
+    "Plateforme nationale de l'éducation au Bénin : le ministère, les directions départementales, les écoles, les enseignants, les parents et les élèves travaillent sur les mêmes données.",
 };
 
-// ---------------------------------------------------------------------------
-// Live national figures: aggregated counts only, cached for every visitor.
-// ---------------------------------------------------------------------------
+const PURPOSE =
+  "Classéo réunit le ministère, les directions départementales, les écoles et les familles autour des mêmes informations sur chaque élève, pour que chacun voie ce qui le concerne, au bon moment.";
 
-const nationalFigures = cached(
-  async () => {
-    const year = await db.academicYear.findFirst({ where: { isActive: true }, select: { id: true, label: true } });
-    const [schools, students, teachers, departments, communes] = await Promise.all([
-      db.school.count({ where: { isActive: true } }),
-      year ? db.enrollment.count({ where: { academicYearId: year.id, status: "ACTIVE" } }) : 0,
-      db.teacher.count({ where: { isActive: true } }),
-      db.department.count(),
-      db.commune.count(),
-    ]);
-    return { year: year?.label ?? null, schools, students, teachers, departments, communes };
-  },
-  ["landing-national-figures"],
-  { tags: [tags.stats], revalidate: 300 },
-);
-
-async function Figures() {
-  await connection();
-  let figures: Awaited<ReturnType<typeof nationalFigures>> | null = null;
-  try {
-    figures = await nationalFigures();
-  } catch {
-    figures = null;
-  }
-  if (!figures) {
-    return <p className="text-sidebar-muted">Chiffres indisponibles pour le moment. Réessayez dans quelques minutes.</p>;
-  }
-  const items = [
-    { label: "établissements", value: figures.schools },
-    { label: `élèves inscrits${figures.year ? ` en ${figures.year}` : ""}`, value: figures.students },
-    { label: "enseignants", value: figures.teachers },
-    { label: "départements", value: figures.departments },
-    { label: "communes", value: figures.communes },
-  ];
-  return (
-    <>
-      <dl className="grid grid-cols-1 gap-x-8 gap-y-8 min-[420px]:grid-cols-2 lg:grid-cols-5">
-        {items.map((i) => (
-          <div key={i.label} className="border-t-2 border-accent/60 pt-4">
-            <dd className="font-display text-4xl leading-none font-extrabold text-accent tabular-nums sm:text-5xl">{formatNumber(i.value)}</dd>
-            <dt className="mt-2 text-sidebar-text">{i.label}</dt>
-          </div>
-        ))}
-      </dl>
-      <ReadAloud
-        className="mt-8 border-sidebar-muted bg-transparent text-sidebar-text hover:bg-sidebar-hover"
-        label="Écouter les chiffres"
-        text={`Classéo en chiffres : ${items.map((i) => `${formatNumber(i.value)} ${i.label}`).join(", ")}.`}
-      />
-    </>
-  );
-}
-
-function FiguresSkeleton() {
-  return (
-    <div className="grid grid-cols-1 gap-8 min-[420px]:grid-cols-2 lg:grid-cols-5" role="status" aria-label="Chargement des chiffres">
-      {Array.from({ length: 5 }, (_, i) => (
-        <div key={i} className="border-t-2 border-accent/30 pt-4">
-          <div className="h-10 w-28 rounded-md bg-sidebar-hover" />
-          <div className="mt-3 h-4 w-24 rounded-md bg-sidebar-hover" />
-        </div>
-      ))}
-    </div>
-  );
-}
-
-// ---------------------------------------------------------------------------
-// Content
-// ---------------------------------------------------------------------------
-
-type Actor = { icon: LucideIcon; name: string; promise: string; does: string[] };
-
-const STEERING: Actor[] = [
-  {
-    icon: Landmark,
-    name: "Ministère",
-    promise: "Pilote l'éducation nationale avec des chiffres consolidés, du pays jusqu'à l'école.",
-    does: ["Tableaux de bord nationaux", "Rôles et droits", "Annonces à tout le pays"],
-  },
-  {
-    icon: MapIcon,
-    name: "Directions départementales",
-    promise: "Suivent leur département, comparent ses communes et statuent sur les demandes des écoles.",
-    does: ["Statistiques du département", "Demandes des écoles"],
-  },
-  {
-    icon: MapPin,
-    name: "Circonscriptions scolaires",
-    promise: "Suivent les écoles de leur commune : effectifs, présences, résultats et demandes.",
-    does: ["Suivi école par école", "Présences et résultats"],
-  },
+const BAND = [
+  { src: chemin, alt: "Trois élèves en uniforme marchent vers l'école avec une femme, dans une rue de ville.", caption: "Sur le chemin de l'école", credit: "DEGAN Gabin, CC BY-SA 4.0" },
+  { src: lecture, alt: "Des élèves allongés sur un carrelage lisent ensemble des livres illustrés.", caption: "Lire à plusieurs, Grand-Popo", credit: "Kulttuurinavigaattori, CC BY-SA 4.0" },
+  { src: cour, alt: "Une cour d'école en sable, des élèves en uniforme kaki ; au premier plan, une petite fille avec son cartable salue.", caption: "Cour de l'EPP Savi, Godomey", credit: "Rofik Adam, CC BY-SA 4.0" },
 ];
 
-const FIELD: Actor[] = [
-  {
-    icon: School,
-    name: "Écoles",
-    promise: "Inscriptions, classes, bulletins, frais et emploi du temps au même endroit.",
-    does: ["Publication des bulletins", "Frais et échéanciers"],
-  },
-  {
-    icon: Presentation,
-    name: "Enseignants",
-    promise: "Font l'appel, saisissent les notes et partagent leurs cours, même depuis un téléphone.",
-    does: ["Notes et moyennes calculées", "Ressources avec transcription"],
-  },
-  {
-    icon: HandHeart,
-    name: "Parents",
-    promise: "Suivent chaque enfant en écoutant l'essentiel, même sans savoir lire.",
-    does: ["Résumé parlé", "Absences signalées le jour même"],
-  },
-  {
-    icon: Backpack,
-    name: "Élèves",
-    promise: "Retrouvent leurs notes, leur journée de cours et les ressources de leur classe.",
-    does: ["Emploi du temps du jour", "Fiches de révision"],
-  },
-];
-
-const PARTNERS: Actor = {
-  icon: Handshake,
-  name: "Partenaires",
-  promise: "ONG, partenaires techniques et financiers consultent des statistiques agrégées, jamais de données personnelles.",
-  does: ["Lecture seule", "Données anonymes"],
-};
-
-const COMMITMENTS: { icon: LucideIcon; title: string; text: string }[] = [
-  { icon: Shapes, title: "Pictogrammes et peu de mots", text: "Chaque information a son image, sa couleur et son mot. Jamais la couleur seule." },
-  { icon: Contrast, title: "Contraste élevé et grand texte", text: "Contraste renforcé, texte agrandi jusqu'à 150 % et thème sombre, réglés une fois par appareil." },
-  { icon: Captions, title: "Transcriptions pour tous", text: "Toute vidéo ou tout audio publié est accompagné de son texte. Les alertes sont écrites." },
-  { icon: WifiOff, title: "Fonctionne hors ligne", text: "Les pages déjà ouvertes restent lisibles sans réseau : bulletins, notes, emploi du temps." },
-  { icon: Zap, title: "Pages légères", text: "Pas d'image lourde, pas de vidéo automatique. Pensé pour la 3G et les petits forfaits." },
-  { icon: Keyboard, title: "Clavier et lecteurs d'écran", text: "Tout se fait sans souris, avec un cadre visible sur l'élément actif. Titres et repères guident les lecteurs d'écran." },
-];
-
-const PITCH =
-  "Classéo relie le ministère, les directions départementales, les circonscriptions, les écoles, les enseignants, les parents et les élèves du Bénin sur une même plateforme. Chaque écran se lit à voix haute, reste consultable hors ligne et s'adapte aux personnes qui voient mal, entendent mal ou lisent peu.";
-
-// An illustration only: a fictitious pupil, absent from the demonstration
-// data, so no figure here can contradict what the demo accounts show.
-const KORA_SAMPLE = "Exemple : Yétondé, classe de CM2. Dernier bulletin : 14 sur 20, bien. Aucune absence cette semaine. Demain, le premier cours est le français, à 8 heures.";
-
-// Section titles: never wider than the phone, hyphenated in French (the
-// page is lang="fr") instead of cut in the middle of a word.
-const H2 = "mt-3 text-[min(1.875rem,8.5vw)] leading-tight font-extrabold text-balance break-words hyphens-auto sm:text-4xl";
-
-// ---------------------------------------------------------------------------
-// Page
-// ---------------------------------------------------------------------------
-
+// Public home page. Calm and institutional: one sentence of purpose, the way
+// in, real photographs of Beninese schools, and a word on accessibility. The
+// features are for the presentation, not for this page.
 export default function LandingPage() {
   return (
     <>
-      <header className="bg-sidebar text-sidebar-text">
-        {/* With very large text on a phone the actions move under the
-            wordmark instead of covering it. */}
-        <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-x-2 gap-y-3 px-4 py-3 sm:gap-x-3 sm:px-8 sm:py-4">
+      <header className="border-b border-border bg-surface">
+        <div className="mx-auto flex max-w-7xl items-center gap-3 px-5 py-3 sm:px-8">
           <Link href="/" aria-label="Classéo, accueil" className="min-w-0 rounded-lg">
-            <Logo tone="inverse" />
+            <Logo />
           </Link>
-          <nav aria-label="Sections de la page" className="ml-6 hidden md:block">
-            <ul className="flex gap-1 text-sm font-semibold">
-              {[
-                ["#acteurs", "Acteurs"],
-                ["#inclusion", "Inclusion"],
-                ["#chiffres", "Chiffres"],
-              ].map(([href, label]) => (
-                <li key={href}>
-                  <a href={href} className="inline-flex min-h-11 items-center rounded-lg px-3 hover:bg-sidebar-hover">
-                    {label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </nav>
-          <div className="ml-auto flex shrink-0 items-center gap-2">
-            <Link
-              href="/connexion"
-              className="inline-flex h-11 items-center gap-2 rounded-lg bg-accent px-3 text-sm font-bold whitespace-nowrap text-on-accent hover:brightness-95 sm:h-10 sm:px-4"
-            >
-              <LogIn className="size-4" aria-hidden />
-              <span>Se connecter</span>
-            </Link>
-          </div>
+          <Link
+            href="/connexion"
+            className="ml-auto inline-flex min-h-11 items-center gap-2 rounded-control bg-primary px-4 text-sm font-bold whitespace-nowrap text-on-primary hover:bg-primary-hover"
+          >
+            Se connecter
+          </Link>
         </div>
       </header>
 
       <main id="page-content" tabIndex={-1} className="outline-none">
-        {/* Hero ---------------------------------------------------------- */}
-        <section aria-labelledby="hero-title" className="relative isolate overflow-hidden bg-sidebar text-sidebar-text">
-          <SunriseMotif className="pointer-events-none absolute -right-24 bottom-3 -z-10 w-[32rem] opacity-25 sm:-right-10 sm:opacity-40 lg:right-0 lg:w-[44rem] lg:opacity-100" />
-          <div className="mx-auto max-w-7xl px-5 pt-10 pb-20 sm:px-8 sm:pt-16 lg:pt-24 lg:pb-32">
-            <p className="text-sm font-bold tracking-[0.14em] text-balance text-accent uppercase">République du Bénin · Plateforme nationale de l&apos;éducation</p>
-            <h1
-              id="hero-title"
-              className="mt-5 max-w-3xl text-[min(2.125rem,11vw)] leading-[1.05] font-extrabold tracking-tight text-balance break-words hyphens-auto min-[400px]:text-[min(2.5rem,11vw)] sm:text-[min(3.75rem,9vw)] lg:text-7xl"
-            >
-              L&apos;école béninoise, du ministère <span className="text-accent">à la maison.</span>
-            </h1>
-            <p className="mt-6 max-w-xl text-lg text-sidebar-muted sm:text-xl">
-              Statistiques, établissements, notes, bulletins, présences, frais et messagerie : le ministère, les écoles et les familles travaillent sur les mêmes
-              données.
-            </p>
-            <div className="mt-8 flex flex-col gap-3 min-[420px]:flex-row min-[420px]:flex-wrap">
-              <Link
-                href="/connexion"
-                className="inline-flex h-13 items-center justify-center gap-2 rounded-xl bg-accent px-6 text-base font-bold text-on-accent hover:brightness-95"
+        <section aria-labelledby="hero-title" className="bg-surface">
+          <div className="mx-auto grid max-w-7xl gap-8 px-5 pt-8 pb-12 sm:px-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:items-center lg:gap-14 lg:pt-14 lg:pb-20">
+            <div className="order-2 lg:order-1">
+              <p className="flex items-center gap-2.5 text-sm font-semibold text-muted">
+                <BeninFlag className="h-4" />
+                République du Bénin
+              </p>
+              <h1
+                id="hero-title"
+                className="mt-4 text-[min(2.25rem,10.5vw)] leading-[1.06] font-extrabold tracking-tight text-balance hyphens-auto sm:text-5xl lg:text-[3.5rem]"
               >
-                Accéder à mon espace
-                <ArrowRight className="size-5" aria-hidden />
-              </Link>
-              <ReadAloud
-                text={PITCH}
-                label="Écouter la présentation"
-                className="h-13 justify-center rounded-xl border-sidebar-muted bg-transparent px-5 text-base text-sidebar-text hover:bg-sidebar-hover"
-              />
+                L&apos;école béninoise, du ministère à la maison.
+              </h1>
+              <p className="mt-5 max-w-xl text-lg leading-relaxed text-muted">{PURPOSE}</p>
+              <div className="mt-8 flex flex-col gap-3 min-[420px]:flex-row min-[420px]:flex-wrap min-[420px]:items-center">
+                <Link
+                  href="/connexion"
+                  className="inline-flex min-h-12 items-center justify-center gap-2 rounded-control bg-primary px-6 text-base font-bold text-on-primary shadow-xs hover:bg-primary-hover"
+                >
+                  Accéder à mon espace
+                  <ArrowRight className="size-5" aria-hidden />
+                </Link>
+                <ReadAloud text={`L'école béninoise, du ministère à la maison. ${PURPOSE}`} label="Écouter" className="min-h-12 justify-center px-5 text-base" />
+              </div>
             </div>
-            <ul className="mt-10 flex flex-wrap gap-2 text-sm" aria-label="En bref">
-              {[
-                [Volume2, "Lecture à voix haute"],
-                [WifiOff, "Lecture hors ligne"],
-                [Contrast, "Contraste élevé"],
-              ].map(([Icon, label]) => {
-                const I = Icon as LucideIcon;
-                return (
-                  <li key={label as string} className="inline-flex items-center gap-2 rounded-full border border-sidebar-muted/50 px-3 py-1.5">
-                    <I className="size-4 text-accent" aria-hidden />
-                    {label as string}
-                  </li>
-                );
-              })}
+            <figure className="order-1 lg:order-2">
+              <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-surface-2 sm:aspect-[16/10] lg:aspect-[4/5]">
+                <Image
+                  src={classe}
+                  alt="Une classe de lecture au Bénin : au tableau, « ada va à l'école » écrit à la craie, des élèves assis sur des bancs de bois."
+                  fill
+                  priority
+                  sizes="(min-width: 1024px) 40rem, 100vw"
+                  className="object-cover object-[50%_35%]"
+                  placeholder="blur"
+                />
+              </div>
+              <figcaption className="mt-2 text-xs text-muted">Leçon de lecture dans une école béninoise. Photo : Thomas Dorn, Commission européenne, CC BY 4.0.</figcaption>
+            </figure>
+          </div>
+        </section>
+
+        {/* The ministry context and who it serves, in one line. */}
+        <section aria-label="Pour qui" className="border-y border-border bg-bg">
+          <p className="mx-auto max-w-7xl px-5 py-5 text-center text-[0.9375rem] leading-relaxed text-balance text-muted sm:px-8">
+            Pour le ministère, les directions départementales, les circonscriptions scolaires, les écoles, les enseignants et les familles
+            <span className="text-text"> · prototype présenté au défi EduTech Bénin 2026</span>
+          </p>
+        </section>
+
+        <section aria-labelledby="band-title" className="bg-bg">
+          <div className="mx-auto max-w-7xl px-5 py-12 sm:px-8 lg:py-16">
+            <h2 id="band-title" className="sr-only">
+              L&apos;école au Bénin, en images
+            </h2>
+            <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {BAND.map((p, i) => (
+                <li key={p.caption} className={i === 0 ? "sm:col-span-2 lg:col-span-1" : undefined}>
+                  <figure>
+                    <div className="relative aspect-[3/2] overflow-hidden rounded-xl bg-surface-2">
+                      <Image src={p.src} alt={p.alt} fill sizes="(min-width: 1024px) 26rem, (min-width: 640px) 50vw, 100vw" className="object-cover" placeholder="blur" data-decorative />
+                    </div>
+                    <figcaption className="mt-2 flex flex-wrap items-baseline justify-between gap-x-3 text-sm">
+                      <span className="font-semibold text-text">{p.caption}</span>
+                      <span className="text-xs text-muted">Photo : {p.credit}</span>
+                    </figcaption>
+                  </figure>
+                </li>
+              ))}
             </ul>
           </div>
-          <FlagStripe />
         </section>
 
-        {/* Actors -------------------------------------------------------- */}
-        <section id="acteurs" aria-labelledby="actors-title" className="scroll-mt-4 bg-bg">
-          <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-5 py-16 sm:px-8 lg:grid-cols-[22rem_1fr] lg:gap-16 lg:py-24">
-            <div className="lg:sticky lg:top-8 lg:self-start">
-              <p className="text-sm font-bold tracking-[0.14em] text-primary uppercase">Qui utilise Classéo</p>
-              <h2 id="actors-title" className={H2}>
-                Un espace par rôle, du ministère à la famille.
-              </h2>
-              <p className="mt-4 text-muted">
-                Chacun ne voit que ce qui le concerne. Les droits suivent le découpage du pays : nation, département, commune, école, famille.
-              </p>
-            </div>
-            <div className="flex flex-col gap-10">
-              <ActorGroup title="Pilotage" actors={STEERING} />
-              <ActorGroup title="Sur le terrain" actors={FIELD} />
-              <ActorGroup title="En appui" actors={[PARTNERS]} />
-            </div>
-          </div>
-        </section>
-
-        {/* Inclusion ----------------------------------------------------- */}
-        <section id="inclusion" aria-labelledby="inclusion-title" className="scroll-mt-4 border-y border-border bg-surface">
-          <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 lg:py-24">
-            <div className="max-w-2xl">
-              <p className="text-sm font-bold tracking-[0.14em] text-primary uppercase">Accessibilité</p>
-              <h2 id="inclusion-title" className={H2}>
-                Utilisable avec un handicap ou sans savoir bien lire.
-              </h2>
-              <p className="mt-4 text-muted">Classéo est conçu pour les personnes aveugles ou malvoyantes, sourdes ou malentendantes, et pour celles qui lisent peu.</p>
-            </div>
-
-            <div className="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,26rem)_1fr]">
-              <article aria-labelledby="kora-title" className="relative overflow-hidden rounded-2xl bg-sidebar p-6 text-sidebar-text sm:p-8">
-                <span className="flex size-14 items-center justify-center rounded-2xl bg-accent text-on-accent" aria-hidden>
-                  <Volume2 className="size-7" />
-                </span>
-                <h3 id="kora-title" className="mt-5 text-[min(1.5rem,7.5vw)] leading-tight font-extrabold text-balance hyphens-auto">
-                  Chaque écran se lit à voix haute
-                </h3>
-                <p className="mt-2 text-sidebar-muted">
-                  Bulletins, absences, annonces : le bouton « Écouter » fait lire le résumé en français par la voix du téléphone. Rien à installer, et cela fonctionne hors
-                  ligne.
-                </p>
-                <figure className="mt-6 rounded-xl border border-sidebar-muted/40 bg-sidebar-hover p-4">
-                  <figcaption className="text-xs font-bold tracking-wider text-accent uppercase">Ce qu&apos;entend un parent</figcaption>
-                  <blockquote className="mt-2 text-lg leading-snug">«&nbsp;{KORA_SAMPLE}&nbsp;»</blockquote>
-                </figure>
-                <ReadAloud text={KORA_SAMPLE} label="Écouter l'exemple" className="relative mt-5 h-12 border-accent bg-accent px-5 text-base text-on-accent hover:bg-accent hover:brightness-95" />
-              </article>
-
-              <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                {COMMITMENTS.map((c) => (
-                  <li key={c.title} className="flex gap-4 rounded-2xl border border-border bg-bg p-5">
-                    <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary" aria-hidden>
-                      <c.icon className="size-6" />
-                    </span>
-                    <div className="min-w-0 break-words">
-                      <h3 className="font-sans text-lg font-bold text-balance hyphens-auto">{c.title}</h3>
-                      <p className="mt-1 text-muted">{c.text}</p>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </section>
-
-        {/* Figures ------------------------------------------------------- */}
-        <section id="chiffres" aria-labelledby="figures-title" className="scroll-mt-4 bg-sidebar text-sidebar-text">
-          <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 lg:py-24">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-              <div>
-                <p className="text-sm font-bold tracking-[0.14em] text-accent uppercase">Chiffres</p>
-                <h2 id="figures-title" className={H2}>
-                  La plateforme aujourd&apos;hui
-                </h2>
-              </div>
-              <p className="max-w-sm text-sm text-sidebar-muted">Chiffres agrégés de la plateforme de démonstration, actualisés toutes les cinq minutes. Aucune donnée personnelle.</p>
-            </div>
-            <div className="mt-10">
-              <Suspense fallback={<FiguresSkeleton />}>
-                <Figures />
-              </Suspense>
-            </div>
-          </div>
-        </section>
-
-        {/* Closing call -------------------------------------------------- */}
-        <section aria-labelledby="cta-title" className="bg-bg">
-          <div className="mx-auto flex max-w-7xl flex-col items-start gap-6 px-5 py-16 sm:px-8 md:flex-row md:items-center md:justify-between lg:py-20">
-            <div>
-              <h2 id="cta-title" className={cn(H2, "mt-0")}>
-                Se connecter à Classéo
-              </h2>
-              <p className="mt-2 max-w-xl text-muted">Utilisez l&apos;adresse e-mail et le mot de passe remis par votre établissement ou votre direction.</p>
-            </div>
-            <Link href="/connexion" className="inline-flex h-13 shrink-0 items-center gap-2 rounded-xl bg-primary px-6 text-base font-bold text-on-primary hover:bg-primary-hover">
-              Se connecter
-              <ArrowRight className="size-5" aria-hidden />
-            </Link>
+        <section aria-labelledby="a11y-title" className="border-t border-border bg-surface">
+          <div className="mx-auto grid max-w-7xl gap-4 px-5 py-12 sm:px-8 md:grid-cols-[16rem_1fr] md:gap-10 lg:py-16">
+            <h2 id="a11y-title" className="text-2xl font-extrabold text-balance">
+              Accessible à tous
+            </h2>
+            <p className="max-w-3xl text-lg leading-relaxed text-muted">
+              Chaque écran peut être lu à voix haute. Le texte s&apos;agrandit, le contraste se renforce et tout se fait au clavier, avec un lecteur d&apos;écran ou sur un
+              petit téléphone. Les pages déjà ouvertes restent lisibles sans réseau. Les réglages se trouvent sous le bouton rond, en bas à droite de chaque écran.
+            </p>
           </div>
         </section>
       </main>
 
-      <footer className="bg-sidebar text-sidebar-text">
-        <FlagStripe />
-        <div className="mx-auto flex max-w-7xl flex-col gap-8 px-5 py-10 sm:px-8 md:flex-row md:justify-between">
-          <div className="max-w-sm">
-            <Logo tone="inverse" />
-            <p className="mt-3 text-sm text-sidebar-muted">Plateforme nationale inclusive de l&apos;éducation. Prototype présenté au défi EduTech Bénin, 2026.</p>
+      <footer className="border-t border-border bg-bg">
+        <div className="mx-auto flex max-w-7xl flex-col gap-6 px-5 py-8 sm:px-8 md:flex-row md:items-center md:justify-between">
+          <div>
+            <Logo />
+            <p className="mt-2 text-sm text-muted">Plateforme nationale de l&apos;éducation, prototype présenté au défi EduTech Bénin, 2026.</p>
           </div>
           <nav aria-label="Liens du pied de page">
-            <ul className="grid gap-1 text-sm font-semibold">
+            <ul className="flex flex-wrap gap-x-5 gap-y-1 text-sm font-semibold">
               <li>
                 <Link href="/connexion" className="inline-flex min-h-11 items-center hover:underline">
                   Se connecter
                 </Link>
               </li>
               <li>
-                <a href="#inclusion" className="inline-flex min-h-11 items-center hover:underline">
-                  Accessibilité et inclusion
-                </a>
-              </li>
-              <li>
                 <Link href="/hors-ligne" className="inline-flex min-h-11 items-center hover:underline">
                   Utiliser Classéo hors ligne
                 </Link>
+              </li>
+              <li>
+                <a href="/images/CREDITS.md" className="inline-flex min-h-11 items-center hover:underline">
+                  Crédits photos
+                </a>
               </li>
             </ul>
           </nav>
         </div>
       </footer>
     </>
-  );
-}
-
-function ActorGroup({ title, actors }: { title: string; actors: Actor[] }) {
-  return (
-    <div>
-      <h3 className="mb-4 flex items-center gap-3 font-sans text-sm font-bold tracking-[0.14em] text-muted uppercase">
-        {title}
-        <span className="h-px flex-1 bg-border" aria-hidden />
-      </h3>
-      <ol className="relative flex flex-col gap-3">
-        {actors.map((a, i) => (
-          <li key={a.name} className="group relative flex gap-4 rounded-2xl border border-border bg-surface p-5">
-            {i < actors.length - 1 && <span className="absolute top-[4.25rem] bottom-[-0.8rem] left-[2.7rem] w-0.5 bg-primary/25" aria-hidden />}
-            <span className="relative flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary text-on-primary" aria-hidden>
-              <a.icon className="size-6" />
-            </span>
-            <div className="min-w-0 break-words">
-              <h4 className="font-display text-[min(1.25rem,6.5vw)] leading-snug font-bold text-balance hyphens-auto">{a.name}</h4>
-              <p className="mt-1 text-text">{a.promise}</p>
-              <ul className="mt-3 flex flex-wrap gap-2">
-                {a.does.map((d) => (
-                  <li key={d} className="rounded-full bg-surface-2 px-3 py-1 text-sm text-muted">
-                    {d}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </li>
-        ))}
-      </ol>
-    </div>
   );
 }
