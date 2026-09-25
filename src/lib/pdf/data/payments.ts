@@ -20,6 +20,7 @@ export async function loadReceipt(user: PdfUser, id: string) {
       recordedBy: { select: { firstName: true, lastName: true } },
       invoice: {
         select: {
+          id: true,
           number: true,
           totalAmount: true,
           paidAmount: true,
@@ -44,7 +45,7 @@ export async function loadReceipt(user: PdfUser, id: string) {
     classroom: p.invoice.enrollment.classroom.name,
     yearLabel: p.invoice.enrollment.academicYear.label,
   };
-  return { id: p.id, data, schoolId: p.invoice.school.id, issuer: schoolIssuer(p.invoice.school) };
+  return { id: p.id, invoiceId: p.invoice.id, data, schoolId: p.invoice.school.id, issuer: schoolIssuer(p.invoice.school) };
 }
 
 // An invoice through getInvoice(), which applies invoiceWhere().
