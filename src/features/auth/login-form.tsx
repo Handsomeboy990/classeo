@@ -1,6 +1,7 @@
 "use client";
 
 import { Eye, EyeOff, LogIn } from "lucide-react";
+import Link from "next/link";
 import { useRef, useState } from "react";
 
 import { ActionForm, SubmitButton } from "@/components/kit/action-form";
@@ -42,7 +43,10 @@ export function LoginForm({ next, showDemo }: { next?: string; showDemo: boolean
             {visible ? <EyeOff className="size-5" aria-hidden /> : <Eye className="size-5" aria-hidden />}
           </button>
         </div>
-        <SubmitButton size="lg" pendingLabel="Connexion…" className="mt-2 w-full">
+        <Link href="/mot-de-passe-oublie" className="-mt-1 self-end text-sm font-semibold text-primary underline-offset-4 hover:underline">
+          Mot de passe oublié ?
+        </Link>
+        <SubmitButton size="lg" pendingLabel="Connexion…" className="mt-1 w-full">
           <LogIn aria-hidden /> Se connecter
         </SubmitButton>
       </ActionForm>
