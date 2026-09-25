@@ -154,7 +154,6 @@ export function DeleteRoleDialog({
   targets: { id: string; name: string }[];
   blockedReason: string | null;
 }) {
-  const router = useRouter();
   const [open, setOpen] = useState(false);
   const plural = role.users > 1;
   return (
@@ -173,14 +172,9 @@ export function DeleteRoleDialog({
             </div>
           </div>
         ) : (
-          <ActionForm
-            action={deleteRole}
-            onSuccess={() => {
-              setOpen(false);
-              router.push("/espace/droits");
-            }}
-            className="flex flex-col gap-4"
-          >
+          // The refresh that follows success sends the page back to the list,
+          // the role no longer exists (see the rights page).
+          <ActionForm action={deleteRole} onSuccess={() => setOpen(false)} className="flex flex-col gap-4">
             <input type="hidden" name="roleId" value={role.id} />
             {role.users > 0 ? (
               <>

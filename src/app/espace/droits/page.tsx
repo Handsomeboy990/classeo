@@ -1,6 +1,7 @@
 import { ShieldCheck, Users } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
 import { EmptyState } from "@/components/kit/states";
 import { PageHeader } from "@/components/kit/page-header";
@@ -22,7 +23,10 @@ export default async function RightsPage({ searchParams }: PageProps<"/espace/dr
   const user = await requirePermission("role:view");
   const sp = await searchParams;
   const roles = await listRolesWithCounts(user);
-  const selected = roles.find((r) => r.id === param(sp, "role")) ?? roles[0];
+  const wanted = param(sp, "role");
+  // A deleted role (or a stale link) goes back to the list.
+  if (wanted && !roles.some((r) => r.id === wanted)) redirect("/espace/droits");
+  const selected = roles.find((r) => r.id === wanted) ?? roles[0];
 
   const actor = actorOf(user);
   const canUpdate = can(user, "role:update");
@@ -92,7 +96,7 @@ export default async function RightsPage({ searchParams }: PageProps<"/espace/dr
 
         {selected ? (
           <Card>
-            <CardHeader className="flex-col sm:flex-row">
+            <CardHeader className="flex-col">
               <div className="min-w-0">
                 <CardTitle className="flex items-center gap-2">
                   <ShieldCheck className="size-5 text-primary" aria-hidden /> {selected.name}
@@ -110,7 +114,7 @@ export default async function RightsPage({ searchParams }: PageProps<"/espace/dr
                   · {formatNumber(selected.permissions.length)} droits
                 </p>
               </div>
-              <div className="flex flex-wrap content-start gap-2 sm:justify-end">
+              <div className="flex flex-wrap gap-2">
                 <Badge tone="info">Niveau : {SCOPE_LABELS[selected.scopeLevel]}</Badge>
                 {selected.isSystem ? <Badge>Rôle système</Badge> : <Badge tone="accent">Personnalisé</Badge>}
                 <Badge>
