@@ -7,7 +7,7 @@ import { PageHeader } from "@/components/kit/page-header";
 import { EmptyState } from "@/components/kit/states";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
-import { ConfirmButton } from "@/features/classes/components/confirm-button";
+import { ConfirmButton } from "@/components/kit/confirm-button";
 import { removeChild } from "@/features/parents/actions";
 import { AddChildDialog, EditGuardianDialog } from "@/features/parents/components/parent-forms";
 import { getGuardian, studentChoices } from "@/features/parents/queries";

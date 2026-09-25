@@ -14,7 +14,7 @@ import { Table, TD, TH, THead, TR } from "@/components/ui/table";
 import { getCurrentPeriod } from "@/features/classes/academic";
 import { deleteAssignment, deleteClassroom } from "@/features/classes/actions";
 import { AssignmentDialog, EditClassDialog } from "@/features/classes/components/class-forms";
-import { ConfirmButton } from "@/features/classes/components/confirm-button";
+import { ConfirmButton } from "@/components/kit/confirm-button";
 import { classFormOptions, getClassroom } from "@/features/classes/queries";
 import { computeClassCards } from "@/features/report-cards/compute";
 import { DISABILITY_LABELS } from "@/features/students/labels";

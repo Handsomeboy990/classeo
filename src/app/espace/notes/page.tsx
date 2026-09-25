@@ -7,7 +7,7 @@ import { PageHeader } from "@/components/kit/page-header";
 import { EmptyState } from "@/components/kit/states";
 import { Badge } from "@/components/ui/badge";
 import { getActiveYear, getCurrentPeriod } from "@/features/classes/academic";
-import { UrlSelect } from "@/features/classes/components/url-select";
+import { UrlSelect } from "@/components/kit/url-select";
 import { ClassLockButtons, CreateSheetDialog } from "@/features/grades/components/sheet-forms";
 import { assignmentsWithoutSheet, listSheets, sheetFilterOptions } from "@/features/grades/queries";
 import { can, requirePermission } from "@/lib/auth/authorize";
@@ -112,7 +112,7 @@ export default async function NotesPage(props: PageProps<"/espace/notes">) {
       />
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end">
         <UrlSelect param="periode" label="Période" value={periodId} options={year.periods.map((p) => ({ value: p.id, label: `${p.name}${p.isClosed ? " (clôturée)" : ""}` }))} className="sm:w-52" />
-        <UrlSelect param="classe" label="Classe" value={classroomId} allLabel={user.teacherId ? "Mes matières" : "Toutes les classes"} options={classes.map((c) => ({ value: c.id, label: c.name }))} className="sm:w-52" />
+        <UrlSelect param="classe" label="Classe" value={classroomId ?? ""} allLabel={user.teacherId ? "Mes matières" : "Toutes les classes"} options={classes.map((c) => ({ value: c.id, label: c.name }))} className="sm:w-52" />
         {can(user, "grade:lock") && selectedClass && (
           <div className="flex flex-wrap gap-2">
             <ClassLockButtons classroomId={selectedClass.id} periodId={periodId} className={selectedClass.name} />

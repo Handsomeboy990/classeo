@@ -4,7 +4,7 @@ import Link from "next/link";
 import { DataTable, type Column } from "@/components/kit/data-table";
 import { PageHeader } from "@/components/kit/page-header";
 import { Badge } from "@/components/ui/badge";
-import { UrlSelect } from "@/features/classes/components/url-select";
+import { UrlSelect } from "@/components/kit/url-select";
 import { CreateTeacherDialog } from "@/features/teachers/components/teacher-forms";
 import { listTeachers } from "@/features/teachers/queries";
 import { can, requirePermission } from "@/lib/auth/authorize";

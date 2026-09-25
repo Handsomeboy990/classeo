@@ -6,7 +6,7 @@ import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/kit/page-header";
 import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
-import { ConfirmButton } from "@/features/classes/components/confirm-button";
+import { ConfirmButton } from "@/components/kit/confirm-button";
 import { deleteSheet } from "@/features/grades/actions";
 import { GradeGrid } from "@/features/grades/components/grade-grid";
 import { SheetLockButton, SheetSettingsDialog } from "@/features/grades/components/sheet-forms";

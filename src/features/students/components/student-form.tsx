@@ -7,7 +7,6 @@ import { FormField } from "@/components/kit/form-field";
 import { ButtonLink } from "@/components/ui/button";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input, Select } from "@/components/ui/input";
-import { FocusFirstInvalid } from "@/features/classes/components/focus-invalid";
 
 import { createStudent, updateStudent } from "../actions";
 import { CHANNEL_LABELS, DISABILITIES, DISABILITY_LABELS, RELATIONSHIPS } from "../labels";
@@ -54,7 +53,6 @@ export function StudentForm({ classes, guardians, values, cancelHref }: { classe
   const editing = !!values;
   return (
     <ActionForm action={editing ? updateStudent : createStudent} onReset={(e) => e.preventDefault()} className="flex max-w-3xl flex-col gap-6">
-      <FocusFirstInvalid />
       {values && <input type="hidden" name="id" value={values.id} />}
       <Card>
         <CardHeader>

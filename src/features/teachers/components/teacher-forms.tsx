@@ -2,7 +2,7 @@ import { Pencil, Plus } from "lucide-react";
 
 import { FormField } from "@/components/kit/form-field";
 import { Input, Select } from "@/components/ui/input";
-import { FormDialog } from "@/features/classes/components/form-dialog";
+import { FormDialog } from "@/components/kit/form-dialog";
 
 import { createTeacher, updateTeacher } from "../actions";
 

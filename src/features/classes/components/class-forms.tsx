@@ -1,10 +1,10 @@
 import { Pencil, Plus } from "lucide-react";
 
+import { FormDialog } from "@/components/kit/form-dialog";
 import { FormField } from "@/components/kit/form-field";
 import { Input, Select } from "@/components/ui/input";
 
 import { createClassroom, saveAssignment, updateClassroom } from "../actions";
-import { FormDialog } from "./form-dialog";
 
 type Options = {
   levels: { id: string; name: string }[];

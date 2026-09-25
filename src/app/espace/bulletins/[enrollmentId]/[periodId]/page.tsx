@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 import { ReadAloud } from "@/components/kit/read-aloud";
 import { EmptyState } from "@/components/kit/states";
 import { Alert } from "@/components/ui/alert";
-import { PrintButton } from "@/features/report-cards/components/print-button";
+import { PrintButton } from "@/components/kit/print-button";
 import { printableCard } from "@/features/report-cards/queries";
 import { can, requirePermission } from "@/lib/auth/authorize";
 import { spokenSummary } from "@/lib/domain/report-card";

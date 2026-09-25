@@ -11,8 +11,8 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TD, TH, THead, TR } from "@/components/ui/table";
 import { getActiveYear, getCurrentPeriod } from "@/features/classes/academic";
-import { ConfirmButton } from "@/features/classes/components/confirm-button";
-import { UrlSelect } from "@/features/classes/components/url-select";
+import { ConfirmButton } from "@/components/kit/confirm-button";
+import { UrlSelect } from "@/components/kit/url-select";
 import { publishReportCards } from "@/features/report-cards/actions";
 import { classPreview, publicationOverview } from "@/features/report-cards/queries";
 import { can, requirePermission } from "@/lib/auth/authorize";
@@ -40,7 +40,7 @@ export default async function ReportCardsPage(props: PageProps<"/espace/bulletin
   const filters = (
     <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end">
       <UrlSelect param="periode" label="Période" value={periodId} options={year.periods.map((p) => ({ value: p.id, label: p.name }))} className="sm:w-52" />
-      <UrlSelect param="classe" label="Classe" value={classroomId} allLabel="Vue d'ensemble" options={overview.map((c) => ({ value: c.id, label: c.name }))} className="sm:w-52" />
+      <UrlSelect param="classe" label="Classe" value={classroomId ?? ""} allLabel="Vue d'ensemble" options={overview.map((c) => ({ value: c.id, label: c.name }))} className="sm:w-52" />
     </div>
   );
 

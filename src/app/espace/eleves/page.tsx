@@ -7,7 +7,7 @@ import { PageHeader } from "@/components/kit/page-header";
 import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
 import { getActiveYear } from "@/features/classes/academic";
-import { UrlSelect } from "@/features/classes/components/url-select";
+import { UrlSelect } from "@/components/kit/url-select";
 import { classroomOptions } from "@/features/classes/queries";
 import { DISABILITY_LABELS, ENROLLMENT_STATUS_LABELS, GENDER_LABELS, shortDate } from "@/features/students/labels";
 import { listStudents } from "@/features/students/queries";
@@ -102,7 +102,7 @@ export default async function StudentsPage(props: PageProps<"/espace/eleves">) {
         }
       />
       <div className="mb-4 flex flex-col gap-3 sm:flex-row">
-        <UrlSelect param="classe" label="Classe" value={classroomId} allLabel="Toutes les classes" options={classes.map((c) => ({ value: c.id, label: c.name }))} className="sm:w-52" />
+        <UrlSelect param="classe" label="Classe" value={classroomId ?? ""} allLabel="Toutes les classes" options={classes.map((c) => ({ value: c.id, label: c.name }))} className="sm:w-52" />
         <UrlSelect
           param="statut"
           label="Statut"
