@@ -14,7 +14,7 @@ import { DomainError } from "@/lib/errors";
 import { notify } from "@/lib/notify";
 
 import { activeYearId, manageableWhere, resolveTargetForWrite } from "./queries";
-import { contentSchema, parseEventDate, type ContentInput } from "./schema";
+import { contentSchema, parseEventDate, tickerEnd, type ContentInput } from "./schema";
 
 type User = NonNullable<CurrentUser>;
 
@@ -33,6 +33,8 @@ function contentData(input: ContentInput) {
     transcript: hasMedia ? input.transcript : null,
     subjectLabel: input.type === "RESOURCE" ? input.subjectLabel : null,
     eventDate: input.type === "EVENT" && input.eventDate ? parseEventDate(input.eventDate) : null,
+    ticker: !!input.tickerUntil,
+    tickerUntil: input.tickerUntil ? tickerEnd(input.tickerUntil) : null,
   };
 }
 

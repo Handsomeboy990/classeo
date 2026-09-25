@@ -132,6 +132,28 @@ export async function visibleWhere(user: User): Promise<Prisma.ContentWhereInput
   return { OR: or };
 }
 
+export type TickerItem = { id: string; title: string; summary: string | null; type: "ANNOUNCEMENT" | "RESOURCE" | "EVENT" };
+
+// Important announcements shown as a scrolling band on the screens of their
+// audience: published, marked for the band, before its end date, and
+// readable by this user under the same rules as the list (audience and
+// reach). Drafts and the author's own unpublished work never scroll.
+export async function tickerContents(user: User): Promise<TickerItem[]> {
+  const rows = await db.content.findMany({
+    where: {
+      AND: [
+        { status: "PUBLISHED", ticker: true, tickerUntil: { gt: new Date() } },
+        { audience: { in: audiencesFor(user) } },
+        reachWhere(await readerReachFor(user), { includeNational: true }),
+      ],
+    },
+    select: { id: true, title: true, easyRead: true, type: true },
+    orderBy: { publishedAt: "desc" },
+    take: 6,
+  });
+  return rows.map((r) => ({ id: r.id, title: r.title, summary: r.easyRead, type: r.type }));
+}
+
 export const contentInclude = {
   author: { select: { firstName: true, lastName: true, role: { select: { name: true } } } },
   department: { select: { name: true } },

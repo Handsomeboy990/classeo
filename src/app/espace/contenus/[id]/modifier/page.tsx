@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/kit/page-header";
 import { ContentForm } from "@/features/contents/content-form";
 import { getManageableContent, targetLabel, targetOptions } from "@/features/contents/queries";
-import { toEventInput } from "@/features/contents/schema";
+import { toEventInput, toTickerInput } from "@/features/contents/schema";
 import { can, requirePermission } from "@/lib/auth/authorize";
 import { targetValue } from "@/lib/domain/content-targeting";
 
@@ -42,6 +42,7 @@ export default async function EditContentPage({ params }: PageProps<"/espace/con
           transcript: c.transcript ?? "",
           subjectLabel: c.subjectLabel ?? "",
           eventDate: toEventInput(c.eventDate),
+          tickerUntil: toTickerInput(c.ticker ? c.tickerUntil : null),
         }}
       />
     </div>
