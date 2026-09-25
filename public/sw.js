@@ -12,7 +12,7 @@
  * - Caches are versioned: a new VERSION removes the previous ones.
  */
 
-const VERSION = "2026-09-25.1";
+const VERSION = "2026-09-25.2";
 const SHELL = `classeo-shell-${VERSION}`;
 const ASSETS = `classeo-assets-${VERSION}`;
 const PAGES = `classeo-pages-${VERSION}`;
@@ -21,13 +21,18 @@ const OFFLINE_URL = "/hors-ligne";
 const PRECACHE = [OFFLINE_URL, "/icon.svg", "/icons/icon-192.png", "/manifest.webmanifest"];
 const MAX_PAGES = 40;
 
+// The offline page must render with no network at all: keep its HTML and
+// every script and stylesheet it references.
+async function precache() {
+  const shell = await caches.open(SHELL);
+  await shell.addAll(PRECACHE.map((url) => new Request(url, { cache: "reload" })));
+  const html = await (await shell.match(OFFLINE_URL)).text();
+  const assets = [...new Set(html.match(/\/_next\/static\/[^"'\s)\\]+/g) || [])];
+  await (await caches.open(ASSETS)).addAll(assets);
+}
+
 self.addEventListener("install", (event) => {
-  event.waitUntil(
-    caches
-      .open(SHELL)
-      .then((cache) => cache.addAll(PRECACHE.map((url) => new Request(url, { cache: "reload" }))))
-      .then(() => self.skipWaiting()),
-  );
+  event.waitUntil(precache().then(() => self.skipWaiting()));
 });
 
 self.addEventListener("activate", (event) => {
