@@ -16,6 +16,7 @@ import { PrismaClient, type Prisma } from "../src/generated/prisma/client";
 import { DEFAULT_ROLES, PERMISSIONS } from "../src/lib/auth/permissions";
 import { nextFreeUsername, usernameBase } from "../src/lib/auth/username";
 import { DEMO_ACCOUNTS, DEMO_PASSWORD } from "../src/lib/demo/accounts";
+import { seedExtras } from "./seed-extras";
 import { generalAverage, rankEntries, round2 } from "../src/lib/domain/grades";
 import { describeConflict, findConflicts, slotTimeError, type PlannedSlot } from "../src/lib/domain/timetable";
 
@@ -1135,6 +1136,12 @@ async function main() {
   console.timeLog("seed", `timetable ${slots.length} slots, no class or teacher conflict`);
 
   await db.auditLog.create({ data: { userId: ministerId, action: "seed", resource: "system", summary: "Initialisation des données de démonstration" } });
+  await seedExtras(db, {
+    passwordHash,
+    ids: { minister: ministerId, director: directorId, accountant: accountantId, parent: parentUserId, student: studentUserId, teacher: demoTeacherUserId },
+    schools: { ceg: ceg.id, epp: epp.id },
+    yearId: year.id,
+  });
   console.timeEnd("seed");
 }
 
