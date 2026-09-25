@@ -81,7 +81,9 @@ export function acceptTranslation(source: string, translated: unknown): string |
     if (plain === token || !out.includes(plain)) return null;
     out = out.split(plain).join(token);
   }
-  return out;
+  // The country and the platform keep their spelling even when the source
+  // only had an adjective ("école béninoise" gives "Benin").
+  return out.replace(/(?<!\p{L})Benin(?!\p{L})/gu, "Bénin").replace(/(?<!\p{L})Classeo(?!\p{L})/gu, "Classéo");
 }
 
 export type PublicTranslator = {

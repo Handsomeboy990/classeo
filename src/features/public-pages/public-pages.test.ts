@@ -61,6 +61,7 @@ describe("public translation lookup", () => {
     expect(acceptTranslation("Utiliser Classéo", "Klasewo zán")).toBeNull();
     // A name that only lost its accents is written back as it should be.
     expect(acceptTranslation("Utiliser Classéo hors ligne au Bénin", "Lo Classeo offline ni Benin")).toBe("Lo Classéo offline ni Bénin");
+    expect(acceptTranslation("Leçon dans une école béninoise", "Nuxixa ɖo wemaxɔmɛ Benin tɔn")).toBe("Nuxixa ɖo wemaxɔmɛ Bénin tɔn");
     expect(acceptTranslation("Voir <b>", "Kpɔ́n <b>")).toBeNull();
   });
 
