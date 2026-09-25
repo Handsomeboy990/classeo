@@ -42,8 +42,9 @@ async function call(config: ApiConfig, path: string, body: unknown, timeoutMs: n
       signal: AbortSignal.timeout(timeoutMs),
       cache: "no-store",
     });
-  } catch {
-    throw new UnavailableError();
+  } catch (error) {
+    const timeout = error instanceof DOMException && error.name === "TimeoutError";
+    throw new UnavailableError(timeout ? "Service de traduction : délai dépassé" : "Service de traduction injoignable");
   }
   if (res.status === 429) {
     const retry = Number(res.headers.get("retry-after"));
@@ -59,7 +60,10 @@ async function call(config: ApiConfig, path: string, body: unknown, timeoutMs: n
 export async function translateBatch(config: ApiConfig, texts: string[], to: TargetLanguage): Promise<Map<string, string>> {
   if (texts.length === 0) return new Map();
   if (texts.length > BATCH_SIZE) throw new Error(`At most ${BATCH_SIZE} texts per batch`);
-  const res = await call(config, "/api/v1/translate/batch", { texts, from_lang: "fr", to_lang: to }, 45_000);
+  // Strings found in the service's own dictionary come back at once; the
+  // others go through a model, about a second each: the wait grows with
+  // the batch.
+  const res = await call(config, "/api/v1/translate/batch", { texts, from_lang: "fr", to_lang: to }, Math.min(240_000, 20_000 + texts.length * 2_000));
   const json = (await res.json().catch(() => null)) as { data?: { index?: number; success?: boolean; translated_text?: unknown }[] } | null;
   if (!json || !Array.isArray(json.data)) throw new UnavailableError("Réponse inattendue du service de traduction");
   const out = new Map<string, string>();

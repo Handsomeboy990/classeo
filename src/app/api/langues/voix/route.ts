@@ -4,7 +4,7 @@ import { guard, json } from "@/features/languages/guard";
 import { speech, voiceAvailable } from "@/features/languages/service";
 
 // A first synthesis can take a minute while the model loads.
-export const maxDuration = 120;
+export const maxDuration = 300;
 
 const Body = z.object({
   lang: z.string().max(8),

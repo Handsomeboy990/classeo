@@ -7,7 +7,7 @@ import { isCandidate, isQueueable, MAX_UI_LENGTH, normalise } from "@/features/l
 
 // The draining of the queue runs after the response and may wait for the
 // quota of the translation service.
-export const maxDuration = 60;
+export const maxDuration = 300;
 
 const Body = z.object({
   lang: z.string().max(8),
