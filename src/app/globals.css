@@ -706,3 +706,19 @@ html[data-lite="on"] img[data-decorative] {
   }
 }
 
+/* High contrast: tinted hairlines become full strength borders. */
+[data-contrast="high"] :is(.border-success\/20, .border-warning\/25, .border-danger\/20, .border-info\/20, .border-primary\/15) {
+  border-color: currentColor;
+}
+
+/* Enlarged text on a phone: key figures one per row, never clipped. */
+@media (max-width: 39.999rem) {
+  html:is([data-text="lg"], [data-text="xl"], [data-text="xxl"]) .ds-stat-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 22rem) {
+  .ds-stat-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
