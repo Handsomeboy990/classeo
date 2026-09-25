@@ -611,39 +611,164 @@ html[data-lite="on"] img[data-decorative] {
 }
 
 /*
- * Print. A page that holds a printable document (data-print-root, e.g. a
- * report card) prints that document only: the app shell and the controls
- * marked data-print-hide are left out, colours stay legible on paper.
+ * Print. One stylesheet for every page, so a print view only has to mark
+ * what is specific to it:
+ * - A4 portrait, 14 mm margins; data-print-landscape on any element prints
+ *   its pages in landscape (wide grade sheets, registers).
+ * - The app chrome never prints: sidebar, top bar, toasts, pagination,
+ *   buttons, search boxes and anything marked data-print-hide.
+ * - Paper typography: 10.5 pt body, black on white, no shadows, headings
+ *   kept with what follows.
+ * - Tables: header repeated on every page, footer at the end, rows never
+ *   cut in two; the phone card layout and the sticky header are off.
+ * - Helpers: .print-only (paper only), .print-break-before,
+ *   .print-avoid-break.
+ * A page that holds a printable document (data-print-root, e.g. a report
+ * card) prints that document only.
  */
-@media print {
-  body:has([data-print-root]) aside,
-  body:has([data-print-root]) header:not([data-print-root] header),
-  body:has([data-print-root]) [data-print-hide],
-  body:has([data-print-root]) [data-offline-banner] {
+@page {
+  size: A4;
+  margin: 14mm 12mm 16mm;
+}
+@page landscape {
+  size: A4 landscape;
+  margin: 10mm 12mm 12mm;
+}
+
+@media screen {
+  .print-only {
     display: none !important;
   }
-  /* The shell is a two column grid: with the sidebar gone, collapse it. */
-  body:has([data-print-root]) > div {
-    display: block !important;
+}
+
+@media print {
+  html {
+    font-size: 10.5pt !important;
   }
-  body:has([data-print-root]) main {
+  body {
+    background: #fff !important;
+    color: #000 !important;
+    line-height: 1.4;
+  }
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    animation: none !important;
+    transition: none !important;
+  }
+
+  /* App chrome. */
+  body aside.sticky,
+  body header.sticky,
+  [data-print-hide],
+  [data-offline-banner],
+  .ds-toaster,
+  nav[aria-label="Pagination"],
+  button:not([data-print-keep]),
+  .ds-adorned:has(> input[type="search"]),
+  dialog {
+    display: none !important;
+  }
+  body > div:has(> aside) {
+    display: block !important;
+    min-height: 0 !important;
+  }
+  body main {
     max-width: none !important;
     padding: 0 !important;
   }
-  body:has([data-print-root]) {
-    background: #fff !important;
-    color: #000 !important;
+
+  /* Printable document pages: the document only. */
+  body:has([data-print-root]) aside,
+  body:has([data-print-root]) header:not([data-print-root] header) {
+    display: none !important;
+  }
+  body:has([data-print-root]) > div {
+    display: block !important;
   }
   [data-print-root] {
     border: 0 !important;
     break-inside: auto;
   }
-  [data-print-root] tr {
+
+  [data-print-landscape] {
+    page: landscape;
+  }
+
+  /* Typography. */
+  h1 {
+    font-size: 18pt;
+  }
+  h2 {
+    font-size: 13pt;
+  }
+  h3 {
+    font-size: 11.5pt;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    break-after: avoid;
+    color: #000 !important;
+  }
+  p,
+  li {
+    orphans: 3;
+    widows: 3;
+  }
+  a {
+    color: inherit !important;
+    text-decoration: none !important;
+  }
+  .text-muted {
+    color: #333 !important;
+  }
+  img,
+  svg,
+  figure,
+  .print-avoid-break {
     break-inside: avoid;
   }
-  * {
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
+  .print-break-before {
+    break-before: page;
+  }
+
+  /* Tables. */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  thead {
+    display: table-header-group;
+  }
+  tfoot {
+    display: table-footer-group;
+  }
+  tr,
+  th,
+  td {
+    break-inside: avoid;
+  }
+  .ds-table-scroll {
+    overflow: visible !important;
+  }
+  .ds-table thead th {
+    position: static !important;
+    background: #f2f2f2 !important;
+    color: #000 !important;
+    border-bottom: 1px solid #000;
+  }
+  .ds-table tbody tr {
+    border-top: 1px solid #bbb;
+  }
+  .ds-table :where(th, td) {
+    padding: 0.35rem 0.5rem;
+  }
+  .rounded-card {
+    border-color: #bbb !important;
   }
 }
 
