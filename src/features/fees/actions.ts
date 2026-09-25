@@ -7,6 +7,7 @@ import { createAction } from "@/lib/action";
 import { audit } from "@/lib/audit";
 import { invalidate, tags } from "@/lib/cache";
 import { db } from "@/lib/db";
+import { assertWritable } from "@/lib/guards";
 import { formatReference, installmentStatus, invoiceStatus, planPercentError, splitByPlan } from "@/lib/domain/payments";
 import { DomainError } from "@/lib/errors";
 import { compareNames, formatFcfa } from "@/lib/utils";
@@ -31,6 +32,7 @@ export const createFeeType = createAction({
     const schoolId = requireSchoolId(user);
     const year = await activeYear();
     if (!year) throw new DomainError("Aucune année scolaire active.");
+    await assertWritable({ schoolId, academicYearId: year.id });
     await assertLevel(input.levelId);
     const feeType = await db.feeType.create({
       data: { schoolId, academicYearId: year.id, name: input.name, amount: input.amount, levelId: input.levelId ?? null, isActive: true },
@@ -52,6 +54,7 @@ export const updateFeeType = createAction({
   handler: async (input, user) => {
     const current = await db.feeType.findFirst({ where: { AND: [{ id: input.id }, feeTypeWhere(user)] } });
     if (!current) throw new DomainError("Type de frais introuvable.");
+    await assertWritable({ schoolId: current.schoolId, academicYearId: current.academicYearId });
     await assertLevel(input.levelId);
     const feeType = await db.feeType.update({
       where: { id: current.id },
@@ -78,6 +81,7 @@ export const deleteFeeType = createAction({
       include: { _count: { select: { items: true } } },
     });
     if (!feeType) throw new DomainError("Type de frais introuvable.");
+    await assertWritable({ schoolId: feeType.schoolId, academicYearId: feeType.academicYearId });
     if (feeType._count.items > 0)
       throw new DomainError(`Impossible de supprimer « ${feeType.name} » : il figure déjà sur ${feeType._count.items} facture${feeType._count.items > 1 ? "s" : ""}. Désactivez-le plutôt.`);
     await db.$transaction([db.paymentPlan.deleteMany({ where: { feeTypeId: feeType.id } }), db.feeType.delete({ where: { id: feeType.id } })]);
@@ -96,6 +100,7 @@ export const savePlan = createAction({
   handler: async (input, user) => {
     const feeType = await db.feeType.findFirst({ where: { AND: [{ id: input.feeTypeId }, feeTypeWhere(user)] } });
     if (!feeType) throw new DomainError("Type de frais introuvable.");
+    await assertWritable({ schoolId: feeType.schoolId, academicYearId: feeType.academicYearId });
     const error = planPercentError(input.percent);
     if (error) throw new DomainError(error);
     for (let i = 1; i < input.dueDate.length; i++)
@@ -145,6 +150,7 @@ export const deletePlan = createAction({
   handler: async (input, user) => {
     const plan = await db.paymentPlan.findFirst({ where: { id: input.id, feeType: feeTypeWhere(user) } });
     if (!plan) throw new DomainError("Échéancier introuvable.");
+    await assertWritable({ schoolId: plan.schoolId, academicYearId: plan.academicYearId });
     await db.paymentPlan.delete({ where: { id: plan.id } });
     await audit(user, { action: "delete", resource: "fee", resourceId: plan.id, summary: `Échéancier supprimé : ${plan.name}`, schoolId: plan.schoolId });
     return "Échéancier supprimé. Les factures déjà émises gardent leurs tranches.";
@@ -166,6 +172,7 @@ export const generateInvoices = createAction({
       include: { plans: { where: { isActive: true }, include: { installments: { orderBy: { order: "asc" } } }, take: 1 } },
     });
     if (!feeType) throw new DomainError("Type de frais introuvable.");
+    await assertWritable({ schoolId: feeType.schoolId, academicYearId: feeType.academicYearId });
     if (!feeType.isActive) throw new DomainError("Ce type de frais est désactivé.");
 
     const today = startOfToday();

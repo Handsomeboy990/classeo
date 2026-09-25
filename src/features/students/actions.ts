@@ -11,6 +11,7 @@ import type { CurrentUser } from "@/lib/auth/session";
 import { invalidate, tags } from "@/lib/cache";
 import { isIsoDate, isoToDate, todayIso } from "@/lib/domain/attendance";
 import { db } from "@/lib/db";
+import { assertEnrollmentWritable, assertWritable } from "@/lib/guards";
 import { DomainError } from "@/lib/errors";
 
 import { DISABILITIES, ENROLLMENT_STATUS_LABELS } from "./labels";
@@ -94,6 +95,7 @@ export const createStudent = createAction({
   handler: async (input, user) => {
     const year = await requireActiveYear();
     const classroom = await findClassroomForEnrollment(user, input.classroomId, year.id);
+    await assertWritable({ schoolId: classroom.schoolId, academicYearId: year.id });
     assertCapacity(classroom);
     if (input.guardianMode === "existing") {
       const known = await db.guardian.count({ where: { id: input.guardianId!, students: { some: { student: studentWhere(user) } } } });
@@ -167,6 +169,7 @@ export const updateStudent = createAction({
     if (!student) throw new DomainError("Élève introuvable ou hors de votre périmètre.");
     const enrollment = student.enrollments[0];
     if (!enrollment) throw new DomainError("Cet élève n'est pas inscrit cette année dans votre périmètre.");
+    await assertEnrollmentWritable(enrollment.id);
 
     let classChange: { name: string } | null = null;
     if (enrollment.classroomId !== input.classroomId) {
@@ -216,6 +219,7 @@ export const setEnrollmentStatus = createAction({
     });
     if (!enrollment) throw new DomainError("Inscription introuvable ou hors de votre périmètre.");
     if (!enrollment.academicYear.isActive) throw new DomainError("Seules les inscriptions de l'année active peuvent changer de statut.");
+    await assertWritable({ schoolId: enrollment.schoolId, academicYearId: enrollment.academicYearId });
     if (enrollment.status === input.status) return "Aucun changement.";
     if (input.status === "ACTIVE") assertCapacity(enrollment.classroom);
     await db.enrollment.update({ where: { id: enrollment.id }, data: { status: input.status } });

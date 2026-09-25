@@ -4,10 +4,13 @@ import { notFound } from "next/navigation";
 
 import { DataTable, type Column } from "@/components/kit/data-table";
 import { PageHeader } from "@/components/kit/page-header";
-import { Badge } from "@/components/ui/badge";
+import { Alert } from "@/components/ui/alert";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
+import { YearSelect } from "@/features/calendar/components/year-select";
+import { selectedYear } from "@/features/calendar/queries";
+import { SchoolStatusBadge } from "@/features/school-status/components/status-badge";
+import { SchoolStatusDialog } from "@/features/school-status/components/status-dialog";
 import { SchoolFormDialog } from "@/features/schools/components/school-form-dialog";
-import { SchoolStatusButton } from "@/features/schools/components/school-status-button";
 import { CYCLE_LABELS, SECTOR_LABELS } from "@/features/schools/labels";
 import { communeOptions, getSchoolDetail } from "@/features/schools/queries";
 import { Breakdown } from "@/features/statistics/components/breakdown";
@@ -17,6 +20,7 @@ import { getStatistics } from "@/features/statistics/queries";
 import { ScopeBreadcrumb } from "@/features/territory/components/scope-breadcrumb";
 import { requireSchoolInScope } from "@/features/territory/scope";
 import { can, requirePermission } from "@/lib/auth/authorize";
+import { fileUrl } from "@/lib/files";
 import { formatDate, formatNumber } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Établissement" };
@@ -28,10 +32,12 @@ export default async function SchoolDetailPage({ params, searchParams }: PagePro
   const user = await requirePermission("school:view");
   const { id } = await params;
   await requireSchoolInScope(user, id);
-  const detail = await getSchoolDetail(user, id);
+  const sp = await searchParams;
+  const { year, options: years } = await selectedYear(sp);
+  const detail = await getSchoolDetail(user, id, year?.id ?? null);
   if (!detail) notFound();
   const { school, classes, staffUsers, teachers, director } = detail;
-  const sp = await searchParams;
+  const yearLabel = year?.label ?? "";
   const { sort, direction } = sortParams(sp);
 
   const showStats = can(user, "statistics:view");
@@ -78,19 +84,33 @@ export default async function SchoolDetailPage({ params, searchParams }: PagePro
                 }}
               />
             )}
-            {canEdit && user.scope.level !== "SCHOOL" && <SchoolStatusButton id={school.id} name={school.name} isActive={school.isActive} />}
+            {can(user, "school:lock") && ["NATIONAL", "DEPARTMENT", "COMMUNE"].includes(user.scope.level) && <SchoolStatusDialog id={school.id} name={school.name} status={school.status} />}
           </>
         }
       />
       <ScopeBreadcrumb scope={{ level: "SCHOOL", id: school.id }} basePath="/espace/territoire" user={user} />
+      {school.status !== "ACTIVE" && (
+        <Alert tone={school.status === "SUSPENDED" ? "warning" : "danger"} title={`Établissement ${school.status === "SUSPENDED" ? "suspendu" : "fermé"}${school.statusChangedAt ? ` depuis le ${formatDate(school.statusChangedAt)}` : ""}`}>
+          <p>Ses données restent consultables ; aucune modification n&apos;est acceptée.{school.statusReason ? ` Motif : ${school.statusReason}` : ""}</p>
+        </Alert>
+      )}
 
       <div className="grid grid-cols-1 gap-4 *:min-w-0 lg:grid-cols-3">
         <Card>
           <CardHeader>
             <CardTitle>Identité</CardTitle>
-            {school.isActive ? <Badge tone="success">Actif</Badge> : <Badge tone="danger">Désactivé</Badge>}
+            <SchoolStatusBadge status={school.status} reason={school.statusReason} />
           </CardHeader>
           <CardBody>
+            {(school.logoFileId || school.motto) && (
+              <div className="mb-3 flex items-center gap-3">
+                {school.logoFileId && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={fileUrl(school.logoFileId)!} alt={`Logo de ${school.name}`} className="size-14 rounded-control border border-border object-contain" />
+                )}
+                {school.motto && <p className="text-sm italic text-muted">« {school.motto} »</p>}
+              </div>
+            )}
             <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-sm">
               <dt className="text-muted">Secteur</dt>
               <dd>{SECTOR_LABELS[school.sector]}</dd>
@@ -102,6 +122,22 @@ export default async function SchoolDetailPage({ params, searchParams }: PagePro
               <dd>{school.phone ?? "Non renseigné"}</dd>
               <dt className="text-muted">E-mail</dt>
               <dd className="break-all">{school.email ?? "Non renseigné"}</dd>
+              {school.postalBox && (
+                <>
+                  <dt className="text-muted">Boîte postale</dt>
+                  <dd>{school.postalBox}</dd>
+                </>
+              )}
+              {school.website && (
+                <>
+                  <dt className="text-muted">Site web</dt>
+                  <dd className="break-all">
+                    <a href={school.website} className="text-primary hover:underline" rel="noopener noreferrer" target="_blank">
+                      {school.website}
+                    </a>
+                  </dd>
+                </>
+              )}
               <dt className="text-muted">Créé le</dt>
               <dd>{formatDate(school.createdAt)}</dd>
             </dl>
@@ -157,7 +193,7 @@ export default async function SchoolDetailPage({ params, searchParams }: PagePro
                 <dd className="font-display text-2xl font-bold">{formatNumber(staffUsers)}</dd>
               </div>
               <div>
-                <dt className="text-sm text-muted">Classes {detail.yearLabel}</dt>
+                <dt className="text-sm text-muted">Classes {yearLabel}</dt>
                 <dd className="font-display text-2xl font-bold">{formatNumber(classes.length)}</dd>
               </div>
             </dl>
@@ -168,9 +204,12 @@ export default async function SchoolDetailPage({ params, searchParams }: PagePro
       {stats && <IndicatorCards stats={stats} requestsHref={can(user, "request:view") ? "/espace/demandes?statut=PENDING" : undefined} />}
 
       <section aria-labelledby="classes-title" className="flex flex-col gap-3">
-        <h2 id="classes-title" className="text-lg font-bold">
-          Classes de l&apos;année {detail.yearLabel}
-        </h2>
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <h2 id="classes-title" className="text-lg font-bold">
+            Classes de l&apos;année {yearLabel}
+          </h2>
+          <YearSelect options={years} value={year?.id} />
+        </div>
         <DataTable
           rows={classes}
           columns={classColumns}
@@ -180,7 +219,7 @@ export default async function SchoolDetailPage({ params, searchParams }: PagePro
           searchPlaceholder={false}
           caption={`Classes de ${school.name}`}
           emptyTitle="Aucune classe"
-          emptyDescription="Aucune classe n'est ouverte cette année dans cet établissement."
+          emptyDescription={`Aucune classe ouverte en ${yearLabel} dans cet établissement.`}
         />
       </section>
 

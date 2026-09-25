@@ -4,6 +4,8 @@ import { forbidden } from "next/navigation";
 
 import { PageHeader } from "@/components/kit/page-header";
 import { ButtonLink } from "@/components/ui/button";
+import { YearSelect } from "@/features/calendar/components/year-select";
+import { selectedYear } from "@/features/calendar/queries";
 import { Breakdown } from "@/features/statistics/components/breakdown";
 import { IndicatorCards } from "@/features/statistics/components/indicator-cards";
 import { MethodNote } from "@/features/statistics/components/method-note";
@@ -34,8 +36,9 @@ export default async function StatisticsPage({ searchParams }: PageProps<"/espac
   const { sort, direction } = sortParams(sp);
 
   const level = user.scope.level;
+  const { year, options: years } = await selectedYear(sp);
   const [stats, departments, communes] = await Promise.all([
-    getStatistics(scope),
+    getStatistics(scope, year?.id ?? null),
     level === "NATIONAL" ? listDepartments() : Promise.resolve(null),
     (level === "NATIONAL" || level === "DEPARTMENT") && departmentId ? communesOf(departmentId) : Promise.resolve([]),
   ]);
@@ -47,14 +50,16 @@ export default async function StatisticsPage({ searchParams }: PageProps<"/espac
 
   const hrefFor =
     stats.childLevel === "DEPARTMENT"
-      ? (id: string) => `/espace/statistiques?departement=${id}`
+      ? (id: string) => withYear(`/espace/statistiques?departement=${id}`)
       : stats.childLevel === "COMMUNE"
-        ? (id: string) => `/espace/statistiques?${new URLSearchParams({ ...(level === "NATIONAL" && departmentId ? { departement: departmentId } : {}), commune: id })}`
+        ? (id: string) => withYear(`/espace/statistiques?${new URLSearchParams({ ...(level === "NATIONAL" && departmentId ? { departement: departmentId } : {}), commune: id })}`)
         : stats.childLevel === "SCHOOL" && can(user, "school:view")
           ? (id: string) => `/espace/etablissements/${id}`
           : undefined;
 
-  const keep: Record<string, string> = { tri: sort, ordre: direction };
+  const keep: Record<string, string> = { tri: sort, ordre: direction, ...(year && !year.isActive ? { annee: year.id } : {}) };
+  // Drill down links keep the chosen year.
+  const withYear = (href: string) => (year && !year.isActive ? `${href}${href.includes("?") ? "&" : "?"}annee=${year.id}` : href);
 
   return (
     <div className="flex flex-col gap-6">
@@ -74,15 +79,18 @@ export default async function StatisticsPage({ searchParams }: PageProps<"/espac
       />
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <ScopeBreadcrumb scope={scope} basePath="/espace/statistiques" user={user} />
-        {(departments || communes.length > 0) && (
-          <ScopeFilter
-            departments={departments?.map((d) => ({ id: d.id, name: d.name })) ?? null}
-            communes={communes}
-            departmentId={departmentId}
-            communeId={communeId}
-            keep={keep}
-          />
-        )}
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
+          <YearSelect options={years} value={year?.id} />
+          {(departments || communes.length > 0) && (
+            <ScopeFilter
+              departments={departments?.map((d) => ({ id: d.id, name: d.name })) ?? null}
+              communes={communes}
+              departmentId={departmentId}
+              communeId={communeId}
+              keep={keep}
+            />
+          )}
+        </div>
       </div>
       <IndicatorCards stats={stats} requestsHref={can(user, "request:view") ? "/espace/demandes?statut=PENDING" : undefined} />
       <Breakdown stats={stats} sort={sort} direction={direction} basePath="/espace/statistiques" searchParams={sp} hrefFor={hrefFor} />

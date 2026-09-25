@@ -4,10 +4,11 @@ import Link from "next/link";
 
 import { DataTable, type Column } from "@/components/kit/data-table";
 import { PageHeader } from "@/components/kit/page-header";
-import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
+import { SchoolStatusBadge } from "@/features/school-status/components/status-badge";
+import { SchoolStatusDialog } from "@/features/school-status/components/status-dialog";
+import { SCHOOL_STATUS_LABELS, SCHOOL_STATUSES } from "@/features/school-status/labels";
 import { SchoolFormDialog } from "@/features/schools/components/school-form-dialog";
-import { SchoolStatusButton } from "@/features/schools/components/school-status-button";
 import { CYCLE_LABELS, CYCLES, SECTOR_LABELS, SECTORS } from "@/features/schools/labels";
 import { communeOptions, listSchools, schoolFilters } from "@/features/schools/queries";
 import { FilterBar, type FilterField } from "@/features/territory/components/filter-bar";
@@ -32,7 +33,7 @@ export default async function SchoolsPage({ searchParams }: PageProps<"/espace/e
     level === "NATIONAL" ? listDepartments() : Promise.resolve([]),
   ]);
 
-  const canToggle = can(user, "school:update") && level !== "SCHOOL";
+  const canToggle = can(user, "school:lock") && level !== "SCHOOL" && level !== "SELF";
   const columns: Column<Row>[] = [
     {
       header: "Établissement",
@@ -49,8 +50,16 @@ export default async function SchoolsPage({ searchParams }: PageProps<"/espace/e
     { header: "Commune", cell: (s) => `${s.commune.name} (${s.commune.department.name})`, hideBelow: "md" },
     { header: "Secteur", cell: (s) => SECTOR_LABELS[s.sector], hideBelow: "lg", mobileHidden: false },
     { header: "Cycle", cell: (s) => CYCLE_LABELS[s.cycle], hideBelow: "sm" },
-    { header: "Statut", cell: (s) => (s.isActive ? <Badge tone="success">Actif</Badge> : <Badge tone="danger">Désactivé</Badge>) },
-    ...(canToggle ? [{ header: "Actions", actions: true, cell: (s: Row) => <SchoolStatusButton id={s.id} name={s.name} isActive={s.isActive} size="sm" />, className: "text-right" }] : []),
+    {
+      header: "Statut",
+      cell: (s) => (
+        <div className="flex flex-col items-start gap-1">
+          <SchoolStatusBadge status={s.status} reason={s.statusReason} />
+          {s.status !== "ACTIVE" && s.statusReason && <span className="line-clamp-2 max-w-64 text-xs text-muted">{s.statusReason}</span>}
+        </div>
+      ),
+    },
+    ...(canToggle ? [{ header: "Actions", actions: true, cell: (s: Row) => <SchoolStatusDialog id={s.id} name={s.name} status={s.status} size="sm" />, className: "text-right" }] : []),
   ];
 
   const communeChoices = communes.filter((c) => !filters.departmentId || c.department.id === filters.departmentId);
@@ -78,10 +87,7 @@ export default async function SchoolsPage({ searchParams }: PageProps<"/espace/e
       label: "Statut",
       value: filters.status,
       allLabel: "Tous",
-      options: [
-        { value: "active", label: "Actifs" },
-        { value: "inactive", label: "Désactivés" },
-      ],
+      options: SCHOOL_STATUSES.map((st) => ({ value: st, label: SCHOOL_STATUS_LABELS[st] })),
     },
   ];
 

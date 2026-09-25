@@ -8,6 +8,7 @@ import { audit } from "@/lib/audit";
 import { classroomWhere } from "@/lib/auth/scope";
 import { invalidate, tags } from "@/lib/cache";
 import { db } from "@/lib/db";
+import { assertWritable } from "@/lib/guards";
 import { DomainError } from "@/lib/errors";
 import { guardianUserIds, notify } from "@/lib/notify";
 import { plural } from "@/lib/utils";
@@ -26,6 +27,7 @@ export const publishReportCards = createAction({
       select: { id: true, name: true, schoolId: true, academicYearId: true },
     });
     if (!classroom) throw new DomainError("Classe introuvable ou hors de votre périmètre.");
+    await assertWritable({ schoolId: classroom.schoolId, academicYearId: classroom.academicYearId });
     const period = await db.schoolPeriod.findFirst({ where: { id: input.periodId, academicYearId: classroom.academicYearId } });
     if (!period) throw new DomainError("Cette période n'appartient pas à l'année de la classe.");
 

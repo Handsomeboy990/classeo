@@ -1,12 +1,16 @@
 import {
   BarChart3,
   Bell,
+  BookMarked,
   BookOpen,
+  Building2,
   CalendarDays,
+  CalendarRange,
   ClipboardCheck,
   FileText,
   GraduationCap,
   Home,
+  FileStack,
   Inbox,
   KeyRound,
   Landmark,
@@ -20,6 +24,7 @@ import {
   ScrollText,
   Settings2,
   ShieldCheck,
+  TrendingUp,
   Users,
   UserSquare2,
   Wallet,
@@ -71,6 +76,10 @@ export const NAVIGATION: NavSection[] = [
       { label: "Statistiques", href: "/espace/statistiques", icon: BarChart3, permission: ["statistics:view"], scopes: STAFF, tab: { territory: 2, school: 6 } },
       { label: "Établissements", href: "/espace/etablissements", icon: Landmark, permission: ["school:view"], scopes: TERRITORY, short: "Écoles", tab: { territory: 4 } },
       { label: "Demandes", href: "/espace/demandes", icon: Inbox, permission: ["request:view"], scopes: STAFF, tab: { territory: 3 } },
+      { label: "Comparaison des années", href: "/espace/comparaison", icon: TrendingUp, permission: ["statistics:view"], scopes: STAFF, short: "Comparaison" },
+      { label: "Pièces demandées", href: "/espace/pieces-demandees", icon: FileStack, permission: ["document_request:view"], scopes: STAFF, short: "Pièces" },
+      { label: "Calendrier scolaire", href: "/espace/calendrier", icon: CalendarRange, permission: ["calendar:view"], scopes: STAFF, short: "Calendrier" },
+      { label: "Matières", href: "/espace/matieres", icon: BookMarked, permission: ["subject:view"], scopes: STAFF },
     ],
   },
   {
@@ -110,6 +119,7 @@ export const NAVIGATION: NavSection[] = [
   {
     title: "Administration",
     items: [
+      { label: "Paramètres de l'établissement", href: "/espace/parametres-etablissement", icon: Building2, permission: ["school:update"], scopes: ["SCHOOL"], short: "Paramètres" },
       { label: "Comptes utilisateurs", href: "/espace/utilisateurs", icon: KeyRound, permission: ["user:view"], short: "Comptes" },
       { label: "Demandes de réinitialisation", href: "/espace/aide-connexion", icon: LifeBuoy, permission: ["user:update"], scopes: STAFF, short: "Mots de passe" },
       { label: "Rôles et droits", href: "/espace/droits", icon: ShieldCheck, permission: ["role:view"], short: "Droits" },

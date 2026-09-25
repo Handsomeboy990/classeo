@@ -24,7 +24,8 @@ import { statScopeKey, type StatScope } from "../territory/scope";
 
 export type ChildLevel = "DEPARTMENT" | "COMMUNE" | "SCHOOL" | "CLASS";
 
-export type ChildRow = { id: string; name: string; indicators: Indicators };
+// status: set for schools, so a suspended or closed one is flagged.
+export type ChildRow = { id: string; name: string; indicators: Indicators; status?: "ACTIVE" | "SUSPENDED" | "CLOSED" };
 
 export type ScopeStatistics = {
   scope: StatScope;
@@ -37,6 +38,17 @@ export type ScopeStatistics = {
 };
 
 type Years = { current: { id: string; label: string } | null; previous: { id: string; label: string } | null };
+
+// The year shown and the year its results come from. By default the active
+// year, with the results of the year before (the current one has none yet).
+// A past year chosen from the year selector is read with its own results.
+export async function yearsFor(yearId: string | null | undefined): Promise<Years> {
+  if (!yearId) return loadYears();
+  const chosen = await db.academicYear.findUnique({ where: { id: yearId }, select: { id: true, label: true, isActive: true } });
+  if (!chosen) return loadYears();
+  if (chosen.isActive) return loadYears();
+  return { current: { id: chosen.id, label: chosen.label }, previous: { id: chosen.id, label: chosen.label } };
+}
 
 export async function loadYears(): Promise<Years> {
   const current = await db.academicYear.findFirst({ where: { isActive: true }, select: { id: true, label: true, startDate: true } });
@@ -54,6 +66,7 @@ type SchoolCountsRow = {
   communeId: string;
   departmentId: string;
   isActive: boolean;
+  status: "ACTIVE" | "SUSPENDED" | "CLOSED";
   enrollments: number;
   girls: number;
   disabled: number;
@@ -86,7 +99,7 @@ async function schoolCounts(scope: StatScope, years: Years): Promise<SchoolCount
   const prevId = years.previous?.id ?? "";
   return db.$queryRaw<SchoolCountsRow[]>`
     WITH sc AS (
-      SELECT s.id, s.name, s."communeId", c."departmentId", s."isActive"
+      SELECT s.id, s.name, s."communeId", c."departmentId", s."isActive", s.status::text AS status
       FROM "School" s JOIN "Commune" c ON c.id = s."communeId"
       WHERE ${schoolFilter(scope)}
     ),
@@ -127,7 +140,7 @@ async function schoolCounts(scope: StatScope, years: Years): Promise<SchoolCount
       SELECT r."schoolId" AS sid, count(*)::int AS n FROM "SchoolRequest" r
       WHERE r.status = 'PENDING' AND r."schoolId" IN (SELECT id FROM sc) GROUP BY 1
     )
-    SELECT sc.id, sc.name, sc."communeId", sc."departmentId", sc."isActive",
+    SELECT sc.id, sc.name, sc."communeId", sc."departmentId", sc."isActive", sc.status,
            coalesce(enr.total, 0) AS enrollments, coalesce(enr.girls, 0) AS girls, coalesce(enr.disabled, 0) AS disabled,
            coalesce(tea.n, 0) AS teachers, coalesce(cla.n, 0) AS classes,
            coalesce(att.total, 0) AS "attendanceRecords", coalesce(att.absent, 0) AS absences,
@@ -235,8 +248,8 @@ function groupSchools(rows: SchoolCountsRow[], key: (r: SchoolCountsRow) => stri
   return names.map((n) => ({ id: n.id, name: n.name, indicators: computeIndicators(sumCounts(byKey.get(n.id) ?? [])) }));
 }
 
-async function computeStatistics(scope: StatScope): Promise<ScopeStatistics> {
-  const years = await loadYears();
+async function computeStatistics(scope: StatScope, yearId: string | null): Promise<ScopeStatistics> {
+  const years = await yearsFor(yearId);
   const schools = await schoolCounts(scope, years);
   const total = computeIndicators(sumCounts(schools.map(countsOfSchool)));
   const base = { scope, yearLabel: years.current?.label ?? null, previousYearLabel: years.previous?.label ?? null, total, computedAt: new Date().toISOString() };
@@ -254,7 +267,7 @@ async function computeStatistics(scope: StatScope): Promise<ScopeStatistics> {
       return {
         ...base,
         childLevel: "SCHOOL",
-        children: schools.map((r) => ({ id: r.id, name: r.name, indicators: computeIndicators(countsOfSchool(r)) })),
+        children: schools.map((r) => ({ id: r.id, name: r.name, status: r.status, indicators: computeIndicators(countsOfSchool(r)) })),
       };
     case "SCHOOL": {
       const classes = await classCounts(scope.id, years);
@@ -274,15 +287,16 @@ async function computeStatistics(scope: StatScope): Promise<ScopeStatistics> {
 // Cached per territorial scope and shared by every user of that scope. The
 // key is the scope, never the user. Invalidated through tags.stats by every
 // action that changes an input (schools, requests, enrollments, attendance).
-const cachedStatistics = cached((_key: string, scope: StatScope) => computeStatistics(scope), ["statistics", "v1"], {
+const cachedStatistics = cached((_key: string, scope: StatScope, yearId: string | null) => computeStatistics(scope, yearId), ["statistics", "v3"], {
   tags: [tags.stats],
   revalidate: 600,
 });
 
 // The caller must have checked that the scope is inside the user's territory
 // (see territory/scope.ts).
-export function getStatistics(scope: StatScope) {
-  return cachedStatistics(statScopeKey(scope), scope);
+// yearId: a year from the year selector; omitted, the active year.
+export function getStatistics(scope: StatScope, yearId: string | null = null) {
+  return cachedStatistics(statScopeKey(scope), scope, yearId);
 }
 
 export const CHILD_LABELS: Record<ChildLevel, { singular: string; plural: string }> = {

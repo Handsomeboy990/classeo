@@ -6,7 +6,7 @@ import type { CurrentUser } from "@/lib/auth/session";
 import { db } from "@/lib/db";
 import { param, type SearchParams } from "@/lib/list";
 
-import { loadYears } from "../statistics/queries";
+import { isSchoolStatus, type SchoolStatus } from "../school-status/labels";
 import { isCycle, isSector, type Cycle, type Sector } from "./labels";
 
 type User = NonNullable<CurrentUser>;
@@ -17,7 +17,7 @@ export type SchoolFilters = {
   communeId: string | null;
   sector: Sector | null;
   cycle: Cycle | null;
-  status: "active" | "inactive" | null;
+  status: SchoolStatus | null;
 };
 
 export function schoolFilters(sp: SearchParams): SchoolFilters {
@@ -28,7 +28,7 @@ export function schoolFilters(sp: SearchParams): SchoolFilters {
     communeId: param(sp, "commune") || null,
     sector: isSector(param(sp, "secteur")) ? (param(sp, "secteur") as Sector) : null,
     cycle: isCycle(param(sp, "cycle")) ? (param(sp, "cycle") as Cycle) : null,
-    status: statut === "active" || statut === "inactive" ? statut : null,
+    status: isSchoolStatus(statut) ? statut : null,
   };
 }
 
@@ -40,7 +40,7 @@ export function schoolListWhere(user: User, f: SchoolFilters): Prisma.SchoolWher
   if (f.communeId) and.push({ communeId: f.communeId });
   if (f.sector) and.push({ sector: f.sector });
   if (f.cycle) and.push({ cycle: f.cycle });
-  if (f.status) and.push({ isActive: f.status === "active" });
+  if (f.status) and.push({ status: f.status });
   return { AND: and };
 }
 
@@ -51,6 +51,9 @@ const listSelect = {
   sector: true,
   cycle: true,
   isActive: true,
+  status: true,
+  statusReason: true,
+  statusChangedAt: true,
   address: true,
   phone: true,
   email: true,
@@ -74,16 +77,16 @@ export function exportSchools(user: User, f: SchoolFilters) {
 
 // Detail of a school. The caller has checked it is inside the user's scope;
 // the scoped where is applied again so this function is safe on its own.
-export async function getSchoolDetail(user: User, id: string) {
-  const years = await loadYears();
+// yearId: the year whose classes are listed (closed years stay readable).
+export async function getSchoolDetail(user: User, id: string, yearId: string | null) {
   const school = await db.school.findFirst({
     where: { AND: [{ id }, schoolWhere(user)] },
-    select: { ...listSelect, latitude: true, longitude: true, createdAt: true, updatedAt: true },
+    select: { ...listSelect, latitude: true, longitude: true, createdAt: true, updatedAt: true, motto: true, website: true, postalBox: true, logoFileId: true },
   });
   if (!school) return null;
   const [classes, staffUsers, teachers, director] = await Promise.all([
     db.classroom.findMany({
-      where: { schoolId: id, academicYearId: years.current?.id ?? "__none__" },
+      where: { schoolId: id, academicYearId: yearId ?? "__none__" },
       select: {
         id: true,
         name: true,
@@ -102,7 +105,7 @@ export async function getSchoolDetail(user: User, id: string) {
       orderBy: { createdAt: "asc" },
     }),
   ]);
-  return { school, classes, staffUsers, teachers, director, yearLabel: years.current?.label ?? null };
+  return { school, classes, staffUsers, teachers, director };
 }
 
 // Communes the user may attach a school to, grouped for a select.

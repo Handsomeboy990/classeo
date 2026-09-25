@@ -9,6 +9,7 @@ import { INDICATORS, sortByIndicator, type IndicatorKey } from "@/lib/domain/ind
 import type { SearchParams } from "@/lib/list";
 import { cn } from "@/lib/utils";
 
+import { SchoolStatusBadge } from "@/features/school-status/components/status-badge";
 import { CHILD_LABELS, type ScopeStatistics } from "../queries";
 import { ABSENCE_SCALE, absenceTone, formatIndicator, indicatorFormatter } from "../format";
 
@@ -158,6 +159,11 @@ export function Breakdown({
                         </Link>
                       ) : (
                         r.name
+                      )}
+                      {r.status && r.status !== "ACTIVE" && (
+                        <span className="ml-2 inline-block align-middle">
+                          <SchoolStatusBadge status={r.status} />
+                        </span>
                       )}
                     </TH>
                     {keys.map((k) => (

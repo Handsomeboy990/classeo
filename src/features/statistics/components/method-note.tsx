@@ -19,7 +19,11 @@ export function MethodNote({ stats }: { stats: ScopeStatistics }) {
           Réussite et moyenne : bulletins publiés en {stats.previousYearLabel ?? "année précédente"}. La moyenne annuelle d&apos;un élève est la moyenne de ses trois
           trimestres ; le taux de réussite est la part des moyennes annuelles égales ou supérieures à 10/20.
         </li>
-        <li>Pour une classe, les résultats sont ceux obtenus l&apos;an dernier par les élèves qui la composent aujourd&apos;hui.</li>
+        <li>
+          {stats.previousYearLabel === stats.yearLabel
+            ? "Année close : ses propres bulletins donnent la réussite et la moyenne ; pour une classe, ceux de ses élèves cette année-là."
+            : "Pour une classe, les résultats sont ceux obtenus l'an dernier par les élèves qui la composent aujourd'hui."}
+        </li>
         <li>Chaque niveau additionne exactement les chiffres de ses subdivisions. Calculé le {formatDateTime(stats.computedAt)}, actualisé à chaque modification.</li>
       </ul>
     </details>

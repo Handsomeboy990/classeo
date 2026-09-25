@@ -7,11 +7,14 @@ import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
-import { DecisionForm } from "@/features/requests/components/decision-form";
+import { yearOptions } from "@/features/calendar/queries";
+import { isoInDays } from "@/features/calendar/rules";
+import { DecisionForm, type ExtensionChoice } from "@/features/requests/components/decision-form";
 import { REQUEST_STATUS_LABELS, REQUEST_STATUS_TONES, REQUEST_TYPE_LABELS } from "@/features/requests/labels";
 import { getRequest } from "@/features/requests/queries";
 import { can, requirePermission } from "@/lib/auth/authorize";
-import { formatDateTime } from "@/lib/utils";
+import { db } from "@/lib/db";
+import { formatDate, formatDateTime } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Demande" };
 
@@ -22,7 +25,21 @@ export default async function RequestPage({ params }: PageProps<"/espace/demande
   const { id } = await params;
   const request = id.length <= 64 ? await getRequest(user, id) : null;
   if (!request) notFound();
-  const canDecide = can(user, "request:approve") && ["NATIONAL", "DEPARTMENT", "COMMUNE"].includes(user.scope.level);
+  const isExtension = request.type === "YEAR_EXTENSION";
+  // A year extension is decided by the ministry, which owns the calendar.
+  const canDecide = isExtension
+    ? user.scope.level === "NATIONAL" && can(user, "calendar:approve")
+    : can(user, "request:approve") && ["NATIONAL", "DEPARTMENT", "COMMUNE"].includes(user.scope.level);
+
+  let extension: ExtensionChoice | undefined;
+  if (isExtension && canDecide && request.status === "PENDING") {
+    const closed = (await yearOptions()).filter((y) => y.status === "CLOSED");
+    extension = { years: closed.map((y) => ({ id: y.id, label: y.label })), defaultYearId: closed[0]?.id ?? null, defaultUntil: isoInDays(14) };
+  }
+  // The extension created by the approval, if any.
+  const granted = isExtension
+    ? await db.yearExtension.findFirst({ where: { requestId: request.id }, orderBy: { createdAt: "desc" }, select: { until: true, status: true, academicYear: { select: { label: true } } } })
+    : null;
 
   const decision =
     request.status === "PENDING" ? null : (
@@ -31,6 +48,12 @@ export default async function RequestPage({ params }: PageProps<"/espace/demande
         {request.decider && (
           <p className="mt-2 text-xs">
             Par {request.decider.firstName} {request.decider.lastName}, {request.decider.role.name}
+          </p>
+        )}
+        {granted && (
+          <p className="mt-2 font-semibold">
+            Année {granted.academicYear.label} modifiable jusqu&apos;au {formatDate(granted.until)}
+            {granted.status === "ENDED" ? " (prolongation terminée depuis)" : ""}.
           </p>
         )}
       </Alert>
@@ -66,9 +89,13 @@ export default async function RequestPage({ params }: PageProps<"/espace/demande
           </CardHeader>
           <CardBody>
             {canDecide ? (
-              <DecisionForm id={request.id} decided={decision} />
+              <DecisionForm id={request.id} decided={decision} extension={extension} />
             ) : (
-              (decision ?? <p className="text-sm text-muted">En attente d&apos;examen par la circonscription, la direction départementale ou le ministère.</p>)
+              (decision ?? (
+                <p className="text-sm text-muted">
+                  {isExtension ? "En attente de la décision du ministère, qui fixe le calendrier." : "En attente d'examen par la circonscription, la direction départementale ou le ministère."}
+                </p>
+              ))
             )}
           </CardBody>
         </Card>
