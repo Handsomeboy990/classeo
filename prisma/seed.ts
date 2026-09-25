@@ -14,7 +14,8 @@ import { PrismaPg } from "@prisma/adapter-pg";
 
 import { PrismaClient, type Prisma } from "../src/generated/prisma/client";
 import { DEFAULT_ROLES, PERMISSIONS } from "../src/lib/auth/permissions";
-import { DEMO_PASSWORD } from "../src/lib/demo/accounts";
+import { nextFreeUsername, usernameBase } from "../src/lib/auth/username";
+import { DEMO_ACCOUNTS, DEMO_PASSWORD } from "../src/lib/demo/accounts";
 import { generalAverage, rankEntries, round2 } from "../src/lib/domain/grades";
 import { describeConflict, findConflicts, slotTimeError, type PlannedSlot } from "../src/lib/domain/timetable";
 
@@ -329,19 +330,26 @@ async function main() {
 
   // Staff users (created before teachers so the demo teacher can be linked)
   const users: Prisma.UserCreateManyInput[] = [];
-  const addUser = (u: Omit<Prisma.UserCreateManyInput, "passwordHash" | "id"> & { id?: string }) => {
-    const row = { id: u.id ?? id(), passwordHash, ...u };
+  // Sign in identifiers come from the names ("afiavi.hounkpatin"); the demo
+  // accounts listed on the sign in page reserve theirs first so a random
+  // namesake can never take them.
+  const takenUsernames = new Set<string>(DEMO_ACCOUNTS.map((a) => a.username));
+  const addUser = (u: Omit<Prisma.UserCreateManyInput, "passwordHash" | "id" | "username"> & { id?: string; username?: string }) => {
+    const username = u.username ?? nextFreeUsername(usernameBase(u.firstName, u.lastName), [...takenUsernames]);
+    takenUsernames.add(username);
+    const row = { id: u.id ?? id(), passwordHash, ...u, username };
     users.push(row);
     return row.id;
   };
-  const ministerId = addUser({ email: "ministre@classeo.bj", firstName: "Adjoa", lastName: "Houngbédji", gender: "F", roleId: roleIds.NATIONAL_ADMIN!, scopeLevel: "NATIONAL" });
-  addUser({ email: "analyste@classeo.bj", firstName: "Rodrigue", lastName: "Kpadonou", gender: "M", roleId: roleIds.NATIONAL_ANALYST!, scopeLevel: "NATIONAL" });
-  addUser({ email: "partenaire@classeo.bj", firstName: "Estelle", lastName: "Amoussou", gender: "F", roleId: roleIds.PARTNER!, scopeLevel: "NATIONAL" });
+  const ministerId = addUser({ username: "adjoa.houngbedji", email: "ministre@classeo.bj", firstName: "Adjoa", lastName: "Houngbédji", gender: "F", roleId: roleIds.NATIONAL_ADMIN!, scopeLevel: "NATIONAL" });
+  addUser({ username: "rodrigue.kpadonou", email: "analyste@classeo.bj", firstName: "Rodrigue", lastName: "Kpadonou", gender: "M", roleId: roleIds.NATIONAL_ANALYST!, scopeLevel: "NATIONAL" });
+  addUser({ username: "estelle.amoussou", email: "partenaire@classeo.bj", firstName: "Estelle", lastName: "Amoussou", gender: "F", roleId: roleIds.PARTNER!, scopeLevel: "NATIONAL" });
   const ddempIds: Record<string, string> = {};
   for (const dep of TERRITORY) {
     // The Atlantique director is a demonstration account, named once for all.
     const p = dep.name === "Atlantique" ? ({ firstName: "Aristide", lastName: "Gbaguidi", gender: "M" } as const) : person();
     ddempIds[dep.name] = addUser({
+      username: dep.name === "Atlantique" ? "aristide.gbaguidi" : undefined,
       email: `ddemp.${slug(dep.name)}@classeo.bj`,
       firstName: p.firstName,
       lastName: p.lastName,
@@ -352,8 +360,9 @@ async function main() {
     });
   }
   for (const name of ["Abomey-Calavi", "Cotonou", "Parakou"]) {
-    const p = person();
+    const p = name === "Abomey-Calavi" ? ({ firstName: "Bénédicta", lastName: "Zannou", gender: "F" } as const) : person();
     addUser({
+      username: name === "Abomey-Calavi" ? "benedicta.zannou" : undefined,
       email: `cs.${slug(name)}@classeo.bj`,
       firstName: p.firstName,
       lastName: p.lastName,
@@ -363,9 +372,9 @@ async function main() {
       communeId: communeByName.get(name)!.id,
     });
   }
-  const directorId = addUser({ email: "directeur@classeo.bj", firstName: "Florentin", lastName: "Agossou", gender: "M", roleId: roleIds.SCHOOL_DIRECTOR!, scopeLevel: "SCHOOL", schoolId: ceg.id });
-  addUser({ email: "secretaire@classeo.bj", firstName: "Pélagie", lastName: "Tossou", gender: "F", roleId: roleIds.SECRETARY!, scopeLevel: "SCHOOL", schoolId: ceg.id });
-  const accountantId = addUser({ email: "comptable@classeo.bj", firstName: "Gildas", lastName: "Sossou", gender: "M", roleId: roleIds.ACCOUNTANT!, scopeLevel: "SCHOOL", schoolId: ceg.id });
+  const directorId = addUser({ username: "florentin.agossou", email: "directeur@classeo.bj", firstName: "Florentin", lastName: "Agossou", gender: "M", roleId: roleIds.SCHOOL_DIRECTOR!, scopeLevel: "SCHOOL", schoolId: ceg.id });
+  addUser({ username: "pelagie.tossou", email: "secretaire@classeo.bj", firstName: "Pélagie", lastName: "Tossou", gender: "F", roleId: roleIds.SECRETARY!, scopeLevel: "SCHOOL", schoolId: ceg.id });
+  const accountantId = addUser({ username: "gildas.sossou", email: "comptable@classeo.bj", firstName: "Gildas", lastName: "Sossou", gender: "M", roleId: roleIds.ACCOUNTANT!, scopeLevel: "SCHOOL", schoolId: ceg.id });
   addUser({ email: "directrice.epp@classeo.bj", firstName: "Mireille", lastName: "Dossou", gender: "F", roleId: roleIds.SCHOOL_DIRECTOR!, scopeLevel: "SCHOOL", schoolId: epp.id });
 
   // Classes, teachers, students ----------------------------------------------
@@ -540,6 +549,7 @@ async function main() {
   for (const t of teachers.filter((t) => t.schoolId === ceg.id || t.schoolId === epp.id)) {
     const isDemo = t.id === demoTeacherId;
     const uid = addUser({
+      username: isDemo ? "nafissatou.issifou" : undefined,
       email: isDemo ? "enseignant@classeo.bj" : `${slug(t.firstName)}.${slug(t.lastName)}.${String(t.matricule).slice(-3)}@ecoles.classeo.bj`,
       firstName: t.firstName,
       lastName: t.lastName,
@@ -563,9 +573,9 @@ async function main() {
   sibling.firstName = "Mahougnon";
   sibling.lastName = "Hounkpatin";
   sibling.gender = "M";
-  const studentUserId = addUser({ email: "eleve@classeo.bj", firstName: "Sènami", lastName: "Hounkpatin", gender: "F", roleId: roleIds.STUDENT!, scopeLevel: "SELF" });
+  const studentUserId = addUser({ username: "senami.hounkpatin", email: "eleve@classeo.bj", firstName: "Sènami", lastName: "Hounkpatin", gender: "F", roleId: roleIds.STUDENT!, scopeLevel: "SELF" });
   demoStudent.userId = studentUserId;
-  const parentUserId = addUser({ email: "parent@classeo.bj", firstName: "Afiavi", lastName: "Hounkpatin", gender: "F", phone: "0196123456", roleId: roleIds.PARENT!, scopeLevel: "SELF" });
+  const parentUserId = addUser({ username: "afiavi.hounkpatin", email: "parent@classeo.bj", firstName: "Afiavi", lastName: "Hounkpatin", gender: "F", phone: "0196123456", roleId: roleIds.PARENT!, scopeLevel: "SELF" });
 
   await chunked(users, 500, (b) => db.user.createMany({ data: b }));
   await chunked(teachers, 2000, (b) => db.teacher.createMany({ data: b }));
@@ -941,7 +951,9 @@ async function main() {
     const p = person();
     const uid = id();
     heads.set(r.school.id, uid);
-    headRows.push({ id: uid, passwordHash, email: `direction.${slug(r.school.name)}@ecoles.classeo.bj`, firstName: p.firstName, lastName: p.lastName, gender: p.gender, roleId: roleIds.SCHOOL_DIRECTOR!, scopeLevel: "SCHOOL", schoolId: r.school.id });
+    const username = nextFreeUsername(usernameBase(p.firstName, p.lastName), [...takenUsernames]);
+    takenUsernames.add(username);
+    headRows.push({ id: uid, passwordHash, username, email: `direction.${slug(r.school.name)}@ecoles.classeo.bj`, firstName: p.firstName, lastName: p.lastName, gender: p.gender, roleId: roleIds.SCHOOL_DIRECTOR!, scopeLevel: "SCHOOL", schoolId: r.school.id });
   }
   await db.user.createMany({ data: headRows });
   await db.schoolRequest.createMany({
