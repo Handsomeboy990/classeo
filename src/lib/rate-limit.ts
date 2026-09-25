@@ -19,7 +19,7 @@ export async function hitRateLimit(key: string, limit: number, windowMs: number)
     return tx.rateLimit.update({ where: { key }, data: { count: { increment: 1 } } });
   });
   const retryAfterMs = row.windowStart.getTime() + windowMs - now.getTime();
-  return { allowed: row.count <= limit, retryAfterMs: Math.max(0, retryAfterMs) };
+  return { allowed: row.count <= limit, count: row.count, retryAfterMs: Math.max(0, retryAfterMs) };
 }
 
 export async function resetRateLimit(key: string) {
