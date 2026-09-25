@@ -3,6 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { Logo } from "@/components/brand/logo";
+import { FlagStripe, SunriseMotif } from "@/components/brand/sunrise";
 import { LoginForm } from "@/features/auth/login-form";
 import { getCurrentUser } from "@/lib/auth/session";
 import { param } from "@/lib/list";
@@ -16,29 +17,24 @@ export default async function LoginPage({ searchParams }: PageProps<"/connexion"
 
   return (
     <main className="grid min-h-dvh lg:grid-cols-[1.1fr_1fr]">
-      <section className="relative hidden overflow-hidden bg-sidebar p-12 text-sidebar-text lg:flex lg:flex-col lg:justify-between" aria-hidden>
-        <Logo tone="inverse" />
-        <div className="relative z-10 max-w-md">
-          <p className="font-display text-4xl leading-tight font-bold">
-            La plateforme nationale de l&apos;éducation,
-            <span className="text-accent"> du ministère à la classe.</span>
+      {/* The home page's hero, condensed: same slogan, same bright flag
+          yellow sun standing on the flag stripe, never cut by it. */}
+      <section className="relative hidden flex-col overflow-hidden bg-sidebar text-sidebar-text lg:sticky lg:top-0 lg:flex lg:h-dvh" aria-hidden>
+        <div className="px-12 pt-12">
+          <Logo tone="inverse" />
+        </div>
+        <div className="relative z-10 my-auto max-w-lg px-12 py-10">
+          <p className="text-sm font-bold tracking-[0.14em] text-balance text-accent uppercase">République du Bénin · Plateforme nationale de l&apos;éducation</p>
+          <p className="mt-4 font-display text-5xl leading-[1.05] font-extrabold tracking-tight text-balance">
+            L&apos;école béninoise, du ministère <span className="text-accent">à la maison.</span>
           </p>
-          <p className="mt-4 text-sidebar-muted">
-            Directions départementales, circonscriptions, écoles, enseignants, élèves et familles travaillent sur les mêmes données. Chaque écran se lit aussi à
-            voix haute.
+          <p className="mt-5 text-lg text-sidebar-muted">
+            Statistiques, établissements, notes, bulletins, présences, frais et messagerie : le ministère, les écoles et les familles travaillent sur les mêmes
+            données.
           </p>
         </div>
-        <div className="flex h-2 overflow-hidden rounded-full">
-          <span className="w-2/5 bg-[#008751]" />
-          <span className="w-2/5 bg-accent" />
-          <span className="w-1/5 bg-[#E8112D]" />
-        </div>
-        <svg className="absolute -right-24 -bottom-24 size-[28rem] opacity-15" viewBox="0 0 100 100">
-          <circle cx="50" cy="50" r="30" fill="#FCD116" />
-          {Array.from({ length: 12 }, (_, i) => (
-            <rect key={i} x="49" y="2" width="2" height="12" rx="1" fill="#FCD116" transform={`rotate(${i * 30} 50 50)`} />
-          ))}
-        </svg>
+        <SunriseMotif still className="mr-6 w-[30rem] max-w-[80%] shrink-0 self-end" />
+        <FlagStripe className="shrink-0" />
       </section>
       <section className="flex items-center justify-center px-4 py-10 sm:px-8">
         <div className="w-full max-w-md">
