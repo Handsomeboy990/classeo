@@ -26,6 +26,7 @@ export default async function TeachersPage(props: PageProps<"/espace/enseignants
   const columns: Column<Row>[] = [
     {
       header: "Enseignant",
+      primary: true,
       cell: (r) => (
         <div>
           <Link href={`/espace/enseignants/${r.id}`} className="font-semibold text-primary hover:underline">
@@ -63,22 +64,9 @@ export default async function TeachersPage(props: PageProps<"/espace/enseignants
     <>
       <PageHeader
         title="Enseignants"
-        description="Équipe pédagogique, classes et volumes horaires de l'année active."
+        description="Équipe pédagogique de l'année active."
         actions={can(user, "teacher:create") && user.scope.schoolId && <CreateTeacherDialog />}
       />
-      <div className="mb-4">
-        <UrlSelect
-          param="statut"
-          label="Statut"
-          value={statut ?? "actifs"}
-          options={[
-            { value: "actifs", label: "En activité" },
-            { value: "inactifs", label: "Inactifs" },
-            { value: "tous", label: "Tous" },
-          ]}
-          className="sm:w-52"
-        />
-      </div>
       <DataTable
         rows={rows}
         columns={columns}
@@ -88,9 +76,24 @@ export default async function TeachersPage(props: PageProps<"/espace/enseignants
         pageSize={pageSize}
         searchParams={sp}
         basePath="/espace/enseignants"
-        searchPlaceholder="Rechercher par nom, matricule, spécialité"
+        searchPlaceholder="Nom, matricule ou spécialité"
+        toolbar={
+          <UrlSelect
+            param="statut"
+            label="Statut"
+            hideLabel
+            value={statut ?? "actifs"}
+            options={[
+              { value: "actifs", label: "En activité" },
+              { value: "inactifs", label: "Inactifs" },
+              { value: "tous", label: "Tous les statuts" },
+            ]}
+            className="sm:w-48"
+          />
+        }
         caption="Liste des enseignants"
         emptyTitle="Aucun enseignant"
+        emptyDescription={q ? "Vérifiez l'orthographe ou cherchez par matricule." : undefined}
       />
     </>
   );

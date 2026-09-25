@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/kit/page-header";
 import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
+import { buttonVariants } from "@/components/ui/button";
 import { ConfirmButton } from "@/components/kit/confirm-button";
 import { deleteSheet } from "@/features/grades/actions";
 import { GradeGrid } from "@/features/grades/components/grade-grid";
@@ -58,8 +59,8 @@ export default async function SheetPage(props: PageProps<"/espace/notes/[sheetId
               </Badge>
             )}
             {can(user, "grade:export") && (
-              <a href={`/api/export/notes?fiche=${sheet.id}`} className="inline-flex h-11 items-center gap-2 rounded-lg border border-border-strong bg-surface px-4 text-sm font-semibold hover:bg-surface-2">
-                <Download className="size-4" aria-hidden /> CSV
+              <a href={`/api/export/notes?fiche=${sheet.id}`} className={buttonVariants({ variant: "secondary" })}>
+                <Download aria-hidden /> CSV
               </a>
             )}
             {editable && (

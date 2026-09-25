@@ -6,6 +6,7 @@ import { DataTable, type Column } from "@/components/kit/data-table";
 import { PageHeader } from "@/components/kit/page-header";
 import { EmptyState } from "@/components/kit/states";
 import { Badge } from "@/components/ui/badge";
+import { buttonVariants } from "@/components/ui/button";
 import { getActiveYear, getCurrentPeriod } from "@/features/classes/academic";
 import { UrlSelect } from "@/components/kit/url-select";
 import { ClassLockButtons, CreateSheetDialog } from "@/features/grades/components/sheet-forms";
@@ -57,6 +58,7 @@ export default async function NotesPage(props: PageProps<"/espace/notes">) {
     },
     {
       header: "Matière",
+      primary: true,
       cell: (r) => (
         <Link href={`/espace/notes/${r.id}`} className="font-semibold text-primary hover:underline">
           {r.assignment.subject.name}
@@ -82,11 +84,13 @@ export default async function NotesPage(props: PageProps<"/espace/notes">) {
     },
     {
       header: "Action",
+      actions: true,
+      className: "text-right",
       cell: (r) => (
         <Link
           href={`/espace/notes/${r.id}`}
-          className="inline-flex h-9 items-center rounded-lg border border-border-strong px-3 text-sm font-semibold hover:bg-surface-2"
-          aria-label={`${!r.isLocked && editable ? "Saisir" : "Consulter"} les notes de ${r.assignment.subject.name}, ${r.assignment.classroom.name}`}
+          className={buttonVariants({ variant: "secondary", size: "sm" })}
+          aria-label={`${!r.isLocked && editable && !period.isClosed ? "Saisir" : "Consulter"} les notes de ${r.assignment.subject.name}, ${r.assignment.classroom.name}`}
         >
           {!r.isLocked && editable && !period.isClosed ? "Saisir" : "Consulter"}
         </Link>
@@ -102,23 +106,15 @@ export default async function NotesPage(props: PageProps<"/espace/notes">) {
         actions={
           <>
             {can(user, "grade:export") && classroomId && (
-              <a href={`/api/export/notes?classe=${classroomId}&periode=${periodId}`} className="inline-flex h-11 items-center gap-2 rounded-lg border border-border-strong bg-surface px-4 text-sm font-semibold hover:bg-surface-2">
-                <Download className="size-4" aria-hidden /> Exporter (CSV)
+              <a href={`/api/export/notes?classe=${classroomId}&periode=${periodId}`} className={buttonVariants({ variant: "secondary" })}>
+                <Download aria-hidden /> Exporter (CSV)
               </a>
             )}
+            {can(user, "grade:lock") && selectedClass && <ClassLockButtons classroomId={selectedClass.id} periodId={periodId} className={selectedClass.name} />}
             {canCreate && <CreateSheetDialog assignments={assignments} periods={year.periods.filter((p) => !p.isClosed)} defaultPeriodId={periodId} />}
           </>
         }
       />
-      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end">
-        <UrlSelect param="periode" label="Période" value={periodId} options={year.periods.map((p) => ({ value: p.id, label: `${p.name}${p.isClosed ? " (clôturée)" : ""}` }))} className="sm:w-52" />
-        <UrlSelect param="classe" label="Classe" value={classroomId ?? ""} allLabel={user.teacherId ? "Mes matières" : "Toutes les classes"} options={classes.map((c) => ({ value: c.id, label: c.name }))} className="sm:w-52" />
-        {can(user, "grade:lock") && selectedClass && (
-          <div className="flex flex-wrap gap-2">
-            <ClassLockButtons classroomId={selectedClass.id} periodId={periodId} className={selectedClass.name} />
-          </div>
-        )}
-      </div>
       <DataTable
         rows={rows}
         columns={columns}
@@ -128,10 +124,24 @@ export default async function NotesPage(props: PageProps<"/espace/notes">) {
         pageSize={30}
         searchParams={sp}
         basePath="/espace/notes"
-        searchPlaceholder="Rechercher une matière, une classe, un enseignant"
+        searchPlaceholder="Matière, classe ou enseignant"
+        toolbar={
+          <>
+            <UrlSelect param="periode" label="Période" hideLabel value={periodId} options={year.periods.map((p) => ({ value: p.id, label: `${p.name}${p.isClosed ? " (clôturée)" : ""}` }))} className="sm:w-48" />
+            <UrlSelect
+              param="classe"
+              label="Classe"
+              hideLabel
+              value={classroomId ?? ""}
+              allLabel={user.teacherId ? "Mes matières" : "Toutes les classes"}
+              options={classes.map((c) => ({ value: c.id, label: c.name }))}
+              className="sm:w-48"
+            />
+          </>
+        }
         caption={`Fiches de notes, ${period.name}`}
         emptyTitle="Aucune fiche de notes"
-        emptyDescription={canCreate ? "Créez une fiche avec le bouton « Nouvelle fiche » pour commencer la saisie." : "Aucune fiche n'a encore été ouverte pour cette période."}
+        emptyDescription={canCreate ? "Créez une fiche avec « Nouvelle fiche » pour commencer la saisie." : "Aucune fiche n'a encore été ouverte pour cette période."}
       />
     </>
   );

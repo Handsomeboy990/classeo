@@ -8,6 +8,7 @@ import { StatCard, StatGrid } from "@/components/kit/stat-card";
 import { EmptyState } from "@/components/kit/states";
 import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
+import { buttonVariants } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TD, TH, THead, TR } from "@/components/ui/table";
 import { getActiveYear, getCurrentPeriod } from "@/features/classes/academic";
@@ -87,7 +88,7 @@ export default async function ReportCardsPage(props: PageProps<"/espace/bulletin
                     <TD className="text-right">
                       <Link
                         href={`/espace/bulletins?classe=${c.id}&periode=${periodId}`}
-                        className="inline-flex h-9 items-center rounded-lg border border-border-strong px-3 text-sm font-semibold hover:bg-surface-2"
+                        className={buttonVariants({ variant: "secondary", size: "sm" })}
                         aria-label={`Ouvrir les bulletins de la ${c.name}`}
                       >
                         Ouvrir
@@ -120,9 +121,9 @@ export default async function ReportCardsPage(props: PageProps<"/espace/bulletin
             {can(user, "report_card:export") && (
               <a
                 href={`/api/export/bulletins?classe=${classroom.id}&periode=${periodId}`}
-                className="inline-flex h-11 items-center gap-2 rounded-lg border border-border-strong bg-surface px-4 text-sm font-semibold hover:bg-surface-2"
+                className={buttonVariants({ variant: "secondary" })}
               >
-                <Download className="size-4" aria-hidden /> Exporter (CSV)
+                <Download aria-hidden /> Exporter (CSV)
               </a>
             )}
             {can(user, "report_card:export") && cards.length > 0 && (
@@ -215,7 +216,7 @@ export default async function ReportCardsPage(props: PageProps<"/espace/bulletin
                       <span className="inline-flex flex-wrap justify-end gap-2">
                         <Link
                           href={`/espace/bulletins/${c.enrollmentId}/${periodId}`}
-                          className="inline-flex h-9 items-center rounded-lg border border-border-strong px-3 text-sm font-semibold hover:bg-surface-2"
+                          className={buttonVariants({ variant: "secondary", size: "sm" })}
                           aria-label={`Voir le bulletin de ${c.name}`}
                         >
                           Voir

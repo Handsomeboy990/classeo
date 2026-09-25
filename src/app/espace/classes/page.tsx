@@ -26,6 +26,7 @@ export default async function ClassesPage(props: PageProps<"/espace/classes">) {
   const columns: Column<Row>[] = [
     {
       header: "Classe",
+      primary: true,
       cell: (r) => (
         <Link href={`/espace/classes/${r.id}`} className="font-semibold text-primary hover:underline">
           {r.name}
@@ -59,7 +60,7 @@ export default async function ClassesPage(props: PageProps<"/espace/classes">) {
     <>
       <PageHeader
         title="Classes"
-        description={`Année scolaire ${year?.label ?? ""} · effectifs, professeurs principaux et matières enseignées.`}
+        description={year ? `Année scolaire ${year.label}` : undefined}
         actions={options && <CreateClassDialog options={options} />}
       />
       <DataTable
@@ -71,10 +72,10 @@ export default async function ClassesPage(props: PageProps<"/espace/classes">) {
         pageSize={pageSize}
         searchParams={sp}
         basePath="/espace/classes"
-        searchPlaceholder="Rechercher une classe"
+        searchPlaceholder="Nom de la classe"
         caption="Liste des classes"
         emptyTitle={q ? "Aucune classe ne correspond à la recherche" : "Aucune classe pour cette année"}
-        emptyDescription={q ? "Essayez un autre nom." : canCreate ? "Créez la première classe avec le bouton « Nouvelle classe »." : undefined}
+        emptyDescription={q ? "Essayez un autre nom." : canCreate ? "Créez la première avec « Nouvelle classe »." : undefined}
       />
     </>
   );

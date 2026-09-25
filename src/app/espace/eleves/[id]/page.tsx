@@ -9,7 +9,7 @@ import { StatCard, StatGrid } from "@/components/kit/stat-card";
 import { EmptyState } from "@/components/kit/states";
 import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
-import { ButtonLink } from "@/components/ui/button";
+import { ButtonLink, buttonVariants } from "@/components/ui/button";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TD, TH, THead, TR } from "@/components/ui/table";
 import { EnrollmentStatusActions } from "@/features/students/components/enrollment-status";
@@ -277,7 +277,7 @@ export default async function StudentPage(props: PageProps<"/espace/eleves/[id]"
                       <AverageLevel average={r.generalAverage === null ? null : Number(r.generalAverage)} />
                       <Link
                         href={`/espace/bulletins/${r.enrollmentId}/${r.periodId}`}
-                        className="inline-flex h-9 items-center rounded-lg border border-border-strong px-3 font-semibold hover:bg-surface-2"
+                        className={buttonVariants({ variant: "secondary", size: "sm" })}
                         aria-label={`Voir le bulletin du ${r.period.name} ${r.period.academicYear.label}`}
                       >
                         Voir

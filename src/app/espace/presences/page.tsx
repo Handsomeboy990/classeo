@@ -6,7 +6,7 @@ import { PageHeader } from "@/components/kit/page-header";
 import { StatCard, StatGrid } from "@/components/kit/stat-card";
 import { EmptyState } from "@/components/kit/states";
 import { Alert } from "@/components/ui/alert";
-import { ButtonLink } from "@/components/ui/button";
+import { ButtonLink, buttonVariants } from "@/components/ui/button";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { saveAttendance } from "@/features/attendance/actions";
 import { AttendanceRegister } from "@/features/attendance/components/attendance-register";
@@ -56,9 +56,9 @@ export default async function AttendancePage(props: PageProps<"/espace/presences
             {can(user, "attendance:export") && (
               <a
                 href={`/api/export/presences?classe=${classroomId}&du=${stats.week.from}&au=${stats.week.to}`}
-                className="inline-flex h-11 items-center gap-2 rounded-lg border border-border-strong bg-surface px-4 text-sm font-semibold hover:bg-surface-2"
+                className={buttonVariants({ variant: "secondary" })}
               >
-                <Download className="size-4" aria-hidden /> Exporter la semaine
+                <Download aria-hidden /> Exporter la semaine
               </a>
             )}
             <PdfDownloadLink

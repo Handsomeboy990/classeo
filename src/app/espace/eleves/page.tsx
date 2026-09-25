@@ -5,7 +5,7 @@ import Link from "next/link";
 import { DataTable, type Column } from "@/components/kit/data-table";
 import { PageHeader } from "@/components/kit/page-header";
 import { Badge } from "@/components/ui/badge";
-import { ButtonLink } from "@/components/ui/button";
+import { ButtonLink, buttonVariants } from "@/components/ui/button";
 import { getActiveYear } from "@/features/classes/academic";
 import { UrlSelect } from "@/components/kit/url-select";
 import { classroomOptions } from "@/features/classes/queries";
@@ -35,6 +35,7 @@ export default async function StudentsPage(props: PageProps<"/espace/eleves">) {
   const columns: Column<Row>[] = [
     {
       header: "Élève",
+      primary: true,
       cell: (r) => (
         <div>
           <Link href={`/espace/eleves/${r.student.id}`} className="font-semibold text-primary hover:underline">
@@ -82,15 +83,12 @@ export default async function StudentsPage(props: PageProps<"/espace/eleves">) {
     <>
       <PageHeader
         title="Élèves"
-        description={`Inscriptions de l'année ${year?.label ?? ""}.`}
+        description={year ? `Année scolaire ${year.label}` : undefined}
         actions={
           <>
             {can(user, "student:export") && (
-              <a
-                href={`/api/export/eleves?${exportQs}`}
-                className="inline-flex h-11 items-center gap-2 rounded-lg border border-border-strong bg-surface px-4 text-sm font-semibold hover:bg-surface-2"
-              >
-                <Download className="size-4" aria-hidden /> Exporter (CSV)
+              <a href={`/api/export/eleves?${exportQs}`} className={buttonVariants({ variant: "secondary" })}>
+                <Download aria-hidden /> Exporter (CSV)
               </a>
             )}
             {can(user, "student:create") && (
@@ -101,21 +99,6 @@ export default async function StudentsPage(props: PageProps<"/espace/eleves">) {
           </>
         }
       />
-      <div className="mb-4 flex flex-col gap-3 sm:flex-row">
-        <UrlSelect param="classe" label="Classe" value={classroomId ?? ""} allLabel="Toutes les classes" options={classes.map((c) => ({ value: c.id, label: c.name }))} className="sm:w-52" />
-        <UrlSelect
-          param="statut"
-          label="Statut"
-          value={status}
-          options={[
-            { value: "ACTIVE", label: "Inscrits" },
-            { value: "WITHDRAWN", label: "Retirés" },
-            { value: "TRANSFERRED", label: "Transférés" },
-            { value: "ALL", label: "Tous" },
-          ]}
-          className="sm:w-52"
-        />
-      </div>
       <DataTable
         rows={rows}
         columns={columns}
@@ -125,7 +108,25 @@ export default async function StudentsPage(props: PageProps<"/espace/eleves">) {
         pageSize={pageSize}
         searchParams={sp}
         basePath="/espace/eleves"
-        searchPlaceholder="Rechercher par nom ou matricule"
+        searchPlaceholder="Nom ou matricule"
+        toolbar={
+          <>
+            <UrlSelect param="classe" label="Classe" hideLabel value={classroomId ?? ""} allLabel="Toutes les classes" options={classes.map((c) => ({ value: c.id, label: c.name }))} className="sm:w-48" />
+            <UrlSelect
+              param="statut"
+              label="Statut"
+              hideLabel
+              value={status}
+              options={[
+                { value: "ACTIVE", label: "Inscrits" },
+                { value: "WITHDRAWN", label: "Retirés" },
+                { value: "TRANSFERRED", label: "Transférés" },
+                { value: "ALL", label: "Tous les statuts" },
+              ]}
+              className="sm:w-44"
+            />
+          </>
+        }
         caption="Liste des élèves"
         emptyTitle={q ? "Aucun élève ne correspond à la recherche" : "Aucun élève"}
         emptyDescription={q ? "Vérifiez l'orthographe ou cherchez par matricule." : undefined}
