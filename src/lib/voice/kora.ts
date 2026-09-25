@@ -1,31 +1,32 @@
 // Kora, the voice of Classéo.
 //
-// French: Azure Speech on the server, voice Denise, the same natural female
-// voice on every device (see /api/voix). The text is cut into short parts;
-// each part is asked for while the previous one plays, and the server keeps
-// every clip, so a text already heard costs no new synthesis.
+// French: Piper on the server, voice Siwis, the same female voice on every
+// device (see /api/voix). The text is cut into short parts; each part is
+// asked for while the previous one plays, and the server keeps every clip,
+// so a text already heard costs no new synthesis.
 //
-// When the server has no Azure key, Azure fails or the device is offline,
-// the browser reads with its own speech synthesis, with a deliberate choice
-// of voice: a French female voice, preferring the natural (neural) voices
-// shipped by Edge, Chrome, macOS, iOS and Android, and never a male voice
-// when a female one exists. On a desktop without such a voice (Chromium or
-// Firefox on Linux) the browser only offers the synthetic espeak voice, male
-// and harsh: Kora then raises its pitch a little and slows it down, so that
-// it stays understandable. Text is spoken sentence by sentence with a short
-// pause in between: long utterances get cut off after about fifteen seconds
-// in Chrome, and short ones sound more natural and can be stopped at once.
+// When the server voice is not configured or fails, or the device is
+// offline, the browser reads with its own speech synthesis, with a
+// deliberate choice of voice: a French female voice, preferring the natural
+// (neural) voices shipped by Edge, Chrome, macOS, iOS and Android, and never
+// a male voice when a female one exists. On a desktop without such a voice
+// (Chromium or Firefox on Linux) the browser only offers the synthetic
+// espeak voice, male and harsh: Kora then raises its pitch a little and
+// slows it down, so that it stays understandable. Text is spoken sentence
+// by sentence with a short pause in between: long utterances get cut off
+// after about fifteen seconds in Chrome, and short ones sound more natural
+// and can be stopped at once.
 //
 // Fon, Yoruba and Hausa: clips synthesised by the server (see
 // /api/langues/voix). Every clip, French or not, plays at a normalised
 // level.
 //
 // Speed: the setting of Préférences is the utterance rate of the browser
-// voice. Server clips are made once at a fixed pace (AZURE_RATE) and played
-// faster or slower with playbackRate, pitch preserved. Passing the setting
-// to Azure as the SSML rate instead would make three clips, three Azure
-// calls and three cache entries of the same text; playbackRate costs nothing
-// and applies to the clips already cached.
+// voice. Server clips are made once at a fixed pace (PIPER_PACE, the pace
+// of "Normale") and played faster or slower with playbackRate, pitch
+// preserved. Passing the setting to Piper as its length scale instead would
+// make three clips, three syntheses and three cache entries of the same
+// text; playbackRate costs nothing and applies to the clips already cached.
 
 import { frenchParts } from "./speech-text";
 
@@ -160,8 +161,9 @@ export function playbackRateFor(userRate: number) {
   return Math.min(1.5, Math.max(0.6, userRate / Number(NORMAL_RATE)));
 }
 
-// The French voice of the server ("Denise"), asked once per page; null when
-// the server has none (no Azure key, Azure refusing) or cannot be reached.
+// The French voice of the server ("Siwis"), asked once per page; null when
+// the server has none (voice not configured or failing) or cannot be
+// reached.
 let serverVoice: Promise<string | null> | null = null;
 // After a failure the browser voice is used for a minute without asking.
 let serverDownUntil = 0;
@@ -226,7 +228,7 @@ export async function speak(text: string, onEnd?: (outcome: Outcome) => void, on
 }
 
 // Asks the server for the clip of one part. Null when it cannot give one;
-// when Azure is down (503) or the server unreachable, the browser voice
+// when the voice is down (503) or the server unreachable, the browser voice
 // takes over for a minute. A refusal for this text only (signed out on a
 // private text, too many requests) does not.
 async function askPart(text: string, part: number): Promise<string | null> {
@@ -235,7 +237,8 @@ async function askPart(text: string, part: number): Promise<string | null> {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ text, part }),
-      signal: AbortSignal.timeout(15_000),
+      // The first clip of a new server instance can take a while.
+      signal: AbortSignal.timeout(30_000),
     });
     const body = (await res.json().catch(() => ({}))) as { clip?: unknown };
     if (res.ok && typeof body.clip === "string") return body.clip;

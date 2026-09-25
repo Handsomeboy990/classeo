@@ -1,29 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { buildSsml, escapeXml, frenchParts, MAX_SPOKEN_LENGTH, PART_LENGTH } from "./speech-text";
-
-describe("escapeXml", () => {
-  it("escapes the five XML characters and drops control characters", () => {
-    expect(escapeXml(`Tom & "Léa" <b>'x'</b>`)).toBe("Tom &amp; &quot;Léa&quot; &lt;b&gt;&apos;x&apos;&lt;/b&gt;");
-    expect(escapeXml("a\u0000b\u0007c\u001Fd")).toBe("abcd");
-    expect(escapeXml("ligne\nsuivante\ttab")).toBe("ligne\nsuivante\ttab");
-  });
-});
-
-describe("buildSsml", () => {
-  it("wraps the text in the Denise voice with a slower prosody", () => {
-    const ssml = buildSsml("Bonjour  Afiavi.");
-    expect(ssml).toBe(
-      '<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="fr-FR"><voice name="fr-FR-DeniseNeural"><prosody rate="-10%">Bonjour Afiavi.</prosody></voice></speak>',
-    );
-  });
-  it("cannot be broken out of by the text", () => {
-    const ssml = buildSsml(`</prosody></voice><voice name="x">Pirate & co`);
-    expect(ssml).not.toContain('<voice name="x">');
-    expect(ssml).toContain("&lt;/prosody&gt;&lt;/voice&gt;&lt;voice name=&quot;x&quot;&gt;Pirate &amp; co");
-    expect(ssml.match(/<voice /g)).toHaveLength(1);
-  });
-});
+import { frenchParts, MAX_SPOKEN_LENGTH, PART_LENGTH } from "./speech-text";
 
 describe("frenchParts", () => {
   it("keeps a short text whole and ignores blank text", () => {

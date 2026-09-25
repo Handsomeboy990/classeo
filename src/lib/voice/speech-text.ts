@@ -1,19 +1,18 @@
-// Text rules of the French server voice (Azure Speech), shared by the
+// Text rules of the French server voice (Piper, voice Siwis), shared by the
 // browser, which asks for the parts one by one and reads the rest with its
 // own voice if the server stops answering, and by the server, which cuts the
 // text the same way before synthesising a part.
 
 import { normalise } from "@/features/languages/text";
 
-export const AZURE_VOICE = "fr-FR-DeniseNeural";
-// A little slower than the voice's default pace: Kora reads to parents who
-// may not read well, often through a phone speaker. Part of the cache key:
-// changing it produces new clips.
-export const AZURE_RATE = "-10%";
+// The voice and the pace of api/kora-tts.py. Part of the cache key:
+// changing either there must change it here, so that new clips are made.
+export const PIPER_VOICE = "fr_FR-siwis-medium";
+export const PIPER_PACE = "length_scale=1.1;sentence_silence=0.25";
 export const MAX_SPOKEN_LENGTH = 6000;
-// Short parts: the first one is ready in about a second, and a sentence
+// Short parts: the first one is ready in a second or two, and a sentence
 // shared by several texts is synthesised once.
-export const PART_LENGTH = 300;
+export const PART_LENGTH = 200;
 
 // Joins items with a space into pieces of at most `max` characters.
 function pack(items: string[], max: number) {
@@ -44,19 +43,4 @@ export function frenchParts(text: string, max = PART_LENGTH): string[] {
   if (!clean) return [];
   const sentences = clean.split(/(?<=[.!?;])\s+/u).flatMap((s) => pieces(s, max));
   return pack(sentences, max);
-}
-
-const ENTITIES: Record<string, string> = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&apos;" };
-
-// Text safe inside an XML element or attribute. Characters XML forbids
-// (control characters) are removed: Azure refuses the whole request for one.
-export function escapeXml(text: string) {
-  return text.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\uFFFE\uFFFF]/g, "").replace(/[&<>"']/g, (c) => ENTITIES[c]!);
-}
-
-export function buildSsml(text: string, voice = AZURE_VOICE, rate = AZURE_RATE) {
-  return (
-    `<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="fr-FR">` +
-    `<voice name="${escapeXml(voice)}"><prosody rate="${escapeXml(rate)}">${escapeXml(normalise(text))}</prosody></voice></speak>`
-  );
 }

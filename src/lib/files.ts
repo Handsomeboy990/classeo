@@ -11,7 +11,7 @@ import { DomainError } from "@/lib/errors";
 // storage to configure, and every read goes through an authorization check.
 
 // "tts_audio": speech produced by the translation service (local
-// languages) or by Azure Speech (French), cached by text and voice; never
+// languages) or by Kora's Piper voice (French), cached by text and voice; never
 // uploaded by a user.
 export type FilePurpose = "student_photo" | "school_logo" | "signature" | "stamp" | "document" | "payment_proof" | "tts_audio";
 
@@ -35,8 +35,8 @@ function sniff(bytes: Uint8Array): string | null {
   if (b[0] === 0x52 && b[1] === 0x49 && b[2] === 0x46 && b[3] === 0x46 && b[8] === 0x57 && b[9] === 0x41 && b[10] === 0x56 && b[11] === 0x45) return "audio/wav";
   if (b[0] === 0x25 && b[1] === 0x50 && b[2] === 0x44 && b[3] === 0x46) return "application/pdf";
   // MP3: an ID3 tag, or straight away an MPEG audio frame (11 bits of sync,
-  // a valid layer, a bitrate index other than "bad"). Azure sends the
-  // latter.
+  // a valid layer, a bitrate index other than "bad"), as speech services
+  // send.
   if (b[0] === 0x49 && b[1] === 0x44 && b[2] === 0x33) return "audio/mpeg";
   if (b[0] === 0xff && b[1] !== undefined && b[2] !== undefined && (b[1] & 0xe0) === 0xe0 && (b[1] & 0x06) !== 0 && (b[2] & 0xf0) !== 0xf0) return "audio/mpeg";
   const head = new TextDecoder().decode(b.slice(0, 256)).trimStart().toLowerCase();
