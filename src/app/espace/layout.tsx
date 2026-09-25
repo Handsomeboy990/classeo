@@ -14,6 +14,7 @@ import { requireUser } from "@/lib/auth/session";
 import { pushPublicKey } from "@/lib/channels/push";
 import { db } from "@/lib/db";
 import { mobileTabs, tabAudience, visibleNavigation, type NavItem } from "@/lib/navigation";
+import { roleLabel } from "@/features/messages/role-label";
 
 function render(item: NavItem): RenderedItem {
   return { label: item.label, short: item.short, href: item.href, icon: <item.icon aria-hidden /> };
@@ -27,7 +28,7 @@ export default async function SpaceLayout({ children }: LayoutProps<"/espace">) 
   const visible = visibleNavigation(user);
   const sections: RenderedSection[] = visible.map((s) => ({ title: s.title, items: s.items.map(render) }));
   const tabs = mobileTabs(visible, tabAudience(user)).map(render);
-  const shellUser = { fullName: user.fullName, email: user.email, roleName: user.role.name, scopeLabel: user.scope.label };
+  const shellUser = { fullName: user.fullName, email: user.email, roleName: roleLabel(user.role.name, user.gender), scopeLabel: user.scope.label };
   const pushKey = pushPublicKey();
 
   return (
@@ -73,7 +74,7 @@ export default async function SpaceLayout({ children }: LayoutProps<"/espace">) 
                 <Avatar name={user.fullName} />
                 <div className="leading-tight">
                   <p className="text-sm font-semibold">{user.fullName}</p>
-                  <p className="text-xs text-muted">{user.role.name}</p>
+                  <p className="text-xs text-muted">{roleLabel(user.role.name, user.gender)}</p>
                 </div>
                 <SignOutButton
                   label="Se déconnecter"
