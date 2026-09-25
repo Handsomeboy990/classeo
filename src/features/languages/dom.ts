@@ -1,7 +1,7 @@
 "use client";
 
 import { originals } from "./client";
-import { isCandidate, normalise } from "./text";
+import { isCandidate, lookupText, normalise } from "./text";
 
 // The translation layer works on the text nodes of the main region, after
 // React has rendered them: nothing in the pages has to change. Skipped:
@@ -52,7 +52,7 @@ export function forget(node: Text) {
 // spaces. Returns false when the map has no translation for it.
 export function translateNode(node: Text, map: Map<string, string>) {
   const source = frenchOf(node);
-  const t = map.get(normalise(source));
+  const t = lookupText(normalise(source), map);
   if (!t) return false;
   const lead = source.match(/^\s*/)?.[0] ?? "";
   const trail = source.match(/\s*$/)?.[0] ?? "";

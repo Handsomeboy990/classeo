@@ -4,7 +4,7 @@ import { QuotaError, translateBatch, translateMany, UnavailableError, type ApiCo
 import { normaliseWav } from "./audio";
 import { cacheKey } from "./cache-key";
 import { voiceOf } from "./languages";
-import { batches, isCandidate, isQueueable, polish, segments, speechChunks } from "./text";
+import { batches, isCandidate, isQueueable, lookupKeys, lookupText, polish, segments, speechChunks } from "./text";
 import { TokenBucket, type Clock } from "./token-bucket";
 
 function fakeClock(start = 0): Clock & { t: number } {
@@ -64,6 +64,15 @@ describe("text rules", () => {
     expect(isQueueable("Hounkpatin")).toBe(false);
     expect(isQueueable("Voir le bulletin")).toBe(true);
     expect(isQueueable("absent")).toBe(true);
+  });
+  it("translates the label of \"label, value\" and keeps the value", () => {
+    const map = new Map([["Bonjour", "Ku do zanzan"], ["Moyenne", "Akpá"]]);
+    expect(lookupText("Bonjour, Afiavi", map)).toBe("Ku do zanzan, Afiavi");
+    expect(lookupText("Moyenne : 13,5/20", map)).toBe("Akpá : 13,5/20");
+    expect(lookupText("Bonjour", map)).toBe("Ku do zanzan");
+    expect(lookupText("Au revoir, Afiavi", map)).toBeUndefined();
+    expect(lookupKeys("Bonjour, Afiavi")).toEqual(["Bonjour, Afiavi", "Bonjour", "Bonjour,"]);
+    expect(isQueueable("Bonjour, Afiavi")).toBe(false);
   });
   it("keeps a translation only with the same figures, and the source's capital", () => {
     expect(polish("Bonjour", "ku do zanzan")).toBe("Ku do zanzan");

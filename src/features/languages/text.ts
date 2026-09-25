@@ -31,6 +31,32 @@ export function isCandidate(text: string) {
   return true;
 }
 
+function splitLabel(text: string) {
+  const m = text.match(/^(.+?)(\s*[,:]\s+)(.+)$/u);
+  return m ? { head: m[1]!, sep: m[2]!, tail: m[3]! } : null;
+}
+
+// The cache entries a text node may use: itself, and its label when it is
+// "label, value" or "label : value".
+export function lookupKeys(text: string) {
+  const parts = splitLabel(text);
+  return parts ? [text, parts.head, `${parts.head}${parts.sep.trim()}`] : [text];
+}
+
+// A whole string, or a known label followed by a value it introduces:
+// "Bonjour, Afiavi", "Moyenne : 13,5/20". The label is translated, the
+// value (a name, a figure) is kept as is.
+export function lookupText(text: string, map: Map<string, string>) {
+  const whole = map.get(text);
+  if (whole) return whole;
+  const parts = splitLabel(text);
+  if (!parts) return undefined;
+  const { head, sep, tail } = parts;
+  const label = map.get(head) ?? map.get(`${head}${sep.trim()}`)?.replace(/[,:]$/, "");
+  if (!label) return undefined;
+  return `${label}${sep}${map.get(tail) ?? tail}`;
+}
+
 // Whether a string missing from the cache may be sent to the translation
 // service in the background. Stricter than isCandidate: anything that may be
 // a name, or carries a figure (a date, a grade, an amount), stays French
@@ -41,6 +67,9 @@ export function isQueueable(text: string) {
   if (!isCandidate(text) || text.length > 80) return false;
   if (DIGIT.test(text)) return false;
   if (PROPER_NAME.test(text)) return false;
+  // "Bonjour, Afiavi": the label is asked for on its own, never with the name.
+  const parts = splitLabel(text);
+  if (parts && PROPER_NAME.test(parts.tail)) return false;
   return text.split(" ").length >= 2 || /^[\p{Ll}]/u.test(text);
 }
 

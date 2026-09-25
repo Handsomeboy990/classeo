@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { initLanguages, setLanguage, setShowOriginal, useLanguageState } from "./client";
 import { forget, prune, restoreAll, sourceKey, textNodes, translateNode, wasWrittenByLayer } from "./dom";
 import { bcp47, inLanguage, LANGUAGES, languageLabel, type LanguageCode, type TargetLanguage } from "./languages";
+import { lookupKeys } from "./text";
 
 type Status = "idle" | "loading" | "done" | "partial" | "unavailable";
 
@@ -71,7 +72,7 @@ export function TranslationLayer({ userId, languages, voices }: { userId: string
       for (const n of nodes) {
         if (!translateNode(n, map)) {
           missing++;
-          waiting.add(sourceKey(n));
+          lookupKeys(sourceKey(n)).forEach((k) => waiting.add(k));
         }
       }
       return missing;
@@ -95,7 +96,7 @@ export function TranslationLayer({ userId, languages, voices }: { userId: string
     // First pass: whatever is known already, then one request for the page.
     const nodes = textNodes(main);
     apply(nodes);
-    void ask([...new Set(nodes.map(sourceKey))], true);
+    void ask([...new Set(nodes.flatMap((n) => lookupKeys(sourceKey(n))))], true);
 
     // Later updates (a tab, a refreshed thread, a streamed section): known
     // strings at once, unknown ones in a grouped follow up request.
