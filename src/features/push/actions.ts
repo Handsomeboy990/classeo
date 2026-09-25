@@ -46,6 +46,19 @@ export const unsubscribePush = createAction({
   },
 });
 
+// Tells the device whether its subscription belongs to the signed in user.
+// One left by the previous user of a shared browser is deleted: the person
+// now signed in never receives someone else's notifications.
+export const checkPushDevice = createAction({
+  permission: null,
+  schema: z.object({ endpoint }),
+  handler: async ({ endpoint }, user) => {
+    const row = await db.pushSubscription.findUnique({ where: { endpoint }, select: { userId: true } });
+    if (row && row.userId !== user.id) await db.pushSubscription.deleteMany({ where: { endpoint } });
+    return { message: "", data: { mine: row?.userId === user.id } };
+  },
+});
+
 export const sendTestPush = createAction({
   permission: null,
   schema: z.object({}),
