@@ -10,10 +10,11 @@ import { can, ForbiddenError } from "@/lib/auth/authorize";
 import type { CurrentUser } from "@/lib/auth/session";
 import { invalidate, tags } from "@/lib/cache";
 import { db } from "@/lib/db";
+import { AUDIENCE_MISFIT, audienceFitsTarget, MAX_RECIPIENTS, targetLevel, type AudienceCode, type TargetIds } from "@/lib/domain/content-targeting";
 import { DomainError } from "@/lib/errors";
 import { notify } from "@/lib/notify";
 
-import { activeYearId, manageableWhere, resolveTargetForWrite } from "./queries";
+import { activeYearId, manageableWhere, resolveRecipientsForWrite, resolveTargetForWrite } from "./queries";
 import { contentSchema, parseEventDate, type ContentInput } from "./schema";
 
 type User = NonNullable<CurrentUser>;
@@ -46,65 +47,99 @@ async function findManageable(user: User, id: string) {
   return found;
 }
 
-// Readers of a school or class content hear about it right away. Wider
+// Readers of a school or class content hear about it right away, following
+// the same rule as the list: inside the target and in the audience. Wider
 // targets (commune, department, nation) reach too many accounts for a
-// synchronous write and rely on the list instead.
-async function notifyReaders(user: User, c: { id: string; title: string; audience: string; schoolId: string | null; classroomId: string | null }) {
-  if (!c.schoolId) return;
+// synchronous write and rely on the list and the ticker instead. Accounts
+// whose role cannot open contents are left out: the link would refuse them.
+type Notifiable = { id: string; title: string; audience: string; schoolId: string | null; classroomId: string | null };
+
+async function readerIds(c: Notifiable) {
+  if (!c.schoolId) return [];
   const yearId = await activeYearId();
   const enrolled: Prisma.EnrollmentWhereInput = c.classroomId
     ? { classroomId: c.classroomId, academicYearId: yearId, status: "ACTIVE" }
     : { schoolId: c.schoolId, academicYearId: yearId, status: "ACTIVE" };
   const wants = (a: string) => c.audience === "EVERYONE" || c.audience === a;
-  const ids: string[] = [];
-  if (wants("PARENTS")) {
-    const rows = await db.guardian.findMany({ where: { userId: { not: null }, students: { some: { student: { enrollments: { some: enrolled } } } } }, select: { userId: true }, take: 500 });
-    ids.push(...rows.map((r) => r.userId!));
-  }
-  if (wants("STUDENTS")) {
-    const rows = await db.student.findMany({ where: { userId: { not: null }, enrollments: { some: enrolled } }, select: { userId: true }, take: 500 });
-    ids.push(...rows.map((r) => r.userId!));
-  }
-  if (wants("TEACHERS")) {
-    const rows = await db.teacher.findMany({
-      where: c.classroomId
-        ? { userId: { not: null }, OR: [{ assignments: { some: { classroomId: c.classroomId } } }, { mainClasses: { some: { id: c.classroomId } } }] }
-        : { userId: { not: null }, schoolId: c.schoolId },
-      select: { userId: true },
-      take: 500,
-    });
-    ids.push(...rows.map((r) => r.userId!));
-  }
-  if (wants("STAFF")) {
-    const rows = await db.user.findMany({ where: { schoolId: c.schoolId, scopeLevel: "SCHOOL", teachers: { none: {} }, isActive: true }, select: { id: true }, take: 100 });
-    ids.push(...rows.map((r) => r.id));
-  }
+  const lists: Promise<(string | null)[]>[] = [];
+  if (wants("PARENTS"))
+    lists.push(db.guardian.findMany({ where: { userId: { not: null }, students: { some: { student: { enrollments: { some: enrolled } } } } }, select: { userId: true }, take: 2000 }).then((r) => r.map((x) => x.userId)));
+  if (wants("STUDENTS")) lists.push(db.student.findMany({ where: { userId: { not: null }, enrollments: { some: enrolled } }, select: { userId: true }, take: 2000 }).then((r) => r.map((x) => x.userId)));
+  if (wants("TEACHERS"))
+    lists.push(
+      db.teacher
+        .findMany({
+          where: c.classroomId
+            ? { userId: { not: null }, isActive: true, OR: [{ assignments: { some: { classroomId: c.classroomId } } }, { mainClasses: { some: { id: c.classroomId } } }] }
+            : { userId: { not: null }, isActive: true, schoolId: c.schoolId },
+          select: { userId: true },
+          take: 500,
+        })
+        .then((r) => r.map((x) => x.userId)),
+    );
+  // A class has no staff of its own: staff hear only about school contents.
+  if (wants("STAFF") && !c.classroomId)
+    lists.push(db.user.findMany({ where: { schoolId: c.schoolId, scopeLevel: "SCHOOL", role: { code: { not: "TEACHER" } } }, select: { id: true }, take: 200 }).then((r) => r.map((x) => x.id)));
+  const ids = [...new Set((await Promise.all(lists)).flat().filter((x): x is string => !!x))];
+  if (!ids.length) return [];
+  const allowed = await db.user.findMany({
+    where: { id: { in: ids }, isActive: true, role: { permissions: { some: { permission: { code: "content:view" } } } } },
+    select: { id: true },
+  });
+  return allowed.map((u) => u.id);
+}
+
+async function notifyReaders(user: User, c: Notifiable) {
+  const ids = await readerIds(c);
   await notify(
     ids.filter((id) => id !== user.id),
     { kind: "content", title: "Nouvelle publication", body: c.title, link: `/espace/contenus/${c.id}` },
   );
 }
 
+function assertAudienceFits(target: TargetIds, audience: AudienceCode) {
+  if (!audienceFitsTarget(targetLevel(target), audience)) throw new DomainError(AUDIENCE_MISFIT);
+}
+
+const createSchema = contentSchema.and(
+  z
+    .object({
+      // Explicit recipients (specific schools or classes): one copy each.
+      mode: z.enum(["single", "several"]).default("single"),
+      recipients: z.array(z.string().max(60)).max(MAX_RECIPIENTS, `${MAX_RECIPIENTS} destinataires au plus.`).default([]),
+    })
+    .superRefine((v, ctx) => {
+      if (v.mode === "several" && !v.recipients.length) ctx.addIssue({ code: "custom", path: ["recipients"], message: "Cochez au moins un destinataire." });
+    }),
+);
+
 export const createContent = createAction({
   permission: "content:create",
-  schema: contentSchema,
+  schema: createSchema,
   handler: async (input, user) => {
     assertCanPublish(user, input);
-    const target = await resolveTargetForWrite(user, input.target);
+    const targets = input.mode === "several" ? await resolveRecipientsForWrite(user, input.recipients) : [await resolveTargetForWrite(user, input.target)];
+    for (const t of targets) assertAudienceFits(t, input.audience);
     const publish = input.intent === "publish";
-    const created = await db.content.create({
-      data: { ...contentData(input), ...target, authorId: user.id, status: publish ? "PUBLISHED" : "DRAFT", publishedAt: publish ? new Date() : null },
-    });
-    await audit(user, {
-      action: publish ? "publish" : "create",
-      resource: "content",
-      resourceId: created.id,
-      summary: `${publish ? "Publication" : "Création"} du contenu « ${created.title} »`,
-      schoolId: created.schoolId,
-    });
-    if (publish) await notifyReaders(user, created);
+    const now = new Date();
+    const created = await db.$transaction(
+      targets.map((target) =>
+        db.content.create({ data: { ...contentData(input), ...target, authorId: user.id, status: publish ? "PUBLISHED" : "DRAFT", publishedAt: publish ? now : null } }),
+      ),
+    );
+    for (const c of created) {
+      await audit(user, {
+        action: publish ? "publish" : "create",
+        resource: "content",
+        resourceId: c.id,
+        summary: `${publish ? "Publication" : "Création"} du contenu « ${c.title} »${created.length > 1 ? ` (envoi à ${created.length} destinataires)` : ""}`,
+        schoolId: c.schoolId,
+      });
+      if (publish) await notifyReaders(user, c);
+    }
     invalidate(tags.contents);
-    redirect(`/espace/contenus/${created.id}`);
+    if (created.length === 1) redirect(`/espace/contenus/${created[0]!.id}`);
+    redirect(`/espace/contenus?vue=geres&envoye=${created.length}`);
   },
 });
 
@@ -130,6 +165,7 @@ export const updateContent = createAction({
       input.target === currentValue
         ? { departmentId: current.departmentId, communeId: current.communeId, schoolId: current.schoolId, classroomId: current.classroomId }
         : await resolveTargetForWrite(user, input.target);
+    assertAudienceFits(target, input.audience);
     const publish = input.intent === "publish" && current.status !== "PUBLISHED";
     const updated = await db.content.update({
       where: { id: current.id },
@@ -156,6 +192,7 @@ export const publishContent = createAction({
   handler: async ({ id }, user) => {
     const current = await findManageable(user, id);
     if (current.status === "PUBLISHED") throw new DomainError("Ce contenu est déjà publié.");
+    assertAudienceFits(current, current.audience);
     if ((current.mediaType === "AUDIO" || current.mediaType === "VIDEO") && !current.transcript)
       throw new DomainError("Ajoutez d'abord une transcription : les personnes sourdes ou malentendantes doivent pouvoir lire ce contenu.");
     const updated = await db.content.update({ where: { id }, data: { status: "PUBLISHED", publishedAt: new Date() } });
