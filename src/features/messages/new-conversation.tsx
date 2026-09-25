@@ -1,55 +1,114 @@
 "use client";
 
-import { MessageSquarePlus, SendHorizonal } from "lucide-react";
+import { Building2, MessageSquarePlus, SendHorizonal, UserRound } from "lucide-react";
 import { useState } from "react";
 
 import { ActionForm, SubmitButton } from "@/components/kit/action-form";
 import { FormField } from "@/components/kit/form-field";
+import { MultiPicker, type PickerOption } from "@/components/kit/multi-picker";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
-import { Input, Select, Textarea } from "@/components/ui/input";
+import { Input, Textarea } from "@/components/ui/input";
+import { MAX_INSTITUTION_RECIPIENTS } from "@/lib/domain/institutions";
+import { cn } from "@/lib/utils";
 
 import { FormRecovery } from "../contents/form-recovery";
 import { startConversation } from "./actions";
 import type { Contact } from "./queries";
 import { QUICK_MESSAGES } from "./templates";
 
-export function NewConversation({ contacts, showQuick }: { contacts: Contact[]; showQuick: boolean }) {
+type Mode = "person" | "institution";
+
+// Two ways to start a conversation: with a person, or, for the staff of an
+// institution, on behalf of that institution with one or several others
+// (one conversation each). Both pickers only offer what the server accepts.
+export function NewConversation({
+  contacts,
+  institutions,
+  sender,
+  showQuick,
+}: {
+  contacts: Contact[];
+  institutions: PickerOption[];
+  // Name of the institution the user writes for, if any.
+  sender: string | null;
+  showQuick: boolean;
+}) {
   const [open, setOpen] = useState(false);
-  const [recipientId, setRecipientId] = useState("");
+  const canInstitution = !!sender && institutions.length > 0;
+  const [mode, setMode] = useState<Mode>(contacts.length === 0 && canInstitution ? "institution" : "person");
+  const [person, setPerson] = useState<string[]>([]);
+  const [picked, setPicked] = useState<string[]>([]);
   const [subject, setSubject] = useState("");
   const [body, setBody] = useState("");
-  const groups = [...new Set(contacts.map((c) => c.group))];
+  const people: PickerOption[] = contacts.map((c) => ({ value: c.id, label: c.name, group: c.group, detail: c.detail }));
+  const nothing = contacts.length === 0 && !canInstitution;
 
   return (
     <>
       <Button type="button" onClick={() => setOpen(true)}>
         <MessageSquarePlus aria-hidden /> Nouvelle conversation
       </Button>
-      <Dialog open={open} onClose={() => setOpen(false)} title="Nouvelle conversation" description="Les destinataires proposés sont les personnes liées à votre scolarité ou à votre établissement." size="lg">
-        {contacts.length === 0 ? (
+      <Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        title="Nouvelle conversation"
+        description={
+          canInstitution
+            ? `Écrivez à une personne, ou au nom de ${sender} à un établissement ou à un service.`
+            : "Les destinataires proposés sont les personnes liées à votre scolarité ou à votre établissement."
+        }
+        size="lg"
+      >
+        {nothing ? (
           <p className="text-sm text-muted">Aucun contact pour le moment. Vos contacts apparaissent dès qu&apos;un enfant ou une classe est rattaché à votre compte.</p>
         ) : (
           <ActionForm action={startConversation} successToast={false} className="flex flex-col gap-4">
-            <FormRecovery selects={{ recipientId }} />
-            <FormField label="Destinataire" name="recipientId" required>
-              <Select value={recipientId} onChange={(e) => setRecipientId(e.target.value)}>
-                <option value="">Choisir une personne…</option>
-                {groups.map((g) => (
-                  <optgroup key={g} label={g}>
-                    {contacts
-                      .filter((c) => c.group === g)
-                      .map((c) => (
-                        <option key={c.id} value={c.id}>
-                          {c.name}
-                          {c.detail ? ` (${c.detail})` : ""}
-                        </option>
-                      ))}
-                  </optgroup>
-                ))}
-              </Select>
-            </FormField>
-            {showQuick && (
+            <FormRecovery />
+            <input type="hidden" name="mode" value={mode} />
+            {canInstitution && (
+              <fieldset>
+                <legend className="text-sm font-semibold">À qui écrivez-vous ?</legend>
+                <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
+                  {(
+                    [
+                      { value: "person", label: "Une personne", hint: "Un parent, un enseignant, un chef d'établissement…", Icon: UserRound, disabled: contacts.length === 0 },
+                      { value: "institution", label: "Un établissement ou un service", hint: `Au nom de ${sender}`, Icon: Building2, disabled: false },
+                    ] as const
+                  ).map((o) => (
+                    <label
+                      key={o.value}
+                      className={cn(
+                        "flex min-h-14 cursor-pointer items-start gap-3 rounded-lg border border-border-strong bg-surface px-3 py-2 has-checked:border-primary has-checked:bg-primary-soft has-focus-visible:ring-2 has-focus-visible:ring-primary",
+                        o.disabled && "cursor-not-allowed opacity-50",
+                      )}
+                    >
+                      <input type="radio" name="mode-choice" value={o.value} checked={mode === o.value} disabled={o.disabled} onChange={() => setMode(o.value)} className="sr-only" />
+                      <o.Icon className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden />
+                      <span>
+                        <span className="block text-sm font-semibold">{o.label}</span>
+                        <span className="block text-xs text-muted">{o.hint}</span>
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+            )}
+            {mode === "person" ? (
+              <MultiPicker name="recipientId" legend="Destinataire" options={people} selected={person} onChange={setPerson} single searchPlaceholder="Rechercher une personne…" />
+            ) : (
+              <MultiPicker
+                name="institutions"
+                legend="Destinataires"
+                hint="Cochez-en plusieurs pour un envoi groupé : chacun reçoit sa propre conversation et vous voyez qui l'a lue."
+                options={institutions}
+                selected={picked}
+                onChange={setPicked}
+                max={MAX_INSTITUTION_RECIPIENTS}
+                searchPlaceholder="Rechercher un établissement, une circonscription…"
+              />
+            )}
+            {showQuick && mode === "person" && (
               <fieldset>
                 <legend className="text-sm font-semibold">Messages rapides</legend>
                 <p className="text-xs text-muted">Un appui remplit le sujet et le message.</p>
@@ -82,7 +141,7 @@ export function NewConversation({ contacts, showQuick }: { contacts: Contact[]; 
                 Annuler
               </Button>
               <SubmitButton pendingLabel="Envoi…">
-                <SendHorizonal aria-hidden /> Envoyer
+                <SendHorizonal aria-hidden /> {mode === "institution" && picked.length > 1 ? `Envoyer à ${picked.length} destinataires` : "Envoyer"}
               </SubmitButton>
             </div>
           </ActionForm>

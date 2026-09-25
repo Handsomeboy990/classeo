@@ -3,7 +3,7 @@ import "server-only";
 import type { CurrentUser } from "@/lib/auth/session";
 import { db } from "@/lib/db";
 
-import { userScopeWhere } from "../users/queries";
+import { NOT_MAILBOX_ROLE, userScopeWhere } from "../users/queries";
 
 type User = NonNullable<CurrentUser>;
 
@@ -36,6 +36,7 @@ async function lastChanges(roleIds: string[]) {
 export async function listRolesWithCounts(user: User) {
   const [roles, counts, totals] = await Promise.all([
     db.role.findMany({
+      where: NOT_MAILBOX_ROLE,
       select: { id: true, code: true, name: true, description: true, scopeLevel: true, isSystem: true, updatedAt: true, permissions: { select: { permission: { select: { code: true } } } } },
       orderBy: [{ isSystem: "desc" }, { createdAt: "asc" }],
       take: 500,

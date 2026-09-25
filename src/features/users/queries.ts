@@ -4,6 +4,7 @@ import type { Prisma } from "@/generated/prisma/client";
 import { schoolWhere } from "@/lib/auth/scope";
 import type { CurrentUser } from "@/lib/auth/session";
 import { db } from "@/lib/db";
+import { MAILBOX_ROLE_CODE } from "@/lib/domain/institutions";
 import { canAssignRole, type ScopeLevel } from "@/lib/domain/rights";
 import { param, type SearchParams } from "@/lib/list";
 
@@ -11,7 +12,7 @@ type User = NonNullable<CurrentUser>;
 
 // Accounts a user may see: those attached to an entity inside their
 // territory. Parents and students (no entity) are only visible nationally.
-export function userScopeWhere(user: User): Prisma.UserWhereInput {
+function territoryWhere(user: User): Prisma.UserWhereInput {
   const s = user.scope;
   switch (s.level) {
     case "NATIONAL":
@@ -27,6 +28,15 @@ export function userScopeWhere(user: User): Prisma.UserWhereInput {
     case "SELF":
       return { id: "__none__" };
   }
+}
+
+// Messaging mailbox accounts (lib/domain/institutions.ts) are not people:
+// they never appear in account administration.
+const NOT_MAILBOX: Prisma.UserWhereInput = { role: { code: { not: MAILBOX_ROLE_CODE } } };
+export const NOT_MAILBOX_ROLE: Prisma.RoleWhereInput = { code: { not: MAILBOX_ROLE_CODE } };
+
+export function userScopeWhere(user: User): Prisma.UserWhereInput {
+  return { AND: [territoryWhere(user), NOT_MAILBOX] };
 }
 
 export type UserFilters = { q: string; roleId: string | null; status: "active" | "inactive" | null };
@@ -107,7 +117,7 @@ export function actorOf(user: User) {
 // role (parents and students are created with their student record).
 export async function assignableRoles(user: User) {
   const roles = await db.role.findMany({
-    where: { scopeLevel: { not: "SELF" } },
+    where: { scopeLevel: { not: "SELF" }, ...NOT_MAILBOX_ROLE },
     select: { id: true, code: true, name: true, scopeLevel: true, permissions: { select: { permission: { select: { code: true } } } } },
     orderBy: { name: "asc" },
   });
@@ -117,7 +127,7 @@ export async function assignableRoles(user: User) {
 }
 
 export function roleFilterOptions() {
-  return db.role.findMany({ select: { id: true, name: true }, orderBy: { name: "asc" } });
+  return db.role.findMany({ where: NOT_MAILBOX_ROLE, select: { id: true, name: true }, orderBy: { name: "asc" } });
 }
 
 // Entities of the user's territory, for the scope select of the create form.

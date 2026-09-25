@@ -4,7 +4,7 @@ import { CircleAlert, Search } from "lucide-react";
 import { useId, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import { Checkbox, Input } from "@/components/ui/input";
+import { Checkbox, Input, Radio } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
 import { useFormState } from "./action-form";
@@ -18,8 +18,9 @@ const fold = (s: string) =>
     .toLowerCase();
 
 // A searchable list of checkboxes, grouped, for choosing several recipients.
-// The choice is submitted as hidden `${name}[]` inputs, so what is ticked
-// survives a search that hides it and a refused submission.
+// The choice is submitted as hidden `${name}[]` inputs (`${name}` for a single
+// choice), so what is ticked survives a search that hides it and a refused
+// submission.
 export function MultiPicker({
   name,
   legend,
@@ -54,6 +55,7 @@ export function MultiPicker({
   const chosen = new Set(selected);
   const full = !!max && selected.length >= max;
   const labelOf = new Map(options.map((o) => [o.value, o.label]));
+  const Choice = single ? Radio : Checkbox;
 
   function toggle(value: string, on: boolean) {
     if (single) return onChange(on ? [value] : []);
@@ -69,7 +71,7 @@ export function MultiPicker({
         </p>
       )}
       {selected.map((v) => (
-        <input key={v} type="hidden" name={`${name}[]`} value={v} />
+        <input key={v} type="hidden" name={single ? name : `${name}[]`} value={v} />
       ))}
       <div className="mt-2 flex flex-col gap-2">
         <label htmlFor={`${id}-q`} className="sr-only">
@@ -134,8 +136,9 @@ export function MultiPicker({
                   .map((o) => {
                     const on = chosen.has(o.value);
                     return (
-                      <Checkbox
+                      <Choice
                         key={o.value}
+                        name={single ? `${id}-choice` : undefined}
                         checked={on}
                         disabled={!on && full && !single}
                         onChange={(e) => toggle(o.value, e.target.checked)}
