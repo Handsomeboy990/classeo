@@ -5,7 +5,7 @@ import { EmptyState } from "@/components/kit/states";
 import { SectionTitle, SpokenSummary } from "@/features/family/components/blocks";
 import { AttendanceFigures, AttendanceHistory } from "@/features/family/components/sections";
 import { countWord, presenceRate, summariseAttendance } from "@/features/family/logic";
-import { attendanceOf, requireStudentFile } from "@/features/family/queries";
+import { attendanceOf, requireStudentSection } from "@/features/family/queries";
 import { formatPercent } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Présences" };
@@ -14,7 +14,7 @@ const dayFmt = new Intl.DateTimeFormat("fr-FR", { weekday: "long", day: "numeric
 
 export default async function AttendancePage({ params }: PageProps<"/espace/suivi/[studentId]/presences">) {
   const { studentId } = await params;
-  const { enrollment } = await requireStudentFile(studentId);
+  const { enrollment } = await requireStudentSection(studentId, "presences");
   const records = await attendanceOf(enrollment);
 
   if (!records.length) {
