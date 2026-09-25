@@ -115,7 +115,9 @@ test("a department imposes an exam on every school of a commune", async ({ pageA
   await page.getByLabel("Premier jour des épreuves").fill(frIn(30));
   await page.getByLabel("Dernier jour des épreuves").fill(frIn(31));
   await page.getByRole("radio", { name: "Tous les établissements d'une commune" }).check();
-  await page.getByRole("combobox", { name: "Commune" }).selectOption({ label: "Abomey-Calavi" });
+  // A long list: the searchable field, type to filter then pick.
+  await page.getByRole("combobox", { name: "Commune" }).fill("Abomey");
+  await page.getByRole("option", { name: "Abomey-Calavi", exact: true }).click();
   await expect(page.getByText(/établissements? concernés? pour cette classe/)).toBeVisible();
   await shot(page, "06-create-imposed");
   await page.getByRole("button", { name: "Décider l'examen blanc" }).click();
