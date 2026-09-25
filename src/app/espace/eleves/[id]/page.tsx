@@ -21,6 +21,7 @@ import { formatRank } from "@/lib/domain/report-card";
 import { param } from "@/lib/list";
 import { PdfDownloadLink } from "@/lib/pdf/download-link";
 import { formatAverage, formatDate, formatNumber, formatPercent } from "@/lib/utils";
+import { plural } from "@/features/classes/text";
 
 export const metadata: Metadata = { title: "Élève" };
 
@@ -90,7 +91,7 @@ export default async function StudentPage(props: PageProps<"/espace/eleves/[id]"
               <StatCard
                 label="Absences"
                 value={formatNumber(attendanceCounts.ABSENT ?? 0)}
-                hint={`${attendanceCounts.LATE ?? 0} retard(s), ${attendanceCounts.EXCUSED ?? 0} excusée(s), en demi-journées`}
+                hint={`${plural(attendanceCounts.LATE ?? 0, "retard", "retards")}, ${plural(attendanceCounts.EXCUSED ?? 0, "excusée", "excusées")}, en demi-journées`}
                 icon={UserX}
                 tone="danger"
               />
@@ -225,7 +226,7 @@ export default async function StudentPage(props: PageProps<"/espace/eleves/[id]"
               <CardTitle>Absences et retards récents</CardTitle>
             </CardHeader>
             {attendance.length === 0 ? (
-              <EmptyState title="Aucune absence ni retard" description="Toujours présent depuis la rentrée." />
+              <EmptyState title="Aucune absence ni aucun retard depuis la rentrée" />
             ) : (
               <Table>
                 <caption className="sr-only">Absences et retards récents</caption>

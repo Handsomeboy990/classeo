@@ -50,7 +50,7 @@ export default async function AttendancePage(props: PageProps<"/espace/presences
     <>
       <PageHeader
         title="Présences"
-        description={`Appel de la ${reg.classroom.name}, ${formatDate(date)}, ${halfLabel}.`}
+        description={`Appel de la ${reg.classroom.name}, ${formatDate(date)}, ${halfLabel}`}
         actions={
           <>
             {can(user, "attendance:export") && (

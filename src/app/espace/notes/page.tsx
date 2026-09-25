@@ -102,7 +102,7 @@ export default async function NotesPage(props: PageProps<"/espace/notes">) {
     <>
       <PageHeader
         title="Notes"
-        description={`Fiches de notes, ${period.name} ${year.label}${user.teacherId && !classroomId ? " · vos matières" : ""}.`}
+        description={`${period.name}, ${year.label}${user.teacherId && !classroomId ? " · vos matières" : ""}`}
         actions={
           <>
             {can(user, "grade:export") && classroomId && (

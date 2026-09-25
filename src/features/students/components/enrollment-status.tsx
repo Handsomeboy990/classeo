@@ -39,7 +39,7 @@ export function EnrollmentStatusActions({ enrollmentId, status, name, className 
       {status === "ACTIVE" ? (
         <>
           <Button variant="secondary" onClick={() => setTarget("TRANSFERRED")}>
-            <UserMinus aria-hidden /> Transfert
+            <UserMinus aria-hidden /> Transférer
           </Button>
           <Button variant="danger" onClick={() => setTarget("WITHDRAWN")}>
             <UserX aria-hidden /> Retirer

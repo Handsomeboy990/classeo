@@ -48,7 +48,7 @@ export default async function ReportCardsPage(props: PageProps<"/espace/bulletin
   if (!preview) {
     return (
       <>
-        <PageHeader title="Bulletins" description={`${period.name} ${year.label} · calcul, aperçu et publication des bulletins aux familles.`} />
+        <PageHeader title="Bulletins" description={`${period.name}, ${year.label}`} />
         {filters}
         <Card>
           <CardHeader>
@@ -115,7 +115,7 @@ export default async function ReportCardsPage(props: PageProps<"/espace/bulletin
     <>
       <PageHeader
         title={`Bulletins · ${classroom.name}`}
-        description={`${period.name} ${year.label} · aperçu calculé à partir des notes saisies.`}
+        description={`${period.name}, ${year.label} · calculé à partir des notes saisies`}
         actions={
           <>
             {can(user, "report_card:export") && (
@@ -142,7 +142,11 @@ export default async function ReportCardsPage(props: PageProps<"/espace/bulletin
                 title={`Publier les bulletins de la ${classroom.name} ?`}
                 description={`${cards.length} bulletins seront publiés pour le ${period.name}. Les parents et les élèves recevront une notification.${
                   publishedCount ? " Les bulletins déjà publiés seront remplacés par cette nouvelle version." : ""
-                }${unlockedSheets.length ? ` Attention : ${unlockedSheets.length} fiche(s) de notes ne sont pas verrouillées.` : ""}`}
+                }${
+                  unlockedSheets.length
+                    ? ` Attention : ${unlockedSheets.length > 1 ? `${unlockedSheets.length} fiches de notes ne sont pas verrouillées` : "une fiche de notes n'est pas verrouillée"}.`
+                    : ""
+                }`}
                 confirmLabel="Publier"
               >
                 <Send aria-hidden /> {publishedCount ? "Republier" : "Publier les bulletins"}

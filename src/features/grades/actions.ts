@@ -104,7 +104,12 @@ export const updateSheet = createAction({
         ],
       },
     });
-    if (beyond) throw new DomainError(`${beyond} note(s) déjà saisie(s) seraient masquées : effacez-les avant de réduire le nombre d'évaluations.`);
+    if (beyond)
+      throw new DomainError(
+        beyond > 1
+          ? `${beyond} notes déjà saisies seraient masquées : effacez-les avant de réduire le nombre d'évaluations.`
+          : "Une note déjà saisie serait masquée : effacez-la avant de réduire le nombre d'évaluations.",
+      );
     await db.gradeSheet.update({
       where: { id: sheet.id },
       data: { formula: input.formula, interrogationCount: input.interrogationCount, devoirCount: input.devoirCount, compositionCount: input.compositionCount },

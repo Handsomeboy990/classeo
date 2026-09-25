@@ -119,7 +119,7 @@ export async function TeacherDashboard({ user }: { user: NonNullable<CurrentUser
                         <span className="text-xs font-semibold tabular-nums">{formatPercent(progress)}</span>
                       </div>
                     ) : (
-                      <p className="text-xs text-muted">Pas encore de fiche pour ce trimestre</p>
+                      <p className="text-xs text-muted">Pas encore de fiche pour cette période</p>
                     )}
                   </div>
                   {sheet?.isLocked ? (
@@ -152,7 +152,7 @@ export async function TeacherDashboard({ user }: { user: NonNullable<CurrentUser
               <CardTitle>Appel du jour</CardTitle>
             </CardHeader>
             {isWeekend(today) ? (
-              <EmptyState title="Pas de cours aujourd'hui" description="Bon week-end." />
+              <EmptyState title="Pas d'appel le week-end" />
             ) : (
               <ul className="divide-y divide-border">
                 {registerClasses.map((c) => (

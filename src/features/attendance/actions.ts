@@ -12,6 +12,7 @@ import { ATTENDANCE_LABELS, isIsoDate, isoToDate, newAbsences, todayIso } from "
 import { db } from "@/lib/db";
 import { DomainError } from "@/lib/errors";
 import { notify } from "@/lib/notify";
+import { plural } from "@/features/classes/text";
 
 const status = z.enum(["PRESENT", "ABSENT", "LATE", "EXCUSED"]);
 const reason = z
@@ -104,8 +105,8 @@ export const saveAttendance = createAction({
     });
     invalidate(tags.stats);
     const absent = counts.ABSENT ?? 0;
-    return `Appel enregistré pour la ${classroom.name} : ${input.records.length - absent} présent(s) ou excusé(s), ${absent} absent(s).${
-      fresh.length ? ` ${fresh.length} famille(s) prévenue(s).` : ""
+    return `Appel enregistré pour la ${classroom.name} : ${plural(input.records.length - absent, "présent ou excusé", "présents ou excusés")}, ${plural(absent, "absent", "absents")}.${
+      fresh.length ? ` ${plural(fresh.length, "famille prévenue", "familles prévenues")}.` : ""
     }`;
   },
 });
@@ -143,6 +144,6 @@ export const saveTeacherAttendance = createAction({
       schoolId: teachers[0]?.schoolId,
     });
     invalidate(tags.stats);
-    return `Présence des enseignants enregistrée : ${absent} absent(s).`;
+    return `Présence des enseignants enregistrée : ${plural(absent, "absent", "absents")}.`;
   },
 });
