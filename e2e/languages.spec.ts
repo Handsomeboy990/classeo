@@ -15,8 +15,13 @@ test("a parent switches the family dashboard to Fongbe and back to French @mobil
   const select = page.getByLabel("Langue", { exact: true });
   await expect(select).toHaveValue("fr");
 
-  await select.selectOption("fon");
-  await expect(page.getByRole("status").filter({ hasText: /Page traduite en fongbe/ })).toBeVisible();
+  // A choice made before hydration is reset to the controlled value: pick
+  // again until the switcher answers.
+  const translated = page.getByRole("status").filter({ hasText: /Page traduite en fongbe/ });
+  await expect(async () => {
+    await select.selectOption("fon");
+    await expect(translated).toBeVisible({ timeout: 3_000 });
+  }).toPass({ timeout: 20_000 });
   await expect(page.locator("#page-content")).toHaveAttribute("lang", "fon");
   // Names are never translated.
   await expect(heading).toContainText("Afiavi");
