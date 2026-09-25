@@ -12,7 +12,7 @@ import { activateYear, createExtension, endExtension, saveYear, setYearClosed } 
 import { ExtensionFields } from "@/features/calendar/components/extension-fields";
 import { YearFields, type YearFormValues } from "@/features/calendar/components/year-fields";
 import { extensionSchoolOptions, listYears, schoolYearAccess } from "@/features/calendar/queries";
-import { defaultTerms, isoToUtc, toIso, YEAR_STATUS_LABELS, YEAR_STATUS_TONES } from "@/features/calendar/rules";
+import { isoToUtc, toIso, YEAR_STATUS_LABELS, YEAR_STATUS_TONES } from "@/features/calendar/rules";
 import { can, requirePermission } from "@/lib/auth/authorize";
 import { formatDate, formatNumber } from "@/lib/utils";
 
@@ -39,7 +39,12 @@ function nextYearValues(latest: Year | undefined): YearFormValues {
     label: `${first}-${first + 1}`,
     startDate: toIso(start),
     endDate: toIso(end),
-    periods: defaultTerms(start, end).map((p) => ({ name: p.name, startDate: toIso(p.startDate), endDate: toIso(p.endDate) })),
+    // Three terms separated by the Christmas and Easter holidays, as usual.
+    periods: [
+      { name: "Trimestre 1", startDate: toIso(start), endDate: `${first}-12-18` },
+      { name: "Trimestre 2", startDate: `${first + 1}-01-04`, endDate: `${first + 1}-03-26` },
+      { name: "Trimestre 3", startDate: `${first + 1}-04-12`, endDate: toIso(end) },
+    ],
   };
 }
 
