@@ -38,6 +38,17 @@ export type ScopeStatistics = {
 
 type Years = { current: { id: string; label: string } | null; previous: { id: string; label: string } | null };
 
+// The year shown and the year its results come from. By default the active
+// year, with the results of the year before (the current one has none yet).
+// A past year chosen from the year selector is read with its own results.
+export async function yearsFor(yearId: string | null | undefined): Promise<Years> {
+  if (!yearId) return loadYears();
+  const chosen = await db.academicYear.findUnique({ where: { id: yearId }, select: { id: true, label: true, isActive: true } });
+  if (!chosen) return loadYears();
+  if (chosen.isActive) return loadYears();
+  return { current: { id: chosen.id, label: chosen.label }, previous: { id: chosen.id, label: chosen.label } };
+}
+
 export async function loadYears(): Promise<Years> {
   const current = await db.academicYear.findFirst({ where: { isActive: true }, select: { id: true, label: true, startDate: true } });
   const previous = await db.academicYear.findFirst({
@@ -235,8 +246,8 @@ function groupSchools(rows: SchoolCountsRow[], key: (r: SchoolCountsRow) => stri
   return names.map((n) => ({ id: n.id, name: n.name, indicators: computeIndicators(sumCounts(byKey.get(n.id) ?? [])) }));
 }
 
-async function computeStatistics(scope: StatScope): Promise<ScopeStatistics> {
-  const years = await loadYears();
+async function computeStatistics(scope: StatScope, yearId: string | null): Promise<ScopeStatistics> {
+  const years = await yearsFor(yearId);
   const schools = await schoolCounts(scope, years);
   const total = computeIndicators(sumCounts(schools.map(countsOfSchool)));
   const base = { scope, yearLabel: years.current?.label ?? null, previousYearLabel: years.previous?.label ?? null, total, computedAt: new Date().toISOString() };
@@ -274,15 +285,16 @@ async function computeStatistics(scope: StatScope): Promise<ScopeStatistics> {
 // Cached per territorial scope and shared by every user of that scope. The
 // key is the scope, never the user. Invalidated through tags.stats by every
 // action that changes an input (schools, requests, enrollments, attendance).
-const cachedStatistics = cached((_key: string, scope: StatScope) => computeStatistics(scope), ["statistics", "v1"], {
+const cachedStatistics = cached((_key: string, scope: StatScope, yearId: string | null) => computeStatistics(scope, yearId), ["statistics", "v2"], {
   tags: [tags.stats],
   revalidate: 600,
 });
 
 // The caller must have checked that the scope is inside the user's territory
 // (see territory/scope.ts).
-export function getStatistics(scope: StatScope) {
-  return cachedStatistics(statScopeKey(scope), scope);
+// yearId: a year from the year selector; omitted, the active year.
+export function getStatistics(scope: StatScope, yearId: string | null = null) {
+  return cachedStatistics(statScopeKey(scope), scope, yearId);
 }
 
 export const CHILD_LABELS: Record<ChildLevel, { singular: string; plural: string }> = {
