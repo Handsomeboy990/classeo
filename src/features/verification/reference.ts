@@ -88,6 +88,7 @@ export const REVOKE_PERMISSION: Record<DocumentKind, PermissionCode> = {
   fiche_appel: "attendance:update",
   emploi_du_temps: "timetable:update",
   statistiques: "statistics:export",
+  examen_blanc: "mock_exam:create",
 };
 
 // "Afiavi Sènami Hounkpatin" gives "A. S. H.": enough to match the paper in
