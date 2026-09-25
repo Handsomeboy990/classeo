@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Atkinson_Hyperlegible_Next, Bricolage_Grotesque } from "next/font/google";
 
 import { Toaster } from "@/components/kit/toaster";
+import { AccessibilityFab } from "@/components/shell/accessibility-fab";
 import { OfflineBanner } from "@/features/pwa/offline-banner";
 import { ServiceWorkerRegistration } from "@/features/pwa/service-worker";
 
@@ -53,6 +54,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         </a>
         <OfflineBanner />
         {children}
+        <AccessibilityFab />
         <Toaster />
         <ServiceWorkerRegistration />
       </body>
