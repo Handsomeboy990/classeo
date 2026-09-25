@@ -23,6 +23,10 @@ export async function GET(_request: Request, ctx: RouteContext<"/espace/transfer
         summary: `certificat de scolarité (exeat) de ${s.lastName} ${s.firstName}, vers ${data.destination.name}`,
         resourceId: transferId,
         schoolId,
+        // Registered like every document: reference, QR code, public check.
+        kind: "certificat" as const,
+        title: `Certificat de scolarité (exeat) de ${s.lastName} ${s.firstName}`,
+        subjectId: transferId,
       };
     },
   });
