@@ -83,10 +83,10 @@ export function summarizeClass(averages: (number | null)[]): ClassSummary {
   };
 }
 
-// "1er", "2e": French ordinal for ranks, "ex" for a tie.
+// "1er", "2e": French ordinal for ranks, "ex æquo" for a tie.
 export function formatRank(rank: number | null, tied = false): string {
   if (rank === null) return "–";
-  return `${rank}${rank === 1 ? "er" : "e"}${tied ? " ex" : ""}`;
+  return `${rank}${rank === 1 ? "er" : "e"}${tied ? " ex æquo" : ""}`;
 }
 
 // A short text summary for the voice reader: average, mention, rank, then

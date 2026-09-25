@@ -85,7 +85,7 @@ describe("summarizeClass", () => {
 describe("formatRank", () => {
   it("writes French ordinals", () => {
     expect(formatRank(1)).toBe("1er");
-    expect(formatRank(3, true)).toBe("3e ex");
+    expect(formatRank(3, true)).toBe("3e ex æquo");
     expect(formatRank(null)).toBe("–");
   });
 });
