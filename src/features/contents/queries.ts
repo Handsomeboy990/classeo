@@ -4,7 +4,7 @@ import { cache } from "react";
 
 import type { Prisma } from "@/generated/prisma/client";
 import { can, ForbiddenError } from "@/lib/auth/authorize";
-import { classroomWhere } from "@/lib/auth/scope";
+import { classroomWhere, isTeacherRole } from "@/lib/auth/scope";
 import type { CurrentUser } from "@/lib/auth/session";
 import { db } from "@/lib/db";
 import {
@@ -48,9 +48,9 @@ const familyPositions = cache(async (user: User): Promise<Position[]> => {
   return rows.map((r) => ({ classroomId: r.classroomId, schoolId: r.schoolId, communeId: r.school.communeId, departmentId: r.school.commune.departmentId }));
 });
 
-function isTeacher(user: User) {
-  return user.role.code === "TEACHER" && !!user.teacherId;
-}
+// Role based, like the scope filters: an unlinked teacher account manages
+// no class rather than the whole school.
+const isTeacher = isTeacherRole;
 
 async function profile(user: User) {
   return {
