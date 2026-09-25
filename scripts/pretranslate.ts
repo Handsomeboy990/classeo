@@ -95,7 +95,9 @@ export function collect() {
     for (const m of src.matchAll(/[>}]([^<>{}]+)[<{]/g)) candidates.push(m[1]!);
     for (const m of src.matchAll(/"((?:[^"\\\n]|\\.)*)"/g)) candidates.push(m[1]!);
     for (const m of src.matchAll(/'((?:[^'\\\n]|\\.)*)'/g)) candidates.push(m[1]!);
-    for (const m of src.matchAll(/`([^`$]*)`/g)) candidates.push(m[1]!);
+    // Template literals: the static parts around the values, "Bonjour, "
+    // in `Bonjour, ${name}`.
+    for (const m of src.matchAll(/`([^`]*)`/g)) candidates.push(...m[1]!.split(/\$\{[^}]*\}/));
     for (const c of candidates) {
       const s = normalise(decode(c.replace(/\\'/g, "'").replace(/\\"/g, '"')));
       if (looksLikeText(s)) found.add(s);
