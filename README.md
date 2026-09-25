@@ -43,6 +43,36 @@ npm run db:seed               # demo data (about a minute)
 npm run dev
 ```
 
+### E-mail
+
+Classéo sends four e-mails: account created (with the temporary password),
+password reset code, password changed confirmation, and important
+notifications (absence, report card, request, message). Without `SMTP_HOST`
+nothing is sent: each e-mail is summarised in the server log (masked
+recipient, subject, never the content) and the app works normally, the
+temporary passwords still being shown on screen.
+
+For development, catch every e-mail locally with Mailpit:
+
+```bash
+docker compose up -d mailpit  # SMTP on 1025, web UI on http://localhost:8025
+```
+
+then in `.env`:
+
+```bash
+SMTP_HOST=localhost
+SMTP_PORT=1025
+```
+
+Open http://localhost:8025 to read the messages. Other ports:
+`MAILPIT_SMTP_PORT=2025 MAILPIT_UI_PORT=9025 docker compose up -d mailpit`.
+The one command Docker stack (`--profile app`) already sends to Mailpit.
+
+In production, set `APP_URL` (links in e-mails), `SMTP_HOST`, `SMTP_PORT`,
+`SMTP_USER`, `SMTP_PASSWORD`, `SMTP_SECURE` (`true` for port 465) and
+`MAIL_FROM` to your provider's SMTP relay. See `.env.example`.
+
 ## Demo accounts
 
 Every account uses the password `Classeo2026`. The sign in page lists them and
