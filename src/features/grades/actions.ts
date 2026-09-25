@@ -11,6 +11,7 @@ import type { CurrentUser } from "@/lib/auth/session";
 import { invalidate, tags } from "@/lib/cache";
 import { db } from "@/lib/db";
 import { DomainError } from "@/lib/errors";
+import { plural } from "@/lib/utils";
 
 import { sheetWriteWhere } from "./queries";
 
@@ -185,7 +186,7 @@ export const saveGrades = createAction({
       action: "update",
       resource: "grade",
       resourceId: sheet.id,
-      summary: `Saisie de notes ${sheetLabel(sheet)} : ${written.length} enregistrée(s), ${cleared.length} effacée(s)`,
+      summary: `Saisie de notes ${sheetLabel(sheet)} : ${plural(written.length, "note enregistrée", "notes enregistrées")}, ${plural(cleared.length, "note effacée", "notes effacées")}`,
       schoolId: sheet.assignment.classroom.schoolId,
     });
     invalidate(tags.stats);
@@ -230,7 +231,7 @@ export const setClassLock = createAction({
       action: "lock",
       resource: "grade",
       resourceId: classroom.id,
-      summary: `${input.lock ? "Verrouillage" : "Déverrouillage"} de ${count} fiche(s) de la ${classroom.name}`,
+      summary: `${input.lock ? "Verrouillage" : "Déverrouillage"} de ${plural(count, "fiche")} de la ${classroom.name}`,
       schoolId: classroom.schoolId,
     });
     if (!count) return input.lock ? "Toutes les fiches de la classe étaient déjà verrouillées." : "Aucune fiche verrouillée dans cette classe.";

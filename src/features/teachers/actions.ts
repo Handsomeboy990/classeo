@@ -53,7 +53,7 @@ export const createTeacher = createAction({
       }
     }
     if (!teacherId) throw new DomainError("Le matricule n'a pas pu être attribué. Réessayez.");
-    await audit(user, { action: "create", resource: "teacher", resourceId: teacherId, summary: `Ajout de l'enseignant ${input.firstName} ${input.lastName}`, schoolId: school.id });
+    await audit(user, { action: "create", resource: "teacher", resourceId: teacherId, summary: `Ajout de ${input.gender === "F" ? "l'enseignante" : "l'enseignant"} ${input.firstName} ${input.lastName}`, schoolId: school.id });
     invalidate(tags.stats);
     redirect(`/espace/enseignants/${teacherId}`);
   },
@@ -71,7 +71,7 @@ export const updateTeacher = createAction({
       action: "update",
       resource: "teacher",
       resourceId: teacher.id,
-      summary: `Modification de l'enseignant ${input.firstName} ${input.lastName}${teacher.isActive !== input.isActive ? (input.isActive ? ", réactivé" : ", désactivé") : ""}`,
+      summary: `Modification de ${input.gender === "F" ? "l'enseignante" : "l'enseignant"} ${input.firstName} ${input.lastName}${teacher.isActive !== input.isActive ? `, ${input.isActive ? "réactivé" : "désactivé"}${input.gender === "F" ? "e" : ""}` : ""}`,
       schoolId: teacher.schoolId,
     });
     if (teacher.isActive !== input.isActive) invalidate(tags.stats);

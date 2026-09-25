@@ -13,6 +13,7 @@ import { db } from "@/lib/db";
 import { mailEnabled, platformUrl, sendMail } from "@/lib/mail";
 import { passwordChangedEmail, resetCodeEmail } from "@/lib/mail/templates";
 import { hitRateLimit, resetRateLimit } from "@/lib/rate-limit";
+import { de } from "@/lib/utils";
 
 import {
   generateResetCode,
@@ -74,7 +75,7 @@ async function issueCode(userId: string) {
       resource: "user",
       resourceId: user.id,
       schoolId: user.schoolId,
-      summary: `Demande de réinitialisation du mot de passe de ${user.email}`,
+      summary: `Demande de réinitialisation du mot de passe ${de(user.email)}`,
       metadata: { tokenId: token.id, mail: status },
     });
   } catch (error) {
@@ -176,7 +177,7 @@ export async function resetPasswordWithCode(_prev: ActionState, formData: FormDa
     resource: "user",
     resourceId: user.id,
     schoolId: user.schoolId,
-    summary: `Réinitialisation du mot de passe de ${user.email} par code e-mail, sessions fermées`,
+    summary: `Réinitialisation du mot de passe ${de(user.email)} par code e-mail, sessions fermées`,
   });
   after(() =>
     sendMail({

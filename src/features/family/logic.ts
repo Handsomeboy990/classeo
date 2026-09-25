@@ -3,7 +3,7 @@
 // unit tested in logic.test.ts.
 
 import { mention } from "@/lib/domain/grades";
-import { formatAverage } from "@/lib/utils";
+import { de, formatAverage } from "@/lib/utils";
 
 // Benin is on West Africa Time, UTC+1 all year, no daylight saving.
 const BENIN_OFFSET_MS = 60 * 60 * 1000;
@@ -118,7 +118,7 @@ export function spokenSummary(input: SummaryInput): string {
 }
 
 export function reportSentence(r: { firstName: string; periodLabel: string; average: number | null; rank: number | null; classSize: number; appreciation: string | null }) {
-  const parts = [`Bulletin de ${r.firstName}, ${r.periodLabel}. Moyenne générale : ${averageWords(r.average)}.`];
+  const parts = [`Bulletin ${de(r.firstName)}, ${r.periodLabel}. Moyenne générale : ${averageWords(r.average)}.`];
   if (r.rank) parts.push(`Rang : ${rankLabel(r.rank, r.classSize)}.`);
   if (r.appreciation) parts.push(`Appréciation : ${r.appreciation}`);
   return parts.join(" ");

@@ -13,6 +13,7 @@ import { db } from "@/lib/db";
 import { platformUrl, sendMail } from "@/lib/mail";
 import { passwordChangedEmail } from "@/lib/mail/templates";
 import { hitRateLimit, resetRateLimit } from "@/lib/rate-limit";
+import { de } from "@/lib/utils";
 
 const MAX_FAILED = 5;
 const LOCK_MS = 15 * 60 * 1000;
@@ -77,7 +78,7 @@ export async function login(_prev: ActionState, formData: FormData): Promise<Act
   await db.user.update({ where: { id: user.id }, data: { failedLoginCount: 0, lockedUntil: null, lastLoginAt: new Date() } });
   await resetRateLimit(`login:email:${email}`);
   await createSession(user.id);
-  await audit(null, { action: "login", resource: "user", resourceId: user.id, summary: `Connexion de ${user.firstName} ${user.lastName}`, schoolId: user.schoolId });
+  await audit(null, { action: "login", resource: "user", resourceId: user.id, summary: `Connexion ${de(`${user.firstName} ${user.lastName}`)}`, schoolId: user.schoolId });
 
   redirect(user.mustChangePassword ? "/changer-mot-de-passe" : safeNext(next));
 }
