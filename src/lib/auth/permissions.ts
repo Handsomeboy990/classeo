@@ -34,6 +34,7 @@ export const RESOURCES = {
   user: "Comptes utilisateurs",
   role: "Rôles et droits",
   audit: "Journal d'activité",
+  translation: "Traduction en langues locales",
 } as const;
 export type Resource = keyof typeof RESOURCES;
 
@@ -72,6 +73,9 @@ const APPLICABLE: Record<Resource, Action[]> = {
   user: ["view", "create", "update", "delete", "export"],
   role: ["view", "update"],
   audit: ["view", "export"],
+  // Interface and content in Fon, Yoruba, Bariba... Parents by default; the
+  // ministry extends it to other profiles from the rights matrix.
+  translation: ["view"],
 };
 
 export const PERMISSIONS: { code: PermissionCode; resource: Resource; action: Action; description: string }[] =
@@ -263,6 +267,7 @@ export const DEFAULT_ROLES: {
     description: "Suit la scolarité de ses enfants et échange avec l'école.",
     scopeLevel: "SELF",
     permissions: [
+      ...only("translation", "view"),
       ...only("student", "view"),
       ...only("grade", "view"),
       ...only("report_card", "view"),
