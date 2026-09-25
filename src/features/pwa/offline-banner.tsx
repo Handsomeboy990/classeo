@@ -12,8 +12,8 @@ function subscribe(onChange: () => void) {
   };
 }
 
-// Visible and announced when the connection drops: the platform keeps
-// working read only, changes wait for the network.
+// Visible and announced when the connection drops: the kept pages stay
+// readable, grades, registers and messages are queued (src/features/offline).
 export function OfflineBanner() {
   const offline = useSyncExternalStore(
     subscribe,
@@ -26,7 +26,7 @@ export function OfflineBanner() {
         <p className="flex items-start justify-center gap-2 bg-sidebar px-4 py-2.5 text-center text-sm font-semibold text-sidebar-text sm:items-center">
           <WifiOff className="mt-0.5 size-4 shrink-0 text-accent sm:mt-0" aria-hidden />
           <span>
-            Vous êtes hors ligne. Classéo reste consultable en lecture : les pages déjà ouvertes sont disponibles, les modifications attendront le retour du réseau.
+            Vous êtes hors ligne. Les pages gardées sur cet appareil restent consultables. Les notes, les appels et les messages saisis sont gardés et envoyés au retour du réseau.
           </span>
         </p>
       )}

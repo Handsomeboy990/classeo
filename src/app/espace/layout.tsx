@@ -9,6 +9,8 @@ import { SidebarNav, type RenderedItem, type RenderedSection } from "@/component
 import { SignOutButton } from "@/components/shell/sign-out-button";
 import { TabBar } from "@/components/shell/tab-bar";
 import { Avatar } from "@/components/ui/avatar";
+import { OfflineSession } from "@/features/offline/offline-session";
+import { offlinePages } from "@/features/offline/pages";
 import { InstallCard } from "@/features/pwa/install-ui";
 import { requireUser } from "@/lib/auth/session";
 import { pushPublicKey } from "@/lib/channels/push";
@@ -24,7 +26,7 @@ export default async function SpaceLayout({ children }: LayoutProps<"/espace">) 
   const user = await requireUser();
   if (user.mustChangePassword) redirect("/changer-mot-de-passe");
 
-  const unread = await db.notification.count({ where: { userId: user.id, readAt: null } });
+  const [unread, pages] = await Promise.all([db.notification.count({ where: { userId: user.id, readAt: null } }), offlinePages(user)]);
   const visible = visibleNavigation(user);
   const sections: RenderedSection[] = visible.map((s) => ({ title: s.title, items: s.items.map(render) }));
   const tabs = mobileTabs(visible, tabAudience(user)).map(render);
@@ -85,6 +87,7 @@ export default async function SpaceLayout({ children }: LayoutProps<"/espace">) 
               </div>
             </div>
           </div>
+          <OfflineSession userId={user.id} pages={pages} />
         </header>
 
         <InstallCard />

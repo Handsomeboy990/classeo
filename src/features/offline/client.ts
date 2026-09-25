@@ -177,3 +177,50 @@ async function replayAll() {
   }
   if (askedToSignIn) toast("error", "Reconnectez-vous pour envoyer les saisies en attente. Elles restent gardées sur cet appareil.");
 }
+
+// ---------------------------------------------------------------------------
+// Pages kept for offline use (downloaded by the service worker).
+// ---------------------------------------------------------------------------
+
+export type OfflinePage = { url: string; title: string | null; at: number };
+export type OfflineState = {
+  userId: string;
+  updatedAt: number;
+  pages: OfflinePage[];
+  running?: boolean;
+  complete?: boolean;
+  saveData?: boolean;
+  stopped?: "budget" | "network" | "session" | null;
+};
+
+let pagesRequest: { userId: string; urls: string[] } | null = null;
+
+function saveDataOn() {
+  return (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData === true;
+}
+
+// Asks the service worker to download the key pages of the account. It
+// skips the work when they are recent, unless forced from the preferences.
+export async function requestOfflinePages(request?: { userId: string; urls: string[] }, force = false) {
+  if (request) pagesRequest = request;
+  if (!pagesRequest || !("serviceWorker" in navigator)) return false;
+  // Resolves once the worker is active (never in development, where it is
+  // not registered).
+  const worker = (await navigator.serviceWorker.ready).active;
+  if (!worker) return false;
+  worker.postMessage({ type: "precache", userId: pagesRequest.userId, urls: pagesRequest.urls, force, saveData: saveDataOn() });
+  return true;
+}
+
+export function isDataSaverOn() {
+  return typeof navigator !== "undefined" && saveDataOn();
+}
+
+// The state the service worker keeps in its meta cache.
+export async function readOfflineState(): Promise<OfflineState | null> {
+  if (typeof caches === "undefined") return null;
+  const name = (await caches.keys()).filter((k) => k.startsWith("classeo-meta-")).sort().pop();
+  if (!name) return null;
+  const hit = await (await caches.open(name)).match("/__classeo/offline-state");
+  return hit ? ((await hit.json().catch(() => null)) as OfflineState | null) : null;
+}
