@@ -61,7 +61,12 @@ export async function readSessionId(token: string | undefined): Promise<string |
   }
 }
 
+// Forwarding headers are client controlled unless a proxy we trust rewrites
+// them. Vercel overwrites X-Forwarded-For with the real client address; any
+// other reverse proxy must be declared with TRUST_PROXY=true. Otherwise every
+// request shares one key, which keeps the rate limit impossible to bypass.
 export function clientIp(h: Headers) {
+  if (!process.env.VERCEL && process.env.TRUST_PROXY !== "true") return "direct";
   return h.get("x-forwarded-for")?.split(",")[0]?.trim() || h.get("x-real-ip") || "unknown";
 }
 

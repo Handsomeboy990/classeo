@@ -34,7 +34,9 @@ export async function login(_prev: ActionState, formData: FormData): Promise<Act
   const { email, password, next } = parsed.data;
   const ip = clientIp(await headers());
 
-  const byIp = await hitRateLimit(`login:ip:${ip}`, 30, LOCK_MS);
+  // Without a trusted proxy the address is unknown ("direct"): the per account
+  // limit and the lockout still apply, a shared IP bucket would lock everyone.
+  const byIp = ip === "direct" ? { allowed: true, retryAfterMs: 0 } : await hitRateLimit(`login:ip:${ip}`, 30, LOCK_MS);
   const byEmail = await hitRateLimit(`login:email:${email}`, 10, LOCK_MS);
   if (!byIp.allowed || !byEmail.allowed) {
     const minutes = Math.ceil(Math.max(byIp.retryAfterMs, byEmail.retryAfterMs) / 60000);

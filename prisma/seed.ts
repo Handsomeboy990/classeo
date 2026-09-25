@@ -588,7 +588,7 @@ async function main() {
         audience: "PARENTS",
         status: "PUBLISHED",
         publishedAt: new Date("2026-09-24T12:00:00Z"),
-        eventDate: new Date("2026-10-10T10:00:00Z"),
+        eventDate: new Date("2026-10-10T09:00:00Z"), // 10:00 in Benin (UTC+1)
         schoolId: ceg.id,
         authorId: directorId,
       },
