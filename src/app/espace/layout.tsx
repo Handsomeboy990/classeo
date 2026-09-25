@@ -3,6 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { Logo } from "@/components/brand/logo";
+import { AccessibilityButton } from "@/components/shell/accessibility-button";
 import { AppBar } from "@/components/shell/app-bar";
 import { SidebarNav, type RenderedItem, type RenderedSection } from "@/components/shell/sidebar-nav";
 import { SignOutButton } from "@/components/shell/sign-out-button";
@@ -51,6 +52,11 @@ export default async function SpaceLayout({ children }: LayoutProps<"/espace">) 
               {user.scope.label}
             </p>
             <div className="ml-auto flex items-center gap-2">
+              {/* Docked here on a large screen instead of floating over tables
+                  and values (see .a11y-fab in globals.css). */}
+              <span data-a11y-docked className="contents">
+                <AccessibilityButton />
+              </span>
               <Link
                 href="/espace/notifications"
                 className="relative inline-flex size-10 items-center justify-center rounded-lg border border-border-strong bg-surface hover:bg-surface-2"

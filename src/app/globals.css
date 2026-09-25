@@ -1161,13 +1161,19 @@ html[data-lite="on"] img[data-decorative] {
  * Phone shell (below lg): a top app bar, a tab bar fixed at the bottom above
  * the home indicator, bottom sheets, and the accessibility button floating
  * above the tab bar. Sizes are in rem so they grow with the text size
- * preference.
+ * preference, except the floating button: a fixed 40 px on phones and 44 px
+ * from lg, so a larger text does not make it cover more of the page.
  */
 :root {
   --app-bar-h: 3.5rem;
   --tab-bar-h: 4rem;
-  --fab-size: 2.75rem;
+  --fab-size: 40px;
   --tab-bar-space: calc(var(--tab-bar-h) + env(safe-area-inset-bottom));
+}
+@media (min-width: 64rem) {
+  :root {
+    --fab-size: 44px;
+  }
 }
 
 /* Nothing may hide behind the tab bar or the floating button. */
@@ -1179,6 +1185,10 @@ html[data-lite="on"] img[data-decorative] {
 @media (min-width: 64rem) {
   .app-main {
     padding-bottom: calc(var(--fab-size) + 3rem);
+  }
+  /* Private space: the button sits in the header, nothing floats. */
+  body:has([data-a11y-docked]) .app-main {
+    padding-bottom: 3rem;
   }
 }
 
@@ -1216,7 +1226,13 @@ div.overflow-x-auto:has(> table) {
 
 /*
  * Accessibility button: bottom right, discreet (surface colour, hairline
- * border, soft shadow), above the tab bar on phones.
+ * border, soft shadow), above the tab bar on phones. It never covers an
+ * action:
+ * - a page with a save bar stuck to the bottom (grades, attendance, rights:
+ *   marked data-action-bar) hides it on phones; the account sheet and the
+ *   Menu sheet carry the same entry;
+ * - in the private space on a large screen it is docked in the header
+ *   (data-a11y-docked), so no gutter has to be kept free beside tables.
  */
 .a11y-fab {
   position: fixed;
@@ -1229,10 +1245,16 @@ div.overflow-x-auto:has(> table) {
     right: 1.5rem;
     bottom: 1.5rem;
   }
+  body:has([data-a11y-docked]) .a11y-fab {
+    display: none;
+  }
 }
 @media (max-width: 63.999rem) {
   body:has([data-tab-bar]) .a11y-fab {
     bottom: calc(var(--tab-bar-space) + 0.75rem);
+  }
+  body:has([data-action-bar]) .a11y-fab {
+    display: none;
   }
   /* Toasts rise above the tab bar instead of covering it. */
   body:has([data-tab-bar]) div.fixed.bottom-4:has(> .contents[aria-live]) {
