@@ -1,10 +1,16 @@
 import type { ReactNode } from "react";
 
 import { LogoMark } from "@/components/brand/logo";
+import { DOCUMENT_KINDS, contentHash, type DocumentKind } from "@/features/verification/reference";
+import { issueOnce, verificationOf } from "@/features/verification/registry";
+import { getCurrentUser } from "@/lib/auth/session";
+import { qrPath } from "@/lib/qr";
 import { cn } from "@/lib/utils";
 
+import { completeIssuer } from "../data/letterhead";
 import { beninDate, beninDateTime } from "../format";
 import type { DocumentMeta, Issuer } from "../layout";
+import { contactLine, ministriesFor, REPUBLIC } from "../letterhead";
 
 // HTML twin of the PDF layout, for the pages printed from the browser: the
 // same flag band, header, typography and footer, on white paper. The styles
@@ -46,42 +52,85 @@ const CSS = `
   .doc-sheet * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }`;
 
+// The letterhead: the Republic and the ministry in words, no emblem, then
+// the school with its logo and details.
 function IssuerBlock({ issuer }: { issuer: Issuer }) {
-  const contact = issuer.kind === "school" ? [issuer.phone ? `Tél. ${issuer.phone}` : null, issuer.email].filter(Boolean).join(" · ") : "";
+  const ministries = ministriesFor(issuer.kind === "school" ? issuer.cycle : null);
   return (
-    <div className="min-w-0">
-      <p className="doc-label">République du Bénin</p>
+    <div className="min-w-0 max-w-md">
+      <p className="text-[11px] font-bold tracking-[0.12em] text-[#0b3b2a] uppercase">{REPUBLIC}</p>
+      {ministries.map((m) => (
+        <p key={m} className="text-xs leading-snug font-semibold">
+          {m}
+        </p>
+      ))}
+      <span className="my-1.5 block h-px w-10 bg-[#006b40]" aria-hidden />
       {issuer.kind === "ministry" ? (
         <>
-          <p className="mt-0.5 font-bold">Ministère des Enseignements</p>
-          <p>{issuer.name}</p>
+          <p className="font-bold">{issuer.name}</p>
+          {issuer.detail && <p className="doc-muted text-xs">{issuer.detail}</p>}
         </>
       ) : (
-        <>
-          <p className="mt-0.5 font-bold">{issuer.name}</p>
-          {(issuer.address || issuer.place) && <p className="doc-muted text-xs">{[issuer.address, issuer.place].filter(Boolean).join(", ")}</p>}
-          {contact && <p className="doc-muted text-xs">{contact}</p>}
-        </>
+        <div className="flex items-start gap-2.5">
+          {issuer.logoUrl && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={issuer.logoUrl} alt={`Logo de ${issuer.name}`} className="size-11 shrink-0 object-contain" />
+          )}
+          <div className="min-w-0">
+            <p className="font-bold">{issuer.name}</p>
+            {(issuer.address || issuer.place) && <p className="doc-muted text-xs">{[issuer.address, issuer.place].filter(Boolean).join(", ")}</p>}
+            {contactLine(issuer) && <p className="doc-muted text-xs">{contactLine(issuer)}</p>}
+          </div>
+        </div>
       )}
     </div>
   );
 }
 
-export function PrintSheet({
-  meta,
+const KIND_BY_TITLE = new Map(Object.entries(DOCUMENT_KINDS).map(([k, v]) => [v, k as DocumentKind]));
+
+// A printed view is registered like a PDF: its code and QR code are printed
+// in the footer. The same view shown again the same day by the same person
+// keeps its code. The hash covers what the page prints (the content passed
+// by the page, or the document identity when none is given).
+async function registerView(meta: DocumentMeta, record?: PrintRecord) {
+  const user = await getCurrentUser();
+  const kind = record?.kind ?? KIND_BY_TITLE.get(meta.title as (typeof DOCUMENT_KINDS)[DocumentKind]);
+  if (!user || !kind) return null;
+  const { generatedAt: _at, generatedBy: _by, ...identity } = meta;
+  const code = await issueOnce({
+    kind,
+    title: meta.title,
+    subjectId: record?.subjectId ?? meta.reference,
+    schoolId: record?.schoolId ?? user.scope.schoolId ?? null,
+    contentHash: contentHash({ format: "html", identity: { ...identity, issuer: { ...identity.issuer, logo: undefined } }, content: record?.content ?? null }),
+    issuedById: user.id,
+  });
+  return verificationOf(code);
+}
+
+export type PrintRecord = { kind: DocumentKind; subjectId?: string | null; schoolId?: string | null; content?: unknown };
+
+export async function PrintSheet({
+  meta: given,
   landscape = false,
   className,
   headerExtra,
   children,
   id,
+  record,
 }: {
   meta: DocumentMeta;
+  record?: PrintRecord;
   landscape?: boolean;
   className?: string;
   headerExtra?: ReactNode;
   children: ReactNode;
   id?: string;
 }) {
+  const meta = { ...given, issuer: await completeIssuer(given.issuer, { withLogoBytes: false }) };
+  const check = await registerView(given, record);
+  const qr = check ? qrPath(check.qr, 2) : null;
   const by = meta.generatedBy;
   return (
     <article
@@ -117,13 +166,28 @@ export function PrintSheet({
         </header>
         {headerExtra}
         <div className="mt-4">{children}</div>
-        <footer className="doc-muted mt-8 border-t border-[#cfcec4] pt-2 text-[10px] leading-snug">
-          <p>
-            Généré sur Classéo le {beninDateTime(meta.generatedAt)} (heure du Bénin) par {by.name}, {by.role}.
-          </p>
-          <p>
-            Vérification : réf. {meta.reference} · compte {by.email}. Le document téléchargé en PDF porte la même référence et figure au journal d&apos;activité.
-          </p>
+        <footer className="doc-muted doc-keep mt-8 flex items-center gap-3 border-t border-[#cfcec4] pt-2 text-[10px] leading-snug">
+          {check && qr && (
+            <svg viewBox={`0 0 ${qr.viewBox} ${qr.viewBox}`} className="size-16 shrink-0" role="img" aria-label={`QR code de vérification, ${check.shortUrl}`}>
+              <rect width={qr.viewBox} height={qr.viewBox} fill="#fff" />
+              <path d={qr.d} fill="#1a1d1a" />
+            </svg>
+          )}
+          <div className="min-w-0">
+            {check && (
+              <p className="text-[11px] font-bold text-[#0b3b2a]">
+                Code de vérification {check.code} · {check.shortUrl}
+              </p>
+            )}
+            <p>
+              Généré sur Classéo le {beninDateTime(meta.generatedAt)} (heure du Bénin) par {by.name}, {by.role}. Réf. {meta.reference}.
+            </p>
+            <p>
+              {check
+                ? "Scannez le code ou saisissez l'adresse pour vérifier l'authenticité de ce document."
+                : `Vérification : réf. ${meta.reference} · compte ${by.email}. Le document figure au journal d'activité.`}
+            </p>
+          </div>
         </footer>
       </div>
     </article>

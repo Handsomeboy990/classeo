@@ -1,10 +1,14 @@
 import { Children, type ReactNode } from "react";
 
-import { Document, G, Page, Path, Rect, Svg, Text, View } from "@react-pdf/renderer";
+import { Document, G, Image, Page, Path, Rect, Svg, Text, View } from "@react-pdf/renderer";
 import type { Style } from "@react-pdf/types";
 
+import { qrPath } from "@/lib/qr";
+
+import { useVerification, type PdfImage } from "./context";
 import { FONT_TITLE } from "./fonts";
 import { beninDate, beninDateTime, pageLabel, pdfText } from "./format";
+import { contactLine, ministriesFor, REPUBLIC, type SchoolCycleCode } from "./letterhead";
 import { COLORS, PAGE, styles } from "./theme";
 
 type StyleProp = Style | Style[];
@@ -27,8 +31,23 @@ export function T({ children, style, ...rest }: { children?: ReactNode; style?: 
 
 // Who issues the document: a school (bulletins, receipts, lists) or a level
 // of the ministry (territorial statistics). Written as text: no emblem.
+// The letterhead details (cycle, postal box, logo) are filled in by
+// completeIssuer() from the school code before rendering.
 export type Issuer =
-  | { kind: "school"; name: string; address?: string | null; place?: string | null; phone?: string | null; email?: string | null; code?: string | null }
+  | {
+      kind: "school";
+      name: string;
+      address?: string | null;
+      place?: string | null;
+      phone?: string | null;
+      email?: string | null;
+      code?: string | null;
+      cycle?: SchoolCycleCode | null;
+      postalBox?: string | null;
+      // Bytes for the PDF (PNG or JPEG only), address for the HTML views.
+      logo?: PdfImage | null;
+      logoUrl?: string | null;
+    }
   | { kind: "ministry"; name: string; detail?: string | null };
 
 export type DocumentMeta = {
@@ -70,24 +89,37 @@ function FlagBand() {
   );
 }
 
+// Letterhead: the Republic and the ministry in words (no emblem), then the
+// school with its logo and details, or the territorial service.
 function IssuerBlock({ issuer }: { issuer: Issuer }) {
-  if (issuer.kind === "ministry") {
-    return (
-      <View>
-        <T style={styles.label}>République du Bénin</T>
-        <T style={{ fontSize: 10.5, fontWeight: 700, marginTop: 2 }}>Ministère des Enseignements</T>
-        <T style={{ fontSize: 9, marginTop: 1 }}>{issuer.name}</T>
-        {issuer.detail ? <T style={[styles.small, styles.muted]}>{issuer.detail}</T> : null}
-      </View>
-    );
-  }
-  const contact = [issuer.phone ? `Tél. ${issuer.phone}` : null, issuer.email].filter(Boolean).join(" · ");
+  const ministries = ministriesFor(issuer.kind === "school" ? issuer.cycle : null);
   return (
-    <View>
-      <T style={styles.label}>République du Bénin</T>
-      <T style={{ fontSize: 10.5, fontWeight: 700, marginTop: 2 }}>{issuer.name}</T>
-      {issuer.address || issuer.place ? <T style={[styles.small, styles.muted]}>{[issuer.address, issuer.place].filter(Boolean).join(", ")}</T> : null}
-      {contact ? <T style={[styles.small, styles.muted]}>{contact}</T> : null}
+    <View style={{ maxWidth: 270 }}>
+      <T style={{ fontSize: 8, fontWeight: 700, letterSpacing: 1.2, color: COLORS.primaryDark, textTransform: "uppercase" }}>{REPUBLIC}</T>
+      {ministries.map((m) => (
+        <T key={m} style={{ fontSize: 7.5, fontWeight: 600, marginTop: 1.5, lineHeight: 1.25 }}>
+          {m}
+        </T>
+      ))}
+      <View style={{ width: 36, height: 1, backgroundColor: COLORS.primary, marginVertical: 4 }} />
+      {issuer.kind === "ministry" ? (
+        <View>
+          <T style={{ fontSize: 10, fontWeight: 700 }}>{issuer.name}</T>
+          {issuer.detail ? <T style={[styles.small, styles.muted]}>{issuer.detail}</T> : null}
+        </View>
+      ) : (
+        <View style={{ flexDirection: "row", gap: 7, alignItems: "flex-start" }}>
+          {issuer.logo ? (
+            // eslint-disable-next-line jsx-a11y/alt-text
+            <Image src={issuer.logo} style={{ width: 34, height: 34, objectFit: "contain" }} />
+          ) : null}
+          <View style={{ flexShrink: 1 }}>
+            <T style={{ fontSize: 10.5, fontWeight: 700 }}>{issuer.name}</T>
+            {issuer.address || issuer.place ? <T style={[styles.small, styles.muted]}>{[issuer.address, issuer.place].filter(Boolean).join(", ")}</T> : null}
+            {contactLine(issuer) ? <T style={[styles.small, styles.muted]}>{contactLine(issuer)}</T> : null}
+          </View>
+        </View>
+      )}
     </View>
   );
 }
@@ -97,11 +129,7 @@ export function DocumentHeader({ meta, children }: { meta: DocumentMeta; childre
   return (
     <View style={{ marginBottom: 12 }}>
       <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", paddingBottom: 10, borderBottomWidth: 1.5, borderBottomColor: COLORS.primary }}>
-        <View style={{ flexDirection: "row", gap: 10, maxWidth: "55%" }}>
-          <View style={{ alignItems: "center", gap: 2 }}>
-            <Mark size={36} />
-            <Text style={{ fontFamily: FONT_TITLE, fontWeight: 700, fontSize: 8.5, color: COLORS.primaryDark }}>Classéo</Text>
-          </View>
+        <View style={{ maxWidth: "56%" }}>
           <IssuerBlock issuer={meta.issuer} />
         </View>
         <View style={{ alignItems: "flex-end", maxWidth: "45%" }}>
@@ -130,25 +158,55 @@ function RunningHeader({ meta }: { meta: DocumentMeta }) {
   );
 }
 
+// The QR code of the verification address, drawn as vector paths so it
+// stays sharp at any print resolution.
+export function QrCode({ matrix, size }: { matrix: NonNullable<ReturnType<typeof useVerification>>["qr"]; size: number }) {
+  const { d, viewBox } = qrPath(matrix, 2);
+  return (
+    <Svg viewBox={`0 0 ${viewBox} ${viewBox}`} width={size} height={size}>
+      <Rect x={0} y={0} width={viewBox} height={viewBox} fill={COLORS.white} />
+      <Path d={d} fill={COLORS.text} />
+    </Svg>
+  );
+}
+
 // The footer text is static; the page number is a sibling of its own, the
-// form the paginator repeats reliably on every page.
+// form the paginator repeats reliably on every page. When the document is
+// registered, the QR code and the verification code sit at its left.
 function Footer({ meta, pageHeight }: { meta: DocumentMeta; pageHeight: number }) {
   const by = meta.generatedBy;
+  const check = useVerification();
+  const qrSize = 44;
   return (
     <>
-      <View fixed style={{ position: "absolute", bottom: 18, left: PAGE.marginX, right: PAGE.marginX, borderTopWidth: 0.75, borderTopColor: COLORS.border, paddingTop: 5, paddingRight: 70 }}>
-        <T style={{ fontSize: 7, color: COLORS.muted }}>
-          Généré sur Classéo le {beninDateTime(meta.generatedAt)} (heure du Bénin) par {by.name}, {by.role}.
-        </T>
-        <T style={{ fontSize: 7, color: COLORS.muted }}>
-          Vérification : réf. {meta.reference} · compte {by.email} · inscrit au journal d&apos;activité de la plateforme.
-        </T>
+      <View
+        fixed
+        style={{ position: "absolute", bottom: 12, left: PAGE.marginX, right: PAGE.marginX, borderTopWidth: 0.75, borderTopColor: COLORS.border, paddingTop: 4, paddingRight: 70, flexDirection: "row", gap: 7, alignItems: "center" }}
+      >
+        {check ? <QrCode matrix={check.qr} size={qrSize} /> : null}
+        <View style={{ flex: 1 }}>
+          {check ? (
+            <T style={{ fontSize: 7.5, fontWeight: 700, color: COLORS.primaryDark }}>
+              Code de vérification {check.code} · {check.shortUrl}
+            </T>
+          ) : null}
+          <T style={{ fontSize: 7, color: COLORS.muted }}>
+            Généré sur Classéo le {beninDateTime(meta.generatedAt)} (heure du Bénin) par {by.name}, {by.role}.
+          </T>
+          <T style={{ fontSize: 7, color: COLORS.muted }}>
+            {check ? "Scannez le code ou saisissez l'adresse pour vérifier l'authenticité de ce document." : `Vérification : réf. ${meta.reference} · compte ${by.email} · inscrit au journal d'activité de la plateforme.`}
+          </T>
+        </View>
       </View>
       <Text
         fixed
-        style={{ position: "absolute", top: pageHeight - 43, right: PAGE.marginX, width: 70, textAlign: "right", fontSize: 8, fontWeight: 700, color: COLORS.primaryDark }}
+        style={{ position: "absolute", top: pageHeight - 40, right: PAGE.marginX, width: 70, textAlign: "right", fontSize: 8, fontWeight: 700, color: COLORS.primaryDark }}
         render={({ subPageNumber, subPageTotalPages }) => pageLabel(subPageNumber, subPageTotalPages)}
       />
+      <View fixed style={{ position: "absolute", top: pageHeight - 27, right: PAGE.marginX, flexDirection: "row", gap: 3, alignItems: "center" }}>
+        <Mark size={9} />
+        <Text style={{ fontFamily: FONT_TITLE, fontWeight: 700, fontSize: 7, color: COLORS.primaryDark }}>Classéo</Text>
+      </View>
     </>
   );
 }
