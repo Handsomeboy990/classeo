@@ -55,3 +55,7 @@ credentials.json
 .playwright-cli/
 playwright-report/
 test-results/
+
+# python (api/kora-tts.py)
+__pycache__/
+.venv/
