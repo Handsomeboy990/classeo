@@ -10,7 +10,9 @@ import { DomainError } from "@/lib/errors";
 // payment proofs) are small and stored in the database: no third party
 // storage to configure, and every read goes through an authorization check.
 
-export type FilePurpose = "student_photo" | "school_logo" | "signature" | "stamp" | "document" | "payment_proof";
+// "tts_audio": speech in a local language produced by the translation
+// service, cached by text and language; never uploaded by a user.
+export type FilePurpose = "student_photo" | "school_logo" | "signature" | "stamp" | "document" | "payment_proof" | "tts_audio";
 
 const LIMITS: Record<FilePurpose, { maxBytes: number; types: string[] }> = {
   student_photo: { maxBytes: 1_000_000, types: ["image/jpeg", "image/png", "image/webp"] },
@@ -19,6 +21,7 @@ const LIMITS: Record<FilePurpose, { maxBytes: number; types: string[] }> = {
   stamp: { maxBytes: 800_000, types: ["image/png", "image/webp"] },
   document: { maxBytes: 5_000_000, types: ["application/pdf", "image/jpeg", "image/png"] },
   payment_proof: { maxBytes: 2_000_000, types: ["application/pdf", "image/jpeg", "image/png", "image/webp"] },
+  tts_audio: { maxBytes: 4_000_000, types: ["audio/wav", "audio/mpeg"] },
 };
 
 // Content sniffing: the declared type must match the first bytes, so a
