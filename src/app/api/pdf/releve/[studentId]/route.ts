@@ -16,6 +16,8 @@ export async function GET(_request: Request, ctx: RouteContext<"/api/pdf/releve/
       const meta = { title: "Relevé de notes", subtitle: `${data.periodName} · ${data.yearLabel}`, reference, generatedAt: c.generatedAt, generatedBy: c.generatedBy, issuer };
       return {
         element: transcriptPdf(data, meta),
+        kind: "releve" as const,
+        title: meta.title,
         fileName: pdfFileName("releve-de-notes", data.periodName, s.lastName, s.firstName),
         reference,
         summary: `relevé de notes de ${s.lastName} ${s.firstName}, ${data.periodName} ${data.yearLabel}`,

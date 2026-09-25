@@ -7,9 +7,18 @@ import { expect, signIn, test as setup } from "./support/fixtures";
 for (const role of ROLES) {
   setup(`sign in as ${role} lands on /espace`, async ({ page }) => {
     await signIn(page, ACCOUNTS[role]);
+    // An account working in several schools (the demo teacher, with the
+    // identity demo data) chooses its school first: the suite works in CEG
+    // Godomey.
+    await page.waitForURL(/\/espace(\/choisir-etablissement)?$/);
+    if (page.url().endsWith("/espace/choisir-etablissement")) {
+      await expect(page.getByRole("heading", { level: 1, name: "Choisir l'établissement" })).toBeVisible();
+      await page.getByRole("button", { name: /^Travailler à CEG Godomey/ }).click();
+    }
     await expect(page).toHaveURL(/\/espace$/);
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-    await expect(page.getByRole("button", { name: "Se déconnecter" })).toBeVisible();
+    // Signed in: the account menu of the top bar names the person.
+    await expect(page.getByRole("button", { name: /^Mon compte/ })).toBeVisible();
     await page.context().storageState({ path: authFile(role) });
   });
 }

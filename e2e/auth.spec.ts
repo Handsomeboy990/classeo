@@ -7,14 +7,14 @@ const MENUS: { role: Role; heading: RegExp; shows: string[]; hides: string[] }[]
   {
     role: "ministre",
     heading: /^Bonjour, Adjoa$/,
-    shows: ["Tableau de bord", "Territoire", "Statistiques", "Établissements", "Demandes", "Comptes utilisateurs", "Rôles et droits", "Journal d'activité"],
+    shows: ["Tableau de bord", "Territoire", "Statistiques", "Établissements", "Enseignants", "Demandes", "Comptes utilisateurs", "Rôles et droits", "Journal d'activité"],
     hides: ["Notes", "Frais et paiements", "Mes enfants"],
   },
   {
     role: "directeur",
     heading: /^Bonjour, Florentin$/,
-    shows: ["Mon établissement", "Classes", "Élèves", "Enseignants", "Notes", "Bulletins", "Présences", "Frais et paiements", "Annonces et ressources"],
-    hides: ["Territoire", "Rôles et droits", "Mes enfants"],
+    shows: ["Mon établissement", "Classes", "Élèves", "Enseignants", "Notes", "Bulletins", "Présences", "Frais et paiements", "Annonces et ressources", "Rôles et droits", "Demandes de réinitialisation"],
+    hides: ["Territoire", "Mes enfants"],
   },
   {
     role: "enseignant",
@@ -61,7 +61,7 @@ for (const { role, heading, shows, hides } of MENUS) {
 test.describe("sign in", () => {
   test("a wrong password is refused, the right one then signs in", async ({ page }) => {
     await signIn(page, PARTNER_EMAIL, "not-the-password-2026");
-    await expect(page.getByText("Adresse e-mail ou mot de passe incorrect.")).toBeVisible();
+    await expect(page.getByText("Identifiant ou mot de passe incorrect.")).toBeVisible();
     await expect(page).toHaveURL(/\/connexion/);
 
     // A successful sign in resets the failure counter, so repeated runs

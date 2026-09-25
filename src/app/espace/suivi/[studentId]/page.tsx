@@ -26,7 +26,7 @@ export default async function ReportCardsPage({ params, searchParams }: PageProp
   const cards = await reportCardsOf(user, studentId);
   const wanted = param(await searchParams, "b");
   const card = cards.find((c) => c.id === wanted) ?? cards[0];
-  const student = { name: `${enrollment.student.firstName} ${enrollment.student.lastName}`, matricule: enrollment.student.matricule };
+  const student = { name: `${enrollment.student.firstName} ${enrollment.student.lastName}`, matricule: enrollment.student.matricule, photoFileId: enrollment.student.photoFileId };
 
   // The certificate of enrollment of the year, for accounts that may see
   // the student record (parents; the route checks it again).
@@ -54,7 +54,7 @@ export default async function ReportCardsPage({ params, searchParams }: PageProp
     subtitle: `${card.periodName} · ${card.yearLabel}`,
     reference: documentReference("BUL", now, printable?.data.enrollmentId, printable?.periodId, "published"),
     generatedAt: now,
-    generatedBy: { name: user.fullName, role: user.role.name, email: user.email },
+    generatedBy: { name: user.fullName, role: user.role.name, email: user.username },
   };
 
   const byYear = new Map<string, typeof cards>();

@@ -1,14 +1,14 @@
 "use client";
 
-import { Bell, ChevronLeft } from "lucide-react";
-import Link from "next/link";
+import { ChevronLeft } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import { LogoMark } from "@/components/brand/logo";
 import { Avatar } from "@/components/ui/avatar";
 
 import { AccountSheet, type ShellUser } from "./account-sheet";
+import { BellLink } from "./bell-link";
+import { ScopeIdentity, type ShellScope } from "./scope-identity";
 import type { RenderedSection } from "./sidebar-nav";
 
 // Client side navigations since the app was opened: the back button uses
@@ -57,9 +57,11 @@ function useScrolledHeading(pathname: string) {
   return heading?.path === pathname && heading.text ? heading.text : null;
 }
 
-// Top app bar of the phone shell: one line, never wrapping. Home shows the
-// brand; a page below a menu entry gets a back button and the entry's name.
-export function AppBar({ sections, unread, user, pushKey }: { sections: RenderedSection[]; unread: number; user: ShellUser; pushKey: string | null }) {
+// Top app bar of the phone shell: one line, never wrapping. Home and the
+// menu pages speak for the user's territory or school (flag or logo and its
+// name, with the school switcher); a page below a menu entry gets a back
+// button and the entry's name.
+export function AppBar({ sections, unread, user, pushKey, scope }: { sections: RenderedSection[]; unread: number; user: ShellUser; pushKey: string | null; scope: ShellScope }) {
   const pathname = usePathname();
   const router = useRouter();
   const [account, setAccount] = useState(false);
@@ -78,9 +80,10 @@ export function AppBar({ sections, unread, user, pushKey }: { sections: Rendered
   const home = pathname === "/espace";
   const entry = owner(sections, pathname);
   const detail = !home && (!entry || entry.href !== pathname);
-  // A menu page carries its own large title: the bar shows it only once that
-  // heading has scrolled away. A page below an entry names its entry.
-  const title = home ? "Classéo" : (scrolled ?? (detail && entry ? entry.label : "Classéo"));
+  // A menu page carries its own large title: the bar shows the identity
+  // until that heading has scrolled away, then the heading. A page below an
+  // entry names its entry.
+  const title = scrolled ?? (detail ? (entry?.label ?? "Classéo") : null);
   const backTo = entry && entry.href !== pathname ? entry.href : "/espace";
 
   return (
@@ -94,27 +97,17 @@ export function AppBar({ sections, unread, user, pushKey }: { sections: Rendered
         >
           <ChevronLeft className="size-6" aria-hidden />
         </button>
+      ) : null}
+      {title ? (
+        <p key={title} className="app-title-in min-w-0 flex-1 truncate px-1 font-display text-lg font-bold">
+          {title}
+        </p>
       ) : (
-        <Link href="/espace" className="inline-flex size-11 shrink-0 items-center justify-center rounded-full" aria-label="Classéo, accueil">
-          <LogoMark className="size-8" />
-        </Link>
+        <div className="flex min-w-0 flex-1 items-center pl-2.5">
+          <ScopeIdentity scope={scope} compact />
+        </div>
       )}
-      <p key={title} className="app-title-in min-w-0 flex-1 truncate px-1 font-display text-lg font-bold">
-        {title}
-      </p>
-      <Link
-        href="/espace/notifications"
-        className="relative inline-flex size-11 shrink-0 items-center justify-center rounded-full text-text active:bg-surface-2"
-        aria-label={unread ? `Notifications, ${unread} non lue${unread > 1 ? "s" : ""}` : "Notifications"}
-        aria-current={pathname === "/espace/notifications" ? "page" : undefined}
-      >
-        <Bell className="size-[1.35rem]" aria-hidden />
-        {unread > 0 && (
-          <span className="absolute top-1 right-0.5 min-w-5 rounded-full border-2 border-surface bg-danger px-1 text-center text-[0.6875rem] leading-4 font-bold text-bg" aria-hidden>
-            {unread > 9 ? "9+" : unread}
-          </span>
-        )}
-      </Link>
+      <BellLink unread={unread} />
       <button
         type="button"
         onClick={() => setAccount(true)}

@@ -6,12 +6,13 @@ import { forbidden, redirect } from "next/navigation";
 import { AverageLevel } from "@/components/kit/level";
 import { PageHeader } from "@/components/kit/page-header";
 import { EmptyState } from "@/components/kit/states";
-import { Avatar } from "@/components/ui/avatar";
 import { SpokenSummary } from "@/features/family/components/blocks";
 import { beninToday, countWord } from "@/features/family/logic";
 import { childOverview } from "@/features/family/overview";
 import { followedEnrollments } from "@/features/family/queries";
 import { requireUser } from "@/lib/auth/session";
+import { StudentAvatar } from "@/features/students/components/student-avatar";
+import { GuardianTransferRequests } from "@/features/transfers/components/guardian-requests";
 
 export const metadata: Metadata = { title: "Mes enfants" };
 
@@ -35,6 +36,7 @@ export default async function FollowUpPage() {
   return (
     <>
       <PageHeader title="Mes enfants" description="Choisissez un enfant pour ouvrir son suivi complet." readable={false} />
+      <GuardianTransferRequests user={user} />
       <SpokenSummary text={intro} label="Écouter" className="mb-6" />
       {overviews.length === 0 ? (
         <EmptyState
@@ -55,7 +57,7 @@ export default async function FollowUpPage() {
                   className="flex h-full flex-col gap-4 rounded-card border border-border bg-surface p-5 transition-colors hover:border-primary hover:bg-surface-2"
                 >
                   <div className="flex flex-wrap items-center gap-4">
-                    <Avatar name={name} className="size-16 text-xl" />
+                    <StudentAvatar name={name} photoFileId={e.student.photoFileId} className="size-16 text-xl" />
                     <div className="min-w-0 break-words hyphens-auto">
                       <h2 className="text-2xl font-bold">{name}</h2>
                       <p className="text-muted">

@@ -19,9 +19,16 @@ export default async function ChangePasswordPage() {
         <h1 className="mt-8 text-2xl font-bold">Changer le mot de passe</h1>
         {user.mustChangePassword && (
           <Alert tone="info" className="mt-4">
-            Première connexion : choisissez votre propre mot de passe pour continuer.
+            Mot de passe temporaire : choisissez votre propre mot de passe pour continuer.
           </Alert>
         )}
+        <p className="mt-4 text-sm text-muted">
+          Votre identifiant de connexion :{" "}
+          <code className="rounded-md bg-primary-soft px-2 py-0.5 font-mono text-base font-semibold text-text" data-testid="own-username">
+            {user.username}
+          </code>
+          . Notez-le : il vous servira à chaque connexion.
+        </p>
         <ActionForm action={changePassword} successToast={false} className="mt-6 flex flex-col gap-4">
           <FormField label="Mot de passe actuel" name="current" required>
             <Input type="password" autoComplete="current-password" />

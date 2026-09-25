@@ -6,6 +6,7 @@ import { audit } from "@/lib/audit";
 import { assignmentWriteWhere } from "@/lib/auth/scope";
 import type { CurrentUser } from "@/lib/auth/session";
 import { db } from "@/lib/db";
+import { assertWritable } from "@/lib/guards";
 import { DAYS, describeConflict, findConflicts, isoDay, slotTimeError, type PlannedSlot } from "@/lib/domain/timetable";
 import { DomainError } from "@/lib/errors";
 
@@ -24,6 +25,8 @@ const assignmentSelect = {
 async function scopedAssignment(user: User, id: string) {
   const a = await db.courseAssignment.findFirst({ where: { AND: [{ id }, assignmentWriteWhere(user)] }, select: assignmentSelect });
   if (!a) throw new DomainError("Cours introuvable dans votre établissement.");
+  // Every timetable write goes through the course or the slot below.
+  await assertWritable({ schoolId: a.classroom.schoolId, academicYearId: a.classroom.academicYearId });
   return a;
 }
 
@@ -33,6 +36,7 @@ async function scopedSlot(user: User, id: string) {
     include: { assignment: { select: assignmentSelect } },
   });
   if (!slot) throw new DomainError("Créneau introuvable.");
+  await assertWritable({ schoolId: slot.assignment.classroom.schoolId, academicYearId: slot.assignment.classroom.academicYearId });
   return slot;
 }
 
@@ -182,6 +186,7 @@ export const restoreSlot = createAction({
       include: { slot: { include: { assignment: { select: assignmentSelect } } } },
     });
     if (!ex) throw new DomainError("Annulation introuvable.");
+    await assertWritable({ schoolId: ex.slot.assignment.classroom.schoolId, academicYearId: ex.slot.assignment.classroom.academicYearId });
     await db.timetableException.delete({ where: { id: ex.id } });
     await audit(user, {
       action: "update",

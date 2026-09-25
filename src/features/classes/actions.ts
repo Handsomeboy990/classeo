@@ -9,6 +9,7 @@ import { classroomWhere, schoolWhere } from "@/lib/auth/scope";
 import type { CurrentUser } from "@/lib/auth/session";
 import { invalidate, tags } from "@/lib/cache";
 import { db } from "@/lib/db";
+import { assertClassroomWritable, assertWritable } from "@/lib/guards";
 import { DomainError } from "@/lib/errors";
 
 import { id, intIn, isUniqueViolation, optionalId, requireActiveYear, requiredText } from "./academic";
@@ -28,6 +29,8 @@ async function findScopedClassroom(user: User, classroomId: string) {
     select: { id: true, name: true, schoolId: true, _count: { select: { enrollments: { where: { status: "ACTIVE" } } } } },
   });
   if (!classroom) throw new DomainError("Classe introuvable ou hors de votre périmètre.");
+  // Every write on a class goes through here.
+  await assertClassroomWritable(classroom.id);
   return classroom;
 }
 
@@ -49,6 +52,7 @@ export const createClassroom = createAction({
     if (!level) throw new DomainError("Ce niveau ne correspond pas au cycle de l'établissement.");
     await assertTeacherOfSchool(input.mainTeacherId, school.id);
     const year = await requireActiveYear();
+    await assertWritable({ schoolId: school.id, academicYearId: year.id });
 
     try {
       const classroom = await db.classroom.create({
@@ -118,6 +122,8 @@ export const saveAssignment = createAction({
     const classroom = await findScopedClassroom(user, input.classroomId);
     const subject = await db.subject.findUnique({ where: { id: input.subjectId } });
     if (!subject) throw new DomainError("Matière introuvable.");
+    // Only subjects of the national catalogue approved by the ministry.
+    if (subject.status !== "APPROVED") throw new DomainError("Cette matière attend la validation du ministère.");
     await assertTeacherOfSchool(input.teacherId, classroom.schoolId);
     const data = { teacherId: input.teacherId, coefficient: input.coefficient, weeklyHours: input.weeklyHours };
     const assignment = await db.courseAssignment.upsert({
@@ -146,6 +152,7 @@ export const deleteAssignment = createAction({
       include: { subject: true, classroom: { select: { name: true, schoolId: true } } },
     });
     if (!assignment) throw new DomainError("Matière introuvable ou hors de votre périmètre.");
+    await assertClassroomWritable(assignment.classroomId);
     const grades = await db.grade.count({ where: { gradeSheet: { assignmentId: assignment.id } } });
     if (grades) throw new DomainError("Des notes ont déjà été saisies pour cette matière : elle ne peut plus être retirée.");
     await db.courseAssignment.delete({ where: { id: assignment.id } });

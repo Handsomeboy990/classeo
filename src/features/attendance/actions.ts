@@ -10,9 +10,11 @@ import { classroomWhere, schoolWhere } from "@/lib/auth/scope";
 import { invalidate, tags } from "@/lib/cache";
 import { ATTENDANCE_LABELS, isIsoDate, isoToDate, newAbsences, todayIso } from "@/lib/domain/attendance";
 import { db } from "@/lib/db";
+import { assertWritable } from "@/lib/guards";
 import { DomainError } from "@/lib/errors";
 import { notify } from "@/lib/notify";
 import { plural } from "@/features/classes/text";
+import { withSubmission } from "@/features/offline/submission";
 
 const status = z.enum(["PRESENT", "ABSENT", "LATE", "EXCUSED"]);
 const reason = z
@@ -44,14 +46,18 @@ export const saveAttendance = createAction({
     date,
     half: z.enum(["MORNING", "AFTERNOON"]),
     records: z.array(z.object({ enrollmentId: id, status, reason })).min(1, "Aucun élève dans l'appel.").max(200),
+    // Set by a register taken offline and replayed (/api/offline/replay).
+    clientId: z.uuid().optional(),
   }),
-  handler: async (input, user) => {
+  handler: (input, user) =>
+    withSubmission(user, input.clientId, "attendance", async () => {
     const year = await assertSchoolDay(input.date);
     const classroom = await db.classroom.findFirst({
       where: { AND: [{ id: input.classroomId }, classroomWhere(user), { academicYearId: year.id }] },
       select: { id: true, name: true, schoolId: true },
     });
     if (!classroom) throw new DomainError("Classe introuvable ou hors de votre périmètre.");
+    await assertWritable({ schoolId: classroom.schoolId, academicYearId: year.id });
     const ids = [...new Set(input.records.map((r) => r.enrollmentId))];
     if (ids.length !== input.records.length) throw new DomainError("Un élève apparaît deux fois dans l'appel.");
     const enrollments = await db.enrollment.findMany({
@@ -108,7 +114,7 @@ export const saveAttendance = createAction({
     return `Appel enregistré pour la ${classroom.name} : ${plural(input.records.length - absent, "présent ou excusé", "présents ou excusés")}, ${plural(absent, "absent", "absents")}.${
       fresh.length ? ` ${plural(fresh.length, "famille prévenue", "familles prévenues")}.` : ""
     }`;
-  },
+    }),
 });
 
 // Staff attendance. Recording it is a staff management task: it needs the
@@ -121,10 +127,11 @@ export const saveTeacherAttendance = createAction({
   }),
   handler: async (input, user) => {
     if (!can(user, "attendance:create")) throw new DomainError("Vous n'avez pas le droit d'enregistrer les présences.");
-    await assertSchoolDay(input.date);
+    const year = await assertSchoolDay(input.date);
     const ids = [...new Set(input.records.map((r) => r.teacherId))];
     const teachers = await db.teacher.findMany({ where: { id: { in: ids }, isActive: true, school: schoolWhere(user) }, select: { id: true, schoolId: true } });
     if (teachers.length !== ids.length || ids.length !== input.records.length) throw new DomainError("Un enseignant est hors de votre périmètre.");
+    for (const schoolId of new Set(teachers.map((t) => t.schoolId))) await assertWritable({ schoolId, academicYearId: year.id });
     const day = isoToDate(input.date);
     await db.$transaction(
       input.records.map((r) => {

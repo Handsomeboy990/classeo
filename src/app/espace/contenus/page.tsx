@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight, LayoutList, Plus } from "lucide-react";
+import { ChevronLeft, ChevronRight, Eye, Inbox, LayoutList, Plus } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 
@@ -10,7 +10,7 @@ import { ButtonLink } from "@/components/ui/button";
 import { ContentCard } from "@/features/contents/content-card";
 import { FilterLinks } from "@/features/contents/filter-links";
 import { CONTENT_TYPES, type ContentTypeCode } from "@/features/contents/meta";
-import { listContents, manageableIds } from "@/features/contents/queries";
+import { canFollowManaged, listContents, manageableIds } from "@/features/contents/queries";
 import { can, requirePermission } from "@/lib/auth/authorize";
 import { listParams, param } from "@/lib/list";
 import { cn, formatNumber } from "@/lib/utils";
@@ -26,11 +26,15 @@ export default async function ContentsPage({ searchParams }: PageProps<"/espace/
   const { q, page, skip, take, pageSize } = listParams(sp, 12);
   const typeKey = param(sp, "type");
   const type = typeKey ? TYPE_PARAM[typeKey] : undefined;
-  const isEditor = can(user, "content:update") || can(user, "content:create");
+  // Two views: what is addressed to the user (default), and, for authors
+  // and supervisors, what they publish or oversee in their territory.
+  const isEditor = canFollowManaged(user);
+  const managed = isEditor && param(sp, "vue") === "geres";
   const statusKey = param(sp, "statut") as keyof typeof STATUS_PARAM | undefined;
-  const status = isEditor && statusKey ? STATUS_PARAM[statusKey] : undefined;
+  const status = managed && statusKey ? STATUS_PARAM[statusKey] : undefined;
+  const sent = Number(param(sp, "envoye") ?? 0);
 
-  const { rows, total } = await listContents(user, { type, status, q, skip, take });
+  const { rows, total } = await listContents(user, { view: managed ? "managed" : "received", type, status, q, skip, take });
   const editable = await manageableIds(
     user,
     rows.map((r) => r.id),
@@ -41,7 +45,7 @@ export default async function ContentsPage({ searchParams }: PageProps<"/espace/
 
   function pageHref(p: number) {
     const next = new URLSearchParams();
-    for (const [k, v] of Object.entries(sp)) if (typeof v === "string" && k !== "page" && k !== "supprime") next.set(k, v);
+    for (const [k, v] of Object.entries(sp)) if (typeof v === "string" && k !== "page" && k !== "supprime" && k !== "envoye") next.set(k, v);
     if (p > 1) next.set("page", String(p));
     const qs = next.toString();
     return qs ? `/espace/contenus?${qs}` : "/espace/contenus";
@@ -51,7 +55,11 @@ export default async function ContentsPage({ searchParams }: PageProps<"/espace/
     <>
       <PageHeader
         title="Annonces et ressources"
-        description="Les informations de l'école et du ministère qui vous concernent. Chaque contenu peut être écouté."
+        description={
+          managed
+            ? "Les contenus que vous publiez ou que vous suivez dans votre périmètre, quel que soit leur public."
+            : "Les informations qui vous sont destinées, et seulement celles-là. Chaque contenu peut être écouté."
+        }
         actions={
           can(user, "content:create") && (
             <ButtonLink href="/espace/contenus/nouveau">
@@ -61,12 +69,30 @@ export default async function ContentsPage({ searchParams }: PageProps<"/espace/
         }
       />
 
+      {Number.isInteger(sent) && sent > 1 && (
+        <Alert tone="success" className="mb-4">
+          Contenu enregistré pour {formatNumber(sent)} destinataires : chacun reçoit son exemplaire.
+        </Alert>
+      )}
       {justDeleted && (
         <Alert tone="success" className="mb-4">
           Contenu supprimé.
         </Alert>
       )}
       <div className="mb-6 flex flex-col gap-4">
+        {isEditor && (
+          <FilterLinks
+            label="Choisir la vue"
+            param="vue"
+            current={managed ? "geres" : undefined}
+            searchParams={Object.fromEntries(Object.entries(sp).filter(([k]) => k !== "statut"))}
+            basePath="/espace/contenus"
+            options={[
+              { value: undefined, label: "Pour moi", icon: <Inbox aria-hidden /> },
+              { value: "geres", label: "Publiés ou suivis", icon: <Eye aria-hidden /> },
+            ]}
+          />
+        )}
         <SearchInput placeholder="Rechercher un contenu…" />
         <FilterLinks
           label="Filtrer par type"
@@ -82,7 +108,7 @@ export default async function ContentsPage({ searchParams }: PageProps<"/espace/
             }),
           ]}
         />
-        {isEditor && (
+        {managed && (
           <FilterLinks
             label="Filtrer par statut"
             param="statut"
@@ -103,7 +129,13 @@ export default async function ContentsPage({ searchParams }: PageProps<"/espace/
         <div className="rounded-card border border-border bg-surface">
           <EmptyState
             title={q || type || status ? "Aucun contenu ne correspond à votre recherche" : "Aucun contenu pour le moment"}
-            description={q || type || status ? "Essayez un autre mot ou retirez un filtre." : "Les annonces, ressources et événements qui vous concernent apparaîtront ici."}
+            description={
+              q || type || status
+                ? "Essayez un autre mot ou retirez un filtre."
+                : managed
+                  ? "Les contenus que vous publiez ou suivez apparaîtront ici."
+                  : "Les annonces, ressources et événements qui vous sont destinés apparaîtront ici."
+            }
           />
         </div>
       ) : (

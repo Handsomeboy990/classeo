@@ -8,7 +8,7 @@ import { z } from "zod";
 import type { ActionState } from "@/lib/action";
 import { audit } from "@/lib/audit";
 import { dummyVerify, hashPassword, verifyPassword } from "@/lib/auth/password";
-import { clientIp, createSession, destroySession, getCurrentUser } from "@/lib/auth/session";
+import { accountSchoolCount, clientIp, createSession, destroySession, getCurrentUser } from "@/lib/auth/session";
 import { db } from "@/lib/db";
 import { platformUrl, sendMail } from "@/lib/mail";
 import { passwordChangedEmail } from "@/lib/mail/templates";
@@ -17,11 +17,13 @@ import { de } from "@/lib/utils";
 
 const MAX_FAILED = 5;
 const LOCK_MS = 15 * 60 * 1000;
-const GENERIC = "Adresse e-mail ou mot de passe incorrect.";
+const GENERIC = "Identifiant ou mot de passe incorrect.";
 const LOCKED = "Compte temporairement verrouillé après plusieurs échecs. Réessayez dans 15 minutes.";
 
 const loginSchema = z.object({
-  email: z.string().trim().toLowerCase().email("Saisissez une adresse e-mail valide.").max(200),
+  // The identifier generated from the names; an e-mail still works for the
+  // accounts that have one.
+  login: z.string().trim().toLowerCase().min(2, "Saisissez votre identifiant.").max(200),
   password: z.string().min(1, "Saisissez votre mot de passe.").max(200),
   next: z.string().optional(),
 });
@@ -36,13 +38,13 @@ export async function login(_prev: ActionState, formData: FormData): Promise<Act
   if (!parsed.success) {
     return { ok: false, message: "Vérifiez les champs du formulaire.", fieldErrors: z.flattenError(parsed.error).fieldErrors };
   }
-  const { email, password, next } = parsed.data;
+  const { login: identifier, password, next } = parsed.data;
   const ip = clientIp(await headers());
 
   // Without a trusted proxy the address is unknown ("direct"): the per account
   // limit and the lockout still apply, a shared IP bucket would lock everyone.
   const byIp = ip === "direct" ? { allowed: true, retryAfterMs: 0 } : await hitRateLimit(`login:ip:${ip}`, 30, LOCK_MS);
-  const byEmail = await hitRateLimit(`login:email:${email}`, 10, LOCK_MS);
+  const byEmail = await hitRateLimit(`login:account:${identifier}`, 10, LOCK_MS);
   if (!byIp.allowed || !byEmail.allowed) {
     const minutes = Math.ceil(Math.max(byIp.retryAfterMs, byEmail.retryAfterMs) / 60000);
     return { ok: false, message: `Trop de tentatives. Réessayez dans ${minutes} minute${minutes > 1 ? "s" : ""}.` };
@@ -52,7 +54,7 @@ export async function login(_prev: ActionState, formData: FormData): Promise<Act
   // an unknown address "locks" after the same number of attempts, and the
   // state of an account (locked, disabled) is never revealed without its
   // password.
-  const user = await db.user.findUnique({ where: { email } });
+  const user = await db.user.findUnique({ where: identifier.includes("@") ? { email: identifier } : { username: identifier } });
   if (!user) {
     if (byEmail.count > MAX_FAILED) return { ok: false, message: LOCKED };
     await dummyVerify(password);
@@ -70,17 +72,23 @@ export async function login(_prev: ActionState, formData: FormData): Promise<Act
       where: { id: user.id },
       data: { failedLoginCount: failed, lockedUntil: failed >= MAX_FAILED ? new Date(now.getTime() + LOCK_MS) : null },
     });
-    await audit(null, { action: "login_failed", resource: "user", resourceId: user.id, summary: `Échec de connexion pour ${email}` });
+    await audit(null, { action: "login_failed", resource: "user", resourceId: user.id, summary: `Échec de connexion pour ${identifier}` });
     return { ok: false, message: GENERIC };
   }
   if (!user.isActive) return { ok: false, message: "Ce compte est désactivé. Contactez votre administrateur." };
 
   await db.user.update({ where: { id: user.id }, data: { failedLoginCount: 0, lockedUntil: null, lastLoginAt: new Date() } });
-  await resetRateLimit(`login:email:${email}`);
+  await resetRateLimit(`login:account:${identifier}`);
   await createSession(user.id);
   await audit(null, { action: "login", resource: "user", resourceId: user.id, summary: `Connexion ${de(`${user.firstName} ${user.lastName}`)}`, schoolId: user.schoolId });
 
-  redirect(user.mustChangePassword ? "/changer-mot-de-passe" : safeNext(next));
+  if (user.mustChangePassword) redirect("/changer-mot-de-passe");
+  // An account working in several schools first chooses one.
+  if ((await accountSchoolCount(user.id)) > 1) {
+    const target = safeNext(next);
+    redirect(target === "/espace" ? "/espace/choisir-etablissement" : `/espace/choisir-etablissement?next=${encodeURIComponent(target)}`);
+  }
+  redirect(safeNext(next));
 }
 
 export async function logout() {
@@ -122,12 +130,14 @@ export async function changePassword(_prev: ActionState, formData: FormData): Pr
   // Security notice to the account's address, as after a reset by code. Sent
   // once the answer has left, so a slow mail server never delays the page.
   const at = new Date();
-  after(() =>
-    sendMail({
-      to: user.email,
-      tag: "password_changed",
-      ...passwordChangedEmail({ firstName: user.firstName, email: user.email, at, signInUrl: platformUrl("/connexion"), forgotUrl: platformUrl("/mot-de-passe-oublie"), keptSession: true }),
-    }),
-  );
-  redirect("/espace");
+  const to = user.email;
+  if (to)
+    after(() =>
+      sendMail({
+        to,
+        tag: "password_changed",
+        ...passwordChangedEmail({ firstName: user.firstName, email: to, at, signInUrl: platformUrl("/connexion"), forgotUrl: platformUrl("/mot-de-passe-oublie"), keptSession: true }),
+      }),
+    );
+  redirect((await accountSchoolCount(user.id)) > 1 ? "/espace/choisir-etablissement" : "/espace");
 }

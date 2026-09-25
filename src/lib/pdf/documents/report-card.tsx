@@ -6,16 +6,21 @@ import { mention } from "@/lib/domain/grades";
 import { formatAverage, plural } from "@/lib/utils";
 
 import { DataTable, Figure, FigureRow, InfoGrid, Notice, Signatures } from "../components";
+import type { PdfPhoto } from "../data/photo";
 import { beninDate, calendarDate, officialName, ordinal } from "../format";
 import { DocumentPage, PdfDocument, T, type DocumentMeta, type Issuer } from "../layout";
 import { COLORS, styles } from "../theme";
+
+import { PhotoFrame } from "./attestation";
 
 export type ReportCardLine = { subject: string; coefficient: number; average: number | null; rank: number | null; teacher?: string | null };
 
 export type ReportCardData = {
   enrollmentId: string;
   mode: "published" | "preview";
-  student: { matricule: string; firstName: string; lastName: string; gender: "F" | "M"; birthDate: Date; birthPlace: string | null };
+  student: { matricule: string; firstName: string; lastName: string; gender: "F" | "M"; birthDate: Date; birthPlace: string | null; photoFileId?: string | null };
+  // The photo bytes for the PDF (the HTML print reads photoFileId).
+  photo?: PdfPhoto | null;
   classroom: { name: string; mainTeacher: string | null };
   // The head of the school signs the report card, whoever clicked publish.
   headOfSchool: string | null;
@@ -49,20 +54,23 @@ export function ReportCardPage({ data, meta, issuer }: { data: ReportCardData; m
     <DocumentPage
       meta={{ ...meta, issuer }}
       header={
-        <View style={{ marginTop: 10 }}>
-          <InfoGrid
-            columns={4}
-            items={[
-              { label: "Élève", value: officialName(s.lastName, s.firstName) },
-              { label: "Matricule", value: s.matricule },
-              { label: "Classe", value: `${data.classroom.name}${data.isRepeating ? " (redoublant)" : ""}` },
-              { label: "Effectif", value: plural(card.classSize, "élève") },
-              { label: s.gender === "F" ? "Née le" : "Né le", value: born },
-              { label: "Sexe", value: GENDER_LABELS[s.gender] },
-              { label: "Année scolaire", value: data.yearLabel },
-              { label: "Professeur principal", value: data.classroom.mainTeacher ?? "Non désigné" },
-            ]}
-          />
+        <View style={{ marginTop: 10, flexDirection: "row", gap: 8, alignItems: "stretch" }}>
+          <PhotoFrame photo={data.photo} width={52} />
+          <View style={{ flex: 1 }}>
+            <InfoGrid
+              columns={4}
+              items={[
+                { label: "Élève", value: officialName(s.lastName, s.firstName) },
+                { label: "Matricule", value: s.matricule },
+                { label: "Classe", value: `${data.classroom.name}${data.isRepeating ? " (redoublant)" : ""}` },
+                { label: "Effectif", value: plural(card.classSize, "élève") },
+                { label: s.gender === "F" ? "Née le" : "Né le", value: born },
+                { label: "Sexe", value: GENDER_LABELS[s.gender] },
+                { label: "Année scolaire", value: data.yearLabel },
+                { label: "Professeur principal", value: data.classroom.mainTeacher ?? "Non désigné" },
+              ]}
+            />
+          </View>
         </View>
       }
     >

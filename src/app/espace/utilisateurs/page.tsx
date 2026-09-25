@@ -1,13 +1,15 @@
-import { Download } from "lucide-react";
+import { Download, LifeBuoy } from "lucide-react";
 import type { Metadata } from "next";
 
 import { DataTable, type Column } from "@/components/kit/data-table";
 import { PageHeader } from "@/components/kit/page-header";
+import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
 import { FilterBar } from "@/features/territory/components/filter-bar";
 import { CreateUserDialog } from "@/features/users/components/create-user-dialog";
 import { UserRowActions } from "@/features/users/components/user-row-actions";
+import { pendingHelpCount } from "@/features/password-help/queries";
 import { assignableRoles, entityOptions, listUsers, roleFilterOptions, userFilters } from "@/features/users/queries";
 import { can, requirePermission } from "@/lib/auth/authorize";
 import { listParams } from "@/lib/list";
@@ -29,11 +31,12 @@ export default async function UsersPage({ searchParams }: PageProps<"/espace/uti
   const canCreate = can(user, "user:create");
   const canUpdate = can(user, "user:update");
 
-  const [{ rows, total }, roles, assignable, entities] = await Promise.all([
+  const [{ rows, total }, roles, assignable, entities, pendingHelp] = await Promise.all([
     listUsers(user, filters, page),
-    roleFilterOptions(),
-    canCreate ? assignableRoles(user) : Promise.resolve([]),
+    roleFilterOptions(user),
+    canCreate || canUpdate ? assignableRoles(user) : Promise.resolve([]),
     canCreate ? entityOptions(user) : Promise.resolve({ DEPARTMENT: [], COMMUNE: [], SCHOOL: [] }),
+    canUpdate ? pendingHelpCount(user) : Promise.resolve(0),
   ]);
 
   const columns: Column<Row>[] = [
@@ -45,7 +48,8 @@ export default async function UsersPage({ searchParams }: PageProps<"/espace/uti
           <p className="font-semibold">
             {u.firstName} {u.lastName}
           </p>
-          <p className="text-xs break-all text-muted">{u.email}</p>
+          <p className="font-mono text-xs break-all text-muted">{u.username}</p>
+          {u.email && <p className="text-xs break-all text-muted">{u.email}</p>}
         </div>
       ),
     },
@@ -70,7 +74,18 @@ export default async function UsersPage({ searchParams }: PageProps<"/espace/uti
             className: "text-right",
             cell: (u: Row) =>
               u.manageable ? (
-                <UserRowActions id={u.id} name={`${u.firstName} ${u.lastName}`} isActive={u.isActive} sessions={u._count.sessions} />
+                <UserRowActions
+                  id={u.id}
+                  name={`${u.firstName} ${u.lastName}`}
+                  isActive={u.isActive}
+                  sessions={u._count.sessions}
+                  roleId={u.role.id}
+                  // Roles of the same level that could go to this account:
+                  // national ones, or those owned by its own entity.
+                  roles={assignable
+                    .filter((r) => r.scopeLevel === u.scopeLevel && (!r.ownerEntityId || r.ownerEntityId === (u.schoolId ?? u.communeId ?? u.departmentId)))
+                    .map((r) => ({ id: r.id, name: r.name }))}
+                />
               ) : (
                 <span className="text-xs text-muted">{u.id === user.id ? "Votre compte" : "Droits supérieurs"}</span>
               ),
@@ -101,6 +116,19 @@ export default async function UsersPage({ searchParams }: PageProps<"/espace/uti
           </>
         }
       />
+      {pendingHelp > 0 && (
+        <Alert
+          tone="warning"
+          title={`${pendingHelp} demande${pendingHelp > 1 ? "s" : ""} de réinitialisation en attente`}
+          action={
+            <ButtonLink href="/espace/aide-connexion" variant="secondary" size="sm">
+              <LifeBuoy aria-hidden /> Traiter
+            </ButtonLink>
+          }
+        >
+          Des personnes de votre périmètre ont oublié leur mot de passe et attendent votre aide.
+        </Alert>
+      )}
       <FilterBar
         basePath="/espace/utilisateurs"
         keep={{ q: filters.q }}
@@ -128,7 +156,7 @@ export default async function UsersPage({ searchParams }: PageProps<"/espace/uti
         pageSize={page.pageSize}
         searchParams={sp}
         basePath="/espace/utilisateurs"
-        searchPlaceholder="Rechercher par nom ou e-mail…"
+        searchPlaceholder="Rechercher par nom, identifiant ou e-mail…"
         caption="Comptes utilisateurs de votre périmètre"
         emptyTitle="Aucun compte"
         emptyDescription="Aucun compte ne correspond à ces critères dans votre périmètre."

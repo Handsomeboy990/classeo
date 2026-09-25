@@ -13,7 +13,7 @@ import { createUser } from "../actions";
 import { TemporaryPassword, type IssuedPassword } from "./temporary-password";
 
 type Level = "NATIONAL" | "DEPARTMENT" | "COMMUNE" | "SCHOOL" | "SELF";
-type RoleOption = { id: string; name: string; scopeLevel: Level };
+type RoleOption = { id: string; name: string; scopeLevel: Level; ownerEntityId?: string | null };
 type EntityOption = { id: string; label: string; group?: string };
 
 const ENTITY_LABEL: Record<"DEPARTMENT" | "COMMUNE" | "SCHOOL", string> = {
@@ -29,9 +29,12 @@ export function CreateUserDialog({ roles, entities }: { roles: RoleOption[]; ent
   const [open, setOpen] = useState(false);
   const [roleId, setRoleId] = useState("");
   const [created, setCreated] = useState<IssuedPassword | null>(null);
-  const level = roles.find((r) => r.id === roleId)?.scopeLevel;
+  const chosen = roles.find((r) => r.id === roleId);
+  const level = chosen?.scopeLevel;
   const entityLevel = level === "DEPARTMENT" || level === "COMMUNE" || level === "SCHOOL" ? level : null;
-  const options = entityLevel ? entities[entityLevel] : [];
+  // A role owned by a school (or a commune, a department) only goes to that
+  // entity: the list is narrowed to it, the server checks it again.
+  const options = entityLevel ? entities[entityLevel].filter((o) => !chosen?.ownerEntityId || o.id === chosen.ownerEntityId) : [];
 
   function close() {
     setOpen(false);
@@ -68,7 +71,7 @@ export function CreateUserDialog({ roles, entities }: { roles: RoleOption[]; ent
                 <Input autoComplete="off" maxLength={80} />
               </FormField>
             </div>
-            <FormField label="Adresse e-mail" name="email" required hint="Identifiant de connexion de la personne.">
+            <FormField label="Adresse e-mail" name="email" hint="Facultatif. La personne se connecte avec l'identifiant créé à partir de ses prénom et nom.">
               <Input type="email" autoComplete="off" maxLength={200} />
             </FormField>
             <FormField label="Téléphone" name="phone">

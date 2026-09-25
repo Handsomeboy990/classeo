@@ -1,17 +1,21 @@
 "use client";
 
-import { AlertTriangle, Lock, RotateCcw, Save } from "lucide-react";
+import { AlertTriangle, CloudUpload, Lock, RotateCcw, Save, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, useTransition, type ChangeEvent, type FocusEvent, type KeyboardEvent } from "react";
 
 import { AverageLevel } from "@/components/kit/level";
 import { toast } from "@/components/kit/toaster";
+import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { discardEntry, sendOrQueue, useOfflineEntries } from "@/features/offline/client";
+import { draftsOf } from "@/features/offline/queue";
+import type { QueueItem } from "@/features/offline/types";
 import { parseGradeValue, type EvaluationColumn } from "@/lib/domain/grade-entry";
 import { rankEntries, round2, subjectAverage, type Formula, type GradeInput } from "@/lib/domain/grades";
 import { formatRank } from "@/lib/domain/report-card";
-import { cn, formatAverage } from "@/lib/utils";
+import { cn, formatAverage, formatDateTime } from "@/lib/utils";
 
 import { saveGrades } from "../actions";
 
@@ -33,6 +37,24 @@ function keepEdits(current: Values, before: Values, fresh: Values): Values {
       return [id, next];
     }),
   );
+}
+
+// Values of entries typed offline, as the grid shows them.
+function draftValues(items: QueueItem<"grades">[], columns: EvaluationColumn[]): Values {
+  const out: Values = {};
+  for (const item of items)
+    for (const c of item.payload.cells) {
+      const col = columns.find((k) => k.type === c.type && k.sequence === c.sequence);
+      if (!col) continue;
+      out[c.enrollmentId] = { ...out[c.enrollmentId], [col.key]: c.value === null ? "" : String(c.value).replace(".", ",") };
+    }
+  return out;
+}
+
+function overlay(base: Values, extra: Values): Values {
+  const out: Values = { ...base };
+  for (const [id, cells] of Object.entries(extra)) out[id] = { ...out[id], ...cells };
+  return out;
 }
 
 // Label shown above a field in the phone cards: "I1", "I2", then the full
@@ -65,6 +87,27 @@ export function GradeGrid({
   const [values, setValues] = useState<Values>(() => toValues(rows));
   const [pending, startTransition] = useTransition();
   const rootRef = useRef<HTMLDivElement>(null);
+
+  // Entries typed offline for this sheet. Waiting ones count as saved on
+  // this device (shown in their own colour); refused ones are put back in
+  // the grid as unsaved changes, to correct and send again.
+  const entries = useOfflineEntries();
+  const drafts = useMemo(() => draftsOf(entries, "grades", sheetId), [entries, sheetId]);
+  const pendingValues = useMemo(() => draftValues(drafts.pending, columns), [drafts.pending, columns]);
+  const base = useMemo(() => overlay(saved, pendingValues), [saved, pendingValues]);
+  const [seenDrafts, setSeenDrafts] = useState<QueueItem<"grades">[]>([]);
+  const allDrafts = [...drafts.pending, ...drafts.rejected];
+  if (allDrafts.length !== seenDrafts.length || allDrafts.some((d) => !seenDrafts.includes(d))) {
+    const all = allDrafts.sort((a, b) => a.createdAt - b.createdAt);
+    const known = new Set(seenDrafts.map((d) => d.clientId));
+    const fresh = all.filter((d) => !known.has(d.clientId));
+    // A waiting entry that left the queue without being refused was
+    // written: its values become the saved ones until fresh data arrives.
+    const gone = seenDrafts.filter((d) => d.status !== "rejected" && !all.some((a) => a.clientId === d.clientId));
+    setSeenDrafts(all);
+    if (fresh.length) setValues((v) => overlay(v, draftValues(fresh, columns)));
+    if (gone.length) setSaved((v) => overlay(v, draftValues(gone, columns)));
+  }
 
   // Fresh server data (after a save or a refresh) replaces the baseline.
   // A cell typed since the previous baseline keeps what the user typed: the
@@ -114,11 +157,13 @@ export function GradeGrid({
     for (const r of rows)
       for (const c of columns) {
         const now = (values[r.enrollmentId]?.[c.key] ?? "").trim();
-        const before = (saved[r.enrollmentId]?.[c.key] ?? "").trim();
+        const before = (base[r.enrollmentId]?.[c.key] ?? "").trim();
         if (now.replace(",", ".") !== before.replace(",", ".")) cells.push({ enrollmentId: r.enrollmentId, key: c.key });
       }
     return cells;
-  }, [rows, columns, values, saved]);
+  }, [rows, columns, values, base]);
+
+  const pendingCount = Object.values(pendingValues).reduce((n, cells) => n + Object.keys(cells).length, 0);
 
   useEffect(() => {
     if (!dirty.length) return;
@@ -159,17 +204,49 @@ export function GradeGrid({
       const parsed = parseGradeValue(values[enrollmentId]?.[key] ?? "");
       return { enrollmentId, type: col.type, sequence: col.sequence, value: parsed.ok ? parsed.value : null };
     });
+    // What this device holds for each sent cell: the server compares it
+    // with its own value before an offline entry overwrites anything.
+    const baseline = cells.map((c) => {
+      const key = columns.find((k) => k.type === c.type && k.sequence === c.sequence)!.key;
+      const parsed = parseGradeValue(base[c.enrollmentId]?.[key] ?? "");
+      return { ...c, value: parsed.ok ? parsed.value : null };
+    });
     const snapshot = values;
+    const refused = drafts.rejected;
+    const title = document.querySelector("#page-content h1")?.textContent?.trim();
     startTransition(async () => {
-      const result = await saveGrades(null, { sheetId, cells });
-      if (result?.ok) {
-        setSaved(snapshot);
-        toast("success", result.message ?? "Notes enregistrées.");
-        router.refresh();
-      } else {
-        toast("error", result?.message ?? "L'enregistrement a échoué. Vos saisies sont conservées, réessayez.");
+      try {
+        const sent = await sendOrQueue(
+          { kind: "grades", target: sheetId, payload: { sheetId, cells }, baseline: { cells: baseline }, page: window.location.pathname, label: `Notes${title ? `, ${title}` : ""}` },
+          () => saveGrades(null, { sheetId, cells }),
+        );
+        if (sent.queued) {
+          toast("success", `Pas de réseau : ${cells.length > 1 ? `${cells.length} notes gardées` : "1 note gardée"} sur cet appareil. Envoi automatique au retour du réseau.`);
+        } else if (sent.result?.ok) {
+          setSaved(snapshot);
+          toast("success", sent.result.message ?? "Notes enregistrées.");
+          router.refresh();
+        } else {
+          toast("error", sent.result?.message ?? "L'enregistrement a échoué. Vos saisies sont conservées, réessayez.");
+          return;
+        }
+        // The values of refused entries were in the grid: they left with
+        // this save.
+        for (const r of refused) await discardEntry(r.clientId);
+      } catch {
+        toast("error", "L'enregistrement a échoué. Vos saisies sont conservées, réessayez.");
       }
     });
+  }
+
+  function abandon(item: QueueItem<"grades">) {
+    const reverted = draftValues([item], columns);
+    setValues((v) => {
+      const next = { ...v };
+      for (const [id, cells] of Object.entries(reverted)) next[id] = { ...next[id], ...Object.fromEntries(Object.keys(cells).map((k) => [k, base[id]?.[k] ?? ""])) };
+      return next;
+    });
+    void discardEntry(item.clientId);
   }
 
   function onKeyDown(e: KeyboardEvent<HTMLInputElement>, row: number, col: number) {
@@ -193,7 +270,7 @@ export function GradeGrid({
       e.preventDefault();
       focusCell(row, col - 1);
     } else if (e.key === "Escape") {
-      setValues((v) => ({ ...v, [rows[row]!.enrollmentId]: { ...v[rows[row]!.enrollmentId], [columns[col]!.key]: saved[rows[row]!.enrollmentId]?.[columns[col]!.key] ?? "" } }));
+      setValues((v) => ({ ...v, [rows[row]!.enrollmentId]: { ...v[rows[row]!.enrollmentId], [columns[col]!.key]: base[rows[row]!.enrollmentId]?.[columns[col]!.key] ?? "" } }));
     }
   }
 
@@ -203,7 +280,8 @@ export function GradeGrid({
   function field(r: Row, ri: number, c: EvaluationColumn, ci: number, layout: "table" | "cards") {
     const value = values[r.enrollmentId]?.[c.key] ?? "";
     const error = computed.byId.get(r.enrollmentId)!.errors[c.key];
-    const changed = value.trim().replace(",", ".") !== (saved[r.enrollmentId]?.[c.key] ?? "").trim().replace(",", ".");
+    const changed = value.trim().replace(",", ".") !== (base[r.enrollmentId]?.[c.key] ?? "").trim().replace(",", ".");
+    const waiting = !changed && pendingValues[r.enrollmentId]?.[c.key] !== undefined;
     const errorId = `err-${layout}-${r.enrollmentId}-${ci}`;
     return {
       value,
@@ -222,11 +300,11 @@ export function GradeGrid({
         "aria-label": `${c.label}, ${r.name}`,
         "aria-invalid": error ? true : undefined,
         "aria-describedby": error ? errorId : `grid-help-${layout}`,
-        title: error,
+        title: error ?? (waiting ? "En attente d'envoi" : undefined),
         onChange: (e: ChangeEvent<HTMLInputElement>) => setValues((v) => ({ ...v, [r.enrollmentId]: { ...v[r.enrollmentId], [c.key]: e.target.value } })),
         onFocus: (e: FocusEvent<HTMLInputElement>) => e.currentTarget.select(),
       },
-      tone: error ? "border-danger bg-danger-soft" : changed ? "border-primary bg-primary-soft" : "border-border-strong",
+      tone: error ? "border-danger bg-danger-soft" : changed ? "border-primary bg-primary-soft" : waiting ? "border-warning border-dashed bg-warning-soft" : "border-border-strong",
     };
   }
 
@@ -241,6 +319,33 @@ export function GradeGrid({
   }
 
   return (
+    <>
+      {(drafts.rejected.length > 0 || pendingCount > 0) && (
+        <div className="mb-4 flex flex-col gap-3">
+          {drafts.rejected.map((d) => (
+            <Alert
+              key={d.clientId}
+              tone="danger"
+              title={`Saisie hors ligne du ${formatDateTime(new Date(d.createdAt))} refusée`}
+              action={
+                <Button variant="danger-ghost" size="sm" onClick={() => abandon(d)}>
+                  <Trash2 aria-hidden /> Abandonner cette saisie
+                </Button>
+              }
+            >
+              <p>{d.error}</p>
+              <p className="mt-1">Vos valeurs sont remises dans la grille, en couleur : corrigez-les si besoin, puis enregistrez.</p>
+            </Alert>
+          ))}
+          {pendingCount > 0 && (
+            <Alert tone="warning" title={pendingCount > 1 ? `${pendingCount} notes en attente d'envoi` : "1 note en attente d'envoi"}>
+              <p className="flex items-center gap-1.5">
+                <CloudUpload className="size-4 shrink-0" aria-hidden /> Saisies sans réseau et gardées sur cet appareil (cases en pointillés). Elles partent automatiquement au retour du réseau.
+              </p>
+            </Alert>
+          )}
+        </div>
+      )}
     <div ref={rootRef} className="flex flex-col rounded-card border border-border bg-surface lg:grid lg:grid-cols-[minmax(0,1fr)_auto]">
       <div className="flex flex-wrap items-center gap-x-6 gap-y-2 border-b border-border p-4 text-sm lg:col-start-1 lg:row-start-1">
         <p>
@@ -436,10 +541,14 @@ export function GradeGrid({
           )}
         >
           <p className="min-w-0 flex-1 text-sm text-muted lg:flex-none max-lg:[html[data-text=xl]_&]:basis-full max-lg:[html[data-text=xxl]_&]:basis-full" aria-live="polite">
-            {dirty.length ? `${dirty.length} modification${dirty.length > 1 ? "s" : ""} non enregistrée${dirty.length > 1 ? "s" : ""}` : "Tout est enregistré"}
+            {dirty.length
+              ? `${dirty.length} modification${dirty.length > 1 ? "s" : ""} non enregistrée${dirty.length > 1 ? "s" : ""}`
+              : pendingCount
+                ? `${pendingCount} note${pendingCount > 1 ? "s" : ""} en attente d'envoi`
+                : "Tout est enregistré"}
           </p>
           {dirty.length > 0 && (
-            <Button variant="ghost" size="sm" onClick={() => setValues(saved)} disabled={pending} title="Annuler les modifications">
+            <Button variant="ghost" size="sm" onClick={() => setValues(base)} disabled={pending} title="Annuler les modifications">
               <RotateCcw aria-hidden /> <span className="max-sm:sr-only">Annuler les modifications</span>
             </Button>
           )}
@@ -460,5 +569,6 @@ export function GradeGrid({
         </p>
       )}
     </div>
+    </>
   );
 }

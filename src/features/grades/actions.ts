@@ -10,8 +10,11 @@ import { assignmentWriteWhere, classroomWhere } from "@/lib/auth/scope";
 import type { CurrentUser } from "@/lib/auth/session";
 import { invalidate, tags } from "@/lib/cache";
 import { db } from "@/lib/db";
+import { assertClassroomWritable, assertSheetWritable, assertWritable } from "@/lib/guards";
 import { DomainError } from "@/lib/errors";
 import { plural } from "@/lib/utils";
+
+import { withSubmission } from "@/features/offline/submission";
 
 import { sheetWriteWhere } from "./queries";
 
@@ -38,6 +41,9 @@ const sheetInclude = {
 async function findWritableSheet(user: User, sheetId: string) {
   const sheet = await db.gradeSheet.findFirst({ where: { AND: [{ id: sheetId }, sheetWriteWhere(user)] }, include: sheetInclude });
   if (!sheet) throw new DomainError("Fiche de notes introuvable ou hors de votre périmètre.");
+  // Every write on a sheet goes through here: refused for a closed year or a
+  // suspended school.
+  await assertSheetWritable(sheet.id);
   return sheet;
 }
 
@@ -56,6 +62,7 @@ export const createSheet = createAction({
       include: { subject: true, classroom: { select: { name: true, schoolId: true } } },
     });
     if (!assignment) throw new DomainError("Matière introuvable ou hors de votre périmètre.");
+    await assertWritable({ schoolId: assignment.classroom.schoolId, academicYearId: year.id });
     const period = year.periods.find((p) => p.id === input.periodId);
     if (!period) throw new DomainError("Période inconnue pour l'année scolaire active.");
     if (period.isClosed) throw new DomainError("Cette période est clôturée.");
@@ -152,48 +159,51 @@ const cell = z.object({
 // deletes the grade. Everything is written in one transaction.
 export const saveGrades = createAction({
   permission: "grade:update",
-  schema: z.object({ sheetId: id, cells: z.array(cell).min(1, "Aucune modification à enregistrer.").max(3000) }),
-  handler: async (input, user) => {
-    const sheet = await findWritableSheet(user, input.sheetId);
-    assertEditable(sheet);
-
-    const counts = { INTERROGATION: sheet.interrogationCount, DEVOIR: sheet.devoirCount, COMPOSITION: sheet.compositionCount };
-    if (input.cells.some((c) => c.sequence > counts[c.type])) throw new DomainError("Une évaluation ne fait pas partie de cette fiche.");
-    const enrollmentIds = [...new Set(input.cells.map((c) => c.enrollmentId))];
-    const valid = await db.enrollment.count({ where: { id: { in: enrollmentIds }, classroomId: sheet.assignment.classroom.id, status: "ACTIVE" } });
-    if (valid !== enrollmentIds.length) throw new DomainError("Un élève ne fait pas partie de cette classe.");
-
-    const cleared = input.cells.filter((c) => c.value === null);
-    const written = input.cells.filter((c) => c.value !== null);
-    await db.$transaction([
-      ...(cleared.length
-        ? [
-            db.grade.deleteMany({
-              where: { gradeSheetId: sheet.id, OR: cleared.map((c) => ({ enrollmentId: c.enrollmentId, type: c.type, sequence: c.sequence })) },
-            }),
-          ]
-        : []),
-      ...written.map((c) =>
-        db.grade.upsert({
-          where: { gradeSheetId_enrollmentId_type_sequence: { gradeSheetId: sheet.id, enrollmentId: c.enrollmentId, type: c.type, sequence: c.sequence } },
-          create: { gradeSheetId: sheet.id, enrollmentId: c.enrollmentId, type: c.type, sequence: c.sequence, value: c.value!, gradedById: user.id },
-          update: { value: c.value!, gradedById: user.id },
-        }),
-      ),
-    ]);
-
-    await audit(user, {
-      action: "update",
-      resource: "grade",
-      resourceId: sheet.id,
-      summary: `Saisie de notes ${sheetLabel(sheet)} : ${plural(written.length, "note enregistrée", "notes enregistrées")}, ${plural(cleared.length, "note effacée", "notes effacées")}`,
-      schoolId: sheet.assignment.classroom.schoolId,
-    });
-    invalidate(tags.stats);
-    const n = input.cells.length;
-    return `${n} note${n > 1 ? "s" : ""} enregistrée${n > 1 ? "s" : ""}.`;
-  },
+  // clientId: set by an entry typed offline and replayed (/api/offline/replay).
+  schema: z.object({ sheetId: id, cells: z.array(cell).min(1, "Aucune modification à enregistrer.").max(3000), clientId: z.uuid().optional() }),
+  handler: (input, user) => withSubmission(user, input.clientId, "grades", () => writeGrades(input, user)),
 });
+
+async function writeGrades(input: { sheetId: string; cells: z.infer<typeof cell>[] }, user: User) {
+  const sheet = await findWritableSheet(user, input.sheetId);
+  assertEditable(sheet);
+
+  const counts = { INTERROGATION: sheet.interrogationCount, DEVOIR: sheet.devoirCount, COMPOSITION: sheet.compositionCount };
+  if (input.cells.some((c) => c.sequence > counts[c.type])) throw new DomainError("Une évaluation ne fait pas partie de cette fiche.");
+  const enrollmentIds = [...new Set(input.cells.map((c) => c.enrollmentId))];
+  const valid = await db.enrollment.count({ where: { id: { in: enrollmentIds }, classroomId: sheet.assignment.classroom.id, status: "ACTIVE" } });
+  if (valid !== enrollmentIds.length) throw new DomainError("Un élève ne fait pas partie de cette classe.");
+
+  const cleared = input.cells.filter((c) => c.value === null);
+  const written = input.cells.filter((c) => c.value !== null);
+  await db.$transaction([
+    ...(cleared.length
+      ? [
+          db.grade.deleteMany({
+            where: { gradeSheetId: sheet.id, OR: cleared.map((c) => ({ enrollmentId: c.enrollmentId, type: c.type, sequence: c.sequence })) },
+          }),
+        ]
+      : []),
+    ...written.map((c) =>
+      db.grade.upsert({
+        where: { gradeSheetId_enrollmentId_type_sequence: { gradeSheetId: sheet.id, enrollmentId: c.enrollmentId, type: c.type, sequence: c.sequence } },
+        create: { gradeSheetId: sheet.id, enrollmentId: c.enrollmentId, type: c.type, sequence: c.sequence, value: c.value!, gradedById: user.id },
+        update: { value: c.value!, gradedById: user.id },
+      }),
+    ),
+  ]);
+
+  await audit(user, {
+    action: "update",
+    resource: "grade",
+    resourceId: sheet.id,
+    summary: `Saisie de notes ${sheetLabel(sheet)} : ${plural(written.length, "note enregistrée", "notes enregistrées")}, ${plural(cleared.length, "note effacée", "notes effacées")}`,
+    schoolId: sheet.assignment.classroom.schoolId,
+  });
+  invalidate(tags.stats);
+  const n = input.cells.length;
+  return `${n} note${n > 1 ? "s" : ""} enregistrée${n > 1 ? "s" : ""}.`;
+}
 
 export const setSheetLock = createAction({
   permission: "grade:lock",
@@ -223,6 +233,7 @@ export const setClassLock = createAction({
   handler: async (input, user) => {
     const classroom = await db.classroom.findFirst({ where: { AND: [{ id: input.classroomId }, classroomWhere(user)] }, select: { id: true, name: true, schoolId: true } });
     if (!classroom) throw new DomainError("Classe introuvable ou hors de votre périmètre.");
+    await assertClassroomWritable(classroom.id);
     const { count } = await db.gradeSheet.updateMany({
       where: { AND: [sheetWriteWhere(user), { periodId: input.periodId, isLocked: !input.lock, assignment: { classroomId: classroom.id } }] },
       data: input.lock ? { isLocked: true, lockedAt: new Date(), lockedById: user.id } : { isLocked: false, lockedAt: null, lockedById: null },

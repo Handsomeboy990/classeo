@@ -1,17 +1,19 @@
 // Demonstration accounts shown on the sign in page so the jury can test every
-// role live. They exist only in seeded demo data.
+// role live. They exist only in seeded demo data. Accounts sign in with the
+// identifier built from their names; the e-mail still works for those that
+// have one.
 export const DEMO_PASSWORD = "Classeo2026";
 
 export const DEMO_ACCOUNTS = [
-  { email: "ministre@classeo.bj", role: "Administrateur national", scope: "Ministère, tout le Bénin" },
-  { email: "analyste@classeo.bj", role: "Analyste national", scope: "Cellule statistique" },
-  { email: "ddemp.atlantique@classeo.bj", role: "Directeur départemental", scope: "Atlantique" },
-  { email: "cs.abomey-calavi@classeo.bj", role: "Chef de circonscription", scope: "Abomey-Calavi" },
-  { email: "directeur@classeo.bj", role: "Chef d'établissement", scope: "CEG Godomey" },
-  { email: "secretaire@classeo.bj", role: "Secrétaire", scope: "CEG Godomey" },
-  { email: "comptable@classeo.bj", role: "Comptable", scope: "CEG Godomey" },
-  { email: "enseignant@classeo.bj", role: "Enseignant", scope: "Mathématiques, CEG Godomey" },
-  { email: "parent@classeo.bj", role: "Parent", scope: "Deux enfants scolarisés" },
-  { email: "eleve@classeo.bj", role: "Élève", scope: "3e A, CEG Godomey" },
-  { email: "partenaire@classeo.bj", role: "Structure partenaire", scope: "ONG, lecture seule" },
+  { username: "adjoa.houngbedji", email: "ministre@classeo.bj", role: "Administratrice nationale", scope: "Ministère, tout le Bénin" },
+  { username: "rodrigue.kpadonou", email: "analyste@classeo.bj", role: "Analyste national", scope: "Cellule statistique" },
+  { username: "aristide.gbaguidi", email: "ddemp.atlantique@classeo.bj", role: "Directeur départemental", scope: "Atlantique" },
+  { username: "benedicta.zannou", email: "cs.abomey-calavi@classeo.bj", role: "Cheffe de circonscription", scope: "Abomey-Calavi" },
+  { username: "florentin.agossou", email: "directeur@classeo.bj", role: "Chef d'établissement", scope: "CEG Godomey" },
+  { username: "pelagie.tossou", email: "secretaire@classeo.bj", role: "Secrétaire", scope: "CEG Godomey" },
+  { username: "gildas.sossou", email: "comptable@classeo.bj", role: "Comptable", scope: "CEG Godomey" },
+  { username: "nafissatou.issifou", email: "enseignant@classeo.bj", role: "Enseignante", scope: "Mathématiques, CEG Godomey" },
+  { username: "afiavi.hounkpatin", email: "parent@classeo.bj", role: "Parent", scope: "Deux enfants scolarisés" },
+  { username: "senami.hounkpatin", email: "eleve@classeo.bj", role: "Élève", scope: "3e A, CEG Godomey" },
+  { username: "estelle.amoussou", email: "partenaire@classeo.bj", role: "Structure partenaire", scope: "ONG, lecture seule" },
 ] as const;

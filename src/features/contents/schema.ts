@@ -40,6 +40,14 @@ export const contentSchema = z
       .trim()
       .optional()
       .transform((v) => (v ? v : null)),
+    // Last day of the scrolling band, empty for none.
+    tickerUntil: z
+      .string()
+      .trim()
+      .optional()
+      .transform((v) => (v ? v : null))
+      .refine((v) => v === null || /^\d{4}-\d{2}-\d{2}$/.test(v), "Choisissez une date valide.")
+      .refine((v) => v === null || v >= beninToday(), "Choisissez aujourd'hui ou une date à venir."),
     intent: z.enum(["draft", "publish"]).default("draft"),
   })
   .superRefine((v, ctx) => {
@@ -62,6 +70,21 @@ export function parseEventDate(value: string) {
   if (/^\d{4}-\d\d-\d\dT\d\d:\d\d$/.test(value)) return new Date(`${value}:00+01:00`);
   if (/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d$/.test(value)) return new Date(`${value}+01:00`);
   return new Date(Number.NaN);
+}
+
+// Today in Benin (UTC+1), as YYYY-MM-DD.
+export function beninToday(now = new Date()) {
+  return new Date(now.getTime() + 60 * 60 * 1000).toISOString().slice(0, 10);
+}
+
+// The band runs until the end of its last day, Benin time.
+export function tickerEnd(day: string) {
+  return new Date(`${day}T23:59:59+01:00`);
+}
+
+export function toTickerInput(d: Date | null) {
+  if (!d || d.getTime() < Date.now()) return "";
+  return new Date(d.getTime() + 60 * 60 * 1000).toISOString().slice(0, 10);
 }
 
 export function toEventInput(d: Date | null) {

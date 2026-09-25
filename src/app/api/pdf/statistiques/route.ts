@@ -17,6 +17,8 @@ export async function GET(request: Request) {
       const meta = { title: "Statistiques", subtitle: `${data.scopeName} · ${data.yearLabel ?? ""}`.replace(/ · $/, ""), reference, generatedAt: c.generatedAt, generatedBy: c.generatedBy, issuer };
       return {
         element: statisticsPdf(data, meta),
+        kind: "statistiques" as const,
+        title: meta.title,
         fileName: pdfFileName("statistiques", data.scopeName, data.yearLabel),
         reference,
         summary: `statistiques ${data.scopeName} (${data.children.length} ${data.childLabel.plural.toLowerCase()})`,

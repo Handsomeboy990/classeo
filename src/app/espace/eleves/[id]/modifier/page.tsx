@@ -9,6 +9,7 @@ import { StudentForm } from "@/features/students/components/student-form";
 import { getStudentForEdit } from "@/features/students/queries";
 import { requirePermission } from "@/lib/auth/authorize";
 import { dateToIso } from "@/lib/domain/attendance";
+import { fileUrl } from "@/lib/files";
 
 export const metadata: Metadata = { title: "Modifier un élève" };
 
@@ -46,6 +47,7 @@ export default async function EditStudentPage(props: PageProps<"/espace/eleves/[
             disabilities: student.disabilities,
             classroomId: enrollment.classroomId,
             isRepeating: enrollment.isRepeating,
+            photoUrl: fileUrl(student.photoFileId),
           }}
         />
       ) : (

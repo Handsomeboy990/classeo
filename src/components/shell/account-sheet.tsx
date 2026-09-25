@@ -1,6 +1,6 @@
 "use client";
 
-import { Accessibility, BookOpen, ChevronRight, LogOut, MapPin, Settings2 } from "lucide-react";
+import { Accessibility, ArrowLeftRight, BookOpen, ChevronRight, LogOut, Settings2 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -12,7 +12,9 @@ import { AccessibilityPanel } from "./accessibility-panel";
 import { Sheet } from "./sheet";
 import { SignOutButton } from "./sign-out-button";
 
-export type ShellUser = { fullName: string; email: string; roleName: string; scopeLabel: string };
+// canSwitchSchool: the account works in several schools and can change the
+// school of its session.
+export type ShellUser = { fullName: string; email: string; roleName: string; scopeLabel: string; canSwitchSchool?: boolean };
 
 const ROW =
   "flex min-h-12 w-full items-center gap-3 rounded-lg px-3 py-2 font-medium text-text hover:bg-surface-2 active:bg-surface-2 [&>svg:first-child]:size-5 [&>svg:first-child]:shrink-0 [&>svg:first-child]:text-muted";
@@ -40,7 +42,6 @@ export function AccountSheet({ open, onClose, user, pushKey }: { open: boolean; 
       }
     >
       <p className="flex items-center gap-1.5 px-1 pt-1 pb-4 text-sm text-muted">
-        <MapPin className="size-4 shrink-0" aria-hidden />
         <span className="sr-only">Périmètre :</span>
         <span className="truncate">{user.scopeLabel}</span>
         <span aria-hidden>·</span>
@@ -50,6 +51,15 @@ export function AccountSheet({ open, onClose, user, pushKey }: { open: boolean; 
       <div className="rounded-card border border-border">
         <PushToggle publicKey={pushKey} className="border-b border-border last:border-b-0" />
         <ul className="p-1">
+          {user.canSwitchSchool && (
+            <li>
+              <Link href="/espace/choisir-etablissement" onClick={onClose} className={ROW}>
+                <ArrowLeftRight aria-hidden />
+                <span className="flex-1">Changer d&apos;établissement</span>
+                <ChevronRight className="size-4 text-muted" aria-hidden />
+              </Link>
+            </li>
+          )}
           <li>
             <button
               type="button"

@@ -45,6 +45,8 @@ const nextConfig: NextConfig = {
     // back to a page is instant. Every server action refreshes the router,
     // which clears this cache, so users still see their own changes at once.
     staleTimes: { dynamic: 60, static: 300 },
+    // Uploaded documents may reach 5 MB (src/lib/files.ts).
+    serverActions: { bodySizeLimit: "6mb" },
   },
   async headers() {
     return [

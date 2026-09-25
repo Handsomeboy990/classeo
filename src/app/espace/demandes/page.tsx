@@ -79,6 +79,7 @@ export default async function RequestsPage({ searchParams }: PageProps<"/espace/
         rows={rows}
         columns={columns}
         rowKey={(r) => r.id}
+        rowHref={(r) => `/espace/demandes/${r.id}`}
         total={total}
         page={page.page}
         pageSize={page.pageSize}

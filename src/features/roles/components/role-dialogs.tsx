@@ -25,11 +25,14 @@ export function RoleFormDialog({
   roles,
   levels,
   source,
+  note,
 }: {
   mode: "create" | "duplicate";
   roles: RoleOption[];
   levels: LevelOption[];
   source?: RoleOption & { description: string };
+  // Who will own the role, for a school, a commune or a department.
+  note?: string;
 }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -71,6 +74,7 @@ export function RoleFormDialog({
           }}
           className="flex flex-col gap-4"
         >
+          {note && <Alert tone="info">{note}</Alert>}
           <FormField label="Nom du rôle" name="name" required hint="Par exemple : Analyste départemental, Surveillant général.">
             <Input maxLength={60} autoComplete="off" defaultValue={source ? `Copie de ${source.name}`.slice(0, 60) : ""} />
           </FormField>

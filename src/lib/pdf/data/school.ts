@@ -12,6 +12,7 @@ import type { AttendanceSheetData, CertificateData, ClassListData, TranscriptDat
 import type { PdfUser } from "../respond";
 
 import { schoolIssuer, schoolSelect, validId } from "./common";
+import { studentPhoto } from "./photo";
 
 async function schoolOf(schoolId: string) {
   return db.school.findUniqueOrThrow({ where: { id: schoolId }, select: schoolSelect });
@@ -143,7 +144,7 @@ export async function loadCertificate(user: PdfUser, studentId: string) {
   if (!enrollment || enrollment.status !== "ACTIVE") return null;
   const [school, student, director, first] = await Promise.all([
     schoolOf(enrollment.schoolId),
-    db.student.findUniqueOrThrow({ where: { id: enrollment.student.id }, select: { birthPlace: true } }),
+    db.student.findUniqueOrThrow({ where: { id: enrollment.student.id }, select: { birthPlace: true, photoFileId: true } }),
     // The head of the school signs: its active school director account.
     db.user.findFirst({
       where: { schoolId: enrollment.schoolId, isActive: true, role: { code: "SCHOOL_DIRECTOR" } },
@@ -166,6 +167,7 @@ export async function loadCertificate(user: PdfUser, studentId: string) {
     enrolledSince: first?.academicYear.startDate ?? enrollment.enrolledAt,
     school: { name: school.name, commune: school.commune.name },
     director: director ? { name: `${director.firstName} ${director.lastName}`, gender: director.gender } : null,
+    photo: await studentPhoto(student.photoFileId),
   };
   return { enrollmentId: enrollment.id, data, schoolId: school.id, issuer: schoolIssuer(school) };
 }

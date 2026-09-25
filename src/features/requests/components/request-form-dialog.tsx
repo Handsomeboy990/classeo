@@ -14,15 +14,19 @@ import { REQUEST_TYPE_LABELS, REQUEST_TYPES } from "../labels";
 
 export function RequestFormDialog() {
   const [open, setOpen] = useState(false);
+  const [type, setType] = useState("");
   return (
     <>
       <Button onClick={() => setOpen(true)}>
         <Send aria-hidden /> Nouvelle demande
       </Button>
       <Dialog open={open} onClose={() => setOpen(false)} title="Nouvelle demande au ministère" description="La circonscription, la direction départementale ou le ministère statue ; la décision vous est notifiée.">
-        <ActionForm action={createRequest} onSuccess={() => setOpen(false)} resetOnSuccess className="flex flex-col gap-4">
+        <ActionForm action={createRequest} onSuccess={() => {
+            setOpen(false);
+            setType("");
+          }} resetOnSuccess className="flex flex-col gap-4">
           <FormField label="Type de demande" name="type" required>
-            <Select defaultValue="">
+            <Select value={type} onChange={(e) => setType(e.target.value)}>
               <option value="" disabled>
                 Choisir un type
               </option>
@@ -33,6 +37,11 @@ export function RequestFormDialog() {
               ))}
             </Select>
           </FormField>
+          {type === "YEAR_EXTENSION" && (
+            <FormField label="Date souhaitée" name="wishedUntil" hint="Jusqu'à quand votre établissement a besoin de modifier l'année close. Le ministère fixe la date.">
+              <Input type="date" />
+            </FormField>
+          )}
           <FormField label="Objet" name="subject" required>
             <Input maxLength={150} autoComplete="off" />
           </FormField>

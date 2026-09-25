@@ -17,7 +17,11 @@ test("director publishes an audio announcement only with a transcript, then dele
   await page.getByLabel("Titre").fill(title);
   await page.getByLabel("Résumé facile à lire").fill("Message de test, il sera supprimé tout de suite.");
   await page.getByLabel("Texte complet").fill("Annonce créée par la suite de tests de bout en bout, puis supprimée.");
-  await page.getByRole("combobox", { name: "Cible" }).selectOption({ label: "CEG Godomey" });
+  // A long list: the searchable field, type to filter then pick.
+  const target = page.getByRole("combobox", { name: "Cible" });
+  await target.fill("godomey");
+  await page.getByRole("option", { name: "CEG Godomey" }).click();
+  await expect(target).toHaveValue("CEG Godomey");
   await page.getByRole("combobox", { name: "Public" }).selectOption({ label: "Personnel" });
   await page.getByRole("combobox", { name: "Type de média" }).selectOption({ label: "Audio" });
 

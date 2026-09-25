@@ -5,7 +5,7 @@ export type RequestType = (typeof REQUEST_TYPES)[number];
 export type RequestStatus = (typeof REQUEST_STATUSES)[number];
 
 export const REQUEST_TYPE_LABELS: Record<RequestType, string> = {
-  YEAR_EXTENSION: "Prolongation de période",
+  YEAR_EXTENSION: "Prolongation de l'année scolaire",
   NEW_SUBJECT: "Ouverture de matière ou de classe",
   STAFFING: "Personnel enseignant",
   INFRASTRUCTURE: "Infrastructure et équipement",

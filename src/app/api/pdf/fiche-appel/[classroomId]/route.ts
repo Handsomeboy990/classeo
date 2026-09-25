@@ -16,6 +16,8 @@ export async function GET(request: Request, ctx: RouteContext<"/api/pdf/fiche-ap
       const meta = { title: "Fiche d'appel", subtitle: `${data.classroom} · ${data.yearLabel}`, reference, generatedAt: c.generatedAt, generatedBy: c.generatedBy, issuer };
       return {
         element: attendanceSheetPdf(data, meta),
+        kind: "fiche_appel" as const,
+        title: meta.title,
         fileName: pdfFileName("fiche-appel", data.classroom, day),
         reference,
         summary: `fiche d'appel de la ${data.classroom} du ${day}`,

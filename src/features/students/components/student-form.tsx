@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import { ActionForm, SubmitButton, useFormState } from "@/components/kit/action-form";
 import { FormField } from "@/components/kit/form-field";
+import { ImageUpload } from "@/components/kit/image-upload";
 import { ButtonLink } from "@/components/ui/button";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox, ChoiceGroup, Input, Radio, Select } from "@/components/ui/input";
@@ -24,6 +25,7 @@ export type StudentValues = {
   disabilities: string[];
   classroomId: string;
   isRepeating: boolean;
+  photoUrl?: string | null;
 };
 
 function Disabilities({ values }: { values?: string[] }) {
@@ -56,6 +58,16 @@ export function StudentForm({ classes, guardians, values, cancelHref }: { classe
           <CardTitle>Élève</CardTitle>
         </CardHeader>
         <CardBody className="grid gap-4 sm:grid-cols-2">
+          <div className="sm:col-span-2">
+            <ImageUpload
+              name="photo"
+              label="Photo de l'élève (facultative)"
+              currentUrl={values?.photoUrl}
+              shape="circle"
+              maxSide={480}
+              hint="Elle apparaît sur la fiche, le bulletin et l'attestation. Sans photo, les initiales sont affichées."
+            />
+          </div>
           <FormField label="Nom" name="lastName" required>
             <Input defaultValue={values?.lastName} autoComplete="off" maxLength={60} />
           </FormField>

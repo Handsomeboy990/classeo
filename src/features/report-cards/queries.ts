@@ -85,7 +85,7 @@ export async function printableCard(user: User, enrollmentId: string, periodId: 
       classroomId: true,
       academicYearId: true,
       isRepeating: true,
-      student: { select: { id: true, matricule: true, firstName: true, lastName: true, gender: true, birthDate: true, birthPlace: true } },
+      student: { select: { id: true, matricule: true, firstName: true, lastName: true, gender: true, birthDate: true, birthPlace: true, photoFileId: true } },
       classroom: {
         select: {
           name: true,

@@ -1,28 +1,38 @@
 import {
+  Award,
   BarChart3,
   Bell,
+  BookMarked,
   BookOpen,
+  Building2,
   CalendarDays,
+  CalendarRange,
   ClipboardCheck,
+  FileCheck2,
   FileText,
   GraduationCap,
   Home,
+  FileStack,
   Inbox,
   KeyRound,
   Landmark,
+  LifeBuoy,
   LayoutGrid,
   type LucideIcon,
   Map,
   Megaphone,
   MessagesSquare,
   NotebookPen,
+  PenLine,
   ScrollText,
   Settings2,
   ShieldCheck,
+  TrendingUp,
   Users,
   UserSquare2,
   Wallet,
   Baby,
+  ArrowLeftRight,
 } from "lucide-react";
 
 import type { PermissionCode } from "@/lib/auth/permissions";
@@ -70,6 +80,10 @@ export const NAVIGATION: NavSection[] = [
       { label: "Statistiques", href: "/espace/statistiques", icon: BarChart3, permission: ["statistics:view"], scopes: STAFF, tab: { territory: 2, school: 6 } },
       { label: "Établissements", href: "/espace/etablissements", icon: Landmark, permission: ["school:view"], scopes: TERRITORY, short: "Écoles", tab: { territory: 4 } },
       { label: "Demandes", href: "/espace/demandes", icon: Inbox, permission: ["request:view"], scopes: STAFF, tab: { territory: 3 } },
+      { label: "Comparaison des années", href: "/espace/comparaison", icon: TrendingUp, permission: ["statistics:view"], scopes: STAFF, short: "Comparaison" },
+      { label: "Pièces demandées", href: "/espace/pieces-demandees", icon: FileStack, permission: ["document_request:view"], scopes: STAFF, short: "Pièces" },
+      { label: "Calendrier scolaire", href: "/espace/calendrier", icon: CalendarRange, permission: ["calendar:view"], scopes: STAFF, short: "Calendrier" },
+      { label: "Matières", href: "/espace/matieres", icon: BookMarked, permission: ["subject:view"], scopes: STAFF },
     ],
   },
   {
@@ -78,7 +92,9 @@ export const NAVIGATION: NavSection[] = [
       { label: "Mon établissement", href: "/espace/mon-etablissement", icon: Landmark, permission: ["school:view"], scopes: ["SCHOOL"], short: "Établissement" },
       { label: "Classes", href: "/espace/classes", icon: LayoutGrid, permission: ["class:view"], scopes: ["SCHOOL"], tab: { school: 5, teacher: 5 } },
       { label: "Élèves", href: "/espace/eleves", icon: GraduationCap, permission: ["student:view"], scopes: ["SCHOOL"], tab: { school: 1 } },
-      { label: "Enseignants", href: "/espace/enseignants", icon: UserSquare2, permission: ["teacher:view"], scopes: ["SCHOOL"] },
+      { label: "Transferts", href: "/espace/transferts", icon: ArrowLeftRight, permission: ["student:view"], scopes: STAFF },
+      // A school sees its team, the territory the national registry.
+      { label: "Enseignants", href: "/espace/enseignants", icon: UserSquare2, permission: ["teacher:view"], scopes: STAFF },
       { label: "Parents", href: "/espace/parents", icon: Users, permission: ["parent:view"], scopes: ["SCHOOL"] },
       { label: "Emploi du temps", href: "/espace/emploi-du-temps", icon: CalendarDays, permission: ["timetable:view"], scopes: ["SCHOOL"], short: "Horaires", tab: { teacher: 4 } },
     ],
@@ -89,6 +105,7 @@ export const NAVIGATION: NavSection[] = [
       { label: "Notes", href: "/espace/notes", icon: NotebookPen, permission: ["grade:view"], scopes: ["SCHOOL"], tab: { school: 2, teacher: 1 } },
       { label: "Bulletins", href: "/espace/bulletins", icon: FileText, permission: ["report_card:publish", "report_card:export"], scopes: ["SCHOOL"] },
       { label: "Présences", href: "/espace/presences", icon: ClipboardCheck, permission: ["attendance:view"], scopes: ["SCHOOL"], tab: { school: 4, teacher: 2 } },
+      { label: "Examens blancs", href: "/espace/examens-blancs", icon: Award, permission: ["mock_exam:view"] },
     ],
   },
   {
@@ -108,14 +125,18 @@ export const NAVIGATION: NavSection[] = [
   {
     title: "Administration",
     items: [
+      { label: "Paramètres de l'établissement", href: "/espace/parametres-etablissement", icon: Building2, permission: ["school:update"], scopes: ["SCHOOL"], short: "Paramètres" },
       { label: "Comptes utilisateurs", href: "/espace/utilisateurs", icon: KeyRound, permission: ["user:view"], short: "Comptes" },
+      { label: "Demandes de réinitialisation", href: "/espace/aide-connexion", icon: LifeBuoy, permission: ["user:update"], scopes: STAFF, short: "Mots de passe" },
       { label: "Rôles et droits", href: "/espace/droits", icon: ShieldCheck, permission: ["role:view"], short: "Droits" },
       { label: "Journal d'activité", href: "/espace/journal", icon: ScrollText, permission: ["audit:view"], short: "Journal" },
+      { label: "Documents délivrés", href: "/espace/signature/registre", icon: FileCheck2, permission: ["report_card:publish", "student:update", "payment:delete", "fee:update"], scopes: STAFF, short: "Documents" },
     ],
   },
   {
     title: "Mon compte",
     items: [
+      { label: "Signature électronique", href: "/espace/signature", icon: PenLine, permission: ["report_card:publish", "request:approve"], scopes: STAFF, short: "Signature" },
       { label: "Préférences", href: "/espace/preferences", icon: Settings2 },
       { label: "Guide d'utilisation", href: "/espace/aide", icon: BookOpen, short: "Aide" },
     ],
@@ -164,4 +185,32 @@ export function mobileTabs(sections: NavSection[], audience: TabAudience, count 
     .sort((a, b) => a.tab![audience]! - b.tab![audience]!)
     .slice(0, count);
   return home ? [home, ...ranked] : ranked;
+}
+
+// Unread notifications per menu entry. A notification belongs to the entry
+// whose href is the longest prefix of its link (a message under
+// /espace/messages/..., an absence under /espace/suivi/...). Links with no
+// entry of their own count on "Notifications" only, which always shows the
+// total. The dashboard never carries a badge: it is not where the item is.
+export function navigationBadges(sections: NavSection[], links: (string | null)[]): Record<string, number> {
+  const hrefs = sections.flatMap((s) => s.items.map((i) => i.href)).filter((h) => h !== "/espace" && h !== "/espace/notifications");
+  const counts: Record<string, number> = {};
+  for (const link of links) {
+    const path = link?.split(/[?#]/)[0] ?? "";
+    let best: string | null = null;
+    for (const h of hrefs) if ((path === h || path.startsWith(`${h}/`)) && (!best || h.length > best.length)) best = h;
+    if (best) counts[best] = (counts[best] ?? 0) + 1;
+  }
+  if (links.length && sections.some((s) => s.items.some((i) => i.href === "/espace/notifications"))) counts["/espace/notifications"] = links.length;
+  return counts;
+}
+
+// "3 non lues", for the accessible name of an entry with a badge.
+export function unreadLabel(n: number) {
+  return `${n} non lue${n > 1 ? "s" : ""}`;
+}
+
+// "9+" beyond nine: a badge stays one or two characters wide.
+export function badgeText(n: number) {
+  return n > 9 ? "9+" : String(n);
 }

@@ -15,6 +15,8 @@ import { canEditRoleDetails, customRoleCode, planRoleCreate, planRoleDeletion, p
 import { DomainError } from "@/lib/errors";
 
 import { actorOf, userScopeWhere } from "../users/queries";
+import { canManageRole, canReceiveHolders, creatableLevels, isNationalRole, ownerFor, type RoleOwner } from "./ownership";
+import { actorScope, roleVisibleWhere } from "./queries";
 
 type User = NonNullable<CurrentUser>;
 
@@ -35,20 +37,34 @@ const roleWithPermissions = {
   description: true,
   scopeLevel: true,
   isSystem: true,
+  ownerSchoolId: true,
+  ownerCommuneId: true,
+  ownerDepartmentId: true,
   permissions: { select: { permission: { select: { code: true } } } },
 } as const;
+
+const ownerOf = (r: RoleOwner): RoleOwner => ({ ownerSchoolId: r.ownerSchoolId, ownerCommuneId: r.ownerCommuneId, ownerDepartmentId: r.ownerDepartmentId });
+
+// A role the user may see, or nothing: an identifier of another school's
+// role reads as unknown.
+function findVisibleRole(user: User, id: string) {
+  return db.role.findFirst({ where: { AND: [{ id }, roleVisibleWhere(user)] }, select: roleWithPermissions });
+}
 
 const codesOf = (r: { permissions: { permission: { code: string } }[] }) => r.permissions.map((p) => p.permission.code);
 
 // Role names are what people pick from a list: two roles may not share one,
-// whatever the case or accents.
-async function assertNameFree(name: string, exceptId?: string) {
-  const others = await db.role.findMany({ where: exceptId ? { id: { not: exceptId } } : {}, select: { name: true }, take: 500 });
+// whatever the case or accents. An entity's role is compared with the
+// national roles and the entity's other roles (two schools may both have a
+// "Surveillant général"); a national role with every role.
+async function assertNameFree(name: string, owner: RoleOwner, exceptId?: string) {
+  const among: Prisma.RoleWhereInput = isNationalRole(owner) ? {} : { OR: [{ ownerSchoolId: null, ownerCommuneId: null, ownerDepartmentId: null }, owner] };
+  const others = await db.role.findMany({ where: { AND: [among, exceptId ? { id: { not: exceptId } } : {}] }, select: { name: true }, take: 1000 });
   if (others.some((o) => sameRoleName(o.name, name))) throw new DomainError("Un rôle porte déjà ce nom. Choisissez-en un autre.");
 }
 
 async function refuse(user: User, summary: string, reason: string, resourceId?: string): Promise<never> {
-  await audit(user, { action: "denied", resource: "role", resourceId: resourceId ?? null, schoolId: null, summary, metadata: { reason } });
+  await audit(user, { action: "denied", resource: "role", resourceId: resourceId ?? null, schoolId: user.scope.level === "SCHOOL" ? user.scope.schoolId : null, summary, metadata: { reason } });
   throw new DomainError(reason);
 }
 
@@ -61,8 +77,13 @@ export const createRole = createAction({
     sourceRoleId: optionalId,
   }),
   handler: async (input, user) => {
-    const source = input.sourceRoleId ? await db.role.findUnique({ where: { id: input.sourceRoleId }, select: roleWithPermissions }) : null;
+    const source = input.sourceRoleId ? await findVisibleRole(user, input.sourceRoleId) : null;
     if (input.sourceRoleId && !source) throw new DomainError("Le rôle à copier est introuvable.");
+    // A school, a commune or a department owns the roles it creates.
+    const owner = ownerFor(actorScope(user));
+    if (!owner) return refuse(user, `Création refusée du rôle ${input.name}`, "Votre compte ne peut pas créer de rôle.");
+    if (!creatableLevels(actorScope(user)).includes(input.scopeLevel as ScopeLevel))
+      return refuse(user, `Création refusée du rôle ${input.name} (${SCOPE_LABELS[input.scopeLevel]})`, "Vous créez des rôles pour votre propre niveau uniquement.");
 
     const plan = planRoleCreate({
       actor: actorOf(user),
@@ -71,7 +92,7 @@ export const createRole = createAction({
       catalogue: PERMISSIONS.map((p) => p.code),
     });
     if (!plan.ok) return refuse(user, `Création refusée du rôle ${input.name} (${SCOPE_LABELS[input.scopeLevel]})`, plan.reason);
-    await assertNameFree(input.name);
+    await assertNameFree(input.name, owner);
 
     const permissionRows = await db.permission.findMany({ where: { code: { in: plan.permissions } }, select: { id: true } });
     let created: { id: string; name: string };
@@ -83,6 +104,7 @@ export const createRole = createAction({
           description: input.description,
           scopeLevel: input.scopeLevel,
           isSystem: false,
+          ...owner,
           permissions: { create: permissionRows.map((p) => ({ permissionId: p.id })) },
         },
         select: { id: true, name: true },
@@ -97,9 +119,9 @@ export const createRole = createAction({
       action: "create",
       resource: "role",
       resourceId: created.id,
-      schoolId: null,
+      schoolId: owner.ownerSchoolId,
       summary: `Création du rôle ${created.name} (${SCOPE_LABELS[input.scopeLevel].toLowerCase()})${source ? `, copié de ${source.name}` : ""} : ${count} droit${count > 1 ? "s" : ""}`,
-      metadata: { scopeLevel: input.scopeLevel, source: source?.code ?? null, permissions: plan.permissions, dropped: plan.dropped },
+      metadata: { scopeLevel: input.scopeLevel, source: source?.code ?? null, permissions: plan.permissions, dropped: plan.dropped, owner },
     });
     invalidate(tags.roles);
 
@@ -115,19 +137,21 @@ export const updateRoleDetails = createAction({
   permission: "role:update",
   schema: z.object({ roleId, name: roleName, description: roleDescription }),
   handler: async (input, user) => {
-    const role = await db.role.findUnique({ where: { id: input.roleId }, select: { id: true, name: true, description: true, isSystem: true, scopeLevel: true } });
+    const role = await findVisibleRole(user, input.roleId);
     if (!role) throw new DomainError("Rôle introuvable.");
+    const managed = canManageRole(actorScope(user), role);
+    if (!managed.ok) return refuse(user, `Modification refusée du rôle ${role.name}`, managed.reason, role.id);
     const rule = canEditRoleDetails(actorOf(user), role);
     if (!rule.ok) return refuse(user, `Modification refusée du rôle ${role.name}`, rule.reason, role.id);
     if (role.name === input.name && role.description === input.description) return "Aucun changement à enregistrer.";
-    if (role.name !== input.name) await assertNameFree(input.name, role.id);
+    if (role.name !== input.name) await assertNameFree(input.name, ownerOf(role), role.id);
 
     await db.role.update({ where: { id: role.id }, data: { name: input.name, description: input.description } });
     await audit(user, {
       action: "update",
       resource: "role",
       resourceId: role.id,
-      schoolId: null,
+      schoolId: role.ownerSchoolId,
       summary: role.name === input.name ? `Description du rôle ${role.name} modifiée` : `Rôle ${role.name} renommé en ${input.name}`,
       metadata: { before: { name: role.name, description: role.description }, after: { name: input.name, description: input.description } },
     });
@@ -140,10 +164,16 @@ export const deleteRole = createAction({
   permission: "role:update",
   schema: z.object({ roleId, targetRoleId: optionalId }),
   handler: async (input, user) => {
-    const role = await db.role.findUnique({ where: { id: input.roleId }, select: roleWithPermissions });
+    const role = await findVisibleRole(user, input.roleId);
     if (!role) throw new DomainError("Rôle introuvable.");
-    const target = input.targetRoleId ? await db.role.findUnique({ where: { id: input.targetRoleId }, select: roleWithPermissions }) : null;
+    const managed = canManageRole(actorScope(user), role);
+    if (!managed.ok) return refuse(user, `Suppression refusée du rôle ${role.name}`, managed.reason, role.id);
+    const target = input.targetRoleId ? await findVisibleRole(user, input.targetRoleId) : null;
     if (input.targetRoleId && !target) throw new DomainError("Le rôle d'accueil est introuvable.");
+    if (target) {
+      const fits = canReceiveHolders(role, target);
+      if (!fits.ok) return refuse(user, `Suppression refusée du rôle ${role.name}`, fits.reason, role.id);
+    }
 
     const [total, inScope] = await Promise.all([
       db.user.count({ where: { roleId: role.id } }),
@@ -180,7 +210,7 @@ export const deleteRole = createAction({
       action: "delete",
       resource: "role",
       resourceId: role.id,
-      schoolId: null,
+      schoolId: role.ownerSchoolId,
       summary: moved && target ? `Suppression du rôle ${role.name}, ${moved} compte${moved > 1 ? "s" : ""} déplacé${moved > 1 ? "s" : ""} vers ${target.name}` : `Suppression du rôle ${role.name}`,
       metadata: { code: role.code, scopeLevel: role.scopeLevel, permissions: codesOf(role), movedTo: target?.code ?? null, moved },
     });
@@ -189,7 +219,7 @@ export const deleteRole = createAction({
         action: "update",
         resource: "role",
         resourceId: target.id,
-        schoolId: null,
+        schoolId: role.ownerSchoolId,
         summary: `${moved} compte${moved > 1 ? "s" : ""} du rôle supprimé ${role.name} rattaché${moved > 1 ? "s" : ""} à ${target.name}`,
         metadata: { from: role.code, moved },
       });
@@ -207,11 +237,12 @@ export const updateRolePermissions = createAction({
     permissions: z.array(z.string().max(40)).max(PERMISSIONS.length).default([]),
   }),
   handler: async ({ roleId, permissions }, user) => {
-    const role = await db.role.findUnique({
-      where: { id: roleId },
-      select: { id: true, code: true, name: true, scopeLevel: true, permissions: { select: { permission: { select: { code: true } } } } },
-    });
+    const role = await findVisibleRole(user, roleId);
     if (!role) throw new DomainError("Rôle introuvable.");
+    // Outside the national level, only the roles of one's own entity change:
+    // the national roles serve every school.
+    const managed = canManageRole(actorScope(user), role);
+    if (!managed.ok) return refuse(user, `Modification refusée du rôle ${role.name}`, managed.reason, role.id);
 
     const plan = planRoleUpdate({
       actor: actorOf(user),
@@ -221,8 +252,7 @@ export const updateRolePermissions = createAction({
       catalogue: PERMISSIONS.map((p) => p.code),
     });
     if (!plan.ok) {
-      await audit(user, { action: "denied", resource: "role", resourceId: role.id, summary: `Modification refusée du rôle ${role.name}`, metadata: { reason: plan.reason } });
-      throw new DomainError(plan.reason);
+      return refuse(user, `Modification refusée du rôle ${role.name}`, plan.reason, role.id);
     }
     if (!plan.added.length && !plan.removed.length) return "Aucun changement à enregistrer.";
 
@@ -239,7 +269,7 @@ export const updateRolePermissions = createAction({
       action: "update",
       resource: "role",
       resourceId: role.id,
-      schoolId: null,
+      schoolId: role.ownerSchoolId,
       summary: `Droits du rôle ${role.name} : ${plan.added.length} ajouté${plan.added.length > 1 ? "s" : ""}, ${plan.removed.length} retiré${plan.removed.length > 1 ? "s" : ""}`,
       metadata: { added: plan.added, removed: plan.removed },
     });

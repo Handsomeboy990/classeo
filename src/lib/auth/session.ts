@@ -85,10 +85,14 @@ const rolePermissions = cached(
 
 const userInclude = {
   role: { select: { id: true, code: true, name: true } },
-  school: { select: { id: true, name: true, communeId: true, commune: { select: { departmentId: true } } } },
+  school: { select: { id: true, name: true, logoFileId: true, communeId: true, commune: { select: { departmentId: true } } } },
   commune: { select: { id: true, name: true, departmentId: true } },
   department: { select: { id: true, name: true } },
-  teacher: { select: { id: true } },
+  // One appointment per school where the person teaches.
+  teachers: {
+    where: { isActive: true },
+    select: { id: true, school: { select: { id: true, name: true, logoFileId: true, communeId: true, commune: { select: { departmentId: true } } } } },
+  },
   student: { select: { id: true } },
   guardian: { select: { id: true } },
 } as const;
@@ -119,9 +123,19 @@ async function loadUser(sessionId: string) {
   });
   if (!session || session.revokedAt || session.expiresAt < new Date() || !session.user.isActive) return null;
   const u = session.user;
+  // The school the session works in: the one chosen at sign in (or later
+  // from the school switcher) when the account holds it, otherwise the
+  // account's own school, otherwise its first teaching appointment.
+  const schools = [
+    ...(u.school ? [u.school] : []),
+    ...u.teachers.map((t) => t.school).filter((sc) => sc.id !== u.school?.id),
+  ];
+  const active = schools.find((sc) => sc.id === session.activeSchoolId) ?? schools[0] ?? null;
+  const teacher = u.teachers.find((t) => t.school.id === active?.id) ?? null;
   return {
     id: u.id,
     sessionId: session.id,
+    username: u.username,
     email: u.email,
     firstName: u.firstName,
     lastName: u.lastName,
@@ -132,12 +146,17 @@ async function loadUser(sessionId: string) {
     permissions: new Set((await rolePermissions(u.role.id)) as PermissionCode[]),
     scope: {
       level: u.scopeLevel,
-      departmentId: u.departmentId ?? u.commune?.departmentId ?? u.school?.commune.departmentId ?? null,
-      communeId: u.communeId ?? u.school?.communeId ?? null,
-      schoolId: u.schoolId,
-      label: u.scopeLevel === "SELF" ? await familyScopeLabel(u.id) : (u.school?.name ?? u.commune?.name ?? u.department?.name ?? "Bénin"),
+      departmentId: u.departmentId ?? u.commune?.departmentId ?? active?.commune.departmentId ?? null,
+      communeId: u.communeId ?? active?.communeId ?? null,
+      schoolId: u.scopeLevel === "SCHOOL" ? (active?.id ?? null) : u.schoolId,
+      label: u.scopeLevel === "SELF" ? await familyScopeLabel(u.id) : (active?.name ?? u.commune?.name ?? u.department?.name ?? "Bénin"),
+      // Logo of the active school, shown in the top bar.
+      logoFileId: u.scopeLevel === "SCHOOL" ? (active?.logoFileId ?? null) : null,
     },
-    teacherId: u.teacher?.id ?? null,
+    // Schools the account can switch between (several for a teacher).
+    schools: schools.map((sc) => ({ id: sc.id, name: sc.name, logoFileId: sc.logoFileId })),
+    activeSchoolId: u.scopeLevel === "SCHOOL" ? (active?.id ?? null) : null,
+    teacherId: teacher?.id ?? null,
     studentId: u.student?.id ?? null,
     guardianId: u.guardian?.id ?? null,
   };
@@ -156,4 +175,12 @@ export async function requireUser() {
   const user = await getCurrentUser();
   if (!user) redirect("/connexion");
   return user;
+}
+
+// Number of schools an account works in (its own school and its teaching
+// appointments). Above one, the account chooses its school after sign in.
+export async function accountSchoolCount(userId: string) {
+  const u = await db.user.findUnique({ where: { id: userId }, select: { schoolId: true, teachers: { where: { isActive: true }, select: { schoolId: true } } } });
+  if (!u) return 0;
+  return new Set([...(u.schoolId ? [u.schoolId] : []), ...u.teachers.map((t) => t.schoolId)]).size;
 }

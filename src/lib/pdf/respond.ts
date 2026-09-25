@@ -4,14 +4,18 @@ import type { ReactElement } from "react";
 
 import { renderToBuffer, type DocumentProps } from "@react-pdf/renderer";
 
+import { recordIssued, signedIssuance, verificationOf } from "@/features/verification/registry";
+import { contentHash, newVerificationCode, sha256, type DocumentKind } from "@/features/verification/reference";
 import { audit } from "@/lib/audit";
 import { ForbiddenError } from "@/lib/auth/authorize";
 import type { PermissionCode } from "@/lib/auth/permissions";
 import { getCurrentUser, type CurrentUser } from "@/lib/auth/session";
 
+import { withDocumentScope, type DocumentSigned } from "./context";
+import { completeIssuer } from "./data/letterhead";
 import { prepareFonts } from "./fonts";
 import { attachmentHeader } from "./format";
-import type { DocumentMeta } from "./layout";
+import type { DocumentMeta, Issuer } from "./layout";
 
 export type PdfUser = NonNullable<CurrentUser>;
 
@@ -29,6 +33,14 @@ export type BuiltPdf = {
   summary: string;
   resourceId?: string | null;
   schoolId?: string | null;
+  // Entry of the register of issued documents (the public check page).
+  kind: DocumentKind;
+  title: string;
+  // Student, report card, payment, invoice, class... the document is about.
+  subjectId?: string | null;
+  // A document the head can sign: its content, hashed. When a signature of
+  // the same content exists, the copy carries it and its stable code.
+  signable?: { content: unknown };
 };
 
 const refused = () => new Response("Accès refusé", { status: 403, headers: { "Cache-Control": "no-store" } });
@@ -60,18 +72,43 @@ export async function exportPdf<D>(options: {
   const ctx: PdfContext = {
     user,
     generatedAt: new Date(),
-    generatedBy: { name: user.fullName, role: user.role.name, email: user.email },
+    generatedBy: { name: user.fullName, role: user.role.name, email: user.username },
   };
+  // Every school document carries the full letterhead (ministry, logo).
+  if (data && typeof data === "object" && "issuer" in data) {
+    const holder = data as { issuer: Issuer };
+    holder.issuer = await completeIssuer(holder.issuer);
+  }
   const built = await options.build(data, ctx);
   await prepareFonts();
-  const buffer = await renderToBuffer(built.element);
+
+  // A signed copy reuses the code of its signature; any other copy gets a
+  // code of its own, printed with its QR code and registered with the hash
+  // of the exact file sent.
+  const subjectId = built.subjectId ?? built.resourceId ?? null;
+  const signed = built.signable && subjectId ? await signedIssuance(built.kind, subjectId, contentHash(built.signable.content)) : null;
+  const render = (code: string, signedBy: DocumentSigned | null) => withDocumentScope({ verification: verificationOf(code), signed: signedBy }, () => renderToBuffer(built.element));
+
+  let code = signed?.code ?? newVerificationCode();
+  let buffer = await render(code, signed?.signed ?? null);
+  if (!signed) {
+    // A code drawn twice (about one chance in 10^15) is drawn again and the
+    // file rendered with the new one.
+    for (let attempt = 0; ; attempt++) {
+      const entry = { kind: built.kind, title: built.title, subjectId, schoolId: built.schoolId ?? null, contentHash: sha256(buffer), issuedById: user.id };
+      if (await recordIssued(code, entry)) break;
+      if (attempt >= 3) throw new Error("could not draw a free verification code");
+      code = newVerificationCode();
+      buffer = await render(code, null);
+    }
+  }
 
   await audit(user, {
     action: "export",
     resource: options.resource,
     resourceId: built.resourceId ?? null,
-    summary: `Export PDF ${built.fileName}, réf. ${built.reference} : ${built.summary}`,
-    metadata: { format: "pdf", reference: built.reference, fileName: built.fileName },
+    summary: `Export PDF ${built.fileName}, réf. ${built.reference}, code de vérification ${code}${signed ? " (signé)" : ""} : ${built.summary}`,
+    metadata: { format: "pdf", reference: built.reference, fileName: built.fileName, verificationCode: code, signed: !!signed },
     schoolId: built.schoolId ?? undefined,
   });
 

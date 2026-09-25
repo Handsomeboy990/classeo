@@ -29,7 +29,7 @@ export default async function ReceiptPage({ params }: PageProps<"/espace/frais/p
     subtitle: `Facture ${data.invoice.number}`,
     reference: data.reference,
     generatedAt: new Date(),
-    generatedBy: { name: user.fullName, role: user.role.name, email: user.email },
+    generatedBy: { name: user.fullName, role: user.role.name, email: user.username },
     issuer,
   };
 

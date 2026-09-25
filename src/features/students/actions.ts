@@ -11,9 +11,11 @@ import type { CurrentUser } from "@/lib/auth/session";
 import { invalidate, tags } from "@/lib/cache";
 import { isIsoDate, isoToDate, todayIso } from "@/lib/domain/attendance";
 import { db } from "@/lib/db";
+import { assertEnrollmentWritable, assertWritable } from "@/lib/guards";
 import { DomainError } from "@/lib/errors";
 
 import { DISABILITIES, ENROLLMENT_STATUS_LABELS } from "./labels";
+import { dropPhotoBlob, optionalPhoto, storeStudentPhoto } from "./photo";
 import { studentWhere } from "./queries";
 
 type User = NonNullable<CurrentUser>;
@@ -38,6 +40,7 @@ const studentFields = {
     .transform((v) => (v === undefined ? [] : Array.isArray(v) ? v : [v])),
   classroomId: id,
   isRepeating: checkbox,
+  photo: optionalPhoto,
 };
 
 async function findClassroomForEnrollment(user: User, classroomId: string, yearId: string) {
@@ -94,12 +97,14 @@ export const createStudent = createAction({
   handler: async (input, user) => {
     const year = await requireActiveYear();
     const classroom = await findClassroomForEnrollment(user, input.classroomId, year.id);
+    await assertWritable({ schoolId: classroom.schoolId, academicYearId: year.id });
     assertCapacity(classroom);
     if (input.guardianMode === "existing") {
       const known = await db.guardian.count({ where: { id: input.guardianId!, students: { some: { student: studentWhere(user) } } } });
       if (!known) throw new DomainError("Parent introuvable ou hors de votre périmètre.");
     }
 
+    const photoFileId = await storeStudentPhoto(user, input.photo);
     let studentId = "";
     for (let attempt = 0; attempt < 3 && !studentId; attempt++) {
       const matricule = await nextMatricule(year.label);
@@ -114,6 +119,7 @@ export const createStudent = createAction({
               birthDate: isoToDate(input.birthDate),
               birthPlace: input.birthPlace,
               disabilities: input.disabilities,
+              photoFileId,
             },
           });
           await tx.enrollment.create({
@@ -167,6 +173,7 @@ export const updateStudent = createAction({
     if (!student) throw new DomainError("Élève introuvable ou hors de votre périmètre.");
     const enrollment = student.enrollments[0];
     if (!enrollment) throw new DomainError("Cet élève n'est pas inscrit cette année dans votre périmètre.");
+    await assertEnrollmentWritable(enrollment.id);
 
     let classChange: { name: string } | null = null;
     if (enrollment.classroomId !== input.classroomId) {
@@ -177,6 +184,7 @@ export const updateStudent = createAction({
       classChange = classroom;
     }
 
+    const photoFileId = await storeStudentPhoto(user, input.photo);
     await db.$transaction([
       db.student.update({
         where: { id: student.id },
@@ -187,10 +195,12 @@ export const updateStudent = createAction({
           birthDate: isoToDate(input.birthDate),
           birthPlace: input.birthPlace,
           disabilities: input.disabilities,
+          ...(photoFileId ? { photoFileId } : {}),
         },
       }),
       db.enrollment.update({ where: { id: enrollment.id }, data: { classroomId: input.classroomId, isRepeating: input.isRepeating } }),
     ]);
+    if (photoFileId) await dropPhotoBlob(student.photoFileId);
     await audit(user, {
       action: "update",
       resource: "student",
@@ -216,6 +226,7 @@ export const setEnrollmentStatus = createAction({
     });
     if (!enrollment) throw new DomainError("Inscription introuvable ou hors de votre périmètre.");
     if (!enrollment.academicYear.isActive) throw new DomainError("Seules les inscriptions de l'année active peuvent changer de statut.");
+    await assertWritable({ schoolId: enrollment.schoolId, academicYearId: enrollment.academicYearId });
     if (enrollment.status === input.status) return "Aucun changement.";
     if (input.status === "ACTIVE") assertCapacity(enrollment.classroom);
     await db.enrollment.update({ where: { id: enrollment.id }, data: { status: input.status } });

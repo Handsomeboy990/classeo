@@ -1,9 +1,13 @@
-import { CalendarCheck, Pencil, Trophy, UserX } from "lucide-react";
+import { ArrowLeftRight, CalendarCheck, History, Pencil, Trophy, UserX } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { ConfirmButton } from "@/components/kit/confirm-button";
+import { FormDialog } from "@/components/kit/form-dialog";
+import { ImageUpload } from "@/components/kit/image-upload";
 import { AverageLevel } from "@/components/kit/level";
+import { LineChart } from "@/components/kit/line-chart";
 import { MoreActions } from "@/components/kit/more-actions";
 import { PageHeader } from "@/components/kit/page-header";
 import { StatCard, StatGrid } from "@/components/kit/stat-card";
@@ -14,6 +18,13 @@ import { ButtonLink, buttonVariants } from "@/components/ui/button";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TD, TH, THead, TR } from "@/components/ui/table";
 import { EnrollmentStatusActions } from "@/features/students/components/enrollment-status";
+import { StudentAvatar } from "@/features/students/components/student-avatar";
+import { removeStudentPhoto, updateStudentPhoto } from "@/features/students/photo-actions";
+import { transfersOfStudent } from "@/features/transfers/queries";
+import { TransferStatusBadge } from "@/features/transfers/components/transfer-timeline";
+import { isPending, KIND_LABELS } from "@/features/transfers/logic";
+import { isEnabled } from "@/lib/features";
+import { fileUrl } from "@/lib/files";
 import { CHANNEL_LABELS, DISABILITY_LABELS, ENROLLMENT_STATUS_LABELS, GENDER_LABELS, shortDate } from "@/features/students/labels";
 import { getStudentProfile } from "@/features/students/queries";
 import { can, requirePermission } from "@/lib/auth/authorize";
@@ -37,22 +48,33 @@ export default async function StudentPage(props: PageProps<"/espace/eleves/[id]"
   const canUpdate = can(user, "student:update");
   const age = Math.floor((isoToDate(todayIso()).getTime() - student.birthDate.getTime()) / (365.25 * 86400000));
 
-  // Header actions: the two most used stay in view, the others (the second
-  // document, transfer, withdrawal) go behind "Plus d'actions", so a long
+  // Header actions: the two most used (edit, history) stay in view, the
+  // others (documents, transfer, withdrawal) go behind "Plus d'actions", so a long
   // name keeps its width at 1366 and 1440 px.
   const active = current && current.academicYear.isActive ? current : null;
   const editable = canUpdate && active ? active : null;
+  const [transfersOn, transfers] = await Promise.all([isEnabled("students.transfers"), transfersOfStudent(user, student.id)]);
+  const pendingTransfer = transfers.find((t) => isPending(t.status));
+  const canTransfer = transfersOn && editable && editable.status === "ACTIVE" && user.scope.level === "SCHOOL" && editable.schoolId === user.scope.schoolId && !pendingTransfer;
   const actions = [
     editable && (
       <ButtonLink key="edit" href={`/espace/eleves/${student.id}/modifier`} variant="secondary">
         <Pencil aria-hidden /> Modifier
       </ButtonLink>
     ),
+    <ButtonLink key="history" href={`/espace/eleves/${student.id}/parcours`} variant="secondary">
+      <History aria-hidden /> Parcours
+    </ButtonLink>,
     active && active.status === "ACTIVE" && (
       <PdfDownloadLink key="attestation" href={`/api/pdf/attestation/${student.id}`} label="Attestation (PDF)" description={`attestation de scolarité de ${name}`} />
     ),
     rights.grades && active && period && (
       <PdfDownloadLink key="releve" href={`/api/pdf/releve/${student.id}`} label="Relevé de notes (PDF)" description={`relevé de notes de ${name}, ${period.name}`} />
+    ),
+    canTransfer && (
+      <ButtonLink key="transfer" href={`/espace/transferts/nouveau?eleve=${student.id}`} variant="secondary">
+        <ArrowLeftRight aria-hidden /> Transférer
+      </ButtonLink>
     ),
   ].filter(Boolean);
   const shown = actions.slice(0, 2);
@@ -84,6 +106,20 @@ export default async function StudentPage(props: PageProps<"/espace/eleves/[id]"
           )
         }
       />
+      {pendingTransfer && (
+        <Alert
+          tone="info"
+          className="mb-4"
+          title={`${KIND_LABELS[pendingTransfer.kind]} en cours`}
+          action={
+            <ButtonLink href={`/espace/transferts/${pendingTransfer.id}`} variant="secondary" size="sm">
+              Voir le transfert
+            </ButtonLink>
+          }
+        >
+          {pendingTransfer.fromSchool.name} vers {pendingTransfer.toSchool.name} · <TransferStatusBadge status={pendingTransfer.status} />
+        </Alert>
+      )}
       {param(sp, "inscrit") && (
         <Alert tone="success" className="mb-4">
           Inscription enregistrée. Matricule attribué : <strong>{student.matricule}</strong>.
@@ -129,6 +165,37 @@ export default async function StudentPage(props: PageProps<"/espace/eleves/[id]"
             <CardTitle>Identité</CardTitle>
           </CardHeader>
           <CardBody>
+            <div className="mb-5 flex flex-wrap items-center gap-4">
+              <StudentAvatar name={name} photoFileId={student.photoFileId} className="size-24 text-2xl" />
+              {editable && (
+                <div className="flex flex-wrap gap-2">
+                  <FormDialog
+                    action={updateStudentPhoto}
+                    trigger={student.photoFileId ? "Changer la photo" : "Ajouter une photo"}
+                    triggerVariant="secondary"
+                    triggerSize="sm"
+                    title={`Photo de ${name}`}
+                    description="Facultative. Elle apparaît sur la fiche, les listes, le bulletin, l'attestation et l'espace des parents."
+                  >
+                    <input type="hidden" name="studentId" value={student.id} />
+                    <ImageUpload name="photo" label="Photo" currentUrl={fileUrl(student.photoFileId)} shape="circle" maxSide={480} hint="JPEG, PNG ou WebP. Elle est réduite avant l'envoi." />
+                  </FormDialog>
+                  {student.photoFileId && (
+                    <ConfirmButton
+                      action={removeStudentPhoto}
+                      fields={{ studentId: student.id }}
+                      title="Retirer la photo ?"
+                      description="Les initiales de l'élève seront affichées à la place."
+                      confirmLabel="Retirer"
+                      variant="danger-ghost"
+                      size="sm"
+                    >
+                      Retirer la photo
+                    </ConfirmButton>
+                  )}
+                </div>
+              )}
+            </div>
             <dl className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-3 text-sm [&_dd]:min-w-0 [&_dd]:break-words">
               <dt className="text-muted">Sexe</dt>
               <dd>{GENDER_LABELS[student.gender]}</dd>
@@ -283,6 +350,19 @@ export default async function StudentPage(props: PageProps<"/espace/eleves/[id]"
             <CardHeader>
               <CardTitle>Bulletins publiés</CardTitle>
             </CardHeader>
+            {reportCards.length > 1 && (
+              <CardBody className="border-b border-border">
+                <LineChart
+                  label="Évolution de la moyenne générale d'un bulletin à l'autre"
+                  labels={[...reportCards].reverse().map((r) => `${r.period.name.replace(/^Trimestre\s+(\d+)$/i, "T$1")} ${r.period.academicYear.label.slice(2, 4)}-${r.period.academicYear.label.slice(-2)}`)}
+                  series={[{ name: "Moyenne générale", values: [...reportCards].reverse().map((r) => (r.generalAverage === null ? null : Number(r.generalAverage))) }]}
+                  min={0}
+                  max={20}
+                  format={(n) => formatAverage(n).replace(/,00$/, "")}
+                  reference={{ value: 10, label: "Moyenne de passage" }}
+                />
+              </CardBody>
+            )}
             {reportCards.length === 0 ? (
               <EmptyState title="Aucun bulletin publié" />
             ) : (

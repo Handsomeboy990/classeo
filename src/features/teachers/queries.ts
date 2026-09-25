@@ -48,7 +48,10 @@ export async function listTeachers(user: User, opts: { q: string; active: boolea
       specialty: true,
       isActive: true,
       userId: true,
+      schoolId: true,
       school: { select: { name: true } },
+      // The person's other appointments, from the national registry.
+      profile: { select: { npi: true, teachers: { where: { isActive: true }, select: { schoolId: true, school: { select: { name: true } } } } } },
       assignments: { where: { classroom: { academicYearId: year?.id ?? "__none__" } }, select: { weeklyHours: true, classroom: { select: { name: true } } } },
       mainClasses: { where: { academicYearId: year?.id ?? "__none__" }, select: { name: true } },
     },
@@ -62,8 +65,9 @@ export async function getTeacher(user: User, id: string) {
   return db.teacher.findFirst({
     where: { AND: [{ id }, teacherWhere(user)] },
     include: {
-      user: { select: { email: true, lastLoginAt: true } },
+      user: { select: { username: true, email: true, lastLoginAt: true } },
       school: { select: { name: true } },
+      profile: { select: { npi: true, teachers: { where: { isActive: true }, select: { id: true, schoolId: true, school: { select: { name: true } } } } } },
       assignments: {
         where: { classroom: { academicYearId: year?.id ?? "__none__" } },
         orderBy: [{ classroom: { level: { order: "asc" } } }, { classroom: { name: "asc" } }],

@@ -55,6 +55,7 @@ export default async function TeacherPage(props: PageProps<"/espace/enseignants/
                   specialty: t.specialty,
                   hiredAt: t.hiredAt ? dateToIso(t.hiredAt) : null,
                   isActive: t.isActive,
+                  npi: t.profile?.npi ?? null,
                 }}
               />
             )}
@@ -133,8 +134,34 @@ export default async function TeacherPage(props: PageProps<"/espace/enseignants/
                 <dd>{t.phone ? <a href={`tel:${t.phone}`} className="font-mono hover:underline">{t.phone}</a> : "–"}</dd>
                 <dt className="text-muted">Embauche</dt>
                 <dd>{t.hiredAt ? shortDate(t.hiredAt) : "–"}</dd>
+                <dt className="text-muted">NPI</dt>
+                <dd className="font-mono">{t.profile?.npi ?? "Non renseigné"}</dd>
                 <dt className="text-muted">Compte</dt>
-                <dd className="break-all">{t.user ? t.user.email : "Aucun compte"}</dd>
+                <dd className="break-all">
+                  {t.user ? (
+                    <>
+                      <span className="font-mono">{t.user.username}</span>
+                      {t.user.email && <span className="block text-muted">{t.user.email}</span>}
+                    </>
+                  ) : (
+                    "Aucun compte"
+                  )}
+                </dd>
+                {(t.profile?.teachers.length ?? 0) > 1 && (
+                  <>
+                    <dt className="text-muted">Établissements</dt>
+                    <dd>
+                      <ul className="flex flex-col gap-0.5">
+                        {t.profile!.teachers.map((a) => (
+                          <li key={a.id}>
+                            {a.school.name}
+                            {a.schoolId === t.schoolId && <span className="text-muted"> (cette fiche)</span>}
+                          </li>
+                        ))}
+                      </ul>
+                    </dd>
+                  </>
+                )}
                 {t.user?.lastLoginAt && (
                   <>
                     <dt className="text-muted">Dernière connexion</dt>

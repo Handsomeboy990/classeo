@@ -7,15 +7,18 @@ import { createAction } from "@/lib/action";
 import { audit } from "@/lib/audit";
 import { hashPassword } from "@/lib/auth/password";
 import type { CurrentUser } from "@/lib/auth/session";
+import { allocateUsername } from "@/lib/auth/username";
 import { db } from "@/lib/db";
 import { canAssignRole, canAssignRoleOn, generateTemporaryPassword, SCOPE_LABELS, type ScopeLevel, type ScopeRef } from "@/lib/domain/rights";
 import { DomainError } from "@/lib/errors";
 import { platformUrl, sendMail, type MailStatus } from "@/lib/mail";
 import { credentialsEmail } from "@/lib/mail/templates";
 
+import { roleFitsTarget } from "../roles/ownership";
+import { roleVisibleWhere } from "../roles/queries";
+import { nextTeacherMatricule } from "../teachers/matricule";
 import { communeRef, departmentRef, schoolRef, userScopeRef } from "../territory/scope";
 import { actorOf, userScopeWhere } from "./queries";
-import { nextTeacherMatricule } from "../teachers/matricule";
 
 type User = NonNullable<CurrentUser>;
 
@@ -24,7 +27,15 @@ const id = z.string().trim().min(1).max(64);
 const createSchema = z.object({
   firstName: z.string().trim().min(2, "Prénom trop court.").max(80, "80 caractères maximum."),
   lastName: z.string().trim().min(2, "Nom trop court.").max(80, "80 caractères maximum."),
-  email: z.string().trim().toLowerCase().max(200).pipe(z.email("Adresse e-mail invalide.")),
+  // Optional: accounts sign in with the identifier generated from their names.
+  email: z
+    .string()
+    .trim()
+    .toLowerCase()
+    .max(200)
+    .optional()
+    .transform((v) => v || null)
+    .refine((v) => v === null || z.email().safeParse(v).success, "Adresse e-mail invalide."),
   phone: z
     .string()
     .trim()
@@ -49,25 +60,33 @@ const fold = (v: string) =>
 
 // A teacher account only reaches the classes of its teacher record (see
 // scope.ts). The account is linked to the school's unlinked record with the
-// same name when there is exactly one, otherwise a record is created, so the
-// account works at once and the teacher can be assigned to courses.
+// same name when there is exactly one, otherwise a record is created with its
+// national registry entry, so the account works at once and the teacher can
+// be assigned to courses.
 async function linkTeacherRecord(
   tx: Prisma.TransactionClient,
-  account: { id: string; firstName: string; lastName: string; phone: string | null },
+  account: { id: string; firstName: string; lastName: string; phone: string | null; email: string | null },
   schoolId: string,
 ) {
   const candidates = await tx.teacher.findMany({
     where: { schoolId, userId: null, isActive: true },
-    select: { id: true, firstName: true, lastName: true },
+    select: { id: true, firstName: true, lastName: true, profileId: true, profile: { select: { userId: true } } },
   });
   const matches = candidates.filter((t) => fold(t.firstName) === fold(account.firstName) && fold(t.lastName) === fold(account.lastName));
   if (matches.length === 1) {
-    await tx.teacher.update({ where: { id: matches[0]!.id }, data: { userId: account.id } });
+    const match = matches[0]!;
+    await tx.teacher.update({ where: { id: match.id }, data: { userId: account.id } });
+    if (match.profileId && !match.profile?.userId) await tx.teacherProfile.update({ where: { id: match.profileId }, data: { userId: account.id } });
     return "linked" as const;
   }
+  const profile = await tx.teacherProfile.create({
+    data: { userId: account.id, firstName: account.firstName, lastName: account.lastName, phone: account.phone, email: account.email },
+    select: { id: true },
+  });
   await tx.teacher.create({
     data: {
       userId: account.id,
+      profileId: profile.id,
       schoolId,
       matricule: await nextTeacherMatricule(tx),
       firstName: account.firstName,
@@ -89,9 +108,11 @@ function scopeLabel(level: ScopeLevel, entity: string | null | undefined) {
 function sendCredentials(
   reason: "created" | "reset",
   user: User,
-  account: { email: string; firstName: string; roleName: string; scope: string },
+  account: { email: string | null; firstName: string; roleName: string; scope: string },
   password: string,
 ): Promise<MailStatus> {
+  // Accounts without an e-mail get their details from the manager only.
+  if (!account.email) return Promise.resolve("skipped");
   const mail = credentialsEmail({
     reason,
     firstName: account.firstName,
@@ -114,71 +135,101 @@ async function resolveTarget(level: ScopeLevel, entityId: string | null): Promis
   return { ref: found.ref, label: found.entity.name };
 }
 
+const assignableRoleSelect = {
+  id: true,
+  name: true,
+  code: true,
+  scopeLevel: true,
+  ownerSchoolId: true,
+  ownerCommuneId: true,
+  ownerDepartmentId: true,
+  permissions: { select: { permission: { select: { code: true } } } },
+} as const;
+
+// The anti escalation rule, the territory rule, then the ownership rule of
+// delegated roles: a school's own role only goes to that school's staff.
+function checkAssignment(user: User, role: Prisma.RoleGetPayload<{ select: typeof assignableRoleSelect }>, target: ScopeRef) {
+  const rule = canAssignRoleOn(
+    { ...actorOf(user), scope: userScopeRef(user) },
+    { scopeLevel: role.scopeLevel, permissions: role.permissions.map((p) => p.permission.code) },
+    target,
+  );
+  if (!rule.ok) return rule;
+  return roleFitsTarget(role, target);
+}
+
+export type IssuedCredentials = { username: string; email: string | null; password: string; mail: MailStatus };
+
 export const createUser = createAction({
   permission: "user:create",
   schema: createSchema,
   handler: async (input, user) => {
-    const role = await db.role.findUnique({
-      where: { id: input.roleId },
-      select: { id: true, name: true, code: true, scopeLevel: true, permissions: { select: { permission: { select: { code: true } } } } },
-    });
+    const role = await db.role.findFirst({ where: { AND: [{ id: input.roleId }, roleVisibleWhere(user)] }, select: assignableRoleSelect });
     if (!role) throw new DomainError("Rôle introuvable.");
     if (role.scopeLevel === "SELF") throw new DomainError("Les comptes parent et élève se créent depuis la fiche de l'élève.");
 
     const target = await resolveTarget(role.scopeLevel, input.entityId);
-    const rule = canAssignRoleOn(
-      { ...actorOf(user), scope: userScopeRef(user) },
-      { scopeLevel: role.scopeLevel, permissions: role.permissions.map((p) => p.permission.code) },
-      target.ref,
-    );
+    const rule = checkAssignment(user, role, target.ref);
     if (!rule.ok) {
       await audit(user, { action: "denied", resource: "user", summary: `Création refusée : rôle ${role.name} sur ${target.label}`, metadata: { reason: rule.reason } });
       throw new DomainError(rule.reason);
     }
 
     const password = generateTemporaryPassword();
-    try {
-      let teacherLink: "linked" | "created" | null = null;
-      const created = await db.$transaction(async (tx) => {
-        const account = await tx.user.create({
-        data: {
-          email: input.email,
-          firstName: input.firstName,
-          lastName: input.lastName,
-          phone: input.phone,
-          passwordHash: await hashPassword(password),
-          mustChangePassword: true,
-          roleId: role.id,
-          scopeLevel: role.scopeLevel,
-          departmentId: role.scopeLevel === "DEPARTMENT" ? target.ref.departmentId : null,
-          communeId: role.scopeLevel === "COMMUNE" ? target.ref.communeId : null,
-          schoolId: role.scopeLevel === "SCHOOL" ? target.ref.schoolId : null,
-        },
-        select: { id: true, email: true, firstName: true, lastName: true, phone: true },
+    const passwordHash = await hashPassword(password);
+    let teacherLink: "linked" | "created" | null = null;
+    let created: { id: string; username: string; email: string | null; firstName: string; lastName: string; phone: string | null } | null = null;
+    // Two managers creating a namesake at the same moment: the identifier is
+    // allocated again on a clash.
+    for (let attempt = 0; attempt < 3 && !created; attempt++) {
+      try {
+        created = await db.$transaction(async (tx) => {
+          const account = await tx.user.create({
+            data: {
+              username: await allocateUsername(tx, input.firstName, input.lastName),
+              email: input.email,
+              firstName: input.firstName,
+              lastName: input.lastName,
+              phone: input.phone,
+              passwordHash,
+              mustChangePassword: true,
+              roleId: role.id,
+              scopeLevel: role.scopeLevel,
+              departmentId: role.scopeLevel === "DEPARTMENT" ? target.ref.departmentId : null,
+              communeId: role.scopeLevel === "COMMUNE" ? target.ref.communeId : null,
+              schoolId: role.scopeLevel === "SCHOOL" ? target.ref.schoolId : null,
+            },
+            select: { id: true, username: true, email: true, firstName: true, lastName: true, phone: true },
+          });
+          teacherLink = role.code === "TEACHER" && target.ref.schoolId ? await linkTeacherRecord(tx, account, target.ref.schoolId) : null;
+          return account;
         });
-        if (role.code === "TEACHER" && target.ref.schoolId) teacherLink = await linkTeacherRecord(tx, account, target.ref.schoolId);
-        return account;
-      });
-      const mail = await sendCredentials("created", user, { email: created.email, firstName: created.firstName, roleName: role.name, scope: scopeLabel(role.scopeLevel, target.label) }, password);
-      await audit(user, {
-        action: "create",
-        resource: "user",
-        resourceId: created.id,
-        schoolId: target.ref.schoolId ?? null,
-        summary: `Création du compte ${created.email} : ${role.name}, ${SCOPE_LABELS[role.scopeLevel].toLowerCase()} ${target.label}`,
-        metadata: { role: role.code, scopeLevel: role.scopeLevel, mail },
-      });
-      const message =
-        teacherLink === "linked"
-          ? "Compte créé et rattaché à la fiche enseignant existante."
-          : teacherLink === "created"
-            ? "Compte créé avec sa fiche enseignant. Affectez-lui des cours depuis la page de la classe."
-            : "Compte créé.";
-      return { message, data: { email: created.email, password, mail } };
-    } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") throw new DomainError("Un compte existe déjà avec cette adresse e-mail.");
-      throw error;
+      } catch (error) {
+        if (!(error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002")) throw error;
+        const fields = String((error.meta as { target?: unknown } | undefined)?.target ?? "");
+        if (fields.includes("email")) throw new DomainError("Un compte existe déjà avec cette adresse e-mail.");
+        if (!fields.includes("username") && !fields.includes("matricule")) throw error;
+      }
     }
+    if (!created) throw new DomainError("L'identifiant n'a pas pu être attribué. Réessayez.");
+
+    const mail = await sendCredentials("created", user, { email: created.email, firstName: created.firstName, roleName: role.name, scope: scopeLabel(role.scopeLevel, target.label) }, password);
+    await audit(user, {
+      action: "create",
+      resource: "user",
+      resourceId: created.id,
+      schoolId: target.ref.schoolId ?? null,
+      summary: `Création du compte ${created.username} : ${role.name}, ${SCOPE_LABELS[role.scopeLevel].toLowerCase()} ${target.label}`,
+      metadata: { role: role.code, scopeLevel: role.scopeLevel, mail },
+    });
+    const link = teacherLink as "linked" | "created" | null;
+    const message =
+      link === "linked"
+        ? "Compte créé et rattaché à la fiche enseignant existante."
+        : link === "created"
+          ? "Compte créé avec sa fiche enseignant. Affectez-lui des cours depuis la page de la classe."
+          : "Compte créé.";
+    return { message, data: { username: created.username, email: created.email, password, mail } satisfies IssuedCredentials };
   },
 });
 
@@ -190,10 +241,14 @@ async function manageableTarget(user: User, targetId: string) {
     where: { AND: [{ id: targetId }, userScopeWhere(user)] },
     select: {
       id: true,
+      username: true,
       email: true,
       firstName: true,
       isActive: true,
+      roleId: true,
       schoolId: true,
+      communeId: true,
+      departmentId: true,
       scopeLevel: true,
       school: { select: { name: true } },
       commune: { select: { name: true } },
@@ -223,9 +278,9 @@ export const setUserActive = createAction({
       resource: "user",
       resourceId: target.id,
       schoolId: target.schoolId,
-      summary: `${active ? "Réactivation" : "Désactivation"} du compte ${target.email}`,
+      summary: `${active ? "Réactivation" : "Désactivation"} du compte ${target.username}`,
     });
-    return active ? `Le compte ${target.email} est réactivé.` : `Le compte ${target.email} est désactivé et ses sessions sont fermées.`;
+    return active ? `Le compte ${target.username} est réactivé.` : `Le compte ${target.username} est désactivé et ses sessions sont fermées.`;
   },
 });
 
@@ -239,6 +294,8 @@ export const resetUserPassword = createAction({
     await db.$transaction([
       db.user.update({ where: { id: target.id }, data: { passwordHash, mustChangePassword: true, failedLoginCount: 0, lockedUntil: null } }),
       db.session.updateMany({ where: { userId: target.id, revokedAt: null }, data: { revokedAt: new Date() } }),
+      // A help request still waiting is answered by this reset.
+      db.passwordHelpRequest.updateMany({ where: { userId: target.id, status: "PENDING" }, data: { status: "RESOLVED", handledById: user.id, handledAt: new Date() } }),
     ]);
     const mail = await sendCredentials(
       "reset",
@@ -256,10 +313,10 @@ export const resetUserPassword = createAction({
       resource: "user",
       resourceId: target.id,
       schoolId: target.schoolId,
-      summary: `Réinitialisation du mot de passe de ${target.email}, sessions fermées`,
+      summary: `Réinitialisation du mot de passe de ${target.username}, sessions fermées`,
       metadata: { mail },
     });
-    return { message: "Mot de passe réinitialisé.", data: { email: target.email, password, mail } };
+    return { message: "Mot de passe réinitialisé.", data: { username: target.username, email: target.email, password, mail } satisfies IssuedCredentials };
   },
 });
 
@@ -274,8 +331,42 @@ export const revokeUserSessions = createAction({
       resource: "user",
       resourceId: target.id,
       schoolId: target.schoolId,
-      summary: `Fermeture de ${count} session${count > 1 ? "s" : ""} de ${target.email}`,
+      summary: `Fermeture de ${count} session${count > 1 ? "s" : ""} de ${target.username}`,
     });
     return count ? `${count} session${count > 1 ? "s" : ""} fermée${count > 1 ? "s" : ""}.` : "Aucune session ouverte.";
+  },
+});
+
+// Gives a staff account another role of the same level, for example a role
+// the school created for its own staff. The account keeps its entity; the
+// new rights apply from its next page.
+export const changeUserRole = createAction({
+  permission: "user:update",
+  schema: z.object({ id, roleId: id }),
+  handler: async (input, user) => {
+    const target = await manageableTarget(user, input.id);
+    const role = await db.role.findFirst({ where: { AND: [{ id: input.roleId }, roleVisibleWhere(user)] }, select: assignableRoleSelect });
+    if (!role) throw new DomainError("Rôle introuvable.");
+    if (role.id === target.roleId) return `Le compte ${target.username} a déjà le rôle ${role.name}.`;
+    if (role.scopeLevel === "SELF" || role.scopeLevel !== target.scopeLevel)
+      throw new DomainError("Choisissez un rôle du même niveau que le compte : son périmètre ne change pas ici.");
+
+    const entityId = target.schoolId ?? target.communeId ?? target.departmentId;
+    const position = await resolveTarget(role.scopeLevel, entityId);
+    const rule = checkAssignment(user, role, position.ref);
+    if (!rule.ok) {
+      await audit(user, { action: "denied", resource: "user", resourceId: target.id, summary: `Changement de rôle refusé pour ${target.username} : ${role.name}`, metadata: { reason: rule.reason } });
+      throw new DomainError(rule.reason);
+    }
+    await db.user.update({ where: { id: target.id }, data: { roleId: role.id } });
+    await audit(user, {
+      action: "update",
+      resource: "user",
+      resourceId: target.id,
+      schoolId: target.schoolId,
+      summary: `Rôle de ${target.username} : ${target.role.name} remplacé par ${role.name}`,
+      metadata: { from: target.roleId, to: role.code },
+    });
+    return `${target.firstName} a désormais le rôle ${role.name}.`;
   },
 });

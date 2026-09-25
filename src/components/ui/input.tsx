@@ -2,6 +2,9 @@ import type { ComponentProps, CSSProperties, ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
 
+import { DateField } from "./date-field";
+import { SelectField } from "./select";
+
 // Form controls. The look lives in globals.css (.ds-field, .ds-check,
 // .ds-switch): tokens drive light, dark and high contrast alike, and a
 // utility class passed through className still wins over it.
@@ -52,6 +55,9 @@ export function Input({
   wrapperClassName,
   ...props
 }: ComponentProps<"input"> & Adornments & { fieldSize?: FieldSize }) {
+  // Dates get the calendar of the design system (ui/date-field.tsx), which
+  // keeps the native field as its value and as the fallback.
+  if (props.type === "date" && leading == null && trailing == null) return <DateField className={className} fieldSize={fieldSize} {...props} />;
   return (
     <Adorned leading={leading} trailing={trailing} wrapperClassName={wrapperClassName}>
       <input className={cn("ds-field", className)} data-size={fieldSize === "md" ? undefined : fieldSize} {...props} />
@@ -63,11 +69,11 @@ export function Textarea({ className, ...props }: ComponentProps<"textarea">) {
   return <textarea className={cn("ds-field", className)} {...props} />;
 }
 
-// Native select: lightest option, works with every screen reader and on
-// low-end phones. Only the closed control is restyled (custom chevron): on a
-// phone, the system picker still opens.
-export function Select({ className, fieldSize = "md", ...props }: ComponentProps<"select"> & { fieldSize?: FieldSize }) {
-  return <select className={cn("ds-field", className)} data-size={fieldSize === "md" ? undefined : fieldSize} {...props} />;
+// Select: native up to five options (lightest, the system picker opens on a
+// phone), searchable from six (see ui/select.tsx), with the same API either
+// way. searchable forces the search field on a short list.
+export function Select(props: ComponentProps<"select"> & { fieldSize?: FieldSize; searchable?: boolean }) {
+  return <SelectField {...props} />;
 }
 
 export function Label({ className, ...props }: ComponentProps<"label">) {

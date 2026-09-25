@@ -109,25 +109,3 @@ export const updateSchool = createAction({
     return "Établissement mis à jour.";
   },
 });
-
-export const setSchoolActive = createAction({
-  permission: "school:update",
-  schema: z.object({ id: z.string().min(1).max(64), active: z.enum(["true", "false"]).transform((v) => v === "true") }),
-  handler: async ({ id, active }, user) => {
-    if (user.scope.level === "SCHOOL" || user.scope.level === "SELF")
-      throw new DomainError("Seule la tutelle (commune, département ou ministère) peut activer ou désactiver un établissement.");
-    const school = await db.school.findFirst({ where: { AND: [{ id }, schoolWhere(user)] }, select: { id: true, name: true, isActive: true } });
-    if (!school) throw new DomainError("Établissement introuvable dans votre périmètre.");
-    if (school.isActive === active) return active ? "L'établissement est déjà actif." : "L'établissement est déjà désactivé.";
-    await db.school.update({ where: { id: school.id }, data: { isActive: active } });
-    await audit(user, {
-      action: active ? "activate" : "deactivate",
-      resource: "school",
-      resourceId: school.id,
-      schoolId: school.id,
-      summary: `${active ? "Réactivation" : "Désactivation"} de l'établissement ${school.name}`,
-    });
-    invalidateSchool(school.id);
-    return active ? `${school.name} est réactivé.` : `${school.name} est désactivé.`;
-  },
-});

@@ -1,6 +1,6 @@
 "use client";
 
-import { Eye, EyeOff, LogIn } from "lucide-react";
+import { ChevronDown, Eye, EyeOff, LogIn } from "lucide-react";
 import Link from "next/link";
 import { useRef, useState } from "react";
 
@@ -16,18 +16,18 @@ export function LoginForm({ next, showDemo }: { next?: string; showDemo: boolean
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
 
-  function fill(email: string) {
-    if (emailRef.current) emailRef.current.value = email;
+  function fill(login: string) {
+    if (emailRef.current) emailRef.current.value = login;
     if (passwordRef.current) passwordRef.current.value = DEMO_PASSWORD;
     passwordRef.current?.focus();
   }
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-6">
       <ActionForm action={login} successToast={false} className="flex flex-col gap-4">
         {next && <input type="hidden" name="next" value={next} />}
-        <FormField label="Adresse e-mail" name="email" required>
-          <Input ref={emailRef} type="email" autoComplete="username" inputMode="email" placeholder="prenom.nom@exemple.bj" />
+        <FormField label="Identifiant" name="login" required hint="Votre prénom et votre nom séparés par un point, par exemple afiavi.hounkpatin.">
+          <Input ref={emailRef} type="text" autoComplete="username" autoCapitalize="none" autoCorrect="off" spellCheck={false} placeholder="prenom.nom" />
         </FormField>
         <div className="relative">
           <FormField label="Mot de passe" name="password" required>
@@ -52,28 +52,38 @@ export function LoginForm({ next, showDemo }: { next?: string; showDemo: boolean
       </ActionForm>
 
       {showDemo && (
-        <section aria-labelledby="demo-title" className="rounded-card border border-dashed border-border-strong bg-surface-2 p-4">
-          <h2 id="demo-title" className="text-sm font-bold">
-            Comptes de démonstration
-          </h2>
-          <p className="mt-1 text-xs text-muted">
-            Un rôle remplit le formulaire. Mot de passe commun : <code className="font-semibold text-text">{DEMO_PASSWORD}</code>
-          </p>
-          <ul className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
-            {DEMO_ACCOUNTS.map((a) => (
-              <li key={a.email}>
-                <button
-                  type="button"
-                  onClick={() => fill(a.email)}
-                  className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-left hover:border-primary"
-                >
-                  <span className="block text-sm font-semibold text-text">{a.role}</span>
-                  <span className="block text-xs text-muted">{a.scope}</span>
-                </button>
-              </li>
-            ))}
-          </ul>
-        </section>
+        // Closed by default: the form comes first, the jury opens the list.
+        <details className="group rounded-card border border-border bg-surface-2">
+          <summary className="flex min-h-12 cursor-pointer list-none items-center gap-3 px-4 py-2 [&::-webkit-details-marker]:hidden">
+            <span className="min-w-0 flex-1">
+              <span className="block text-sm font-bold text-text">Comptes de démonstration</span>
+              <span className="block text-xs text-muted">Choisir un rôle remplit le formulaire.</span>
+            </span>
+            <ChevronDown className="size-4 shrink-0 text-muted transition-transform group-open:rotate-180" aria-hidden />
+          </summary>
+          <div className="border-t border-border px-2 pt-2 pb-3">
+            <p className="px-2 pb-2 text-xs text-muted">
+              Mot de passe commun : <code className="font-semibold text-text">{DEMO_PASSWORD}</code>
+            </p>
+            <ul className="flex flex-col">
+              {DEMO_ACCOUNTS.map((a) => (
+                <li key={a.username}>
+                  <button
+                    type="button"
+                    onClick={() => fill(a.username)}
+                    className="flex min-h-11 w-full items-center gap-3 rounded-md px-2 py-1.5 text-left hover:bg-surface"
+                  >
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-sm font-semibold text-text">{a.role}</span>
+                      <span className="block truncate text-xs text-muted">{a.scope}</span>
+                    </span>
+                    <code className="shrink-0 text-xs text-muted max-[380px]:hidden">{a.username}</code>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </details>
       )}
     </div>
   );

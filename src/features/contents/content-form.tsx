@@ -8,12 +8,14 @@ import { FormField } from "@/components/kit/form-field";
 import { Alert } from "@/components/ui/alert";
 import { ButtonLink } from "@/components/ui/button";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input, Select, Textarea } from "@/components/ui/input";
-import { AUDIENCE_LABELS, requiresTranscript, type AudienceCode } from "@/lib/domain/content-targeting";
+import { MultiPicker } from "@/components/kit/multi-picker";
+import { Input, Select, Switch, Textarea } from "@/components/ui/input";
+import { AUDIENCE_LABELS, MAX_RECIPIENTS, requiresTranscript, type AudienceCode } from "@/lib/domain/content-targeting";
 
 import { createContent, updateContent } from "./actions";
 import { FormRecovery } from "./form-recovery";
 import { CONTENT_TYPES, MEDIA_LABELS, type ContentTypeCode } from "./meta";
+import { beninToday } from "./schema";
 import type { TargetOption } from "./queries";
 
 export type ContentFormValues = {
@@ -29,13 +31,28 @@ export type ContentFormValues = {
   transcript: string;
   subjectLabel: string;
   eventDate: string;
+  // Last day of the scrolling band (YYYY-MM-DD), empty for none.
+  tickerUntil?: string;
   status?: "DRAFT" | "PUBLISHED" | "ARCHIVED";
 };
 
 // Every field is controlled so a refused submission keeps what the author
 // typed; the server's field errors show under each field.
-export function ContentForm({ initial, targets, canPublish }: { initial: ContentFormValues; targets: TargetOption[]; canPublish: boolean }) {
+export function ContentForm({
+  initial,
+  targets,
+  canPublish,
+  recipients = [],
+}: {
+  initial: ContentFormValues;
+  targets: TargetOption[];
+  canPublish: boolean;
+  // Explicit recipients offered on creation (specific schools or classes).
+  recipients?: TargetOption[];
+}) {
   const [v, setV] = useState(initial);
+  const [several, setSeveral] = useState(false);
+  const [picked, setPicked] = useState<string[]>([]);
   const set = <K extends keyof ContentFormValues>(key: K) =>
     (e: { target: { value: string } }) => setV((prev) => ({ ...prev, [key]: e.target.value as ContentFormValues[K] }));
 
@@ -43,6 +60,8 @@ export function ContentForm({ initial, targets, canPublish }: { initial: Content
   const alreadyPublished = initial.status === "PUBLISHED";
   const needsTranscript = requiresTranscript(v.mediaType);
   const groups = [...new Set(targets.map((t) => t.group))];
+  const [today] = useState(beninToday);
+  const offerSeveral = !editing && recipients.length > 1;
 
   return (
     <ActionForm action={editing ? updateContent : createContent} className="flex flex-col gap-6">
@@ -105,22 +124,44 @@ export function ContentForm({ initial, targets, canPublish }: { initial: Content
           <CardTitle>Les destinataires</CardTitle>
         </CardHeader>
         <CardBody className="grid gap-5 sm:grid-cols-2">
-          <FormField label="Cible" name="target" required hint="Limitée à votre périmètre.">
-            <Select value={v.target} onChange={set("target")}>
-              <option value="">Choisir…</option>
-              {groups.map((g) => (
-                <optgroup key={g} label={g}>
-                  {targets
-                    .filter((t) => t.group === g)
-                    .map((t) => (
-                      <option key={t.value} value={t.value}>
-                        {t.label}
-                      </option>
-                    ))}
-                </optgroup>
-              ))}
-            </Select>
-          </FormField>
+          {offerSeveral && (
+            <div className="sm:col-span-2">
+              <Switch
+                checked={several}
+                onChange={(e) => setSeveral(e.target.checked)}
+                label="Choisir plusieurs destinataires précis"
+                description={
+                  recipients[0]?.value.startsWith("CLASSROOM")
+                    ? "Certaines classes seulement. Chaque classe reçoit son exemplaire."
+                    : "Certains établissements seulement. Chacun reçoit son exemplaire."
+                }
+              />
+            </div>
+          )}
+          {several && offerSeveral ? (
+            <div className="sm:col-span-2">
+              <input type="hidden" name="target" value="SEVERAL" />
+              <input type="hidden" name="mode" value="several" />
+              <MultiPicker name="recipients" legend="Destinataires" hint="Limités à votre périmètre." options={recipients} selected={picked} onChange={setPicked} max={MAX_RECIPIENTS} />
+            </div>
+          ) : (
+            <FormField label="Cible" name="target" required hint="Limitée à votre périmètre.">
+              <Select value={v.target} onChange={set("target")}>
+                <option value="">Choisir…</option>
+                {groups.map((g) => (
+                  <optgroup key={g} label={g}>
+                    {targets
+                      .filter((t) => t.group === g)
+                      .map((t) => (
+                        <option key={t.value} value={t.value}>
+                          {t.label}
+                        </option>
+                      ))}
+                  </optgroup>
+                ))}
+              </Select>
+            </FormField>
+          )}
           <FormField label="Public" name="audience" required>
             <Select value={v.audience} onChange={set("audience")}>
               {(Object.keys(AUDIENCE_LABELS) as AudienceCode[]).map((a) => (
@@ -129,6 +170,14 @@ export function ContentForm({ initial, targets, canPublish }: { initial: Content
                 </option>
               ))}
             </Select>
+          </FormField>
+          <FormField
+            label="Afficher en bandeau défilant jusqu'au"
+            name="tickerUntil"
+            className="sm:col-span-2"
+            hint="Facultatif, pour une annonce importante : une fois publiée, elle défile en haut des écrans de son public jusqu'à ce jour inclus. Laissez vide pour ne pas l'afficher en bandeau."
+          >
+            <Input type="date" min={today} value={v.tickerUntil ?? ""} onChange={set("tickerUntil")} className="sm:max-w-60" />
           </FormField>
         </CardBody>
       </Card>

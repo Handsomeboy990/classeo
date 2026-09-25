@@ -9,6 +9,7 @@ import type { ReportCardData } from "../documents/report-card";
 import type { PdfUser } from "../respond";
 
 import { schoolIssuer, validId } from "./common";
+import { studentPhoto } from "./photo";
 
 async function publishedClassAverage(classroomId: string, periodId: string) {
   const agg = await db.reportCard.aggregate({ where: { periodId, enrollment: { classroomId } }, _avg: { generalAverage: true } });
@@ -42,11 +43,13 @@ export async function loadReportCard(user: PdfUser, key: { enrollmentId: string;
     select: { id: true, email: true },
   });
   const classAverage = await publishedClassAverage(enrollment.classroomId, period.id);
+  const photoFileId = (await db.student.findUnique({ where: { id: enrollment.student.id }, select: { photoFileId: true } }))?.photoFileId ?? null;
   const mt = enrollment.classroom.mainTeacher;
   const data: ReportCardData = {
     enrollmentId: enrollment.id,
     mode,
-    student: enrollment.student,
+    student: { ...enrollment.student, photoFileId },
+    photo: await studentPhoto(photoFileId),
     classroom: { name: enrollment.classroom.name, mainTeacher: mt ? `${mt.firstName} ${mt.lastName}` : null },
     headOfSchool: await headOfSchool(school?.id),
     isRepeating: enrollment.isRepeating,
@@ -102,7 +105,7 @@ export async function loadClassReportCards(user: PdfUser, classroomId: string, p
     }),
     db.enrollment.findMany({
       where: { classroomId: preview.classroom.id, status: "ACTIVE" },
-      select: { id: true, isRepeating: true, student: { select: { matricule: true, firstName: true, lastName: true, gender: true, birthDate: true, birthPlace: true } } },
+      select: { id: true, isRepeating: true, student: { select: { matricule: true, firstName: true, lastName: true, gender: true, birthDate: true, birthPlace: true, photoFileId: true } } },
     }),
     db.reportCard.findMany({
       where: { periodId: period.id, enrollment: { classroomId: preview.classroom.id } },
@@ -127,6 +130,7 @@ export async function loadClassReportCards(user: PdfUser, classroomId: string, p
       enrollmentId: e.id,
       mode: snap ? "published" : "preview",
       student: e.student,
+      photo: await studentPhoto(e.student.photoFileId),
       classroom: { name: classroom.name, mainTeacher: mt },
       headOfSchool: head,
       isRepeating: e.isRepeating,

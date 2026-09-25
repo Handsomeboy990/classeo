@@ -3,16 +3,17 @@ import type { Metadata } from "next";
 
 import { EmptyState } from "@/components/kit/states";
 import { SpokenSummary } from "@/features/family/components/blocks";
+import { FeesPayLink } from "@/features/family/components/fees-pay-link";
 import { InvoiceCard } from "@/features/family/components/sections";
 import { invoicesOf, requireStudentSection } from "@/features/family/queries";
 import { formatDate, formatFcfa } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Frais de scolarité" };
 
-// Read only: payments are recorded by the school's accountant.
+// Payments are recorded by the school; a parent pays from /espace/payer.
 export default async function FeesPage({ params }: PageProps<"/espace/suivi/[studentId]/frais">) {
   const { studentId } = await params;
-  const { enrollment } = await requireStudentSection(studentId, "frais");
+  const { user, enrollment } = await requireStudentSection(studentId, "frais");
   const invoices = await invoicesOf(enrollment);
 
   if (!invoices.length) {
@@ -41,10 +42,11 @@ export default async function FeesPage({ params }: PageProps<"/espace/suivi/[stu
   return (
     <div className="flex flex-col gap-5">
       <SpokenSummary text={text} label="Écouter les frais" />
+      <FeesPayLink invoices={invoices} isGuardian={!!user.guardianId} />
       {invoices.map((i) => (
         <InvoiceCard key={i.id} invoice={i} />
       ))}
-      <p className="text-sm text-muted">Pour payer, rendez-vous au secrétariat de l&apos;établissement ou utilisez le paiement Mobile Money indiqué par l&apos;école. Le reçu apparaît ici après enregistrement.</p>
+      <p className="text-sm text-muted">Vous pouvez aussi payer au secrétariat de l&apos;établissement. Le reçu apparaît ici après enregistrement.</p>
     </div>
   );
 }

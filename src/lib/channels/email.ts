@@ -27,7 +27,7 @@ async function send(userIds: string[], input: NotificationInput) {
       select: { email: true, firstName: true },
     });
     const url = platformUrl(input.link);
-    const valid = recipients.filter((r) => EMAIL_SHAPE.test(r.email));
+    const valid = recipients.filter((r): r is { email: string; firstName: string } => !!r.email && EMAIL_SHAPE.test(r.email));
     let sent = 0;
     for (let i = 0; i < valid.length; i += BATCH_SIZE) {
       const batch = valid.slice(i, i + BATCH_SIZE);

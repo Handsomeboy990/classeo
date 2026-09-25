@@ -776,44 +776,6 @@ html[data-lite="on"] img[data-decorative] {
 }
 
 /*
- * Landing motif: the sun of the logo rises once when the page opens.
- * transform and opacity only, 900 ms, never delays interaction; removed
- * entirely when the user prefers reduced motion.
- */
-.classeo-rise {
-  transform-box: fill-box;
-  transform-origin: 50% 100%;
-  animation: classeo-rise 900ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
-}
-.classeo-rays {
-  animation: classeo-fade 700ms ease-out 350ms both;
-}
-@keyframes classeo-rise {
-  from {
-    transform: translateY(18%);
-    opacity: 0;
-  }
-  to {
-    transform: none;
-    opacity: 1;
-  }
-}
-@keyframes classeo-fade {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .classeo-rise,
-  .classeo-rays {
-    animation: none;
-  }
-}
-
-/*
  * Focus on dark surfaces (sidebar, landing bands): the blue focus ring falls
  * under 3:1 on deep green, the flag yellow reaches 10:1.
  */
@@ -1189,10 +1151,6 @@ html[data-lite="on"] img[data-decorative] {
   .app-main {
     padding-bottom: calc(var(--fab-size) + 3rem);
   }
-  /* Private space: the button sits in the header, nothing floats. */
-  body:has([data-a11y-docked]) .app-main {
-    padding-bottom: 3rem;
-  }
 }
 
 /*
@@ -1242,36 +1200,57 @@ div.overflow-x-auto:has(> table) {
 }
 
 /*
- * Accessibility button: bottom right, discreet (surface colour, hairline
- * border, soft shadow), above the tab bar on phones. It never covers an
- * action:
- * - a page with a save bar stuck to the bottom (grades, attendance, rights:
- *   marked data-action-bar) hides it on phones; the account sheet and the
- *   Menu sheet carry the same entry;
- * - in the private space on a large screen it is docked in the header
- *   (data-a11y-docked), so no gutter has to be kept free beside tables.
+ * Accessibility button (shell/accessibility-fab.tsx): bottom right on every
+ * screen, discreet (surface colour, hairline border, soft shadow), above the
+ * tab bar on phones. It never covers an action:
+ * - the shell keeps room for it at the end of the page (.app-main);
+ * - while the page scrolls it slides into a small tab on the right edge
+ *   (data-edge): transform only, 220 ms, nothing to wait for; it stays
+ *   clickable there and comes back when the scroll stops or on focus;
+ * - a page with an action bar stuck to the bottom (grades, attendance,
+ *   rights: data-action-bar) hides it; the Menu and account sheets carry
+ *   the same settings.
+ * Reduced motion: it moves without animation.
  */
 .a11y-fab {
   position: fixed;
   z-index: 30;
   right: max(1rem, env(safe-area-inset-right));
   bottom: max(1rem, env(safe-area-inset-bottom));
+  transition:
+    transform 220ms var(--ease-emphasis),
+    border-radius 220ms var(--ease-emphasis),
+    background-color var(--duration-fast) ease;
+}
+.a11y-fab[data-edge]:not(:focus-visible) {
+  /* Only a 1.25rem sliver stays in view, against the edge of the screen. */
+  transform: translateX(calc(100% + max(1rem, env(safe-area-inset-right)) - 1.25rem));
+  border-radius: 999px 0.5rem 0.5rem 999px;
+}
+.a11y-fab[data-edge]:not(:focus-visible) svg {
+  transform: translateX(-0.9rem) scale(0.8);
+}
+.a11y-fab svg {
+  transition: transform 220ms var(--ease-emphasis);
+}
+body:has([data-action-bar]) .a11y-fab {
+  display: none;
+}
+.a11y-panel {
+  max-width: calc(100vw - 1rem);
 }
 @media (min-width: 64rem) {
   .a11y-fab {
     right: 1.5rem;
     bottom: 1.5rem;
   }
-  body:has([data-a11y-docked]) .a11y-fab {
-    display: none;
+  .a11y-fab[data-edge]:not(:focus-visible) {
+    transform: translateX(calc(100% + 1.5rem - 1.25rem));
   }
 }
 @media (max-width: 63.999rem) {
   body:has([data-tab-bar]) .a11y-fab {
     bottom: calc(var(--tab-bar-space) + 0.75rem);
-  }
-  body:has([data-action-bar]) .a11y-fab {
-    display: none;
   }
   /* Toasts rise above the tab bar instead of covering it. */
   body:has([data-tab-bar]) div.fixed.bottom-4:has(> .contents[aria-live]) {
@@ -1415,4 +1394,701 @@ dialog.sheet[data-closing]::backdrop {
 [data-contrast="high"] .ds-menu > :is(a, button):hover {
   outline: 2px solid currentColor;
   outline-offset: -2px;
+}
+
+/*
+ * Anchored panels (ui/combobox.tsx, ui/date-field.tsx): popovers in the top
+ * layer, placed by useAnchoredPanel. They fade in over 120 ms (opacity and a
+ * 4 px shift, never delaying input); reduced motion shows them at once.
+ */
+@layer components {
+  .ds-popover {
+    position: fixed;
+    inset: auto;
+    margin: 0;
+    padding: 0;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    background: var(--surface);
+    color: var(--text);
+    box-shadow: var(--elevation-lg);
+    overflow: hidden;
+  }
+  .ds-popover:popover-open {
+    animation: ds-pop-in var(--duration-fast) var(--ease-emphasis);
+  }
+  .ds-popover[data-side="top"]:popover-open {
+    animation-name: ds-pop-in-up;
+  }
+  .ds-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 2.75rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.9375rem;
+    line-height: 1.35;
+    cursor: pointer;
+    user-select: none;
+  }
+  @media (min-width: 40rem) {
+    .ds-option {
+      min-height: 2.375rem;
+    }
+  }
+  .ds-option[data-active] {
+    background: var(--surface-2);
+  }
+  .ds-option[aria-selected="true"] {
+    color: var(--primary);
+    font-weight: 600;
+  }
+  .ds-option[aria-disabled="true"] {
+    color: var(--text-muted);
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  .ds-option-group {
+    padding: 0.625rem 0.75rem 0.25rem;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+  [data-contrast="high"] .ds-option[data-active] {
+    outline: 2px solid currentColor;
+    outline-offset: -2px;
+  }
+
+  /* Calendar. */
+  .ds-cal-select {
+    height: 2.25rem;
+    min-width: 0;
+    padding: 0 1.75rem 0 0.625rem;
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+    appearance: none;
+    background: var(--chevron) no-repeat right 0.375rem center / 1rem;
+    color: var(--text);
+    font-weight: 700;
+    font-size: 0.9375rem;
+  }
+  .ds-cal-select:hover {
+    background-color: var(--surface-2);
+  }
+  .ds-cal-select option {
+    background: var(--surface);
+    color: var(--text);
+  }
+  .ds-day {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    aspect-ratio: 1;
+    max-height: 2.625rem;
+    border-radius: 999px;
+    font-size: 0.9375rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--text);
+    transition: background-color var(--duration-fast) ease;
+  }
+  .ds-day:hover {
+    background: var(--surface-2);
+  }
+  .ds-day[data-outside] {
+    color: var(--text-muted);
+  }
+  .ds-day[data-today] {
+    box-shadow: inset 0 0 0 1.5px var(--primary);
+    font-weight: 700;
+  }
+  .ds-day[data-selected] {
+    background: var(--primary);
+    color: var(--on-primary);
+    font-weight: 700;
+  }
+  .ds-day[aria-disabled="true"] {
+    color: var(--text-muted);
+    opacity: 0.4;
+    text-decoration: line-through;
+    cursor: not-allowed;
+  }
+  .ds-day:focus-visible {
+    outline-offset: 1px;
+  }
+  [data-contrast="high"] .ds-day[data-selected] {
+    outline: 2px solid var(--text);
+    outline-offset: 1px;
+  }
+}
+@keyframes ds-pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+@keyframes ds-pop-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ds-popover:popover-open {
+    animation: none;
+  }
+}
+
+/*
+ * Average and mention (kit/level.tsx): value, five step gauge, word. The
+ * steps rise in height like a level meter; the filled ones take the tone,
+ * the others stay a quiet track. Wraps as a whole unit on narrow rows.
+ */
+.ds-level {
+  --level: var(--success);
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.125rem 0.5rem;
+  max-width: 100%;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  white-space: nowrap;
+}
+.ds-level[data-tone="warning"] {
+  --level: var(--warning);
+}
+.ds-level[data-tone="danger"] {
+  --level: var(--danger);
+}
+.ds-level-value {
+  color: var(--text);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.ds-level-unit {
+  margin-left: 0.0625rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  font-size: 0.8em;
+}
+.ds-level-steps {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 0.875rem;
+}
+.ds-level-steps > span {
+  width: 0.25rem;
+  border-radius: 1px;
+  background: color-mix(in srgb, var(--text-muted) 28%, transparent);
+}
+.ds-level-steps > span:nth-child(1) {
+  height: 40%;
+}
+.ds-level-steps > span:nth-child(2) {
+  height: 55%;
+}
+.ds-level-steps > span:nth-child(3) {
+  height: 70%;
+}
+.ds-level-steps > span:nth-child(4) {
+  height: 85%;
+}
+.ds-level-steps > span:nth-child(5) {
+  height: 100%;
+}
+.ds-level-steps > span[data-on] {
+  background: var(--level);
+}
+.ds-level-word {
+  color: var(--level);
+  font-weight: 600;
+}
+.ds-level[data-size="lg"] {
+  gap: 0.25rem 0.75rem;
+  font-size: 1.0625rem;
+  line-height: 1.75rem;
+}
+.ds-level[data-size="lg"] .ds-level-value {
+  font-family: var(--font-display), var(--font-body), system-ui, sans-serif;
+  font-size: 1.75rem;
+  letter-spacing: -0.01em;
+}
+.ds-level[data-size="lg"] .ds-level-steps {
+  height: 1.125rem;
+  gap: 3px;
+}
+.ds-level[data-size="lg"] .ds-level-steps > span {
+  width: 0.3125rem;
+}
+[data-contrast="high"] .ds-level-steps > span {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--text);
+}
+[data-contrast="high"] .ds-level-steps > span[data-on] {
+  background: var(--text);
+}
+[data-contrast="high"] .ds-level-word {
+  color: var(--text);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+@media (forced-colors: active) {
+  .ds-level-steps > span {
+    border: 1px solid CanvasText;
+  }
+  .ds-level-steps > span[data-on] {
+    background: CanvasText;
+  }
+}
+
+/*
+ * Top bar panels (shell/header-popover.tsx) and notification badges.
+ * Badges: a count on the danger tone with a ring of the surface around it,
+ * so it reads on the icon it sits on; in the sidebar the ring takes the
+ * sidebar colour. The bell swings once when something new arrives (700 ms,
+ * transform only); reduced motion keeps it still.
+ */
+.ds-header-panel {
+  border-color: var(--border);
+}
+.nav-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  padding-inline: 0.3125rem;
+  border-radius: 999px;
+  background: var(--danger);
+  color: var(--on-danger);
+  box-shadow: 0 0 0 2px var(--surface);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+.bg-sidebar .nav-badge {
+  box-shadow: none;
+}
+.nav-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 999px;
+  background: var(--danger);
+  box-shadow: 0 0 0 2px var(--surface);
+}
+[data-contrast="high"] .nav-badge,
+[data-contrast="high"] .nav-dot {
+  outline: 1.5px solid var(--text);
+}
+.bell-ring {
+  transform-origin: 50% 8%;
+  animation: bell-ring 700ms var(--ease-emphasis);
+}
+.badge-pop {
+  animation: badge-pop 320ms var(--ease-emphasis);
+}
+@keyframes bell-ring {
+  15% {
+    transform: rotate(14deg);
+  }
+  35% {
+    transform: rotate(-11deg);
+  }
+  55% {
+    transform: rotate(7deg);
+  }
+  75% {
+    transform: rotate(-4deg);
+  }
+}
+@keyframes badge-pop {
+  from {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bell-ring,
+  .badge-pop {
+    animation: none;
+  }
+}
+
+/*
+ * Announcement band (shell/news-ticker.tsx), under the top bar: deep green
+ * with the flag yellow label, light text (12:1). The track holds the list
+ * twice and moves by half its width, linear, so the loop has no seam; it
+ * stops on hover, on keyboard focus and with the pause button. Reduced
+ * motion never animates it (the component then shows one item at a time).
+ */
+.ticker {
+  display: flex;
+  align-items: center;
+  min-height: 2.5rem;
+  background: var(--sidebar);
+  color: var(--sidebar-text);
+  font-size: 0.9375rem;
+}
+.ticker-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  align-self: stretch;
+  flex-shrink: 0;
+  padding-inline: 0.75rem 1rem;
+  background: var(--accent);
+  color: #1a1d1a;
+  font-family: var(--font-body), system-ui, sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 0.5rem) 100%, 0 100%);
+}
+.ticker-viewport {
+  position: relative;
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+  padding-inline: 0.75rem;
+  mask-image: linear-gradient(90deg, transparent, #000 1.25rem, #000 calc(100% - 1.25rem), transparent);
+}
+.ticker-track {
+  display: flex;
+  width: max-content;
+  animation: ticker-loop 40s linear infinite;
+}
+.ticker-viewport:is(:hover, :focus-within, [data-paused]) .ticker-track {
+  animation-play-state: paused;
+}
+.ticker-list {
+  display: flex;
+  flex-shrink: 0;
+}
+.ticker-list > li {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}
+.ticker-list > li::after {
+  content: "";
+  width: 0.375rem;
+  height: 0.375rem;
+  margin-inline: 1.5rem;
+  border-radius: 999px;
+  background: var(--accent);
+}
+.ticker-link {
+  display: inline-block;
+  line-height: 2.5rem;
+  color: inherit;
+}
+.ticker-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.ticker-link:focus-visible {
+  outline-color: var(--accent);
+  outline-offset: -3px;
+}
+.ticker-summary {
+  color: var(--sidebar-muted);
+}
+.ticker-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 999px;
+  color: var(--sidebar-text);
+}
+.ticker-btn:hover {
+  background: var(--sidebar-hover);
+}
+.ticker :focus-visible {
+  outline-color: var(--accent);
+}
+@media (max-width: 39.999rem) {
+  .ticker-summary {
+    display: none;
+  }
+}
+@keyframes ticker-loop {
+  to {
+    transform: translateX(-50%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ticker-track {
+    animation: none;
+  }
+}
+[data-contrast="high"] .ticker {
+  border-block: 2px solid var(--text);
+}
+
+/*
+ * Clickable rows (DataTable rowHref, kit/row-links.tsx): the whole row opens
+ * its page. Hover tints it, pressing darkens it, and when the keyboard is on
+ * the row's link the whole row is outlined so the target is plain.
+ */
+.ds-table tbody tr[data-href] {
+  cursor: pointer;
+}
+.ds-table tbody tr[data-href]:hover {
+  background: color-mix(in srgb, var(--primary) 6%, var(--surface));
+}
+.ds-table tbody tr[data-href]:active {
+  background: color-mix(in srgb, var(--primary) 11%, var(--surface));
+}
+.ds-table tbody tr[data-href]:has(a:focus-visible) {
+  background: color-mix(in srgb, var(--primary) 6%, var(--surface));
+  box-shadow: inset 3px 0 0 var(--primary);
+}
+@media (max-width: 39.999rem) {
+  .ds-table[data-cards] tbody tr[data-href]:hover {
+    background: transparent;
+  }
+  .ds-table[data-cards] tbody tr[data-href]:active {
+    background: color-mix(in srgb, var(--primary) 8%, var(--surface));
+  }
+}
+[data-contrast="high"] .ds-table tbody tr[data-href]:hover {
+  outline: 2px solid var(--text);
+  outline-offset: -2px;
+}
+
+/*
+ * Charts (kit/bar-chart.tsx, line-chart.tsx, donut-chart.tsx). One colour
+ * scale from the tokens: the flag green first, then a calm blue, an amber
+ * and two quiet greys; danger only for values past an alert threshold.
+ * Every colour holds 3:1 against the card in both themes.
+ */
+:root {
+  --chart-1: #0f7a4d;
+  --chart-2: #2f6fb3;
+  --chart-3: #b7791f;
+  --chart-4: #7c8a80;
+  --chart-5: #b9c2bb;
+  --chart-danger: #c8102e;
+  --chart-grid: color-mix(in srgb, var(--text-muted) 16%, transparent);
+}
+[data-theme="dark"] {
+  --chart-1: #3fbf7f;
+  --chart-2: #6ea8ff;
+  --chart-3: #f0b43c;
+  --chart-4: #8fa196;
+  --chart-5: #4d5c53;
+  --chart-danger: #ff6b7f;
+}
+[data-contrast="high"] {
+  --chart-1: var(--text);
+  --chart-2: var(--info);
+  --chart-3: var(--warning);
+  --chart-danger: var(--danger);
+  --chart-grid: var(--border);
+}
+
+.ds-bars-plot {
+  position: relative;
+  --label-w: minmax(5.5rem, 34%);
+}
+.ds-bars-rows {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+.ds-bars-row,
+.ds-bars-axis {
+  display: grid;
+  grid-template-columns: var(--label-w) minmax(0, 1fr);
+  align-items: center;
+  gap: 0.75rem;
+}
+.ds-bars-row {
+  min-height: 2.25rem;
+  padding: 0.25rem 0.375rem;
+  margin-inline: -0.375rem;
+  border-radius: var(--radius-sm);
+  color: var(--text);
+}
+a.ds-bars-row:hover {
+  background: var(--surface-2);
+}
+a.ds-bars-row:hover .ds-bars-label {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.ds-bars-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+.ds-bars-track {
+  position: relative;
+  height: 1.375rem;
+  margin-right: 3.5rem;
+}
+.ds-bars-bar {
+  position: absolute;
+  inset-block: 0.1875rem;
+  left: 0;
+  min-width: 3px;
+  border-radius: 0 0.375rem 0.375rem 0;
+}
+.ds-bars-value {
+  position: absolute;
+  top: 50%;
+  transform: translate(0.25rem, -50%);
+  padding-inline: 0.25rem;
+  border-radius: 0.25rem;
+  background: var(--surface);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+/* The grid sits under the tracks: same columns, same right margin. */
+.ds-bars-grid {
+  position: absolute;
+  inset: 0 3.5rem 1.5rem calc(var(--grid-offset, 0px));
+  pointer-events: none;
+}
+.ds-bars-plot {
+  --grid-offset: calc(min(max(5.5rem, 34%), 100%) + 0.75rem);
+}
+.ds-bars-grid > span {
+  position: absolute;
+  inset-block: 0;
+  width: 1px;
+  background: var(--chart-grid);
+}
+.ds-bars-grid > .ds-bars-ref {
+  width: 0;
+  border-left: 2px dashed var(--text-muted);
+  background: none;
+}
+.ds-bars-ref-key {
+  display: inline-block;
+  width: 0;
+  height: 0.875rem;
+  border-left: 2px dashed var(--text-muted);
+}
+.ds-bars-axis {
+  margin-top: 0.25rem;
+}
+.ds-bars-ticks {
+  position: relative;
+  height: 1.25rem;
+  margin-right: 3.5rem;
+  color: var(--text-muted);
+  font-size: 0.6875rem;
+  font-variant-numeric: tabular-nums;
+}
+.ds-bars-ticks > span {
+  position: absolute;
+  top: 0.25rem;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+.ds-bars-ticks > span[data-edge="start"] {
+  transform: none;
+}
+.ds-bars-ticks > span[data-edge="end"] {
+  transform: translateX(-100%);
+}
+@media (max-width: 22rem) {
+  .ds-bars-ticks > span:nth-child(even) {
+    display: none;
+  }
+}
+/* Very large text: name on its own line, bar under it. */
+html:is([data-text="xl"], [data-text="xxl"]) .ds-bars-row,
+html:is([data-text="xl"], [data-text="xxl"]) .ds-bars-axis {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.125rem;
+}
+html:is([data-text="xl"], [data-text="xxl"]) .ds-bars-axis > span:first-child {
+  display: none;
+}
+html:is([data-text="xl"], [data-text="xxl"]) .ds-bars-grid {
+  display: none;
+}
+[data-contrast="high"] .ds-bars-bar {
+  outline: 1px solid var(--text);
+}
+
+.ds-line-grid {
+  stroke: var(--chart-grid);
+  stroke-width: 1;
+}
+.ds-line-ref {
+  stroke: var(--text-muted);
+  stroke-width: 1.5;
+  stroke-dasharray: 5 4;
+}
+.ds-line-tick {
+  fill: var(--text-muted);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.ds-line-path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.ds-line-area {
+  fill: currentColor;
+  opacity: 0.1;
+}
+.ds-line-point circle {
+  fill: var(--surface);
+  stroke: currentColor;
+  stroke-width: 2.5;
+}
+.ds-line-value {
+  fill: var(--text);
+  font-size: 12.5px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.ds-donut-track {
+  fill: none;
+  stroke: var(--surface-2);
+  stroke-width: 13;
+}
+.ds-donut-seg {
+  fill: none;
+  stroke-width: 13;
+}
+.ds-donut-key {
+  width: 0.75rem;
+  height: 0.75rem;
+  flex-shrink: 0;
+  border-radius: 0.1875rem;
+}
+[data-contrast="high"] .ds-donut-key {
+  outline: 1px solid var(--text);
+}
+@media print {
+  .ds-bars-bar,
+  .ds-donut-seg,
+  .ds-donut-key {
+    print-color-adjust: exact;
+  }
 }

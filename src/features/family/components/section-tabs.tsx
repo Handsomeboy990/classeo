@@ -1,12 +1,12 @@
 "use client";
 
-import { CalendarCheck, CalendarDays, FileText, NotebookPen, Wallet } from "lucide-react";
+import { CalendarCheck, CalendarDays, FileText, History, NotebookPen, Wallet } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { cn } from "@/lib/utils";
 
-const ICONS = { bulletins: FileText, notes: NotebookPen, presences: CalendarCheck, "emploi-du-temps": CalendarDays, frais: Wallet };
+const ICONS = { bulletins: FileText, notes: NotebookPen, presences: CalendarCheck, "emploi-du-temps": CalendarDays, frais: Wallet, parcours: History };
 
 export type SectionKey = keyof typeof ICONS;
 
