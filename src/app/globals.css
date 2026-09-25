@@ -352,6 +352,23 @@ html[data-lite="on"] img[data-decorative] {
   }
 }
 
+/*
+ * Phone widths, two guards against the page scrolling sideways:
+ * - a grid cell may shrink below its content (min-width auto lets one wide
+ *   table or long line widen the whole column, then the page);
+ * - a table scroller is positioned, so the visually hidden labels inside
+ *   its cells (sr-only, absolutely placed) stay within it instead of
+ *   stretching the page to the table's full width.
+ */
+@media (max-width: 63.999rem) {
+  .app-main .grid > * {
+    min-width: 0;
+  }
+}
+div.overflow-x-auto:has(> table) {
+  position: relative;
+}
+
 /* Our own pressed states replace the grey tap flash of mobile browsers. */
 [data-tab-bar] :is(a, button),
 [data-app-bar] :is(a, button),
