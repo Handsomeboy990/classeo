@@ -44,5 +44,5 @@ npm proposes a downgrade to Prisma 6 as the only fix, which would remove the dri
 
 ## Known limitations
 
-- Pages that end in the 403 or 404 page return HTTP status 200, because the shared loading skeleton starts streaming before the page decides. The page renders no data of the target. Route handlers return real 403 statuses.
+- Section rights are checked in each section layout, before any loading skeleton streams, so a refused section answers with a real 403. An object outside the user's scope inside an allowed section (another school's class, another family's invoice) shows the not found page with status 200, because that check runs in the page under its loading skeleton; no data of the target is rendered.
 - Without a trusted proxy (plain Docker run), the per address login limit is disabled and only the per account limit and lockout apply.
