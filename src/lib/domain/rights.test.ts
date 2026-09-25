@@ -2,7 +2,18 @@ import { describe, expect, it } from "vitest";
 
 import { DEFAULT_ROLES, PERMISSIONS, type RoleCode } from "@/lib/auth/permissions";
 
-import { canAssignRole, canAssignRoleOn, generateTemporaryPassword, isWithinScope, planRoleUpdate } from "./rights";
+import {
+  canAssignRole,
+  canAssignRoleOn,
+  canEditRoleDetails,
+  customRoleCode,
+  generateTemporaryPassword,
+  isWithinScope,
+  planRoleCreate,
+  planRoleDeletion,
+  planRoleUpdate,
+  sameRoleName,
+} from "./rights";
 
 const role = (code: RoleCode) => DEFAULT_ROLES.find((r) => r.code === code)!;
 const actor = (code: RoleCode) => ({ permissions: role(code).permissions, scopeLevel: role(code).scopeLevel });
@@ -121,5 +132,89 @@ describe("generateTemporaryPassword", () => {
   });
   it("never goes below ten characters", () => {
     expect(generateTemporaryPassword(4)).toHaveLength(10);
+  });
+});
+
+describe("planRoleCreate", () => {
+  const admin = actor("NATIONAL_ADMIN");
+  const director = actor("DEPARTMENT_DIRECTOR");
+  it("copies every permission of the source when the actor holds them", () => {
+    const r = planRoleCreate({ actor: admin, scopeLevel: "NATIONAL", source: role("NATIONAL_ANALYST").permissions, catalogue });
+    expect(r).toEqual({ ok: true, permissions: [...role("NATIONAL_ANALYST").permissions].sort(), dropped: [] });
+  });
+  it("drops and reports the source permissions the actor does not hold", () => {
+    const r = planRoleCreate({ actor: director, scopeLevel: "DEPARTMENT", source: ["school:view", "fee:delete", "role:update"], catalogue });
+    expect(r).toEqual({ ok: true, permissions: ["school:view"], dropped: ["fee:delete", "role:update"] });
+  });
+  it("ignores unknown codes and duplicates, and starts empty without a source", () => {
+    expect(planRoleCreate({ actor: admin, scopeLevel: "SCHOOL", source: ["school:view", "school:view", "school:fly"], catalogue })).toEqual({
+      ok: true,
+      permissions: ["school:view"],
+      dropped: [],
+    });
+    expect(planRoleCreate({ actor: admin, scopeLevel: "COMMUNE", catalogue })).toEqual({ ok: true, permissions: [], dropped: [] });
+  });
+  it("refuses a level above the actor's", () => {
+    expect(planRoleCreate({ actor: director, scopeLevel: "NATIONAL", source: ["school:view"], catalogue }).ok).toBe(false);
+    expect(planRoleCreate({ actor: director, scopeLevel: "DEPARTMENT", catalogue }).ok).toBe(true);
+    expect(planRoleCreate({ actor: director, scopeLevel: "SCHOOL", catalogue }).ok).toBe(true);
+  });
+  it("refuses a family level role", () => {
+    expect(planRoleCreate({ actor: admin, scopeLevel: "SELF", catalogue }).ok).toBe(false);
+  });
+});
+
+describe("canEditRoleDetails", () => {
+  it("allows a custom role at or below the actor's level", () => {
+    expect(canEditRoleDetails(actor("DEPARTMENT_DIRECTOR"), { isSystem: false, scopeLevel: "COMMUNE" }).ok).toBe(true);
+  });
+  it("refuses system roles and roles above the actor", () => {
+    expect(canEditRoleDetails(actor("NATIONAL_ADMIN"), { isSystem: true, scopeLevel: "SCHOOL" }).ok).toBe(false);
+    expect(canEditRoleDetails(actor("DEPARTMENT_DIRECTOR"), { isSystem: false, scopeLevel: "NATIONAL" }).ok).toBe(false);
+  });
+});
+
+describe("planRoleDeletion", () => {
+  const admin = actor("NATIONAL_ADMIN");
+  const custom = { id: "R1", isSystem: false, scopeLevel: "NATIONAL" as const, permissions: ["statistics:view"] };
+  const analyst = { id: "R2", scopeLevel: "NATIONAL" as const, permissions: role("NATIONAL_ANALYST").permissions };
+  it("deletes an unused custom role without a target", () => {
+    expect(planRoleDeletion({ actor: admin, role: custom, holders: { total: 0, inScope: 0 } })).toEqual({ ok: true, move: false });
+  });
+  it("never deletes a system role", () => {
+    expect(planRoleDeletion({ actor: admin, role: { ...custom, isSystem: true }, holders: { total: 0, inScope: 0 } }).ok).toBe(false);
+  });
+  it("requires a target when accounts use the role, then moves them", () => {
+    expect(planRoleDeletion({ actor: admin, role: custom, holders: { total: 2, inScope: 2 } }).ok).toBe(false);
+    expect(planRoleDeletion({ actor: admin, role: custom, holders: { total: 2, inScope: 2 }, target: analyst })).toEqual({ ok: true, move: true });
+  });
+  it("refuses when some holders are outside the actor's scope", () => {
+    const r = planRoleDeletion({ actor: admin, role: custom, holders: { total: 3, inScope: 1 }, target: analyst });
+    expect(r.ok).toBe(false);
+    expect(!r.ok && r.reason).toContain("hors de votre périmètre");
+    expect(!r.ok && r.reason).not.toMatch(/\d/);
+  });
+  it("refuses a target of another level, the role itself, or one the actor could not assign", () => {
+    const one = { total: 1, inScope: 1 };
+    expect(planRoleDeletion({ actor: admin, role: custom, holders: one, target: { ...analyst, scopeLevel: "SCHOOL" } }).ok).toBe(false);
+    expect(planRoleDeletion({ actor: admin, role: custom, holders: one, target: { ...custom } }).ok).toBe(false);
+    const limited = { permissions: ["role:update", "statistics:view"], scopeLevel: "NATIONAL" as const };
+    expect(planRoleDeletion({ actor: limited, role: custom, holders: one, target: analyst }).ok).toBe(false);
+  });
+  it("refuses a role the actor could not assign", () => {
+    const dep = actor("DEPARTMENT_DIRECTOR");
+    expect(planRoleDeletion({ actor: dep, role: custom, holders: { total: 0, inScope: 0 } }).ok).toBe(false);
+    expect(planRoleDeletion({ actor: dep, role: { ...custom, scopeLevel: "DEPARTMENT", permissions: ["fee:delete"] }, holders: { total: 0, inScope: 0 } }).ok).toBe(false);
+  });
+});
+
+describe("role names and codes", () => {
+  it("treats case, accents and spacing as the same name", () => {
+    expect(sameRoleName("Analyste régional", "  analyste   REGIONAL ")).toBe(true);
+    expect(sameRoleName("Analyste régional", "Analyste national")).toBe(false);
+  });
+  it("builds a readable unique code", () => {
+    expect(customRoleCode("Analyste régional d'appui", "a1b2c3")).toBe("CUSTOM_ANALYSTE_REGIONAL_D_APPUI_A1B2C3");
+    expect(customRoleCode("!!!", "ff00aa")).toBe("CUSTOM_ROLE_FF00AA");
   });
 });
