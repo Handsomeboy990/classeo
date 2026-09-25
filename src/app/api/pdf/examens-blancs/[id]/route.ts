@@ -37,6 +37,10 @@ export async function GET(_request: Request, ctx: RouteContext<"/api/pdf/examens
         summary: `relevé de l'examen blanc « ${exam.title} » (${results.named.length} candidats nommés)`,
         resourceId: exam.id,
         schoolId: c.user.scope.schoolId,
+        // Registered like every document: reference, QR code, public check.
+        kind: "examen_blanc" as const,
+        title: `Relevé de l'examen blanc « ${exam.title} »`,
+        subjectId: exam.id,
       };
     },
   });

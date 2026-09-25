@@ -63,6 +63,7 @@ export const DOCUMENT_KINDS = {
   fiche_appel: "Fiche d'appel",
   emploi_du_temps: "Emploi du temps",
   statistiques: "Statistiques",
+  examen_blanc: "Relevé d'examen blanc",
 } as const;
 export type DocumentKind = keyof typeof DOCUMENT_KINDS;
 
