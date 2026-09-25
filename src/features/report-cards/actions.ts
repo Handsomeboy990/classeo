@@ -69,6 +69,9 @@ export const publishReportCards = createAction({
       schoolId: classroom.schoolId,
     });
     invalidate(tags.stats);
-    return `${cards.length} bulletins publiés pour la ${classroom.name}. ${new Set(recipients).size} famille(s) ou élève(s) prévenu(s).`;
+    const notified = new Set(recipients).size;
+    return `${cards.length} bulletins publiés pour la ${classroom.name}. ${
+      notified ? `${notified} compte${notified > 1 ? "s" : ""} parent ou élève prévenu${notified > 1 ? "s" : ""}.` : "Aucun compte parent ou élève à prévenir dans cette classe."
+    }`;
   },
 });
