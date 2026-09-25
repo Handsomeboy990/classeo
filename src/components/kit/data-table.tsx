@@ -106,7 +106,7 @@ export function DataTable<T>({
   return (
     <div className="rounded-card border border-border bg-surface shadow-card">
       {(searchPlaceholder !== false || toolbar) && (
-        <div className="flex flex-col gap-3 border-b border-border p-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:p-4">
+        <div className="flex flex-col gap-3 border-b border-border p-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:p-4" data-print-hide>
           {searchPlaceholder !== false ? <SearchInput placeholder={searchPlaceholder} /> : <span className="max-sm:hidden" />}
           {toolbar && (
             // Phone: filters two by two, a lone last item takes the full row.
