@@ -1,0 +1,324 @@
+import { CalendarCheck, Pencil, Trophy, UserMinus, UserPlus, UserX } from "lucide-react";
+import type { Metadata } from "next";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+
+import { AverageLevel } from "@/components/kit/level";
+import { PageHeader } from "@/components/kit/page-header";
+import { StatCard, StatGrid } from "@/components/kit/stat-card";
+import { EmptyState } from "@/components/kit/states";
+import { Alert } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { ButtonLink } from "@/components/ui/button";
+import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
+import { Table, TD, TH, THead, TR } from "@/components/ui/table";
+import { ConfirmButton } from "@/features/classes/components/confirm-button";
+import { setEnrollmentStatus } from "@/features/students/actions";
+import { CHANNEL_LABELS, DISABILITY_LABELS, ENROLLMENT_STATUS_LABELS, GENDER_LABELS, shortDate } from "@/features/students/labels";
+import { getStudentProfile } from "@/features/students/queries";
+import { can, requirePermission } from "@/lib/auth/authorize";
+import { ATTENDANCE_LABELS, isoToDate, todayIso } from "@/lib/domain/attendance";
+import { formatRank } from "@/lib/domain/report-card";
+import { param } from "@/lib/list";
+import { formatAverage, formatDate, formatNumber, formatPercent } from "@/lib/utils";
+
+export const metadata: Metadata = { title: "Élève" };
+
+export default async function StudentPage(props: PageProps<"/espace/eleves/[id]">) {
+  const user = await requirePermission("student:view");
+  const { id } = await props.params;
+  const sp = await props.searchParams;
+  const profile = await getStudentProfile(user, id);
+  if (!profile) notFound();
+  const { student, current, period, grades, general, attendance, attendanceCounts, attendanceRate, reportCards } = profile;
+  const name = `${student.firstName} ${student.lastName}`;
+  const canUpdate = can(user, "student:update");
+  const age = Math.floor((isoToDate(todayIso()).getTime() - student.birthDate.getTime()) / (365.25 * 86400000));
+
+  return (
+    <>
+      <nav aria-label="Fil d'Ariane" className="mb-2 text-sm text-muted">
+        <Link href="/espace/eleves" className="hover:underline">
+          Élèves
+        </Link>{" "}
+        / {name}
+      </nav>
+      <PageHeader
+        title={name}
+        description={`Matricule ${student.matricule}${current ? ` · ${current.classroom.name}, ${current.school.name} · ${ENROLLMENT_STATUS_LABELS[current.status]}` : ""}`}
+        actions={
+          canUpdate &&
+          current &&
+          current.academicYear.isActive && (
+            <>
+              <ButtonLink href={`/espace/eleves/${student.id}/modifier`} variant="secondary">
+                <Pencil aria-hidden /> Modifier
+              </ButtonLink>
+              {current.status === "ACTIVE" ? (
+                <>
+                  <ConfirmButton
+                    action={setEnrollmentStatus}
+                    fields={{ enrollmentId: current.id, status: "TRANSFERRED" }}
+                    variant="secondary"
+                    title={`Transférer ${name} ?`}
+                    description="L'élève quitte l'établissement pour un autre. Ses notes et présences restent consultables."
+                    confirmLabel="Transférer"
+                  >
+                    <UserMinus aria-hidden /> Transfert
+                  </ConfirmButton>
+                  <ConfirmButton
+                    action={setEnrollmentStatus}
+                    fields={{ enrollmentId: current.id, status: "WITHDRAWN" }}
+                    title={`Retirer ${name} de l'établissement ?`}
+                    description="L'élève n'apparaîtra plus dans les appels, les fiches de notes ni les bulletins. Vous pourrez le réinscrire."
+                    confirmLabel="Retirer"
+                  >
+                    <UserX aria-hidden /> Retirer
+                  </ConfirmButton>
+                </>
+              ) : (
+                <ConfirmButton
+                  action={setEnrollmentStatus}
+                  fields={{ enrollmentId: current.id, status: "ACTIVE" }}
+                  tone="primary"
+                  variant="primary"
+                  title={`Réinscrire ${name} ?`}
+                  description={`L'élève retrouve sa place en ${current.classroom.name} si la classe n'est pas complète.`}
+                  confirmLabel="Réinscrire"
+                >
+                  <UserPlus aria-hidden /> Réinscrire
+                </ConfirmButton>
+              )}
+            </>
+          )
+        }
+      />
+      {param(sp, "inscrit") && (
+        <Alert tone="success" className="mb-4">
+          Inscription enregistrée. Matricule attribué : <strong>{student.matricule}</strong>.
+        </Alert>
+      )}
+
+      <StatGrid>
+        <div className="rounded-card border border-border bg-surface p-5">
+          <p className="text-sm font-medium text-muted">Moyenne générale{period ? `, ${period.name}` : ""}</p>
+          <div className="mt-3">
+            <AverageLevel average={general?.average ?? null} size="lg" />
+          </div>
+        </div>
+        <StatCard label="Rang dans la classe" value={general?.rank ? formatRank(general.rank) : "–"} hint={general ? `sur ${general.classSize} élèves` : undefined} icon={Trophy} tone="accent" />
+        <StatCard label="Taux de présence" value={formatPercent(attendanceRate)} hint="Depuis la rentrée" icon={CalendarCheck} tone="info" />
+        <StatCard
+          label="Absences"
+          value={formatNumber(attendanceCounts.ABSENT ?? 0)}
+          hint={`${attendanceCounts.LATE ?? 0} retard(s), ${attendanceCounts.EXCUSED ?? 0} excusée(s), en demi-journées`}
+          icon={UserX}
+          tone="danger"
+        />
+      </StatGrid>
+
+      <div className="mt-6 grid gap-6 lg:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle>Identité</CardTitle>
+          </CardHeader>
+          <CardBody>
+            <dl className="grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
+              <dt className="text-muted">Sexe</dt>
+              <dd>{GENDER_LABELS[student.gender]}</dd>
+              <dt className="text-muted">Naissance</dt>
+              <dd>
+                {shortDate(student.birthDate)} ({age} ans){student.birthPlace ? `, ${student.birthPlace}` : ""}
+              </dd>
+              <dt className="text-muted">Compte élève</dt>
+              <dd>{student.user ? student.user.email : "Aucun"}</dd>
+              <dt className="text-muted">Besoins particuliers</dt>
+              <dd className="flex flex-wrap gap-1">
+                {student.disabilities.length ? (
+                  student.disabilities.map((d) => (
+                    <Badge key={d} tone="info">
+                      {DISABILITY_LABELS[d]}
+                    </Badge>
+                  ))
+                ) : (
+                  <span className="text-muted">Aucun signalé</span>
+                )}
+              </dd>
+              {current && (
+                <>
+                  <dt className="text-muted">Professeur principal</dt>
+                  <dd>{current.classroom.mainTeacher ? `${current.classroom.mainTeacher.firstName} ${current.classroom.mainTeacher.lastName}` : "Non désigné"}</dd>
+                </>
+              )}
+            </dl>
+          </CardBody>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Parents et tuteurs</CardTitle>
+          </CardHeader>
+          {student.guardians.length ? (
+            <ul className="divide-y divide-border">
+              {student.guardians.map(({ guardian: g, relationship, isPrimary }) => (
+                <li key={g.id} className="flex flex-wrap items-center justify-between gap-2 px-5 py-3 text-sm">
+                  <div>
+                    {can(user, "parent:view") ? (
+                      <Link href={`/espace/parents/${g.id}`} className="font-semibold text-primary hover:underline">
+                        {g.firstName} {g.lastName}
+                      </Link>
+                    ) : (
+                      <span className="font-semibold">
+                        {g.firstName} {g.lastName}
+                      </span>
+                    )}
+                    <span className="block text-muted">
+                      {relationship}
+                      {g.profession ? ` · ${g.profession}` : ""}
+                    </span>
+                  </div>
+                  <div className="text-right">
+                    <a href={`tel:${g.phone}`} className="font-mono hover:underline">
+                      {g.phone}
+                    </a>
+                    <span className="flex justify-end gap-1">
+                      {isPrimary && <Badge tone="success">Principal</Badge>}
+                      <Badge>{CHANNEL_LABELS[g.preferredChannel]}</Badge>
+                      {g.prefersAudio && <Badge tone="info">Préfère l&apos;audio</Badge>}
+                    </span>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <EmptyState title="Aucun parent renseigné" />
+          )}
+        </Card>
+      </div>
+
+      <Card className="mt-6">
+        <CardHeader>
+          <CardTitle>Notes du {period?.name ?? "trimestre"}</CardTitle>
+        </CardHeader>
+        {grades.length === 0 ? (
+          <EmptyState title="Aucune matière" description="Aucune inscription active cette année." />
+        ) : (
+          <Table>
+            <caption className="sr-only">Moyennes par matière pour la période en cours</caption>
+            <THead>
+              <tr>
+                <TH>Matière</TH>
+                <TH className="text-right">Coef.</TH>
+                <TH className="text-right max-md:hidden">Interrogations</TH>
+                <TH className="text-right max-md:hidden">Devoirs</TH>
+                <TH className="text-right max-md:hidden">Composition</TH>
+                <TH>Moyenne</TH>
+              </tr>
+            </THead>
+            <tbody>
+              {grades.map((g) => (
+                <TR key={g.id}>
+                  <TD>
+                    <span className="font-medium">{g.subject}</span>
+                    {g.teacher && <span className="block text-xs text-muted">{g.teacher}</span>}
+                  </TD>
+                  <TD className="text-right tabular-nums">{g.coefficient}</TD>
+                  <TD className="text-right tabular-nums max-md:hidden">{formatAverage(g.interrogationAverage)}</TD>
+                  <TD className="text-right tabular-nums max-md:hidden">{formatAverage(g.devoirAverage)}</TD>
+                  <TD className="text-right tabular-nums max-md:hidden">{formatAverage(g.compositionAverage)}</TD>
+                  <TD>{g.hasSheet ? <AverageLevel average={g.average} /> : <span className="text-muted">Fiche non ouverte</span>}</TD>
+                </TR>
+              ))}
+            </tbody>
+          </Table>
+        )}
+      </Card>
+
+      <div className="mt-6 grid gap-6 lg:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle>Absences et retards récents</CardTitle>
+          </CardHeader>
+          {attendance.length === 0 ? (
+            <EmptyState title="Aucune absence ni retard" description="Toujours présent depuis la rentrée." />
+          ) : (
+            <Table>
+              <caption className="sr-only">Absences et retards récents</caption>
+              <THead>
+                <tr>
+                  <TH>Date</TH>
+                  <TH>Demi-journée</TH>
+                  <TH>Statut</TH>
+                  <TH className="max-sm:hidden">Motif</TH>
+                </tr>
+              </THead>
+              <tbody>
+                {attendance.map((a) => (
+                  <TR key={a.id}>
+                    <TD className="whitespace-nowrap tabular-nums">{shortDate(a.date)}</TD>
+                    <TD>{a.half === "MORNING" ? "Matin" : "Après-midi"}</TD>
+                    <TD>
+                      <Badge tone={a.status === "ABSENT" ? "danger" : a.status === "LATE" ? "warning" : "info"}>{ATTENDANCE_LABELS[a.status]}</Badge>
+                    </TD>
+                    <TD className="text-muted max-sm:hidden">{a.reason ?? "–"}</TD>
+                  </TR>
+                ))}
+              </tbody>
+            </Table>
+          )}
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Bulletins publiés</CardTitle>
+          </CardHeader>
+          {reportCards.length === 0 ? (
+            <EmptyState title="Aucun bulletin publié" />
+          ) : (
+            <ul className="divide-y divide-border">
+              {reportCards.map((r) => (
+                <li key={r.id} className="flex flex-wrap items-center justify-between gap-3 px-5 py-3 text-sm">
+                  <div>
+                    <p className="font-semibold">
+                      {r.period.name} {r.period.academicYear.label}
+                    </p>
+                    <p className="text-muted">
+                      Rang {formatRank(r.rank)} sur {r.classSize} · publié le {formatDate(r.publishedAt)}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <AverageLevel average={r.generalAverage === null ? null : Number(r.generalAverage)} />
+                    <Link
+                      href={`/espace/bulletins/${r.enrollmentId}/${r.periodId}`}
+                      className="inline-flex h-9 items-center rounded-lg border border-border-strong px-3 font-semibold hover:bg-surface-2"
+                      aria-label={`Voir le bulletin du ${r.period.name} ${r.period.academicYear.label}`}
+                    >
+                      Voir
+                    </Link>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Card>
+      </div>
+
+      <Card className="mt-6">
+        <CardHeader>
+          <CardTitle>Scolarité</CardTitle>
+        </CardHeader>
+        <ul className="divide-y divide-border">
+          {student.enrollments.map((e) => (
+            <li key={e.id} className="flex flex-wrap items-center justify-between gap-2 px-5 py-3 text-sm">
+              <span>
+                <strong>{e.academicYear.label}</strong> · {e.classroom.name}, {e.school.name}
+                {e.isRepeating ? " · redoublant" : ""}
+              </span>
+              <Badge tone={e.status === "ACTIVE" ? "success" : "warning"}>{ENROLLMENT_STATUS_LABELS[e.status]}</Badge>
+            </li>
+          ))}
+        </ul>
+      </Card>
+    </>
+  );
+}
