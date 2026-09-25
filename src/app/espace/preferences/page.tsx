@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { PageHeader } from "@/components/kit/page-header";
 import { AccessibilityControls } from "@/components/shell/accessibility-controls";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
+import { VoiceInfo } from "@/features/languages/voice-info";
 import { PushToggle } from "@/features/push/push-toggle";
 import { pushPublicKey } from "@/lib/channels/push";
 
@@ -20,6 +21,7 @@ export default function PreferencesPage() {
           </CardHeader>
           <CardBody>
             <AccessibilityControls />
+            <VoiceInfo />
           </CardBody>
         </Card>
         {pushKey && (
