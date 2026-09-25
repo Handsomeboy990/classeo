@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { Atkinson_Hyperlegible_Next, Bricolage_Grotesque } from "next/font/google";
 
 import { Toaster } from "@/components/kit/toaster";
+import { OfflineBanner } from "@/features/pwa/offline-banner";
+import { ServiceWorkerRegistration } from "@/features/pwa/service-worker";
 
 import "./globals.css";
 
@@ -17,6 +19,9 @@ export const metadata: Metadata = {
     "Plateforme nationale inclusive qui relie le ministère, les directions départementales, les écoles, les enseignants, les élèves et les parents du Bénin.",
   applicationName: "Classéo",
   appleWebApp: { capable: true, title: "Classéo", statusBarStyle: "default" },
+  // The manifest link comes from app/manifest.ts, the icons from icon.svg,
+  // apple-icon.tsx and opengraph-image.tsx.
+  openGraph: { type: "website", locale: "fr_BJ", siteName: "Classéo" },
   formatDetection: { telephone: false },
 };
 
@@ -46,8 +51,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         >
           Aller au contenu principal
         </a>
+        <OfflineBanner />
         {children}
         <Toaster />
+        <ServiceWorkerRegistration />
       </body>
     </html>
   );
