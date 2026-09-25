@@ -1377,3 +1377,74 @@ model Translation {
 
   @@unique([key, lang])
 }
+
+// ---------------------------------------------------------------------------
+// V3.1: issued documents, online payments, feature flags
+// ---------------------------------------------------------------------------
+
+// Every document the platform generates (report card, attestation, receipt,
+// invoice, certificate, list, statistics...) gets a unique reference and the
+// hash of its content. The QR code printed on it points to the public check
+// page. A signed document also links its signature.
+model IssuedDocument {
+  id            String    @id @default(cuid())
+  reference     String    @unique
+  kind          String // "bulletin", "attestation", "recu", "facture", "certificat", "liste", "statistiques", "emploi_du_temps", "releve", "fiche_appel"
+  title         String
+  subjectId     String? // student, report card, payment, invoice or transfer id
+  schoolId      String?
+  contentHash   String
+  issuedById    String
+  signatureId   String?   @unique
+  revokedAt     DateTime?
+  revokedReason String?
+  createdAt     DateTime  @default(now())
+
+  @@index([subjectId])
+  @@index([schoolId, createdAt])
+}
+
+enum OnlinePaymentStatus {
+  CREATED
+  PENDING
+  APPROVED
+  DECLINED
+  CANCELED
+  REFUNDED
+}
+
+// A payment started online with an aggregator (FedaPay today; TrésorPay or
+// another provider later). The provider's webhook, verified by signature,
+// moves it to APPROVED, which records the Payment on the invoice once.
+model OnlinePayment {
+  id             String              @id @default(cuid())
+  provider       String // "fedapay"
+  providerRef    String?             @unique
+  invoiceId      String
+  installmentIds String[]
+  amount         Int
+  currency       String              @default("XOF")
+  status         OnlinePaymentStatus @default(CREATED)
+  checkoutUrl    String?
+  payerId        String
+  payerPhone     String?
+  paymentId      String?             @unique
+  lastEvent      Json?
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+
+  @@index([invoiceId])
+  @@index([status])
+}
+
+// Options a super administrator turns on or off, or configures, without a
+// deployment (payment provider, modules, local languages, limits). Read
+// through src/lib/features.ts, cached, with a code default for every key.
+model FeatureFlag {
+  key         String   @id
+  enabled     Boolean
+  config      Json?
+  description String
+  updatedById String?
+  updatedAt   DateTime @updatedAt
+}
