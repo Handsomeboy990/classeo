@@ -13,6 +13,7 @@ import { db } from "@/lib/db";
 import { DomainError } from "@/lib/errors";
 
 import { teacherWhere } from "./queries";
+import { nextTeacherMatricule } from "./matricule";
 
 const hiredAt = z
   .string()
@@ -32,15 +33,6 @@ const fields = {
   hiredAt,
 };
 
-// "ENS-" + five digits, as the seeded teacher matricules. Only numeric
-// matricules count: a single "ENS-X..." imported by hand sorts last and
-// would otherwise restart the sequence at 1, on a matricule already taken.
-async function nextMatricule() {
-  const taken = await db.teacher.findMany({ where: { matricule: { startsWith: "ENS-" } }, select: { matricule: true } });
-  const seq = taken.reduce((max, t) => (/^ENS-\d+$/.test(t.matricule) ? Math.max(max, Number.parseInt(t.matricule.slice(4), 10)) : max), 0);
-  return `ENS-${String(seq + 1).padStart(5, "0")}`;
-}
-
 export const createTeacher = createAction({
   permission: "teacher:create",
   schema: z.object(fields),
@@ -53,7 +45,7 @@ export const createTeacher = createAction({
     for (let attempt = 0; attempt < 3 && !teacherId; attempt++) {
       try {
         const teacher = await db.teacher.create({
-          data: { ...input, hiredAt: input.hiredAt ? isoToDate(input.hiredAt) : null, schoolId: school.id, matricule: await nextMatricule() },
+          data: { ...input, hiredAt: input.hiredAt ? isoToDate(input.hiredAt) : null, schoolId: school.id, matricule: await nextTeacherMatricule() },
         });
         teacherId = teacher.id;
       } catch (error) {
