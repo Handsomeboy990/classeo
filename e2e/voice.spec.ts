@@ -3,9 +3,10 @@ import { PUBLIC_SPEECH_TEXTS } from "../src/lib/voice/public-texts";
 import { authFile } from "./support/accounts";
 import { expect, test } from "./support/fixtures";
 
-// Kora's voice on the server. Azure is not configured on a test server:
-// these journeys check who may ask for speech, and that the pages then fall
-// back to the voice of the browser. The speech itself is not exercised.
+// Kora's voice on the server (Piper, voice Siwis). A test server has it when
+// KORA_TTS_URL points at a local run of api/kora-tts.py, and not otherwise:
+// these journeys check who may ask for speech either way, and the clip when
+// the voice is there.
 const LANDING = PUBLIC_SPEECH_TEXTS[0]!;
 
 test.describe("signed out", () => {
@@ -17,12 +18,13 @@ test.describe("signed out", () => {
     const privateText = await request.post("/api/voix", { data: { text: "Moyenne de Sènami : 13,5 sur 20.", part: 0 } });
     expect(privateText.status()).toBe(401);
     const publicText = await request.post("/api/voix", { data: { text: LANDING, part: 0 } });
-    // Without an Azure key the server says so and the browser reads itself.
+    // Without the voice the server says so and the browser reads itself.
     expect(publicText.status()).toBe(voice ? 200 : 503);
     if (voice) {
       const { clip } = (await publicText.json()) as { clip: string };
       const audio = await request.get(clip);
-      expect(audio.headers()["content-type"]).toBe("audio/mpeg");
+      expect(audio.headers()["content-type"]).toBe("audio/wav");
+      expect((await audio.body()).subarray(0, 4).toString()).toBe("RIFF");
     }
 
     const local = await request.post("/api/langues/voix", { data: { lang: "fon", text: "Bonjour" } });
@@ -48,7 +50,7 @@ test.describe("signed in", () => {
     const { voice } = (await (await request.get("/api/voix")).json()) as { voice: string | null };
     await page.goto("/espace/preferences");
     const info = page.getByRole("region", { name: "Voix utilisée" });
-    await expect(info.getByRole("status")).toContainText(voice ? "voix Denise (Azure), la même sur tous les appareils" : "Français : voix de cet appareil");
+    await expect(info.getByRole("status")).toContainText(voice ? "Français : voix Siwis, la même sur tous les appareils." : "Français : voix de cet appareil");
     await expect(page.getByRole("radio", { name: "Normale" }).first()).toBeChecked();
   });
 

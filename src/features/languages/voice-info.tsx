@@ -45,7 +45,7 @@ export function VoiceInfo() {
         {voice === "loading"
           ? "Recherche de la voix…"
           : voice.server
-            ? `Français : voix ${voice.server} (Azure), la même sur tous les appareils.`
+            ? `Français : voix ${voice.server}, la même sur tous les appareils.`
             : `Français : voix de cet appareil, ${deviceLine(voice.device)}`}
       </p>
       {voice !== "loading" && voice.server && <p className="mt-1 text-muted">Sans connexion, Kora lit avec la voix de cet appareil : {deviceLine(voice.device)}</p>}

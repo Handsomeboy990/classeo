@@ -31,8 +31,8 @@ function readableText(root: HTMLElement) {
 
 // "Kora", the voice of Classéo (see lib/voice/kora.ts). Reads a text, or the
 // readable text of an element: in French with the voice of the server
-// (Denise, the same on every device), or with the device's own French
-// female voice when the server cannot (no key, outage, offline). In Fon,
+// (Siwis, the same on every device), or with the device's own French
+// female voice when the server cannot (outage, offline). In Fon,
 // Yoruba or Hausa with the voice of the translation service, for a user who
 // chose that language (translation:view), or for any visitor when `lang` is
 // given, as on the public pages; `text` is then the French source, the
