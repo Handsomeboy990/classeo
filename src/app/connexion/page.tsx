@@ -20,12 +20,12 @@ export default async function LoginPage({ searchParams }: PageProps<"/connexion"
         <Logo tone="inverse" />
         <div className="relative z-10 max-w-md">
           <p className="font-display text-4xl leading-tight font-bold">
-            Une école, un territoire,
-            <span className="text-accent"> une seule plateforme.</span>
+            La plateforme nationale de l&apos;éducation,
+            <span className="text-accent"> du ministère à la classe.</span>
           </p>
           <p className="mt-4 text-sidebar-muted">
-            Du ministère à la salle de classe, Classéo relie les directions départementales, les circonscriptions, les écoles, les enseignants, les
-            élèves et les familles, y compris ceux qui ne lisent pas ou ne voient pas.
+            Directions départementales, circonscriptions, écoles, enseignants, élèves et familles travaillent sur les mêmes données. Chaque écran se lit aussi à
+            voix haute.
           </p>
         </div>
         <div className="flex h-2 overflow-hidden rounded-full">
@@ -46,7 +46,7 @@ export default async function LoginPage({ searchParams }: PageProps<"/connexion"
             <Logo />
           </Link>
           <h1 className="mt-8 text-3xl font-bold lg:mt-0">Connexion</h1>
-          <p className="mt-1 mb-6 text-muted">Accédez à votre espace selon votre rôle.</p>
+          <p className="mt-1 mb-6 text-muted">Avec l&apos;adresse e-mail et le mot de passe remis par votre établissement ou votre administration.</p>
           <LoginForm next={param(sp, "next")} showDemo={showDemo} />
         </div>
       </section>

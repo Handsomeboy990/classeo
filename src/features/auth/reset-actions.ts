@@ -10,7 +10,7 @@ import { audit } from "@/lib/audit";
 import { hashPassword } from "@/lib/auth/password";
 import { clientIp } from "@/lib/auth/session";
 import { db } from "@/lib/db";
-import { platformUrl, sendMail } from "@/lib/mail";
+import { mailEnabled, platformUrl, sendMail } from "@/lib/mail";
 import { passwordChangedEmail, resetCodeEmail } from "@/lib/mail/templates";
 import { hitRateLimit, resetRateLimit } from "@/lib/rate-limit";
 
@@ -186,5 +186,6 @@ export async function resetPasswordWithCode(_prev: ActionState, formData: FormDa
     }),
   );
   (await cookies()).delete({ name: RESET_EMAIL_COOKIE, path: COOKIE_PATH });
-  return { ok: true, message: "Votre mot de passe a été modifié. Connectez-vous avec le nouveau." };
+  // The confirmation is only promised when the server can send e-mail.
+  return { ok: true, message: "Votre mot de passe a été modifié. Connectez-vous avec le nouveau.", data: { mailSent: mailEnabled } };
 }
