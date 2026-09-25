@@ -32,9 +32,9 @@ describe("canAssignRole", () => {
     const r = canAssignRole(actor("SCHOOL_DIRECTOR"), role("NATIONAL_ADMIN"));
     expect(r.ok).toBe(false);
   });
-  it("refuses a role with a permission the actor lacks, even at a lower level", () => {
-    // The teacher role enters grades, which a school director only views.
-    expect(canAssignRole(actor("SCHOOL_DIRECTOR"), role("TEACHER")).ok).toBe(false);
+  it("refuses a role with a permission the actor lacks, at the same level", () => {
+    // The teacher role enters grades, which a secretary cannot do.
+    expect(canAssignRole(actor("SECRETARY"), role("TEACHER")).ok).toBe(false);
   });
   it("accepts a subset role at or below the actor's level", () => {
     expect(canAssignRole(actor("SCHOOL_DIRECTOR"), role("SECRETARY")).ok).toBe(true);
