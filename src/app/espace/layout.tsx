@@ -17,6 +17,7 @@ import { db } from "@/lib/db";
 import { fileUrl } from "@/lib/files";
 import { mobileTabs, tabAudience, visibleNavigation, type NavItem } from "@/lib/navigation";
 import { roleLabel } from "@/features/messages/role-label";
+import { SchoolStatusBanner } from "@/features/school-status/components/status-banner";
 
 function render(item: NavItem): RenderedItem {
   return { label: item.label, short: item.short, href: item.href, icon: <item.icon aria-hidden /> };
@@ -112,6 +113,7 @@ export default async function SpaceLayout({ children }: LayoutProps<"/espace">) 
 
         <InstallCard />
         <main id="page-content" tabIndex={-1} className="app-main mx-auto w-full max-w-7xl flex-1 px-4 pt-5 outline-none sm:px-6 lg:pt-8">
+          <SchoolStatusBanner user={user} />
           {children}
         </main>
       </div>
