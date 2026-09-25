@@ -8,6 +8,9 @@ import { expect, expectForbidden, test, uniqueSuffix } from "./support/fixtures"
 
 test.describe.configure({ mode: "serial" });
 
+// Each run confirms a declaration of 1 FCFA on Sènami's invoice: the seeded
+// balance leaves room for many runs before the invoice is covered.
+
 test("a parent declares a transfer once, the accountant confirms it", async ({ pageAs }) => {
   const parent = await pageAs("parent");
   await parent.goto("/espace/payer");
@@ -15,18 +18,18 @@ test("a parent declares a transfer once, the accountant confirms it", async ({ p
   await parent.getByRole("link", { name: "Sènami Hounkpatin" }).click();
   await expect(parent.getByRole("heading", { level: 1, name: "Frais de Sènami" })).toBeVisible();
   await expect(parent.getByText("01 97 00 12 34", { exact: true })).toBeVisible();
-  await expect(parent.getByText("Non retrouvé")).toBeVisible();
+  await expect(parent.getByText("Non retrouvé").first()).toBeVisible();
 
   const ref = `MP${uniqueSuffix().replace(/[^a-z0-9]/gi, "").toUpperCase()}`;
   const form = parent.locator("form", { has: parent.getByRole("button", { name: "Déclarer ce paiement" }) });
-  await form.getByLabel("Montant payé").fill("100");
+  await form.getByLabel("Montant payé").fill("1");
   await form.getByLabel(/Référence de la transaction/).fill(ref);
   await form.getByRole("button", { name: "Déclarer ce paiement" }).click();
   await expect(parent.getByText("Paiement déclaré.", { exact: false }).first()).toBeVisible();
   await expect(parent.getByText(`réf. ${ref}`, { exact: false })).toBeVisible();
 
   // The same reference cannot be declared twice.
-  await form.getByLabel("Montant payé").fill("100");
+  await form.getByLabel("Montant payé").fill("1");
   await form.getByLabel(/Référence de la transaction/).fill(ref.toLowerCase());
   await form.getByRole("button", { name: "Déclarer ce paiement" }).click();
   await expect(parent.getByText("Cette référence a déjà été déclarée", { exact: false }).first()).toBeVisible();
