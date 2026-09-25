@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 
 import { Logo } from "@/components/brand/logo";
-import { FlagStripe } from "@/components/brand/sunrise";
+import { FlagStripe } from "@/components/brand/flag";
 import { Button } from "@/components/ui/button";
 
 // Frame of the public check pages: reachable without an account, from the

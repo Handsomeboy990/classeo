@@ -14,3 +14,14 @@ export function BeninFlag({ className }: { className?: string }) {
     </svg>
   );
 }
+
+// Thin band in the flag colours, used at the top of public pages.
+export function FlagStripe({ className }: { className?: string }) {
+  return (
+    <div className={cn("flex h-1.5", className)} aria-hidden>
+      <span className="w-2/5 bg-[#008751]" />
+      <span className="w-2/5 bg-accent" />
+      <span className="w-1/5 bg-[#e8112d]" />
+    </div>
+  );
+}
