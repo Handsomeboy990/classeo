@@ -125,7 +125,7 @@ export async function changePassword(_prev: ActionState, formData: FormData): Pr
     sendMail({
       to: user.email,
       tag: "password_changed",
-      ...passwordChangedEmail({ firstName: user.firstName, email: user.email, at, signInUrl: platformUrl("/connexion"), forgotUrl: platformUrl("/mot-de-passe-oublie") }),
+      ...passwordChangedEmail({ firstName: user.firstName, email: user.email, at, signInUrl: platformUrl("/connexion"), forgotUrl: platformUrl("/mot-de-passe-oublie"), keptSession: true }),
     }),
   );
   redirect("/espace");
