@@ -58,6 +58,6 @@ describe("e-mail templates", () => {
 
   it("uses no em dash anywhere", () => {
     const all = [credentialsEmail(credentials), resetCodeEmail({ firstName: "A", code: "1", minutes: 15, maxAttempts: 5, codeUrl: "https://a" })];
-    for (const m of all) expect(m.html + m.text).not.toContain("—");
+    for (const m of all) expect(m.html + m.text).not.toContain(String.fromCharCode(0x2014));
   });
 });
