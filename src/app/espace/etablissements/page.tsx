@@ -112,6 +112,7 @@ export default async function SchoolsPage({ searchParams }: PageProps<"/espace/e
         rows={rows}
         columns={columns}
         rowKey={(s) => s.id}
+        rowHref={(s) => `/espace/etablissements/${s.id}`}
         total={total}
         page={page.page}
         pageSize={page.pageSize}

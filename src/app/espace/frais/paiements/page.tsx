@@ -68,6 +68,7 @@ export default async function PaymentsPage({ searchParams }: PageProps<"/espace/
         rows={rows}
         columns={columns}
         rowKey={(r) => r.id}
+        rowHref={(r) => `/espace/frais/factures/${r.invoice.id}`}
         total={total}
         page={page}
         pageSize={pageSize}

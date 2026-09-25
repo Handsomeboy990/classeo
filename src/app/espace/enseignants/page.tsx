@@ -71,6 +71,7 @@ export default async function TeachersPage(props: PageProps<"/espace/enseignants
         rows={rows}
         columns={columns}
         rowKey={(r) => r.id}
+        rowHref={(r) => `/espace/enseignants/${r.id}`}
         total={total}
         page={page}
         pageSize={pageSize}

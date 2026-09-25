@@ -122,6 +122,7 @@ export default async function NotesPage(props: PageProps<"/espace/notes">) {
         rows={rows}
         columns={columns}
         rowKey={(r) => r.id}
+        rowHref={(r) => `/espace/notes/${r.id}`}
         total={total}
         page={page}
         pageSize={30}
