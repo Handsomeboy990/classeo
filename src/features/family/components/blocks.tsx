@@ -71,7 +71,7 @@ export function PictoTile({
     <>
       <div className="flex items-center gap-3">
         <Pictogram icon={icon} tone={tone} />
-        <h3 className="font-sans text-base font-bold text-text">{title}</h3>
+        <h3 className="min-w-0 flex-1 font-sans text-base font-bold break-words hyphens-auto text-text">{title}</h3>
         {href && <ChevronRight className="ml-auto size-5 shrink-0 text-muted" aria-hidden />}
       </div>
       <div className="mt-3 min-w-0 text-text [&_.rounded-full]:flex-wrap">{children}</div>

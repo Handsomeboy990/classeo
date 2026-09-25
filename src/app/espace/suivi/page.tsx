@@ -54,9 +54,9 @@ export default async function FollowUpPage() {
                   href={`/espace/suivi/${e.student.id}`}
                   className="flex h-full flex-col gap-4 rounded-card border border-border bg-surface p-5 transition-colors hover:border-primary hover:bg-surface-2"
                 >
-                  <div className="flex items-center gap-4">
+                  <div className="flex flex-wrap items-center gap-4">
                     <Avatar name={name} className="size-16 text-xl" />
-                    <div className="min-w-0">
+                    <div className="min-w-0 break-words hyphens-auto">
                       <h2 className="text-2xl font-bold">{name}</h2>
                       <p className="text-muted">
                         {e.classroom.name} · {e.school.name}

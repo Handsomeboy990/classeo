@@ -245,11 +245,11 @@ export function TimetableWeek({ slots, today }: { slots: SlotView[]; today: Scho
               {list.length ? (
                 <ul className="divide-y divide-border">
                   {list.map((s) => (
-                    <li key={s.id} className="flex gap-3 px-4 py-2.5">
-                      <span className="w-24 shrink-0 text-sm font-semibold text-primary tabular-nums">
+                    <li key={s.id} className="flex flex-col gap-0.5 px-4 py-2.5 min-[420px]:flex-row min-[420px]:gap-3">
+                      <span className="shrink-0 text-sm font-semibold text-primary tabular-nums min-[420px]:w-24">
                         {spokenTime(s.startTime)} à {spokenTime(s.endTime)}
                       </span>
-                      <span className="min-w-0">
+                      <span className="min-w-0 break-words hyphens-auto">
                         <span className="block font-semibold">{s.subject}</span>
                         <span className="block text-sm text-muted">{[s.room, s.teacher].filter(Boolean).join(" · ")}</span>
                       </span>

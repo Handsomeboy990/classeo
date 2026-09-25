@@ -28,7 +28,7 @@ export function GuideSteps({ guide, headingLevel = 2 }: { guide: Guide; headingL
                   <s.icon className="size-6" />
                   <span className="absolute -top-2 -left-2 flex size-6 items-center justify-center rounded-full bg-primary text-xs font-bold text-on-primary">{i + 1}</span>
                 </span>
-                <span className="font-bold">
+                <span className="min-w-0 font-bold break-words hyphens-auto">
                   <span className="sr-only">Étape {i + 1} : </span>
                   {s.title}
                 </span>
