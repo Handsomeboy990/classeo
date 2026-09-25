@@ -74,5 +74,6 @@ npm proposes a downgrade to Prisma 6 as the only fix, which would remove the dri
 
 ## Known limitations
 
+- Offline entries (grades, registers, messages) wait in the browser's IndexedDB, filtered by account. Opening the sign in page seals them; only the same account signing in again can replay them, and the server refuses an entry whose author is not the session user. On a shared phone, a sealed entry stays readable in that browser's storage until its owner sends or discards it.
 - Section rights are checked in each section layout, before any loading skeleton streams, so a refused section answers with a real 403. An object outside the user's scope inside an allowed section (another school's class, another family's invoice) shows the not found page with status 200, because that check runs in the page under its loading skeleton; no data of the target is rendered.
 - Without a trusted proxy (plain Docker run), the per address login limit is disabled and only the per account limit and lockout apply.
