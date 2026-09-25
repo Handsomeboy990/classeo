@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { PageHeader } from "@/components/kit/page-header";
 import { AccessibilityControls } from "@/components/shell/accessibility-controls";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
+import { OfflinePanel } from "@/features/offline/offline-panel";
 import { PushToggle } from "@/features/push/push-toggle";
 import { pushPublicKey } from "@/lib/channels/push";
 
@@ -32,6 +33,14 @@ export default function PreferencesPage() {
             </CardBody>
           </Card>
         )}
+        <Card aria-labelledby="prefs-offline" id="hors-ligne" className="scroll-mt-24">
+          <CardHeader>
+            <CardTitle id="prefs-offline">Hors ligne</CardTitle>
+          </CardHeader>
+          <CardBody>
+            <OfflinePanel />
+          </CardBody>
+        </Card>
       </div>
     </>
   );
