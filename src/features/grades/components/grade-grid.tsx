@@ -23,6 +23,18 @@ function toValues(rows: Row[]): Values {
   return Object.fromEntries(rows.map((r) => [r.enrollmentId, { ...r.values }]));
 }
 
+const same = (a = "", b = "") => a.trim().replace(",", ".") === b.trim().replace(",", ".");
+
+function keepEdits(current: Values, before: Values, fresh: Values): Values {
+  return Object.fromEntries(
+    Object.entries(fresh).map(([id, cells]) => {
+      const next = { ...cells };
+      for (const [key, value] of Object.entries(current[id] ?? {})) if (!same(value, before[id]?.[key])) next[key] = value;
+      return [id, next];
+    }),
+  );
+}
+
 // Label shown above a field in the phone cards: "I1", "I2", then the full
 // word for the other evaluations ("Devoir", "Composition").
 function cardLabel(c: EvaluationColumn) {
@@ -55,11 +67,14 @@ export function GradeGrid({
   const rootRef = useRef<HTMLDivElement>(null);
 
   // Fresh server data (after a save or a refresh) replaces the baseline.
+  // A cell typed since the previous baseline keeps what the user typed: the
+  // refresh that follows a save can land while the next grade is entered.
   const [prevRows, setPrevRows] = useState(rows);
   if (rows !== prevRows) {
+    const fresh = toValues(rows);
     setPrevRows(rows);
-    setSaved(toValues(rows));
-    setValues(toValues(rows));
+    setValues((current) => keepEdits(current, saved, fresh));
+    setSaved(fresh);
   }
 
   const computed = useMemo(() => {
