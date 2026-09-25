@@ -26,7 +26,6 @@ import { Suspense } from "react";
 import { Logo } from "@/components/brand/logo";
 import { FlagStripe, SunriseMotif } from "@/components/brand/sunrise";
 import { ReadAloud } from "@/components/kit/read-aloud";
-import { AccessibilityButton } from "@/components/shell/accessibility-button";
 import { cached, tags } from "@/lib/cache";
 import { db } from "@/lib/db";
 import { cn, formatNumber } from "@/lib/utils";
@@ -218,7 +217,6 @@ export default function LandingPage() {
             </ul>
           </nav>
           <div className="ml-auto flex shrink-0 items-center gap-2">
-            <AccessibilityButton />
             <Link
               href="/connexion"
               className="inline-flex h-11 items-center gap-2 rounded-lg bg-accent px-3 text-sm font-bold whitespace-nowrap text-on-accent hover:brightness-95 sm:h-10 sm:px-4"
