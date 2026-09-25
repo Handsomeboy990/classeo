@@ -11,6 +11,7 @@ import { db } from "@/lib/db";
 import { generalAverage, subjectAverage } from "@/lib/domain/grades";
 
 import { beninToday, parseReportLines, sortSlots, weekRange, type SchoolDay } from "./logic";
+import { allowedSections, SECTION_PERMISSIONS, type StudentFileSection } from "./sections";
 
 // Reads of the family space. Every query that reaches a student goes through
 // enrollmentWhere(user): a parent reaches only their children, a student only
@@ -70,10 +71,19 @@ export async function scopedEnrollment(user: User, studentId: string): Promise<F
 export const requireStudentFile = cache(async (studentId: string) => {
   const user = await requireUser();
   if (!can(user, "report_card:view") && !can(user, "student:view")) forbidden();
+  if (!allowedSections(user.permissions).length) forbidden();
   const enrollment = await scopedEnrollment(user, studentId);
   if (!enrollment) forbidden();
   return { user, enrollment };
 });
+
+// For each section page: the student file, and the right of what the section
+// shows (grades, attendance, report cards, timetable, fees), or the 403 page.
+export async function requireStudentSection(studentId: string, section: StudentFileSection) {
+  const file = await requireStudentFile(studentId);
+  if (!can(file.user, SECTION_PERMISSIONS[section])) forbidden();
+  return file;
+}
 
 // Published report cards of a student, every school year, newest first.
 export async function reportCardsOf(user: User, studentId: string) {

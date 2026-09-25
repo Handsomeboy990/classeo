@@ -29,7 +29,7 @@ export default async function StudentPage(props: PageProps<"/espace/eleves/[id]"
   const sp = await props.searchParams;
   const profile = await getStudentProfile(user, id);
   if (!profile) notFound();
-  const { student, current, period, grades, general, attendance, attendanceCounts, attendanceRate, reportCards } = profile;
+  const { rights, student, current, period, grades, general, attendance, attendanceCounts, attendanceRate, reportCards } = profile;
   const name = `${student.firstName} ${student.lastName}`;
   const canUpdate = can(user, "student:update");
   const age = Math.floor((isoToDate(todayIso()).getTime() - student.birthDate.getTime()) / (365.25 * 86400000));
@@ -64,23 +64,33 @@ export default async function StudentPage(props: PageProps<"/espace/eleves/[id]"
         </Alert>
       )}
 
-      <StatGrid>
-        <div className="rounded-card border border-border bg-surface p-5">
-          <p className="text-sm font-medium text-muted">Moyenne générale{period ? `, ${period.name}` : ""}</p>
-          <div className="mt-3">
-            <AverageLevel average={general?.average ?? null} size="lg" />
-          </div>
-        </div>
-        <StatCard label="Rang dans la classe" value={general?.rank ? formatRank(general.rank) : "–"} hint={general ? `sur ${general.classSize} élèves` : undefined} icon={Trophy} tone="accent" />
-        <StatCard label="Taux de présence" value={formatPercent(attendanceRate)} hint="Depuis la rentrée" icon={CalendarCheck} tone="info" />
-        <StatCard
-          label="Absences"
-          value={formatNumber(attendanceCounts.ABSENT ?? 0)}
-          hint={`${attendanceCounts.LATE ?? 0} retard(s), ${attendanceCounts.EXCUSED ?? 0} excusée(s), en demi-journées`}
-          icon={UserX}
-          tone="danger"
-        />
-      </StatGrid>
+      {(rights.grades || rights.attendance) && (
+        <StatGrid>
+          {rights.grades && (
+            <>
+              <div className="rounded-card border border-border bg-surface p-5">
+                <p className="text-sm font-medium text-muted">Moyenne générale{period ? `, ${period.name}` : ""}</p>
+                <div className="mt-3">
+                  <AverageLevel average={general?.average ?? null} size="lg" />
+                </div>
+              </div>
+              <StatCard label="Rang dans la classe" value={general?.rank ? formatRank(general.rank) : "–"} hint={general ? `sur ${general.classSize} élèves` : undefined} icon={Trophy} tone="accent" />
+            </>
+          )}
+          {rights.attendance && (
+            <>
+              <StatCard label="Taux de présence" value={formatPercent(attendanceRate)} hint="Depuis la rentrée" icon={CalendarCheck} tone="info" />
+              <StatCard
+                label="Absences"
+                value={formatNumber(attendanceCounts.ABSENT ?? 0)}
+                hint={`${attendanceCounts.LATE ?? 0} retard(s), ${attendanceCounts.EXCUSED ?? 0} excusée(s), en demi-journées`}
+                icon={UserX}
+                tone="danger"
+              />
+            </>
+          )}
+        </StatGrid>
+      )}
 
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
         <Card>
@@ -161,111 +171,117 @@ export default async function StudentPage(props: PageProps<"/espace/eleves/[id]"
         </Card>
       </div>
 
-      <Card className="mt-6">
-        <CardHeader>
-          <CardTitle>Notes du {period?.name ?? "trimestre"}</CardTitle>
-        </CardHeader>
-        {grades.length === 0 ? (
-          <EmptyState title="Aucune matière" description="Aucune inscription active cette année." />
-        ) : (
-          <Table>
-            <caption className="sr-only">Moyennes par matière pour la période en cours</caption>
-            <THead>
-              <tr>
-                <TH>Matière</TH>
-                <TH className="text-right">Coef.</TH>
-                <TH className="text-right max-md:hidden">Interrogations</TH>
-                <TH className="text-right max-md:hidden">Devoirs</TH>
-                <TH className="text-right max-md:hidden">Composition</TH>
-                <TH>Moyenne</TH>
-              </tr>
-            </THead>
-            <tbody>
-              {grades.map((g) => (
-                <TR key={g.id}>
-                  <TD>
-                    <span className="font-medium">{g.subject}</span>
-                    {g.teacher && <span className="block text-xs text-muted">{g.teacher}</span>}
-                  </TD>
-                  <TD className="text-right tabular-nums">{g.coefficient}</TD>
-                  <TD className="text-right tabular-nums max-md:hidden">{formatAverage(g.interrogationAverage)}</TD>
-                  <TD className="text-right tabular-nums max-md:hidden">{formatAverage(g.devoirAverage)}</TD>
-                  <TD className="text-right tabular-nums max-md:hidden">{formatAverage(g.compositionAverage)}</TD>
-                  <TD>{g.hasSheet ? <AverageLevel average={g.average} /> : <span className="text-muted">Fiche non ouverte</span>}</TD>
-                </TR>
-              ))}
-            </tbody>
-          </Table>
-        )}
-      </Card>
-
-      <div className="mt-6 grid gap-6 lg:grid-cols-2">
-        <Card>
+      {rights.grades && (
+        <Card className="mt-6">
           <CardHeader>
-            <CardTitle>Absences et retards récents</CardTitle>
+            <CardTitle>Notes du {period?.name ?? "trimestre"}</CardTitle>
           </CardHeader>
-          {attendance.length === 0 ? (
-            <EmptyState title="Aucune absence ni retard" description="Toujours présent depuis la rentrée." />
+          {grades.length === 0 ? (
+            <EmptyState title="Aucune matière" description="Aucune inscription active cette année." />
           ) : (
             <Table>
-              <caption className="sr-only">Absences et retards récents</caption>
+              <caption className="sr-only">Moyennes par matière pour la période en cours</caption>
               <THead>
                 <tr>
-                  <TH>Date</TH>
-                  <TH>Demi-journée</TH>
-                  <TH>Statut</TH>
-                  <TH className="max-sm:hidden">Motif</TH>
+                  <TH>Matière</TH>
+                  <TH className="text-right">Coef.</TH>
+                  <TH className="text-right max-md:hidden">Interrogations</TH>
+                  <TH className="text-right max-md:hidden">Devoirs</TH>
+                  <TH className="text-right max-md:hidden">Composition</TH>
+                  <TH>Moyenne</TH>
                 </tr>
               </THead>
               <tbody>
-                {attendance.map((a) => (
-                  <TR key={a.id}>
-                    <TD className="whitespace-nowrap tabular-nums">{shortDate(a.date)}</TD>
-                    <TD>{a.half === "MORNING" ? "Matin" : "Après-midi"}</TD>
+                {grades.map((g) => (
+                  <TR key={g.id}>
                     <TD>
-                      <Badge tone={a.status === "ABSENT" ? "danger" : a.status === "LATE" ? "warning" : "info"}>{ATTENDANCE_LABELS[a.status]}</Badge>
+                      <span className="font-medium">{g.subject}</span>
+                      {g.teacher && <span className="block text-xs text-muted">{g.teacher}</span>}
                     </TD>
-                    <TD className="text-muted max-sm:hidden">{a.reason ?? "–"}</TD>
+                    <TD className="text-right tabular-nums">{g.coefficient}</TD>
+                    <TD className="text-right tabular-nums max-md:hidden">{formatAverage(g.interrogationAverage)}</TD>
+                    <TD className="text-right tabular-nums max-md:hidden">{formatAverage(g.devoirAverage)}</TD>
+                    <TD className="text-right tabular-nums max-md:hidden">{formatAverage(g.compositionAverage)}</TD>
+                    <TD>{g.hasSheet ? <AverageLevel average={g.average} /> : <span className="text-muted">Fiche non ouverte</span>}</TD>
                   </TR>
                 ))}
               </tbody>
             </Table>
           )}
         </Card>
+      )}
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Bulletins publiés</CardTitle>
-          </CardHeader>
-          {reportCards.length === 0 ? (
-            <EmptyState title="Aucun bulletin publié" />
-          ) : (
-            <ul className="divide-y divide-border">
-              {reportCards.map((r) => (
-                <li key={r.id} className="flex flex-wrap items-center justify-between gap-3 px-5 py-3 text-sm">
-                  <div>
-                    <p className="font-semibold">
-                      {r.period.name} {r.period.academicYear.label}
-                    </p>
-                    <p className="text-muted">
-                      Rang {formatRank(r.rank)} sur {r.classSize} · publié le {formatDate(r.publishedAt)}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <AverageLevel average={r.generalAverage === null ? null : Number(r.generalAverage)} />
-                    <Link
-                      href={`/espace/bulletins/${r.enrollmentId}/${r.periodId}`}
-                      className="inline-flex h-9 items-center rounded-lg border border-border-strong px-3 font-semibold hover:bg-surface-2"
-                      aria-label={`Voir le bulletin du ${r.period.name} ${r.period.academicYear.label}`}
-                    >
-                      Voir
-                    </Link>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
-        </Card>
+      <div className="mt-6 grid gap-6 lg:grid-cols-2">
+        {rights.attendance && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Absences et retards récents</CardTitle>
+            </CardHeader>
+            {attendance.length === 0 ? (
+              <EmptyState title="Aucune absence ni retard" description="Toujours présent depuis la rentrée." />
+            ) : (
+              <Table>
+                <caption className="sr-only">Absences et retards récents</caption>
+                <THead>
+                  <tr>
+                    <TH>Date</TH>
+                    <TH>Demi-journée</TH>
+                    <TH>Statut</TH>
+                    <TH className="max-sm:hidden">Motif</TH>
+                  </tr>
+                </THead>
+                <tbody>
+                  {attendance.map((a) => (
+                    <TR key={a.id}>
+                      <TD className="whitespace-nowrap tabular-nums">{shortDate(a.date)}</TD>
+                      <TD>{a.half === "MORNING" ? "Matin" : "Après-midi"}</TD>
+                      <TD>
+                        <Badge tone={a.status === "ABSENT" ? "danger" : a.status === "LATE" ? "warning" : "info"}>{ATTENDANCE_LABELS[a.status]}</Badge>
+                      </TD>
+                      <TD className="text-muted max-sm:hidden">{a.reason ?? "–"}</TD>
+                    </TR>
+                  ))}
+                </tbody>
+              </Table>
+            )}
+          </Card>
+        )}
+
+        {rights.reportCards && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Bulletins publiés</CardTitle>
+            </CardHeader>
+            {reportCards.length === 0 ? (
+              <EmptyState title="Aucun bulletin publié" />
+            ) : (
+              <ul className="divide-y divide-border">
+                {reportCards.map((r) => (
+                  <li key={r.id} className="flex flex-wrap items-center justify-between gap-3 px-5 py-3 text-sm">
+                    <div>
+                      <p className="font-semibold">
+                        {r.period.name} {r.period.academicYear.label}
+                      </p>
+                      <p className="text-muted">
+                        Rang {formatRank(r.rank)} sur {r.classSize} · publié le {formatDate(r.publishedAt)}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <AverageLevel average={r.generalAverage === null ? null : Number(r.generalAverage)} />
+                      <Link
+                        href={`/espace/bulletins/${r.enrollmentId}/${r.periodId}`}
+                        className="inline-flex h-9 items-center rounded-lg border border-border-strong px-3 font-semibold hover:bg-surface-2"
+                        aria-label={`Voir le bulletin du ${r.period.name} ${r.period.academicYear.label}`}
+                      >
+                        Voir
+                      </Link>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Card>
+        )}
       </div>
 
       <Card className="mt-6">

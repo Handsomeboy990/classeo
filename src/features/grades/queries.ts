@@ -1,7 +1,7 @@
 import "server-only";
 
 import type { Prisma } from "@/generated/prisma/client";
-import { assignmentWriteWhere, classroomWhere } from "@/lib/auth/scope";
+import { assignmentWriteWhere, classroomWhere, rosterClassroomWhere } from "@/lib/auth/scope";
 import type { CurrentUser } from "@/lib/auth/session";
 import { evaluationColumns, sheetProgress } from "@/lib/domain/grade-entry";
 import { db } from "@/lib/db";
@@ -10,9 +10,10 @@ type User = NonNullable<CurrentUser>;
 
 // Sheets a user may read: those of the classes in their scope. A teacher's
 // list shows their own sheets; they can still open, read only, the sheets of
-// a class they lead as main teacher.
+// a class they lead as main teacher. A sheet holds every student's grades, so
+// families never reach one: they read their child's grades in their space.
 export function sheetReadWhere(user: User): Prisma.GradeSheetWhereInput {
-  return { assignment: { classroom: classroomWhere(user) } };
+  return { assignment: { classroom: rosterClassroomWhere(user) } };
 }
 
 // Sheets a user may write on: their own assignments for a teacher, the
@@ -131,7 +132,7 @@ export async function getSheetForEntry(user: User, id: string) {
 
 export async function sheetFilterOptions(user: User, yearId: string) {
   return db.classroom.findMany({
-    where: { AND: [classroomWhere(user), { academicYearId: yearId }] },
+    where: { AND: [rosterClassroomWhere(user), { academicYearId: yearId }] },
     orderBy: [{ level: { order: "asc" } }, { name: "asc" }],
     select: { id: true, name: true },
     take: 500,

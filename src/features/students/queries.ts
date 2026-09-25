@@ -3,6 +3,7 @@ import "server-only";
 import type { EnrollmentStatus, Prisma } from "@/generated/prisma/client";
 import { getActiveYear, getCurrentPeriod } from "@/features/classes/academic";
 import { computeClassCards } from "@/features/report-cards/compute";
+import { can } from "@/lib/auth/authorize";
 import { enrollmentWhere } from "@/lib/auth/scope";
 import type { CurrentUser } from "@/lib/auth/session";
 import { attendanceRate } from "@/lib/domain/attendance";
@@ -96,11 +97,14 @@ export async function getStudentProfile(user: User, studentId: string) {
   const year = await getActiveYear();
   const current = student.enrollments.find((e) => e.academicYearId === year?.id) ?? null;
   const period = await getCurrentPeriod();
+  // Seeing a student is not reading their results: each block is loaded only
+  // with the right of what it shows (an accountant sees the identity only).
+  const rights = { grades: can(user, "grade:view"), attendance: can(user, "attendance:view"), reportCards: can(user, "report_card:view") };
 
   const [grades, classCards, attendance, statusCounts, reportCards] = await Promise.all([
-    current && period ? subjectGrades(current.id, current.classroomId, period.id) : [],
-    current && period && current.status === "ACTIVE" ? computeClassCards(current.classroomId, period.id) : null,
-    current
+    rights.grades && current && period ? subjectGrades(current.id, current.classroomId, period.id) : [],
+    rights.grades && current && period && current.status === "ACTIVE" ? computeClassCards(current.classroomId, period.id) : null,
+    rights.attendance && current
       ? db.studentAttendance.findMany({
           where: { enrollmentId: current.id, status: { not: "PRESENT" } },
           orderBy: [{ date: "desc" }, { half: "asc" }],
@@ -108,16 +112,19 @@ export async function getStudentProfile(user: User, studentId: string) {
           select: { id: true, date: true, half: true, status: true, reason: true },
         })
       : [],
-    current ? db.studentAttendance.groupBy({ by: ["status"], where: { enrollmentId: current.id }, _count: { _all: true } }) : [],
-    db.reportCard.findMany({
-      where: { enrollment: { AND: [{ studentId: student.id }, enrollmentWhere(user)] } },
-      orderBy: [{ period: { academicYear: { startDate: "desc" } } }, { period: { order: "desc" } }],
-      select: { id: true, enrollmentId: true, periodId: true, generalAverage: true, rank: true, classSize: true, publishedAt: true, period: { select: { name: true, academicYear: { select: { label: true } } } } },
-    }),
+    rights.attendance && current ? db.studentAttendance.groupBy({ by: ["status"], where: { enrollmentId: current.id }, _count: { _all: true } }) : [],
+    !rights.reportCards
+      ? []
+      : db.reportCard.findMany({
+          where: { enrollment: { AND: [{ studentId: student.id }, enrollmentWhere(user)] } },
+          orderBy: [{ period: { academicYear: { startDate: "desc" } } }, { period: { order: "desc" } }],
+          select: { id: true, enrollmentId: true, periodId: true, generalAverage: true, rank: true, classSize: true, publishedAt: true, period: { select: { name: true, academicYear: { select: { label: true } } } } },
+        }),
   ]);
   const counts = Object.fromEntries(statusCounts.map((s) => [s.status, s._count._all]));
   const myCard = classCards?.cards.find((c) => c.enrollmentId === current?.id) ?? null;
   return {
+    rights,
     student,
     current,
     period,

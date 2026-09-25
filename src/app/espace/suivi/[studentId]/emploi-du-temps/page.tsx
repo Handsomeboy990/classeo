@@ -5,13 +5,13 @@ import { EmptyState } from "@/components/kit/states";
 import { SpokenSummary } from "@/features/family/components/blocks";
 import { TimetableWeek } from "@/features/family/components/sections";
 import { beninToday, DAYS, spokenTime } from "@/features/family/logic";
-import { requireStudentFile, timetableOf } from "@/features/family/queries";
+import { requireStudentSection, timetableOf } from "@/features/family/queries";
 
 export const metadata: Metadata = { title: "Emploi du temps" };
 
 export default async function TimetablePage({ params }: PageProps<"/espace/suivi/[studentId]/emploi-du-temps">) {
   const { studentId } = await params;
-  const { enrollment } = await requireStudentFile(studentId);
+  const { enrollment } = await requireStudentSection(studentId, "emploi-du-temps");
   const slots = await timetableOf(enrollment);
   const today = beninToday();
 

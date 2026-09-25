@@ -7,7 +7,7 @@ import { SpokenSummary } from "@/features/family/components/blocks";
 import { PrintButton } from "@/features/family/components/print-button";
 import { ReportCardSheet } from "@/features/family/components/sections";
 import { reportSentence } from "@/features/family/logic";
-import { reportCardsOf, requireStudentFile } from "@/features/family/queries";
+import { reportCardsOf, requireStudentSection } from "@/features/family/queries";
 import { param } from "@/lib/list";
 import { cn } from "@/lib/utils";
 
@@ -17,7 +17,7 @@ export const metadata: Metadata = { title: "Bulletins" };
 // recomputed. One card at a time, printable.
 export default async function ReportCardsPage({ params, searchParams }: PageProps<"/espace/suivi/[studentId]">) {
   const { studentId } = await params;
-  const { user, enrollment } = await requireStudentFile(studentId);
+  const { user, enrollment } = await requireStudentSection(studentId, "bulletins");
   const cards = await reportCardsOf(user, studentId);
   const wanted = param(await searchParams, "b");
   const card = cards.find((c) => c.id === wanted) ?? cards[0];

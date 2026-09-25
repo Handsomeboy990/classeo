@@ -33,6 +33,8 @@ describe("contentSchema", () => {
   it("refuses dangerous media addresses", () => {
     expect(errors({ ...base, mediaType: "IMAGE", mediaUrl: "javascript:alert(1)" }).mediaUrl).toBeDefined();
     expect(errors({ ...base, mediaType: "IMAGE", mediaUrl: "//evil.example/x.png" }).mediaUrl).toBeDefined();
+    expect(errors({ ...base, mediaType: "IMAGE", mediaUrl: "/\\evil.example/x.png" }).mediaUrl).toBeDefined();
+    expect(errors({ ...base, mediaType: "IMAGE", mediaUrl: "/media\\..\\x.png" }).mediaUrl).toBeDefined();
     expect(errors({ ...base, mediaType: "IMAGE", mediaUrl: "/media/affiche.png" })).toEqual({});
   });
 

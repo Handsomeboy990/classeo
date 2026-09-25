@@ -1,7 +1,7 @@
 import "server-only";
 
 import type { AttendanceStatus, DayHalf, Prisma } from "@/generated/prisma/client";
-import { classroomWhere, enrollmentWhere, schoolWhere } from "@/lib/auth/scope";
+import { enrollmentWhere, rosterClassroomWhere, schoolWhere } from "@/lib/auth/scope";
 import type { CurrentUser } from "@/lib/auth/session";
 import { attendanceRate, isoToDate, schoolWeek } from "@/lib/domain/attendance";
 import { db } from "@/lib/db";
@@ -13,10 +13,10 @@ function toCounts(rows: { status: AttendanceStatus; _count: { _all: number } }[]
 }
 
 // The register of a class for a date and half day: active students with the
-// status already recorded, if any.
+// status already recorded, if any. Staff only: it lists the whole class.
 export async function register(user: User, classroomId: string, date: string, half: DayHalf) {
   const classroom = await db.classroom.findFirst({
-    where: { AND: [{ id: classroomId }, classroomWhere(user)] },
+    where: { AND: [{ id: classroomId }, rosterClassroomWhere(user)] },
     select: { id: true, name: true, academicYear: { select: { isActive: true } } },
   });
   if (!classroom) return null;
