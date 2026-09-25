@@ -97,13 +97,13 @@ async function registerView(meta: DocumentMeta, record?: PrintRecord) {
   const user = await getCurrentUser();
   const kind = record?.kind ?? KIND_BY_TITLE.get(meta.title as (typeof DOCUMENT_KINDS)[DocumentKind]);
   if (!user || !kind) return null;
-  const { generatedAt: _at, generatedBy: _by, ...identity } = meta;
+  const identity = { title: meta.title, subtitle: meta.subtitle ?? null, reference: meta.reference, issuer: meta.issuer };
   const code = await issueOnce({
     kind,
     title: meta.title,
     subjectId: record?.subjectId ?? meta.reference,
     schoolId: record?.schoolId ?? user.scope.schoolId ?? null,
-    contentHash: contentHash({ format: "html", identity: { ...identity, issuer: { ...identity.issuer, logo: undefined } }, content: record?.content ?? null }),
+    contentHash: contentHash({ format: "html", identity, content: record?.content ?? null }),
     issuedById: user.id,
   });
   return verificationOf(code);

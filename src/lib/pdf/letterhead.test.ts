@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 
 vi.mock("server-only", () => ({}));
 
-import { createElement } from "react";
+import { createElement, type FC } from "react";
 
 import { renderToBuffer } from "@react-pdf/renderer";
 
@@ -55,11 +55,10 @@ describe("document rendering", () => {
       generatedBy: { name: "Florentin Agossou", role: "Chef d'établissement", email: "florentin.agossou" },
       issuer: { kind: "school" as const, name: "CEG Godomey", cycle: "SECONDARY" as const, postalBox: "123", code: "X" },
     };
-    const page = createElement(DocumentPage, {
-      meta,
-      children: [createElement(T, { key: "t" }, "Contenu"), createElement(Signatures, { key: "s", items: [{ role: "Le directeur", stamp: true }] })],
-    });
-    const doc = createElement(PdfDocument, { title: "t", author: "a", children: page });
+    const Page = DocumentPage as unknown as FC<{ meta: typeof meta }>;
+    const Doc = PdfDocument as unknown as FC<{ title: string; author: string }>;
+    const page = createElement(Page, { meta }, createElement(T, null, "Contenu"), createElement(Signatures, { items: [{ role: "Le directeur", stamp: true }] }));
+    const doc = createElement(Doc, { title: "t", author: "a" }, page);
     const element = createElement(
       VerificationContext.Provider,
       { value: { code: "K7QD4-M2XPH", url, shortUrl: url.slice(7), qr: encodeQr(url) } },
