@@ -4,7 +4,7 @@ import { DataTable, type Column } from "@/components/kit/data-table";
 import { PageHeader } from "@/components/kit/page-header";
 import { UrlSelect } from "@/components/kit/url-select";
 import { Badge } from "@/components/ui/badge";
-import { HelpRequestActions } from "@/features/password-help/components/help-actions";
+import { HelpIssuedProvider, HelpRequestActions } from "@/features/password-help/components/help-actions";
 import { listHelpRequests, type HelpStatusFilter } from "@/features/password-help/queries";
 import { requirePermission } from "@/lib/auth/authorize";
 import { listParams, param } from "@/lib/list";
@@ -82,14 +82,12 @@ export default async function PasswordHelpPage({ searchParams }: PageProps<"/esp
       header: "Actions",
       actions: true,
       className: "text-right",
-      cell: (r) => (
-        <HelpRequestActions
-          id={r.id}
-          name={`${r.user.firstName} ${r.user.lastName}`}
-          contact={r.contact ?? r.user.phone}
-          handled={r.status === "PENDING" ? undefined : <span className="text-xs text-muted">Traitée</span>}
-        />
-      ),
+      cell: (r) =>
+        r.status === "PENDING" ? (
+          <HelpRequestActions id={r.id} name={`${r.user.firstName} ${r.user.lastName}`} contact={r.contact ?? r.user.phone} />
+        ) : (
+          <span className="text-xs text-muted">Traitée</span>
+        ),
     },
   ];
 
@@ -99,6 +97,7 @@ export default async function PasswordHelpPage({ searchParams }: PageProps<"/esp
         title="Demandes de réinitialisation"
         description="Mots de passe oubliés des comptes que vous gérez : élèves, parents et personnel pour un établissement, chefs d'établissement pour une circonscription, et ainsi de suite. Vérifiez l'identité de la personne avant de lui remettre un mot de passe temporaire."
       />
+      <HelpIssuedProvider>
       <DataTable
         rows={rows}
         columns={columns}
@@ -128,6 +127,7 @@ export default async function PasswordHelpPage({ searchParams }: PageProps<"/esp
         emptyTitle="Aucune demande"
         emptyDescription="Personne de votre périmètre n'a demandé de nouveau mot de passe."
       />
+      </HelpIssuedProvider>
     </div>
   );
 }
