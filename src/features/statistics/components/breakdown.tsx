@@ -81,7 +81,7 @@ export function Breakdown({
         <div>
           <CardTitle>{title ?? `Comparaison par ${labels.singular.toLowerCase()}`}</CardTitle>
           <p className="mt-0.5 text-sm text-muted">
-            {rows.length} {rows.length > 1 ? labels.plural.toLowerCase() : labels.singular.toLowerCase()}, triés par {meta.label.toLowerCase()} ({direction === "desc" ? "décroissant" : "croissant"})
+            {rows.length} {rows.length > 1 ? labels.plural.toLowerCase() : labels.singular.toLowerCase()}, {stats.childLevel === "COMMUNE" || stats.childLevel === "CLASS" ? "triées" : "triés"} par {meta.label.toLowerCase()} ({direction === "desc" ? "décroissant" : "croissant"})
           </p>
         </div>
         <Link
@@ -122,7 +122,7 @@ export function Breakdown({
             )}
             <Table>
               <caption className="sr-only">
-                Indicateurs par {labels.singular.toLowerCase()}, triés par {meta.label.toLowerCase()}
+                Indicateurs par {labels.singular.toLowerCase()}, {stats.childLevel === "COMMUNE" || stats.childLevel === "CLASS" ? "triées" : "triés"} par {meta.label.toLowerCase()}
               </caption>
               <THead>
                 <tr>
