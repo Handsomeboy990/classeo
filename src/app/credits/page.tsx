@@ -113,7 +113,7 @@ function CreditDetails({ credit, sourceLabel, tr }: { credit: Credit; sourceLabe
   return (
     <dl className="mt-3 grid gap-x-4 gap-y-2 text-sm sm:grid-cols-[8.5rem_1fr]">
       <dt className="font-semibold text-muted">{node(c.author)}</dt>
-      <dd translate="no" className="min-w-0">
+      <dd translate="no" lang="fr" className="min-w-0">
         {credit.author}
       </dd>
       <dt className="font-semibold text-muted">{node(c.source)}</dt>
