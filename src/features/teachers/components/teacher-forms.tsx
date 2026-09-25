@@ -1,12 +1,12 @@
-import { Pencil, Plus } from "lucide-react";
+import { Pencil } from "lucide-react";
 
+import { FormDialog } from "@/components/kit/form-dialog";
 import { FormField } from "@/components/kit/form-field";
 import { Input, Select, Switch } from "@/components/ui/input";
-import { FormDialog } from "@/components/kit/form-dialog";
 
-import { createTeacher, updateTeacher } from "../actions";
+import { updateTeacher } from "../actions";
 
-type Values = {
+export type TeacherValues = {
   id: string;
   lastName: string;
   firstName: string;
@@ -15,9 +15,10 @@ type Values = {
   specialty: string | null;
   hiredAt: string | null;
   isActive: boolean;
+  npi: string | null;
 };
 
-function Fields({ values }: { values?: Values }) {
+export function TeacherFields({ values }: { values?: TeacherValues }) {
   return (
     <div className="grid gap-4 sm:grid-cols-2">
       {values && <input type="hidden" name="id" value={values.id} />}
@@ -37,6 +38,13 @@ function Fields({ values }: { values?: Values }) {
       <FormField label="Téléphone" name="phone">
         <Input type="tel" inputMode="tel" defaultValue={values?.phone ?? ""} />
       </FormField>
+      <FormField
+        label="NPI"
+        name="npi"
+        hint={values?.npi ? "Numéro personnel d'identification, enregistré au registre national." : "Facultatif. Numéro personnel d'identification, 10 chiffres."}
+      >
+        <Input inputMode="numeric" maxLength={14} defaultValue={values?.npi ?? ""} readOnly={!!values?.npi} autoComplete="off" />
+      </FormField>
       <FormField label="Spécialité" name="specialty" hint="Par exemple : Mathématiques">
         <Input defaultValue={values?.specialty ?? ""} maxLength={80} />
       </FormField>
@@ -50,30 +58,12 @@ function Fields({ values }: { values?: Values }) {
   );
 }
 
-export function CreateTeacherDialog() {
-  return (
-    <FormDialog
-      action={createTeacher}
-      title="Nouvel enseignant"
-      description="Un matricule est attribué automatiquement. Le compte de connexion se crée depuis Comptes utilisateurs."
-      submitLabel="Ajouter"
-      wide
-      trigger={
-        <>
-          <Plus aria-hidden /> Nouvel enseignant
-        </>
-      }
-    >
-      <Fields />
-    </FormDialog>
-  );
-}
-
-export function EditTeacherDialog({ values }: { values: Values }) {
+export function EditTeacherDialog({ values }: { values: TeacherValues }) {
   return (
     <FormDialog
       action={updateTeacher}
       title="Modifier l'enseignant"
+      description="Les nom, prénoms, téléphone et NPI sont ceux du registre national : ils changent aussi dans les autres établissements de la personne."
       triggerVariant="secondary"
       wide
       trigger={
@@ -82,7 +72,7 @@ export function EditTeacherDialog({ values }: { values: Values }) {
         </>
       }
     >
-      <Fields values={values} />
+      <TeacherFields values={values} />
     </FormDialog>
   );
 }
