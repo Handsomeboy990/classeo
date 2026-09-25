@@ -95,6 +95,23 @@ const userInclude = {
 
 export type CurrentUser = Awaited<ReturnType<typeof loadUser>>;
 
+// A parent or a student has no territory: their scope is the school, or the
+// schools, of the children they follow (their own for a student), in the
+// active year. Never "Bénin".
+async function familyScopeLabel(userId: string) {
+  const rows = await db.enrollment.findMany({
+    where: {
+      academicYear: { isActive: true },
+      status: "ACTIVE",
+      student: { OR: [{ userId }, { guardians: { some: { guardian: { userId } } } }] },
+    },
+    select: { school: { select: { name: true } } },
+  });
+  const names = [...new Set(rows.map((r) => r.school.name))].sort((a, b) => a.localeCompare(b, "fr"));
+  if (!names.length) return "Espace famille";
+  return names.length === 1 ? names[0]! : `${names.slice(0, -1).join(", ")} et ${names[names.length - 1]}`;
+}
+
 async function loadUser(sessionId: string) {
   const session = await db.session.findUnique({
     where: { id: sessionId },
@@ -117,7 +134,7 @@ async function loadUser(sessionId: string) {
       departmentId: u.departmentId ?? u.commune?.departmentId ?? u.school?.commune.departmentId ?? null,
       communeId: u.communeId ?? u.school?.communeId ?? null,
       schoolId: u.schoolId,
-      label: u.school?.name ?? u.commune?.name ?? u.department?.name ?? "Bénin",
+      label: u.scopeLevel === "SELF" ? await familyScopeLabel(u.id) : (u.school?.name ?? u.commune?.name ?? u.department?.name ?? "Bénin"),
     },
     teacherId: u.teacher?.id ?? null,
     studentId: u.student?.id ?? null,
