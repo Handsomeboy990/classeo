@@ -137,7 +137,9 @@ test("the DDESTFP imposes an exam on every college of a commune", async ({ pageA
   await expect(page.getByText(/établissements? concernés? pour cette classe/)).toBeVisible();
   await shot(page, "06-create-imposed");
   await page.getByRole("button", { name: "Décider l'examen blanc" }).click();
-  await expect(page.getByRole("heading", { level: 1, name: title })).toBeVisible();
+  // The exam is created for every college of the commune, then the page
+  // of the new exam opens: slower than a plain navigation.
+  await expect(page.getByRole("heading", { level: 1, name: title })).toBeVisible({ timeout: 20_000 });
   await expect(page.getByText("Validé", { exact: true }).first()).toBeVisible();
   await expect(page.getByText("Participation imposée").first()).toBeVisible();
   await expect(page.getByRole("cell", { name: "CEG Godomey", exact: true })).toBeVisible();
