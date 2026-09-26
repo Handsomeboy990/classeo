@@ -207,6 +207,12 @@ async function start(page: Page) {
 
 async function hrefs(page: Page, path: string, selector: string) {
   await page.goto(path);
+  // The list streams in after the loading skeleton; it may also be empty.
+  await page
+    .locator(selector)
+    .first()
+    .waitFor({ timeout: 10_000 })
+    .catch(() => {});
   return page.locator(selector).evaluateAll((links) => [...new Set(links.map((a) => a.getAttribute("href")!))]);
 }
 
