@@ -18,7 +18,7 @@ async function openSenami(parent: Page) {
   await parent.goto("/espace/pieces-justificatifs");
   await expect(parent.getByRole("heading", { level: 1, name: "Pièces et justificatifs" })).toBeVisible();
   await parent.getByRole("navigation", { name: "Choisir l'enfant" }).getByRole("link", { name: /Sènami Hounkpatin/ }).click();
-  await expect(parent.getByRole("link", { name: /Sènami Hounkpatin/, current: "page" })).toBeVisible();
+  await expect(parent.getByRole("navigation", { name: "Choisir l'enfant" }).getByRole("link", { name: /Sènami Hounkpatin/ })).toHaveAttribute("aria-current", "page");
 }
 
 // Opens the pending piece of the queue whose page shows this text: the
