@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { Logo } from "@/components/brand/logo";
 import { FlagStripe } from "@/components/brand/flag";
 import { Button } from "@/components/ui/button";
+import { AnalyticsSlot } from "@/features/analytics/analytics-slot";
 
 // Frame of the public check pages: reachable without an account, from the
 // QR code printed on any document.
@@ -20,6 +21,7 @@ export function PublicShell({ children }: { children: ReactNode }) {
       <main id="page-content" className="mx-auto w-full max-w-2xl flex-1 px-4 pb-12">
         {children}
       </main>
+      <AnalyticsSlot />
     </div>
   );
 }

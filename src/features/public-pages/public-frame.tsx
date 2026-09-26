@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { Logo } from "@/components/brand/logo";
+import { AnalyticsSlot } from "@/features/analytics/analytics-slot";
 
 import { LanguageControls } from "./language-controls";
 import { PUBLIC } from "./texts";
@@ -60,6 +61,7 @@ export function PublicFooter({ tr, voice }: { tr: PublicTranslator; voice: Publi
           </ul>
         </nav>
       </div>
+      <AnalyticsSlot tr={tr} />
     </footer>
   );
 }

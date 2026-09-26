@@ -104,6 +104,14 @@ export const PUBLIC = {
     languages: "Langues locales",
     languagesThanks: "Merci à AWADEME Finanfa Ronaldo, grâce à qui Classéo se lit et s'écoute en langues locales.",
   },
+  // The consent banner of Google Analytics, shown only when NEXT_PUBLIC_GA_ID
+  // is set (features/analytics).
+  analytics: {
+    text: "Classéo souhaite mesurer la fréquentation de ses pages publiques avec Google Analytics. Aucun cookie n'est déposé sans votre accord, et l'espace connecté n'est jamais mesuré.",
+    accept: "Accepter",
+    decline: "Refuser",
+    withdraw: "Retirer mon accord à la mesure d'audience",
+  },
   // Answers of the sign in and forgotten password actions, written in French
   // on the server (features/auth/actions.ts, features/password-help/actions.ts)
   // and looked up by the forms. A message with a figure that changes (a

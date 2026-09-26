@@ -7,6 +7,7 @@ import { Logo } from "@/components/brand/logo";
 import { InfoTip } from "@/components/kit/info-tip";
 import { ReadAloud } from "@/components/kit/read-aloud";
 import { TextProvider } from "@/components/kit/text-provider";
+import { AnalyticsSlot } from "@/features/analytics/analytics-slot";
 import { LanguageControls } from "@/features/public-pages/language-controls";
 import { photo, shortCredit } from "@/features/public-pages/photos";
 import { PHOTO_IMAGES } from "@/features/public-pages/photo-images";
@@ -132,6 +133,7 @@ export function AuthShell({
           </Link>
         </p>
       </section>
+      <AnalyticsSlot tr={tr} />
     </main>
   );
 }
