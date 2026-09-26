@@ -10,6 +10,8 @@ import {
   ClipboardCheck,
   FileCheck2,
   FileText,
+  FileUp,
+  FolderCheck,
   GraduationCap,
   Home,
   FileStack,
@@ -71,6 +73,9 @@ export const NAVIGATION: NavSection[] = [
       { label: "Tableau de bord", href: "/espace", icon: Home, short: "Accueil" },
       { label: "Mes enfants", href: "/espace/suivi", icon: Baby, scopes: ["SELF"], permission: ["student:view"], tab: { family: 1 } },
       { label: "Ma scolarité", href: "/espace/suivi", icon: GraduationCap, scopes: ["SELF"], permission: ["report_card:view"], tab: { family: 1 } },
+      // Enrollment pieces, absence justifications and medical certificates
+      // sent to the school.
+      { label: "Pièces et justificatifs", href: "/espace/pieces-justificatifs", icon: FileUp, scopes: ["SELF"], permission: ["family_document:create"], short: "Pièces" },
     ],
   },
   {
@@ -96,6 +101,8 @@ export const NAVIGATION: NavSection[] = [
       // A school sees its team, the territory the national registry.
       { label: "Enseignants", href: "/espace/enseignants", icon: UserSquare2, permission: ["teacher:view"], scopes: STAFF },
       { label: "Parents", href: "/espace/parents", icon: Users, permission: ["parent:view"], scopes: ["SCHOOL"] },
+      // The queue of pieces and justifications sent by families.
+      { label: "Pièces des familles", href: "/espace/pieces-familles", icon: FolderCheck, permission: ["family_document:approve", "health_document:approve"], scopes: ["SCHOOL"], short: "Pièces" },
       { label: "Emploi du temps", href: "/espace/emploi-du-temps", icon: CalendarDays, permission: ["timetable:view"], scopes: ["SCHOOL"], short: "Horaires", tab: { teacher: 4 } },
     ],
   },
