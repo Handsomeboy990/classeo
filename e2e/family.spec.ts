@@ -25,7 +25,8 @@ test("opens the report card of Sènami", async ({ page }) => {
   await expect(page.getByRole("heading", { level: 1, name: "Sènami Hounkpatin" })).toBeVisible();
   await expect(page.getByRole("link", { name: "Bulletins" })).toHaveAttribute("aria-current", "page");
 
-  const report = page.getByRole("article", { name: /^Bulletin du trimestre 3 · 2025-2026$/ });
+  // CEG Godomey, a public college, is graded by semester.
+  const report = page.getByRole("article", { name: /^Bulletin du semestre 2 · 2025-2026$/ });
   await expect(report).toBeVisible();
   await expect(report.getByText("Moyenne générale")).toBeVisible();
   await expect(report.getByRole("table", { name: /Moyennes par matière/ }).getByRole("cell", { name: "Mathématiques", exact: true })).toBeVisible();

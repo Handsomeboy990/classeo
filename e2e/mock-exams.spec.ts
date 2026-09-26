@@ -4,9 +4,10 @@ import type { Page } from "@playwright/test";
 
 import { expect, signIn, test } from "./support/fixtures";
 
-// Mock exams: a school proposes an exam, the invited school accepts, the
-// district validates; a district imposes one; a teacher enters results; a
-// family reads its child's results; and the refusals around them.
+// Mock exams: a college proposes an exam, the invited college accepts, the
+// DDESTFP validates (the secondary chain has no circonscription); the DDESTFP
+// imposes one; a teacher enters results; a family reads its child's exams;
+// and the refusals around them.
 // Screenshots are written only when E2E_SCREENSHOTS names a folder.
 
 const SHOTS = process.env.E2E_SCREENSHOTS;
@@ -14,8 +15,15 @@ async function shot(page: Page, name: string) {
   if (SHOTS) await page.screenshot({ path: path.join(SHOTS, `${name}.png`), fullPage: true });
 }
 
-const SEEDED_3E = "Examen blanc du BEPC, circonscription d'Abomey-Calavi";
-const SEEDED_CM2 = "Examen blanc du CEP, réseau des écoles de Godomey";
+// Seeded: last year's departmental BEPC mock with the results of CEG
+// Godomey, this year's first one (February 2027), and the CEP mock of the
+// circonscription of Abomey-Calavi (May 2027).
+const SEEDED_3E = "Examen blanc départemental du BEPC 2026, Atlantique";
+const SEEDED_BEPC = "Premier examen blanc départemental du BEPC, Atlantique";
+const SEEDED_CM2 = "Examen blanc du CEP, circonscription d'Abomey-Calavi";
+// The exam the DDESTFP imposes below, starting today: the teacher enters
+// its results.
+const IMPOSED = `Examen blanc imposé ${Date.now().toString(36)}`;
 
 function isoIn(days: number) {
   return new Date(Date.now() + days * 86_400_000).toISOString().slice(0, 10);
@@ -29,12 +37,13 @@ function frIn(days: number) {
 
 test.describe.configure({ mode: "serial" });
 
-test("a school proposes an exam, the partner accepts and the district validates it", async ({ pageAs, browser }) => {
+test("a college proposes an exam, the partner accepts and the DDESTFP validates it", async ({ pageAs, browser }) => {
   const title = `Examen blanc de 3e ${Date.now().toString(36)}`;
   const director = await pageAs("directeur");
   await director.goto("/espace/examens-blancs");
   await expect(director.getByRole("heading", { level: 1, name: "Examens blancs" })).toBeVisible();
-  await expect(director.getByRole("link", { name: SEEDED_CM2 })).toBeVisible();
+  await expect(director.getByRole("link", { name: SEEDED_BEPC })).toBeVisible();
+  await expect(director.getByRole("link", { name: SEEDED_CM2 })).toHaveCount(0);
   await shot(director, "01-list-director");
 
   await director.getByRole("link", { name: "Organiser un examen blanc" }).click();
@@ -67,17 +76,17 @@ test("a school proposes an exam, the partner accepts and the district validates 
   await expect(partner.getByRole("heading", { name: "Votre établissement est invité" })).toHaveCount(0);
   await partnerContext.close();
 
-  // The organiser submits to the district.
+  // The organiser submits to the departmental direction.
   await director.reload();
   await director.getByRole("button", { name: "Soumettre à la validation" }).click();
   await director.getByRole("dialog").getByRole("button", { name: "Soumettre" }).click();
-  await expect(director.getByText(/Examen soumis à la circonscription scolaire/)).toBeVisible();
+  await expect(director.getByText(/Examen soumis à la direction départementale/)).toBeVisible();
   await expect(director.getByText("En attente de validation").first()).toBeVisible();
 
-  // The district validates with a note.
+  // The DDESTFP validates with a note.
   const districtContext = await browser.newContext();
   const district = await districtContext.newPage();
-  await signIn(district, "benedicta.zannou");
+  await signIn(district, "aristide.gbaguidi");
   await expect(district).toHaveURL(/\/espace$/);
   await district.goto("/espace/examens-blancs");
   await expect(district.getByText(/en attente de votre validation/)).toBeVisible();
@@ -89,13 +98,18 @@ test("a school proposes an exam, the partner accepts and the district validates 
   await district.getByLabel("Note de décision").fill("Calendrier compatible avec les compositions. Bonne organisation.");
   await district.getByRole("button", { name: "Valider l'examen" }).click();
   await expect(district.getByText("Examen validé. Les établissements sont notifiés.")).toBeVisible();
-
-  // The seeded CM2 exam also waits for her decision: it is shown, not decided.
-  await district.goto("/espace/examens-blancs");
-  await district.getByRole("table").getByRole("link", { name: SEEDED_CM2 }).click();
-  await expect(district.getByRole("heading", { name: "Validation" })).toBeVisible();
-  await shot(district, "04-district-seeded-cm2");
   await districtContext.close();
+
+  // The circonscription does not follow a college's exam.
+  const circonscriptionContext = await browser.newContext();
+  const circonscription = await circonscriptionContext.newPage();
+  await signIn(circonscription, "benedicta.zannou");
+  await expect(circonscription).toHaveURL(/\/espace$/);
+  await circonscription.goto("/espace/examens-blancs");
+  await expect(circonscription.getByRole("link", { name: SEEDED_CM2 })).toBeVisible();
+  await expect(circonscription.getByRole("link", { name: title })).toHaveCount(0);
+  await shot(circonscription, "04-circonscription-list");
+  await circonscriptionContext.close();
 
   await director.reload();
   await expect(director.getByText("Validé", { exact: true }).first()).toBeVisible();
@@ -104,16 +118,16 @@ test("a school proposes an exam, the partner accepts and the district validates 
   await shot(director, "05-approved-timeline");
 });
 
-test("a department imposes an exam on every school of a commune", async ({ pageAs }) => {
-  const title = `Examen blanc imposé ${Date.now().toString(36)}`;
+test("the DDESTFP imposes an exam on every college of a commune", async ({ pageAs }) => {
+  const title = IMPOSED;
   const page = await pageAs("ddestfp");
   await page.goto("/espace/examens-blancs/nouveau");
   await expect(page.getByText(/La participation est imposée/)).toBeVisible();
   await page.getByLabel("Classe d'examen").selectOption({ label: "3e" });
   await expect(page.getByRole("checkbox", { name: "Mathématiques" })).toBeChecked();
   await page.getByLabel("Intitulé").fill(title);
-  await page.getByLabel("Premier jour des épreuves").fill(frIn(30));
-  await page.getByLabel("Dernier jour des épreuves").fill(frIn(31));
+  await page.getByLabel("Premier jour des épreuves").fill(frIn(0));
+  await page.getByLabel("Dernier jour des épreuves").fill(frIn(1));
   await page.getByRole("radio", { name: "Tous les établissements d'une commune" }).check();
   // A long list: the searchable field, type to filter then pick.
   await page.getByRole("combobox", { name: "Commune" }).fill("Abomey");
@@ -130,8 +144,8 @@ test("a department imposes an exam on every school of a commune", async ({ pageA
 test("a teacher enters a mock exam score and keeps it after reload", async ({ pageAs }) => {
   const page = await pageAs("enseignant");
   await page.goto("/espace/examens-blancs");
-  await page.getByRole("table").getByRole("link", { name: SEEDED_3E }).click();
-  await expect(page.getByRole("heading", { name: "Classement des établissements" })).toBeVisible();
+  await page.getByRole("table").getByRole("link", { name: IMPOSED }).click();
+  await expect(page.getByRole("heading", { level: 1, name: IMPOSED })).toBeVisible();
   await page.getByRole("link", { name: /^3e A/ }).click();
   await expect(page.getByRole("heading", { level: 1, name: /Saisie des notes · 3e A/ })).toBeVisible();
   // Only her subject is editable.
@@ -154,12 +168,13 @@ test("a teacher enters a mock exam score and keeps it after reload", async ({ pa
   await expect(page.getByText("Tout est enregistré")).toBeVisible();
 });
 
-test("a parent reads the child's results, and nothing else", async ({ pageAs }) => {
+test("a parent reads the child's exam, and nothing else", async ({ pageAs }) => {
   const page = await pageAs("parent");
   await page.goto("/espace/examens-blancs");
   await expect(page.getByRole("link", { name: SEEDED_CM2 })).toHaveCount(0);
-  await page.getByRole("table").getByRole("link", { name: SEEDED_3E }).click();
-  await expect(page.getByText(/Rang général/).first()).toBeVisible();
+  await expect(page.getByRole("link", { name: SEEDED_3E })).toHaveCount(0);
+  await page.getByRole("table").getByRole("link", { name: SEEDED_BEPC }).click();
+  await expect(page.getByText("Les notes ne sont pas encore saisies.").first()).toBeVisible();
   await expect(page.getByRole("heading", { name: "Classement des candidats" })).toHaveCount(0);
   await expect(page.getByRole("heading", { name: "Établissements" })).toHaveCount(0);
   await shot(page, "08-parent-results");
@@ -175,10 +190,10 @@ test("refusals: no creation for a teacher, no section for the accountant, no for
   expect(list?.status()).toBe(403);
 
   // The parent never reaches the CM2 exam, even with its address.
-  const director = await pageAs("directeur");
-  await director.goto("/espace/examens-blancs");
-  await director.getByRole("table").getByRole("link", { name: SEEDED_CM2 }).click();
-  const cm2 = director.url();
+  const minister = await pageAs("ministre");
+  await minister.goto("/espace/examens-blancs");
+  await minister.getByRole("table").getByRole("link", { name: SEEDED_CM2 }).click();
+  const cm2 = minister.url();
   const parent = await pageAs("parent");
   await parent.goto(cm2);
   await expect(parent.getByRole("heading", { level: 1, name: SEEDED_CM2 })).toHaveCount(0);
