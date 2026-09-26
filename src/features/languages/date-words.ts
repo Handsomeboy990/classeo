@@ -122,11 +122,13 @@ export function dateLabel(text: string): { label: string; date: string } | null 
 
 // A date alone, or after a label the cache knows: "Publié le 22 septembre
 // 2026" gives the translated label followed by the date from the table.
-export function translateDated(text: string, lang: TargetLanguage, map: Map<string, string>): string | undefined {
+// `label` looks the label up (as a template when it holds a name: "Lu par
+// Nafissatou Issifou le").
+export function translateDated(text: string, lang: TargetLanguage, label: (text: string) => string | undefined): string | undefined {
   const alone = translateDate(text, lang);
   if (alone) return alone;
   const parts = dateLabel(text);
-  const label = parts && (map.get(parts.label) ?? map.get(parts.label.replace(/\s*[:,]$/, "")));
+  const head = parts && (label(parts.label) ?? label(parts.label.replace(/\s*[:,]$/, "")));
   const date = parts && translateDate(parts.date, lang);
-  return label && date ? `${label} ${date}` : undefined;
+  return head && date ? `${head} ${date}` : undefined;
 }

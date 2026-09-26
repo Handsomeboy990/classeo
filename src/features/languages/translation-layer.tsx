@@ -85,7 +85,8 @@ export function TranslationLayer({ userId, languages, voices, names }: { userId:
     asked.set(lang, sent);
     const waiting = new Set<string>();
     let timer: ReturnType<typeof setTimeout> | undefined;
-    const lookup = (text: string) => lookupText(text, map, (t) => translateDated(t, lang, map), pattern);
+    const plain = (text: string) => lookupText(text, map, undefined, pattern);
+    const lookup = (text: string) => lookupText(text, map, (t) => translateDated(t, lang, plain), pattern);
 
     // Regions React has not hydrated yet (a streamed section) are taken again
     // a moment later: hydration changes nothing in the document, so no
@@ -146,6 +147,8 @@ export function TranslationLayer({ userId, languages, voices, names }: { userId:
         main?.setAttribute("lang", bcp47(lang));
         setStatus(gaps > 0 || result.pending > 0 ? "partial" : "done");
       } catch {
+        // Asked again by the next pass (a change, a new page).
+        texts.forEach((t) => sent.delete(t));
         if (!cancelled) setStatus("unavailable");
       }
     };
@@ -210,7 +213,7 @@ export function TranslationLayer({ userId, languages, voices, names }: { userId:
   // for users allowed to translate): appearing after hydration would push
   // the page down under the reader's finger.
   return (
-    <div data-no-translate data-read-skip data-language-bar className="mx-auto w-full max-w-7xl px-4 pt-3 sm:px-6 print:hidden max-lg:[body:has([data-chat])_&]:hidden">
+    <div data-no-translate data-read-skip className="mx-auto w-full max-w-7xl px-4 pt-3 sm:px-6 print:hidden max-lg:[body:has([data-chat])_&]:hidden">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2 rounded-card border border-border bg-surface px-3 py-2">
         <label htmlFor={selectId} className="flex items-center gap-2 text-sm font-semibold">
           <Languages className="size-5 text-primary" aria-hidden />

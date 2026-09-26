@@ -162,6 +162,8 @@ function blockOf(node: Text) {
 // sentence brings back the whole sentence.
 export function collect(root: Node, { inline = displayedInline, ready = ownedByReact, onLater }: CollectOptions = {}): Unit[] {
   const units: Unit[] = [];
+  // Comments (React's Suspense markers) and other nodes hold nothing to read.
+  if (root.nodeType !== TEXT_NODE && root.nodeType !== ELEMENT_NODE) return units;
   const start = root.nodeType === TEXT_NODE ? root.parentElement : (root as Element);
   if (!start || isSkipped(start)) return units;
   if (!ready(start)) {
@@ -308,7 +310,9 @@ export type Change = { type: string; target: Node; addedNodes: ArrayLike<Node>; 
 
 export function changedRoots(records: readonly Change[]): Node[] {
   const roots = new Set<Node>();
-  const add = (n: Node) => roots.add(sentenceAround(n) ?? n);
+  const add = (n: Node) => {
+    if (n.nodeType === TEXT_NODE || n.nodeType === ELEMENT_NODE) roots.add(sentenceAround(n) ?? n);
+  };
   for (const r of records) {
     if (r.type === "characterData" && r.target.nodeType === TEXT_NODE) {
       const t = r.target as Text;

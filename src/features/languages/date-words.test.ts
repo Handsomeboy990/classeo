@@ -28,8 +28,8 @@ describe("date words", () => {
   it("translates the label before a date from the cache, the date from the table", () => {
     const map = new Map([["Publié le", "È tò è ɖò"]]);
     expect(dateLabel("Publié le 22 septembre 2026")).toEqual({ label: "Publié le", date: "22 septembre 2026" });
-    expect(translateDated("Publié le 22 septembre 2026", "fon", map)).toBe("È tò è ɖò 22 zosun 2026");
-    expect(translateDated("Modifié le 22 septembre 2026", "fon", map)).toBeUndefined();
+    expect(translateDated("Publié le 22 septembre 2026", "fon", (t) => map.get(t))).toBe("È tò è ɖò 22 zosun 2026");
+    expect(translateDated("Modifié le 22 septembre 2026", "fon", (t) => map.get(t))).toBeUndefined();
     expect(lookupKeys("Publié le 22 septembre 2026", dateLabel)).toContain("Publié le");
   });
   it("serves as the value of a known label", () => {

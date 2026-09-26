@@ -22,10 +22,12 @@ export function isCandidate(text: string) {
   if (text.length < 2 || text.length > MAX_UI_LENGTH) return false;
   if (!LETTER.test(text)) return false;
   if (EMAIL_OR_URL.test(text)) return false;
-  // "3e A", "T1", "13,5/20", "12 000 FCFA": mostly figures.
-  const letters = (text.match(/\p{L}/gu) ?? []).length;
-  const digits = (text.match(/\p{N}/gu) ?? []).length;
-  if (digits > 0 && (letters < 4 || letters <= digits)) return false;
+  // "3e A", "T1", "13,5/20", "12 000 FCFA": mostly figures. A number counts
+  // once, whatever its length: "Trimestre 3 2025-2026" and "sur 20" are
+  // words with values, looked up as templates.
+  const letters = (text.replace(/FCFA/g, "").match(/\p{L}/gu) ?? []).length;
+  const numbers = (text.match(/\p{N}+/gu) ?? []).length;
+  if (numbers > 0 && (letters < 3 || letters <= numbers)) return false;
   // Initials of an avatar, an abbreviation such as "CEG".
   if (/^[\p{Lu}.]{1,4}$/u.test(text)) return false;
   return true;
@@ -76,9 +78,10 @@ export function numberTemplate(text: string, names: RegExp | null = null): { key
 }
 
 // Bullets, brackets and separators around a fragment: "· publié le",
-// "(Enseignante", "Moyenne :". The words inside are looked up alone.
+// "(Enseignante", "Moyenne :", "/ Parcours". The words inside are looked
+// up alone.
 function affixes(text: string) {
-  const m = text.match(/^([\s·•,;:–(\-]*)(.*?)([\s·•,;:–)\-]*)$/u);
+  const m = text.match(/^([\s·•,;:–(/\-]*)(.*?)([\s·•,;:–)/\-]*)$/u);
   return m && (m[1] || m[3]) && m[2] ? { lead: m[1]!, core: m[2]!, trail: m[3]! } : null;
 }
 
@@ -127,7 +130,7 @@ export function lookupKeys(text: string, dateLabel: (text: string) => { label: s
     if (!PROPER_NAME.test(parts.tail)) add(parts.tail);
   }
   const dated = dateLabel(a?.core ?? text);
-  if (dated) keys.add(dated.label);
+  if (dated) add(dated.label);
   for (const s of sentencesOf(text) ?? []) for (const k of lookupKeys(s, dateLabel, names)) keys.add(k);
   return [...keys].filter((k) => isCandidate(k));
 }

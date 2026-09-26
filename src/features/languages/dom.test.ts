@@ -231,6 +231,13 @@ describe("mutation handling", () => {
     expect(text(p)).toBe("A ɖó wɛn ɛnɛ");
   });
 
+  it("ignores comments, such as React's Suspense markers", () => {
+    const comment = { nodeType: 8, parentNode: null, parentElement: null } as unknown as Node;
+    expect(collect(comment, { inline, ready: () => true })).toEqual([]);
+    const body = mount(h("div", null));
+    expect(changedRoots([record({ target: body, addedNodes: [comment] })])).toEqual([]);
+  });
+
   it("collects added nodes once, and attributes React set again", () => {
     const dialog = h("dialog", null, h("h2", null, "Mon compte"));
     const inner = dialog.childNodes[0] as FakeElement;
