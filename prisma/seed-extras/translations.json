@@ -414,6 +414,12 @@
 "text": "Calcul de la moyenne d’un sujet : (moyenne des questions + devoir + 2 × composition) ÷ 4. Nukúnnúmɔjɛnǔmɛ e è ma ko wlan ǎ é nɔ jlɛ́ ǎ."
 },
 {
+"key": "05d9bc0520ba973d30f5336440b2b1400da55784a868b298b37b269a25ed20b9",
+"lang": "fon",
+"source": "Il manque les bulletins du premier et du troisième trimestre.",
+"text": "Kati gbeɖiɖó tɔn nukɔntɔn ɔ kpo atɔngɔ ɔ kpo tɔn lɛ ɖò finɛ ǎ."
+},
+{
 "key": "05e4ab19dfe9d01e5a43f16112e869a9febe91836170c886ea92702991d877e6",
 "lang": "fon",
 "source": "Mes notes ce trimestre",
@@ -2182,6 +2188,12 @@
 "lang": "fon",
 "source": "Général",
 "text": "Agbà"
+},
+{
+"key": "22f1ffff35d515cd12e79b01b8623aae7e685e47b13ee619bf6a8d812c6e0316",
+"lang": "fon",
+"source": "Pièce validée : Certificat médical (dispense d'EPS)",
+"text": "Wema e è gbéjé kpɔ́n é: Dotóoxwéwema (EPS exemption)"
 },
 {
 "key": "22f5f55b1de52ac072d36274d3c50105fa0826a7147b79c8ea31def4e938214e",
@@ -4566,6 +4578,12 @@
 "text": "Nǔjlajla Nǔwlanwlan sín ɖaxó vogbingbɔn xota gbè"
 },
 {
+"key": "42bc8c0c87b168507c8df246281e01ba90b8b3a718354c6f537b8f525d6eb8f7",
+"lang": "fon",
+"source": "Pièce refusée : Bulletins de l'année précédente",
+"text": "Nǔ e è gbɛ́ é: Kati xwè e wá yì é tɔn lɛ."
+},
+{
 "key": "42c7185d7f6408d0ae2ab963034c247a545cd5d67f55537b5c3194d0aa6f4c0f",
 "lang": "fon",
 "source": "Absence non justifiée",
@@ -4714,6 +4732,12 @@
 "lang": "fon",
 "source": "La vaccination est gratuite.",
 "text": "Abɔtaxixo ɔ, vɔ̌nu wɛ."
+},
+{
+"key": "450985077b1c9a61314a26fefa5d3108c39bd0add915aec2736eb627c9c66f75",
+"lang": "fon",
+"source": "Il manque les bulletins du premier et du troisième trimestre. Envoyez les trois, dans un seul PDF ou en photos.",
+"text": "Kati gbeɖiɖó tɔn nukɔntɔn ɔ kpo atɔngɔ ɔ kpo tɔn lɛ ɖò finɛ ǎ. Sɔ́ atɔn lɛ bǐ sɛ́dó, ɖò PDF ɖokpo mɛ alǒ ɖò fɔtóo lɛ mɛ."
 },
 {
 "key": "451a0f84f0b88b0b9c804fffe3ecf55b1deb53b9927031ee74c63a7081600686",
@@ -7464,6 +7488,12 @@
 "text": "Mɛjitɔ́ ɖebǔ ɖɔ nú mɛ ǎ."
 },
 {
+"key": "6c852c1db6c290c34485fea3388cc834103720825a91f713eabd1abcdd0b3dab",
+"lang": "fon",
+"source": "Pièce validée : Justificatif d'absence",
+"text": "Wema e è gbéjé kpɔ́n é: Kúnnuɖenú e xlɛ́ ɖɔ è kún ɖò finɛ ó é"
+},
+{
 "key": "6c873df08c604e32e4cb37b07ce30fc98a897249dcaad820ebfb8a2731fc3f42",
 "lang": "fon",
 "source": "heure du Bénin) par",
@@ -8388,6 +8418,12 @@
 "text": "Mɛ 2 wɛ wá kplé sín hwenu e wemaxɔmɛ xwè ɔ bɛ́ é. Azǎn vlɔɖówe 3 mɛ, è nɔ ɖó hwenu ǎ. Mɛ e nɔ wá lɛ é sín kɛ́n: 4%. Azǎn gudogudo tɔn e un na wá é: Vɛnsée azǎn 5gɔ́ Kɔnyásun tɔn gbè, ɖò hwelɛkɔ."
 },
 {
+"key": "78b39b38605f7225ff571b24dc170eeb28a7b6816d37537c2aa8ca2dfd490ccb",
+"lang": "fon",
+"source": "Pour 2.",
+"text": "Nu 2."
+},
+{
 "key": "78d6b0498a7b7dd1b131236570613da1132e3225158efb5e58cc1bd3414f1d4c",
 "lang": "fon",
 "source": "Montant payé",
@@ -8710,6 +8746,12 @@
 "lang": "fon",
 "source": "Choisissez un mode de paiement.",
 "text": "Cyan wlɛnwín akwɛzinzan tɔn ɖé."
+},
+{
+"key": "7cd208ab97c31e9d2a6f9a89a9cd7b1b8c4d045728f03e559124e75017c67734",
+"lang": "fon",
+"source": "Pièce refusée : Certificat médical (dispense d'EPS)",
+"text": "Wema e è gbɛ é: Dotóoxwéwema (EPS exemption)"
 },
 {
 "key": "7cf7725efaab2605277c28023ae54a1d0c0bce5cbcf748af84aa887231918269",
@@ -13434,6 +13476,12 @@
 "text": "Akpáxwé 2gɔ́ ɔ 3-4."
 },
 {
+"key": "c2c583904b3997cf56e9625542539f88f03eb2d64be76219fec481cfb189432c",
+"lang": "fon",
+"source": "Pièce validée",
+"text": "Akpáxwé e è gbéjé kpɔ́n é"
+},
+{
 "key": "c2cf6e3a0df1076ce068b3d9665084cf98c6b67fcf9e074dc55a19af965c1ae8",
 "lang": "fon",
 "source": "Guide d'utilisation",
@@ -13684,6 +13732,12 @@
 "lang": "fon",
 "source": "La décision est tracée dans le journal et notifiée au personnel de l'établissement.",
 "text": "È nɔ wlan gbeta e kɔn è wá é dó xójlawema ɔ mɛ, bo nɔ lɛ́ ɖɔ nú azɔ̌watɔ́ tutoblonunu ɔ tɔn lɛ."
+},
+{
+"key": "c6daf789b13a19a25f12643ab6df3f983cfb89acd9fc9f3a94d9fb4b816819ff",
+"lang": "fon",
+"source": "Pièce refusée : Justificatif d'absence",
+"text": "Wema e è gbɛ é: Kúnnuɖenú e xlɛ́ ɖɔ è kún ɖò finɛ ó é"
 },
 {
 "key": "c710a1f92e57a461775a6abf7131c90c2fed2d111442715c45b002b8057b61a5",
@@ -15636,6 +15690,12 @@
 "text": "Limité à votre périmètre."
 },
 {
+"key": "e296d9bfcb8d4ab3519b52392b064de5d89108444ce3473431525171dafd3183",
+"lang": "fon",
+"source": "C'est en ordre pour 2.",
+"text": "C'est en ordre pour 2."
+},
+{
 "key": "e2c483a39902b36181d561253f3865ac1841d5342bb8738cf2c5bd4f20f46d50",
 "lang": "fon",
 "source": "Direction départementale",
@@ -16266,6 +16326,12 @@
 "text": "Mɛjitɔ́ ɖé wɛ ɖɔ akwɛ e é na sú é"
 },
 {
+"key": "ed74700f57ff4bd70dbf5d5dadff8a553051342c3d15fe605f2875b35d125317",
+"lang": "fon",
+"source": "Pièce refusée",
+"text": "Akpáxwé ɖé gbɛ."
+},
+{
 "key": "ed9630eb8ec12111392a310a39a9ef01627a508f6de870731fff482b1e2c0dbc",
 "lang": "fon",
 "source": "Pas encore d'appel enregistré",
@@ -16636,6 +16702,12 @@
 "lang": "fon",
 "source": "Nom de salle trop long.",
 "text": "Xɔ ɔ sín nyikɔ ɖiga dín."
+},
+{
+"key": "f26d21df141d4f12365342620e33f64f767b1acb216b4fea61db5580259b633c",
+"lang": "fon",
+"source": "Dispense d'EPS du 2 au 3.",
+"text": "PE sín 2gɔ́ ɔ jɛ 3gɔ́ ɔ jí."
 },
 {
 "key": "f282c4af444d0e2a9acaf3bc342a7022fda44aaac5a3d57caa79b8650a7254cd",
@@ -18010,6 +18082,12 @@
 "lang": "yo",
 "source": "Calcul de la moyenne d'une matière : (moyenne des interrogations + devoir + 2 × composition) ÷ 4. Une note pas encore saisie ne compte pas.",
 "text": "Iṣiro aropin koko-ọrọ: (apapọ awọn ibeere + iṣẹ amurele + 2 × akopọ) ÷ 4. Ami ti a ko tii wọle ko ka."
+},
+{
+"key": "05d9bc0520ba973d30f5336440b2b1400da55784a868b298b37b269a25ed20b9",
+"lang": "yo",
+"source": "Il manque les bulletins du premier et du troisième trimestre.",
+"text": "Awọn kaadi ijabọ akọkọ ati mẹẹdogun kẹta ti nsọnu."
 },
 {
 "key": "05e4ab19dfe9d01e5a43f16112e869a9febe91836170c886ea92702991d877e6",
@@ -19702,6 +19780,12 @@
 "lang": "yo",
 "source": "Général",
 "text": "Gbogboogbo"
+},
+{
+"key": "22f1ffff35d515cd12e79b01b8623aae7e685e47b13ee619bf6a8d812c6e0316",
+"lang": "yo",
+"source": "Pièce validée : Certificat médical (dispense d'EPS)",
+"text": "Iwe ti a fọwọsi: Iwe-ẹri iṣoogun (idasilẹ EPS)"
 },
 {
 "key": "22f5f55b1de52ac072d36274d3c50105fa0826a7147b79c8ea31def4e938214e",
@@ -22002,6 +22086,12 @@
 "text": "Eto Wiwọle iwọn ọrọ itansan akori ohùn"
 },
 {
+"key": "42bc8c0c87b168507c8df246281e01ba90b8b3a718354c6f537b8f525d6eb8f7",
+"lang": "yo",
+"source": "Pièce refusée : Bulletins de l'année précédente",
+"text": "Ohun kan kọ: Awọn kaadi ijabọ lati ọdun ti tẹlẹ"
+},
+{
 "key": "42c7185d7f6408d0ae2ab963034c247a545cd5d67f55537b5c3194d0aa6f4c0f",
 "lang": "yo",
 "source": "Absence non justifiée",
@@ -22132,6 +22222,12 @@
 "lang": "yo",
 "source": "La vaccination est gratuite.",
 "text": "Ọfẹ ni ajesara."
+},
+{
+"key": "450985077b1c9a61314a26fefa5d3108c39bd0add915aec2736eb627c9c66f75",
+"lang": "yo",
+"source": "Il manque les bulletins du premier et du troisième trimestre. Envoyez les trois, dans un seul PDF ou en photos.",
+"text": "Awọn kaadi ijabọ akọkọ ati mẹẹdogun kẹta ti nsọnu. Firanṣẹ gbogbo awọn mẹta, ni PDF kan tabi ni awọn fọto."
 },
 {
 "key": "451a0f84f0b88b0b9c804fffe3ecf55b1deb53b9927031ee74c63a7081600686",
@@ -24768,6 +24864,12 @@
 "text": "Ko si awọn obi alaye"
 },
 {
+"key": "6c852c1db6c290c34485fea3388cc834103720825a91f713eabd1abcdd0b3dab",
+"lang": "yo",
+"source": "Pièce validée : Justificatif d'absence",
+"text": "Iwe ti a fọwọsi: Ẹri ti isansa"
+},
+{
 "key": "6c873df08c604e32e4cb37b07ce30fc98a897249dcaad820ebfb8a2731fc3f42",
 "lang": "yo",
 "source": "heure du Bénin) par",
@@ -25656,6 +25758,12 @@
 "text": "Wiwa ti 2 lati ibẹrẹ ọdun ile-iwe. 3 idaji-ọjọ ti isansa, ko si idaduro. Oṣuwọn wiwa: 4%. isansa ti o kẹhin: Ọjọ Jimọ Oṣu Kẹsan Ọjọ 5, ni ọsan."
 },
 {
+"key": "78b39b38605f7225ff571b24dc170eeb28a7b6816d37537c2aa8ca2dfd490ccb",
+"lang": "yo",
+"source": "Pour 2.",
+"text": "Fun 2."
+},
+{
 "key": "78d6b0498a7b7dd1b131236570613da1132e3225158efb5e58cc1bd3414f1d4c",
 "lang": "yo",
 "source": "Montant payé",
@@ -25960,6 +26068,12 @@
 "lang": "yo",
 "source": "Choisissez un mode de paiement.",
 "text": "Yan ọna isanwo kan."
+},
+{
+"key": "7cd208ab97c31e9d2a6f9a89a9cd7b1b8c4d045728f03e559124e75017c67734",
+"lang": "yo",
+"source": "Pièce refusée : Certificat médical (dispense d'EPS)",
+"text": "Iwe ti kọ: Iwe-ẹri iṣoogun (idasilẹ EPS)"
 },
 {
 "key": "7cf7725efaab2605277c28023ae54a1d0c0bce5cbcf748af84aa887231918269",
@@ -30498,6 +30612,12 @@
 "text": "Mẹẹdogun 2 3-4"
 },
 {
+"key": "c2c583904b3997cf56e9625542539f88f03eb2d64be76219fec481cfb189432c",
+"lang": "yo",
+"source": "Pièce validée",
+"text": "Abala ti a fọwọsi"
+},
+{
 "key": "c2cf6e3a0df1076ce068b3d9665084cf98c6b67fcf9e074dc55a19af965c1ae8",
 "lang": "yo",
 "source": "Guide d'utilisation",
@@ -30736,6 +30856,12 @@
 "lang": "yo",
 "source": "La décision est tracée dans le journal et notifiée au personnel de l'établissement.",
 "text": "Ipinnu ti wa ni igbasilẹ ninu iwe iroyin ati iwifunni si oṣiṣẹ idasile."
+},
+{
+"key": "c6daf789b13a19a25f12643ab6df3f983cfb89acd9fc9f3a94d9fb4b816819ff",
+"lang": "yo",
+"source": "Pièce refusée : Justificatif d'absence",
+"text": "Iwe kọ: Ẹri ti isansa"
 },
 {
 "key": "c710a1f92e57a461775a6abf7131c90c2fed2d111442715c45b002b8057b61a5",
@@ -32622,6 +32748,12 @@
 "text": "Ni opin si agbegbe rẹ."
 },
 {
+"key": "e296d9bfcb8d4ab3519b52392b064de5d89108444ce3473431525171dafd3183",
+"lang": "yo",
+"source": "C'est en ordre pour 2.",
+"text": "O dara fun 2."
+},
+{
 "key": "e2c483a39902b36181d561253f3865ac1841d5342bb8738cf2c5bd4f20f46d50",
 "lang": "yo",
 "source": "Direction départementale",
@@ -33210,6 +33342,12 @@
 "text": "Owo ti a kede nipasẹ obi kan"
 },
 {
+"key": "ed74700f57ff4bd70dbf5d5dadff8a553051342c3d15fe605f2875b35d125317",
+"lang": "yo",
+"source": "Pièce refusée",
+"text": "Apa kọ"
+},
+{
 "key": "ed9630eb8ec12111392a310a39a9ef01627a508f6de870731fff482b1e2c0dbc",
 "lang": "yo",
 "source": "Pas encore d'appel enregistré",
@@ -33550,6 +33688,12 @@
 "lang": "yo",
 "source": "Nom de salle trop long.",
 "text": "Orukọ yara gun ju."
+},
+{
+"key": "f26d21df141d4f12365342620e33f64f767b1acb216b4fea61db5580259b633c",
+"lang": "yo",
+"source": "Dispense d'EPS du 2 au 3.",
+"text": "Idasile PE lati 2nd si 3rd."
 },
 {
 "key": "f282c4af444d0e2a9acaf3bc342a7022fda44aaac5a3d57caa79b8650a7254cd",
