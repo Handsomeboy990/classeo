@@ -13,9 +13,9 @@ import { listenText, PUBLIC, PUBLIC_SPEECH } from "@/features/public-pages/texts
 import { publicChoice, withChoice } from "@/features/public-pages/translate";
 
 export const metadata: Metadata = {
-  title: { absolute: "Classéo, l'école béninoise du ministère à la maison" },
+  title: { absolute: "Classéo · Toute l'école, au même endroit" },
   description:
-    "Plateforme nationale de l'éducation au Bénin : le ministère, les directions départementales, les écoles, les enseignants, les parents et les élèves travaillent sur les mêmes données.",
+    "Classéo, la plateforme de gestion scolaire pour le Bénin : inscriptions, notes, bulletins, présences, frais et messages, pour l'équipe de l'établissement, les enseignants et les familles.",
 };
 
 // Captions are fragments: a full stop added by the translation is dropped.
@@ -90,11 +90,9 @@ export default async function LandingPage({ searchParams }: PageProps<"/">) {
           </div>
         </section>
 
-        {/* The ministry context and who it serves, in one line. */}
+        {/* Who it serves, in one line. */}
         <section className="border-y border-border bg-bg">
-          <p className="mx-auto max-w-7xl px-4 py-5 text-center text-[0.9375rem] leading-relaxed text-balance text-muted sm:px-8">
-            {node(PUBLIC.landing.audience)} <span className="text-text">{node(PUBLIC.landing.prototype)}</span>
-          </p>
+          <p className="mx-auto max-w-7xl px-4 py-5 text-center text-[0.9375rem] leading-relaxed text-balance text-muted sm:px-8">{node(PUBLIC.landing.audience)}</p>
         </section>
 
         <section aria-labelledby="band-title" className="bg-bg">

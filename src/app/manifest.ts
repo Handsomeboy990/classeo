@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
     id: "/",
     name: "Classéo",
     short_name: "Classéo",
-    description: "Plateforme nationale inclusive de l'éducation au Bénin. Lecture à voix haute, pictogrammes, consultation hors ligne.",
+    description: "La plateforme de gestion scolaire pour le Bénin. Lecture à voix haute, pictogrammes, consultation hors ligne.",
     lang: "fr",
     dir: "ltr",
     start_url: "/espace",
@@ -17,7 +17,7 @@ export default function manifest(): MetadataRoute.Manifest {
     background_color: "#0b3b2a",
     theme_color: "#0b3b2a",
     prefer_related_applications: false,
-    categories: ["education", "government"],
+    categories: ["education", "productivity"],
     icons: [
       { src: "/icons/icon-192.png", sizes: "192x192", type: "image/png", purpose: "any" },
       { src: "/icons/icon-512.png", sizes: "512x512", type: "image/png", purpose: "any" },

@@ -1,5 +1,5 @@
-// Demonstration accounts shown on the sign in page so the jury can test every
-// role live. They exist only in seeded demo data. Accounts sign in with the
+// Demonstration accounts shown on the sign in page so a visitor can try every
+// role. They exist only in seeded demo data. Accounts sign in with the
 // identifier built from their names; the e-mail still works for those that
 // have one.
 export const DEMO_PASSWORD = "Classeo2026";

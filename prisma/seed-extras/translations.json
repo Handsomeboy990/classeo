@@ -1422,6 +1422,12 @@
 "text": "Hwe ɖokpo ɔ nu ɔ, ."
 },
 {
+"key": "1bc253425f5a5d52629bb71ac60e8c4a93b4a1e1ef2f6865b6922dd6f1077fb5",
+"lang": "fon",
+"source": "Mot de passe oublié : la personne qui gère votre compte vous aide.",
+"text": "Nǔ e è wɔn é: Mɛ e nɔ kpé nukún dó akwɛzinzan towe wu é na d’alɔ we."
+},
+{
 "key": "1bc7d9b7b48c3770178884ddde37a753b7c895fdb8e579a576b0ca90388e2e00",
 "lang": "fon",
 "source": "Chargement du bulletin",
@@ -3396,12 +3402,6 @@
 "text": "Kodu nǔjlɛdonǔwu tɔn"
 },
 {
-"key": "3a26e60e63d84ce192ac7e4f43cc2879937c8aac433ed99c983ab6bf62742fcb",
-"lang": "fon",
-"source": "Plateforme nationale de l'éducation, prototype présenté au défi EduTech Bénin, 2026.",
-"text": "Azɔmɛxwe to ɔ tɔn, kpɔndewu ɖee è xlɛ ɖo EduTech Benin sin tɛnkpɔn ɔ hwenu, 2026."
-},
-{
 "key": "3a429e8a6a9fe6f65983d1277999ca001f891f7fae10d264693813c0a10f5f05",
 "lang": "fon",
 "source": "Votre prénom et votre nom, séparés par un point. Par exemple : afiavi.hounkpatin",
@@ -3976,6 +3976,12 @@
 "lang": "fon",
 "source": "Modifier",
 "text": "Fín"
+},
+{
+"key": "42ee6e2154347e3deb0ad07e029db54fa802648a1a79c48c158ba074e41b603e",
+"lang": "fon",
+"source": "Toute l'école, au même endroit.",
+"text": "Wemaxɔmɛ ɔ bǐ, ɖò fí ɖokpo."
 },
 {
 "key": "4304ccfa3f662ac5b05654a85a1484def8f9e95ce181ebf82a4d7d7470159f1a",
@@ -4762,6 +4768,12 @@
 "lang": "fon",
 "source": "Certains établissements seulement. Chacun reçoit son exemplaire.",
 "text": "Azɔ̌xwé ɖé lɛ kɛɖɛ wɛ. Mɛ ɖokpo ɖokpo nɔ yí wema yetɔn."
+},
+{
+"key": "4f691f59342b1f6cc27c042219b575e457a019bd4febf38936fe1ceeff08a41b",
+"lang": "fon",
+"source": "Saisissez votre identifiant : la personne qui gère votre compte recevra la demande et vous remettra un mot de passe temporaire.",
+"text": "Wlan nyikɔ towe: mɛ e nɔ kpé nukún dó akɔnta towe wu é na yí nǔ e byɔ wɛ a ɖè é bo na na we xógbe hwláhwlá ɖé nú táan klewun ɖé."
 },
 {
 "key": "4f934a58f62dacff753570af03207dedbdbfe5ce8be8d070dab16bb235d5dd07",
@@ -7278,12 +7290,6 @@
 "text": "Xójlawema nǔxixa tɔn (SMS ɖexlɛ́ ɖɔ nǔgbo wɛ) *"
 },
 {
-"key": "768e872f655128904fc9c96da3b91a9ac671e9931bd2898b41b9f8dfd654a07c",
-"lang": "fon",
-"source": "Prototype présenté au défi EduTech Bénin 2026.",
-"text": "Nǔjlɛdonǔwu e è xlɛ́ ɖò EduTech Benin 2026 sín tɛnkpɔn ɔ hwenu é."
-},
-{
 "key": "76d5926c896d30202b706ed549f2a7c5dc0cd3ddad2493c9b2fa734493a65ca2",
 "lang": "fon",
 "source": "Ajoutez d'abord une transcription : les personnes sourdes ou malentendantes doivent pouvoir lire ce contenu.",
@@ -9144,6 +9150,12 @@
 "text": "Akwɛ́ nabi e è sú é"
 },
 {
+"key": "93e1d16f59e819cfb135b9a7f9ce31dac18e6778bfb06366ab2545c1bf153a87",
+"lang": "fon",
+"source": "Pour les écoles, collèges et lycées du Bénin, leurs enseignants, les familles et les services de l'éducation.",
+"text": "Nu wemaxɔmɛ lɛ, wemaxɔmɛ ɖaxo lɛ kpodo wemaxɔmɛ ɖaxo lɛ kpo ɖo Benin, mɛsi yetɔn lɛ, hwɛndo yetɔn lɛ kpodo azɔmɛxwe lɛ kpo."
+},
+{
 "key": "93e633ab46df7e45de49d16a50a067b868a53f8593a4a42804bc312242a0fd9d",
 "lang": "fon",
 "source": "Écouter le parcours",
@@ -10194,6 +10206,12 @@
 "text": "Nǔkplɔnmɛ e è na hɛn lidǒ é: Nukúnnúmɔjɛnǔmɛ, 2."
 },
 {
+"key": "a432d800ac76449f1471a811c973a573b9f6d8b056722090f43d283ebe43c270",
+"lang": "fon",
+"source": "Si cet identifiant correspond à un compte actif, votre demande est arrivée chez la personne qui gère votre compte : le chef d'établissement pour les élèves, les parents et le personnel, le service qui a créé le compte pour les autres. Elle vous remettra un mot de passe temporaire, en personne ou au numéro indiqué.",
+"text": "Nú wuntun élɔ́ sɔgbe xá akɔnta e ɖò azɔ̌ wà wɛ é ɖé ɔ, nǔ e ba wɛ a ɖè é ko wá mɛ e nɔ kpé nukún dó akɔnta towe wu é gɔ́n: ​​gǎn e nɔ kpé nukún dó wemaxɔmɛví lɛ wu é, mɛjitɔ́ lɛ kpo azɔ̌watɔ́ lɛ kpo, azɔ̌xɔsa e bló akɔnta ɔ nú mɛ ɖevo lɛ é. É na na we password nú táan klewun ɖé, é na wá kpɔ́n we alǒ ɖò nɔtɛn e è xlɛ́ é jí."
+},
+{
 "key": "a444e10e599de9b10236e13e171b74ca31641527fc929ac6870a6c75782440f6",
 "lang": "fon",
 "source": "résultat",
@@ -10380,12 +10398,6 @@
 "text": "Akwɛ e è mɔ ɖò Moov Money sín wěma 2 septembre tɔn jí é ǎ. Kpɔ́n xójlawema SMS ɔ tɔn."
 },
 {
-"key": "a88c1dacd691afea30aa367af84469cf794833db688e48663aaca971a12a7217",
-"lang": "fon",
-"source": "L'école béninoise, du ministère à la maison.",
-"text": "Wemaxɔmɛ Benin tɔn, sín sinsɛnzɔ́ ɔ mɛ kaka jɛ xwégbe."
-},
-{
 "key": "a8d304bac56902469e89b9dc7b36ea3831eecfae82ee0fcdca48c0ef53dd0e74",
 "lang": "fon",
 "source": "L'école au Bénin, en images",
@@ -10468,6 +10480,12 @@
 "lang": "fon",
 "source": "sans autre validation",
 "text": "è ma lɛ́vɔ ɖexlɛ́ ɖɔ nǔgbo wɛ ǎ."
+},
+{
+"key": "aa5b85a9e4d29ee5c58c7b1cac80bc2fe21f1e9bb2f30af7445cd7660685030a",
+"lang": "fon",
+"source": "Inscriptions, notes, bulletins, présences, frais et messages : Classéo rassemble la vie de l'établissement, pour que l'équipe, les enseignants et les familles voient ce qui les concerne, au bon moment.",
+"text": "Mɛwlanwlan, linlin, wěɖexámɛ, mɛ e wá lɛ é, akwɛ kpo wɛn lɛ kpo: Classéo nɔ kplé gbɛzán azɔ̌xwé ɔ tɔn ɖó kpɔ́, bonu gbɛ̌ta ɔ, mɛ̌si lɛ kpo xwédo lɛ kpo na mɔ nǔ e kàn ye é, ɖò hwenu e jɛxa é."
 },
 {
 "key": "aaa4faeb1d4447e37051b714ee5e7b15946d727c9ba963a30b4e1b66ff001925",
@@ -11500,6 +11518,12 @@
 "lang": "fon",
 "source": "Aperçu",
 "text": "Nukúnnúmɔjɛnǔmɛ"
+},
+{
+"key": "bb2be639f215cf43537983bd87d94eeccb290885fc14ebb672d644df731e818b",
+"lang": "fon",
+"source": "Plus d'informations",
+"text": "Nǔ ɖevo lɛ"
 },
 {
 "key": "bb4369fb676b7e01cef467f8d70fa1fd0e7825d2f759079ef3893aa0c1f26488",
@@ -13164,6 +13188,12 @@
 "text": "Ðò kpɔ́ninɔ xá Ministère de la Santé."
 },
 {
+"key": "d6600dafa31747ef2b9bf26f574840c6bdf5b1d3f4fcad4371ee40c63e2c7d89",
+"lang": "fon",
+"source": "Entrez l'identifiant et le mot de passe remis par votre établissement ou votre service.",
+"text": "Wlan nyikɔ mɛ e nɔ zán é kpo xógbe e è nɔ zán dó hwlɛn mɛ é kpo e azɔ̌xwé towe alǒ azɔ̌xwé towe na we é."
+},
+{
 "key": "d674258167f2ecaeac28a61ba33209a88a239b2b4face5c40096f8c915b1be63",
 "lang": "fon",
 "source": "Imprimer",
@@ -13402,6 +13432,12 @@
 "lang": "fon",
 "source": "Aucun montant n'a été prélevé.",
 "text": "È yí akwɛ nabi ɖé ǎ."
+},
+{
+"key": "da3b3546c98e361d343ef609e75417d4cbb04231075b5707fcee40ad3ba4ea1c",
+"lang": "fon",
+"source": "Classéo, la plateforme de gestion scolaire pour le Bénin.",
+"text": "Classéo, tɛn ɛntɛnɛti tɔn e jí è nɔ kpé nukún dó wemaxɔmɛ lɛ wu ɖè é nú Benin."
 },
 {
 "key": "da44fd6a87ac497200a6de08175bb0d7cb81f8c77321bf513f773b581640a9ad",
@@ -17106,6 +17142,12 @@
 "text": "Ni akoko kanna bi"
 },
 {
+"key": "1bc253425f5a5d52629bb71ac60e8c4a93b4a1e1ef2f6865b6922dd6f1077fb5",
+"lang": "yo",
+"source": "Mot de passe oublié : la personne qui gère votre compte vous aide.",
+"text": "Ọrọigbaniwọle ti o gbagbe: Eniyan ti o ṣakoso akọọlẹ rẹ yoo ran ọ lọwọ."
+},
+{
 "key": "1bc7d9b7b48c3770178884ddde37a753b7c895fdb8e579a576b0ca90388e2e00",
 "lang": "yo",
 "source": "Chargement du bulletin",
@@ -19032,12 +19074,6 @@
 "text": "Kodu afimo"
 },
 {
-"key": "3a26e60e63d84ce192ac7e4f43cc2879937c8aac433ed99c983ab6bf62742fcb",
-"lang": "yo",
-"source": "Plateforme nationale de l'éducation, prototype présenté au défi EduTech Bénin, 2026.",
-"text": "Syeed eto ẹkọ orilẹ-ede, apẹrẹ ti a gbekalẹ ni ipenija EduTech Benin, 2026."
-},
-{
 "key": "3a429e8a6a9fe6f65983d1277999ca001f891f7fae10d264693813c0a10f5f05",
 "lang": "yo",
 "source": "Votre prénom et votre nom, séparés par un point. Par exemple : afiavi.hounkpatin",
@@ -19606,6 +19642,12 @@
 "lang": "yo",
 "source": "Modifier",
 "text": "Lati yipada"
+},
+{
+"key": "42ee6e2154347e3deb0ad07e029db54fa802648a1a79c48c158ba074e41b603e",
+"lang": "yo",
+"source": "Toute l'école, au même endroit.",
+"text": "Gbogbo ile-iwe, ni ibi kan."
 },
 {
 "key": "4304ccfa3f662ac5b05654a85a1484def8f9e95ce181ebf82a4d7d7470159f1a",
@@ -20374,6 +20416,12 @@
 "lang": "yo",
 "source": "Certains établissements seulement. Chacun reçoit son exemplaire.",
 "text": "Awọn idasile kan nikan. Gbogbo eniyan gba ẹda wọn."
+},
+{
+"key": "4f691f59342b1f6cc27c042219b575e457a019bd4febf38936fe1ceeff08a41b",
+"lang": "yo",
+"source": "Saisissez votre identifiant : la personne qui gère votre compte recevra la demande et vous remettra un mot de passe temporaire.",
+"text": "Tẹ orukọ olumulo rẹ sii: eniyan ti o ṣakoso akọọlẹ rẹ yoo gba ibeere naa yoo fun ọ ni ọrọ igbaniwọle igba diẹ."
 },
 {
 "key": "4f934a58f62dacff753570af03207dedbdbfe5ce8be8d070dab16bb235d5dd07",
@@ -22800,12 +22848,6 @@
 "text": "Itọkasi iṣowo (SMS ìmúdájú) *"
 },
 {
-"key": "768e872f655128904fc9c96da3b91a9ac671e9931bd2898b41b9f8dfd654a07c",
-"lang": "yo",
-"source": "Prototype présenté au défi EduTech Bénin 2026.",
-"text": "Afọwọṣe ti a gbekalẹ ni ipenija EduTech Benin 2026."
-},
-{
 "key": "76d5926c896d30202b706ed549f2a7c5dc0cd3ddad2493c9b2fa734493a65ca2",
 "lang": "yo",
 "source": "Ajoutez d'abord une transcription : les personnes sourdes ou malentendantes doivent pouvoir lire ce contenu.",
@@ -24636,6 +24678,12 @@
 "text": "Iye owo ti a san"
 },
 {
+"key": "93e1d16f59e819cfb135b9a7f9ce31dac18e6778bfb06366ab2545c1bf153a87",
+"lang": "yo",
+"source": "Pour les écoles, collèges et lycées du Bénin, leurs enseignants, les familles et les services de l'éducation.",
+"text": "Fun awọn ile-iwe, kọlẹji ati awọn ile-iwe giga ni Benin, awọn olukọ wọn, awọn idile ati awọn iṣẹ eto-ẹkọ."
+},
+{
 "key": "93e633ab46df7e45de49d16a50a067b868a53f8593a4a42804bc312242a0fd9d",
 "lang": "yo",
 "source": "Écouter le parcours",
@@ -25662,6 +25710,12 @@
 "text": "Koko-ọrọ lati fikun: Iṣiro, 2."
 },
 {
+"key": "a432d800ac76449f1471a811c973a573b9f6d8b056722090f43d283ebe43c270",
+"lang": "yo",
+"source": "Si cet identifiant correspond à un compte actif, votre demande est arrivée chez la personne qui gère votre compte : le chef d'établissement pour les élèves, les parents et le personnel, le service qui a créé le compte pour les autres. Elle vous remettra un mot de passe temporaire, en personne ou au numéro indiqué.",
+"text": "Ti idanimọ yii ba ni ibamu si akọọlẹ ti nṣiṣe lọwọ, ibeere rẹ ti de ọdọ ẹni ti o ṣakoso akọọlẹ rẹ: ori idasile fun awọn ọmọ ile-iwe, awọn obi ati oṣiṣẹ, ẹka ti o ṣẹda akọọlẹ naa fun awọn miiran. Yoo fun ọ ni ọrọ igbaniwọle igba diẹ, ni eniyan tabi ni nọmba ti o tọka."
+},
+{
 "key": "a444e10e599de9b10236e13e171b74ca31641527fc929ac6870a6c75782440f6",
 "lang": "yo",
 "source": "résultat",
@@ -25848,12 +25902,6 @@
 "text": "Idunadura ko ri lori Kẹsán 2 Moov Owo gbólóhùn. Ṣayẹwo SMS itọkasi."
 },
 {
-"key": "a88c1dacd691afea30aa367af84469cf794833db688e48663aaca971a12a7217",
-"lang": "yo",
-"source": "L'école béninoise, du ministère à la maison.",
-"text": "Ile-iwe Beninese, lati iṣẹ-iranṣẹ si ile."
-},
-{
 "key": "a8d304bac56902469e89b9dc7b36ea3831eecfae82ee0fcdca48c0ef53dd0e74",
 "lang": "yo",
 "source": "L'école au Bénin, en images",
@@ -25936,6 +25984,12 @@
 "lang": "yo",
 "source": "sans autre validation",
 "text": "lai siwaju afọwọsi"
+},
+{
+"key": "aa5b85a9e4d29ee5c58c7b1cac80bc2fe21f1e9bb2f30af7445cd7660685030a",
+"lang": "yo",
+"source": "Inscriptions, notes, bulletins, présences, frais et messages : Classéo rassemble la vie de l'établissement, pour que l'équipe, les enseignants et les familles voient ce qui les concerne, au bon moment.",
+"text": "Awọn iforukọsilẹ, awọn onipò, awọn kaadi ijabọ, wiwa, awọn idiyele ati awọn ifiranṣẹ: Classéo ṣajọpọ igbesi aye idasile, ki ẹgbẹ, awọn olukọ ati awọn idile rii ohun ti o kan wọn, ni akoko to tọ."
 },
 {
 "key": "aaa4faeb1d4447e37051b714ee5e7b15946d727c9ba963a30b4e1b66ff001925",
@@ -26956,6 +27010,12 @@
 "lang": "yo",
 "source": "Aperçu",
 "text": "Awotẹlẹ"
+},
+{
+"key": "bb2be639f215cf43537983bd87d94eeccb290885fc14ebb672d644df731e818b",
+"lang": "yo",
+"source": "Plus d'informations",
+"text": "Alaye siwaju sii"
 },
 {
 "key": "bb4369fb676b7e01cef467f8d70fa1fd0e7825d2f759079ef3893aa0c1f26488",
@@ -28602,6 +28662,12 @@
 "text": "Ni ajọṣepọ pẹlu awọn Ministry of Health"
 },
 {
+"key": "d6600dafa31747ef2b9bf26f574840c6bdf5b1d3f4fcad4371ee40c63e2c7d89",
+"lang": "yo",
+"source": "Entrez l'identifiant et le mot de passe remis par votre établissement ou votre service.",
+"text": "Tẹ orukọ olumulo ati ọrọ igbaniwọle ti o pese nipasẹ idasile tabi iṣẹ rẹ."
+},
+{
 "key": "d674258167f2ecaeac28a61ba33209a88a239b2b4face5c40096f8c915b1be63",
 "lang": "yo",
 "source": "Imprimer",
@@ -28834,6 +28900,12 @@
 "lang": "yo",
 "source": "Aucun montant n'a été prélevé.",
 "text": "Ko si iye ti a gba."
+},
+{
+"key": "da3b3546c98e361d343ef609e75417d4cbb04231075b5707fcee40ad3ba4ea1c",
+"lang": "yo",
+"source": "Classéo, la plateforme de gestion scolaire pour le Bénin.",
+"text": "Classéo, Syeed iṣakoso ile-iwe fun Benin."
 },
 {
 "key": "da44fd6a87ac497200a6de08175bb0d7cb81f8c77321bf513f773b581640a9ad",

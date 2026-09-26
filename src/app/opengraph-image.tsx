@@ -2,7 +2,7 @@ import { ImageResponse } from "next/og";
 
 import { roundedMark } from "@/features/pwa/brand-art";
 
-export const alt = "Classéo, l'école béninoise du ministère à la maison";
+export const alt = "Classéo, toute l'école au même endroit";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -38,11 +38,10 @@ export default function OpenGraphImage() {
             <span style={{ fontSize: 52, fontWeight: 800, color: "#ffffff" }}>Classéo</span>
           </div>
           <div style={{ display: "flex", flexDirection: "column", marginTop: 56, fontSize: 70, fontWeight: 800, lineHeight: 1.05, color: "#ffffff", maxWidth: 760 }}>
-            <span>L&apos;école béninoise,</span>
-            <span>du ministère</span>
-            <span style={{ color: "#fcd116" }}>à la maison.</span>
+            <span>Toute l&apos;école,</span>
+            <span style={{ color: "#fcd116" }}>au même endroit.</span>
           </div>
-          <span style={{ marginTop: 28, fontSize: 28, color: "#a9c2b4", maxWidth: 560 }}>Voix Kora · Pictogrammes · Hors ligne · Contraste élevé</span>
+          <span style={{ marginTop: 28, fontSize: 28, color: "#a9c2b4", maxWidth: 560 }}>Gestion scolaire pour le Bénin · Voix Kora · Hors ligne</span>
         </div>
         <div style={{ display: "flex", height: 14 }}>
           <div style={{ width: "40%", background: "#008751" }} />

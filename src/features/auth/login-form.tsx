@@ -90,8 +90,8 @@ export function LoginForm({ next, showDemo, forgotHref }: { next?: string; showD
       </ActionForm>
 
       {showDemo && (
-        // Closed by default: the form comes first, the jury opens the list.
-        // For the presentation only, in French.
+        // Closed by default: the form comes first. Demo data only, in
+        // French.
         <details lang="fr" className="group rounded-card border border-border bg-surface-2">
           <summary className="flex min-h-12 cursor-pointer list-none items-center gap-3 px-4 py-2 [&::-webkit-details-marker]:hidden">
             <span className="min-w-0 flex-1">
