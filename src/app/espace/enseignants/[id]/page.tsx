@@ -1,4 +1,4 @@
-import { BookOpen, Clock, LayoutGrid, Users } from "lucide-react";
+import { BookOpen, Clock, IdCard, LayoutGrid, Users } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -7,10 +7,12 @@ import { PageHeader } from "@/components/kit/page-header";
 import { StatCard, StatGrid } from "@/components/kit/stat-card";
 import { EmptyState } from "@/components/kit/states";
 import { Badge } from "@/components/ui/badge";
+import { ButtonLink } from "@/components/ui/button";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TD, TH, THead, TR } from "@/components/ui/table";
 import { shortDate } from "@/features/students/labels";
 import { EditTeacherDialog } from "@/features/teachers/components/teacher-forms";
+import { FILE_LEVELS } from "@/features/teachers/file-rules";
 import { getTeacher } from "@/features/teachers/queries";
 import { can, requirePermission } from "@/lib/auth/authorize";
 import { ATTENDANCE_LABELS, dateToIso } from "@/lib/domain/attendance";
@@ -44,13 +46,18 @@ export default async function TeacherPage(props: PageProps<"/espace/enseignants/
           t.school.name,
           t.specialty,
           t.status ? TEACHER_STATUS_LABELS[t.status] : "Statut non renseigné",
-          t.status ? `payé par : ${PAYER_LABELS[payerOf(t.status)!].toLowerCase()}` : null,
+          t.status ? `payé par : ${PAYER_LABELS[payerOf(t.status)!]}` : null,
           t.profile?.stateMatricule ? `matricule de l'État ${t.profile.stateMatricule}` : null,
         ]
           .filter(Boolean)
           .join(" · ")}
         actions={
           <>
+            {t.profileId && FILE_LEVELS.includes(user.scope.level) && (
+              <ButtonLink href={`/espace/enseignants/registre/${t.profileId}`} variant="secondary">
+                <IdCard aria-hidden /> Fiche de l&apos;enseignant
+              </ButtonLink>
+            )}
             {can(user, "timetable:view") && (
               <PdfDownloadLink href={`/api/pdf/emploi-du-temps?enseignant=${t.id}`} label="Emploi du temps (PDF)" description={`emploi du temps de ${name}`} />
             )}

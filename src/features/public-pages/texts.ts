@@ -28,7 +28,8 @@ export const PUBLIC = {
     machine: "Traduction automatique : en cas de doute, le texte français fait foi.",
   },
   landing: {
-    title: "Le système éducatif, à portée de main.",
+    // A no-break space keeps "à" with "portée": no lone "à" at a line end.
+    title: "Le système éducatif, à\u00a0portée de main.",
     purpose:
       "Inscriptions, notes, bulletins, présences, frais et messages : Classéo rassemble la vie de l'établissement, pour que l'équipe, les enseignants et les familles voient ce qui les concerne, au bon moment.",
     enter: "Accéder à mon espace",
