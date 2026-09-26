@@ -678,6 +678,12 @@
 "text": "Un"
 },
 {
+"key": "0b68109d8ab15cbfcbf06e20ff594dc476458caae39237c6b06a51db85c293fe",
+"lang": "fon",
+"source": "Bonjour 2. Vous avez un message non lu.",
+"text": "Kudo 2. A ɖo wɛn ɖe a ma xa a ɔ."
+},
+{
 "key": "0b7d9c97d9792cda8fb44cd2af3e3aa5d18400ccd170d3cd51f95a44c5d5ff86",
 "lang": "fon",
 "source": "Télécharger en PDF, bulletin du Trimestre 2 3-4",
@@ -3118,6 +3124,12 @@
 "lang": "fon",
 "source": "professeure de mathématiques",
 "text": "mɛsi nulínlɛn tɔn"
+},
+{
+"key": "36561f0fe922588aaed33f660b8186dd190457d2e0d4c6bf12452b8a4a661cec",
+"lang": "fon",
+"source": "1 conversation avec un nouveau message.",
+"text": "1 xóɖɔɖókpɔ́ kpo wɛn yɔyɔ̌ ɖé kpo."
 },
 {
 "key": "36663805042786b29c39d0c805d5b3bc1890d8cc84f79e3b2eba1881e0b6f9a6",
@@ -6396,6 +6408,12 @@
 "text": "Nǔjlɛ́dónùwú ɔ́ bǐ,."
 },
 {
+"key": "6974ef1477e0ec3499c30255d1b8f97bd50747da7afd68d20ebfe6a6ce7ba016",
+"lang": "fon",
+"source": "2 conversations avec un nouveau message.",
+"text": "2 xóɖɔɖókpɔ́ lɛ kpo wɛn yɔyɔ̌ ɖé kpo."
+},
+{
 "key": "6983e27953888ec5e0e124cb9364142be52cba7aea8dfb2b504634c915bb00ee",
 "lang": "fon",
 "source": "Paiements",
@@ -9180,6 +9198,12 @@
 "text": "È nɔ sú akpáxwé ɖé ɖò mɛ ɖěɖee jɛ nukɔn n’i lɛ é gudo."
 },
 {
+"key": "949f9efbac7c3366a4975d425f6e48d0a80930167d2f4551e058514dd1ec71fd",
+"lang": "fon",
+"source": "1 non lu",
+"text": "1 è ma xà ǎ"
+},
+{
 "key": "94a82b120bb5a822e23701bd21658c048134f11af043202dbdc81233a1ebb149",
 "lang": "fon",
 "source": "Les examens blancs de vos enfants et leurs résultats.",
@@ -9250,6 +9274,12 @@
 "lang": "fon",
 "source": "Date limite de paiement",
 "text": "Akwɛ súsú hwenu"
+},
+{
+"key": "9614d42e1a15359e53b5f7e417c0f9b5e7b931dd54fc577f9765cf57b147dcb6",
+"lang": "fon",
+"source": "Vous avez 2 messages non lus.",
+"text": "A ɖo wɛn 2 e a ma xa a lɛ."
 },
 {
 "key": "961a659a4b62778ea6569eb2bc71cfec9ba2b8a86602db781a9691a621f9246e",
@@ -9430,6 +9460,12 @@
 "lang": "fon",
 "source": "Prochain événement",
 "text": "Nǔ e bɔ d’ewu é"
+},
+{
+"key": "982b8e1a84cc85ed3592be73e8bc11f5c06e969c3f3fc2c7e611fc4004eaeb64",
+"lang": "fon",
+"source": "2 non lus",
+"text": "2 è ma xà ǎ"
 },
 {
 "key": "984bdff862d4c678123094098a85c72aaeab186a317f2a0078b5792fd7f14df5",
@@ -13032,6 +13068,12 @@
 "text": "Tuto lɛ"
 },
 {
+"key": "d4ebc8a9cf3965ee3a049af76da3e95ed85647b91ae3155d3f6091d51d3e55ed",
+"lang": "fon",
+"source": "Examen blanc de 2e",
+"text": "Examen blanc de 2e"
+},
+{
 "key": "d5018fcfce0921b15fc737aa875ba0025c7594c8856973082660513a96aec9cc",
 "lang": "fon",
 "source": "Le paiement en ligne n'est pas disponible pour le moment. Déclarez un paiement déjà fait ou réglez à l'établissement.",
@@ -14092,6 +14134,12 @@
 "lang": "fon",
 "source": "Matière, classe ou enseignant",
 "text": "Nǔkplɔnmɛ, azɔ̌xɔsa alǒ mɛ̌si"
+},
+{
+"key": "e5cca30eb15eccf48ab831bfd2c3022a213730e83de63046b3bae49641dabfa4",
+"lang": "fon",
+"source": "Vous avez un message non lu.",
+"text": "A ɖó wɛn ɖé bɔ è ma ko xà ǎ."
 },
 {
 "key": "e5cd4c12a1b2268263819307b7bbeb1e3757840524152ee1e628dc80f8917e86",
@@ -16276,6 +16324,12 @@
 "lang": "yo",
 "source": "Du",
 "text": "Ti"
+},
+{
+"key": "0b68109d8ab15cbfcbf06e20ff594dc476458caae39237c6b06a51db85c293fe",
+"lang": "yo",
+"source": "Bonjour 2. Vous avez un message non lu.",
+"text": "Kaabo 2. O ni ifiranṣẹ ti a ko ka."
 },
 {
 "key": "0b7d9c97d9792cda8fb44cd2af3e3aa5d18400ccd170d3cd51f95a44c5d5ff86",
@@ -18670,6 +18724,12 @@
 "lang": "yo",
 "source": "professeure de mathématiques",
 "text": "olukọ mathimatiki"
+},
+{
+"key": "36561f0fe922588aaed33f660b8186dd190457d2e0d4c6bf12452b8a4a661cec",
+"lang": "yo",
+"source": "1 conversation avec un nouveau message.",
+"text": "1 ibaraẹnisọrọ pẹlu ifiranṣẹ titun kan."
 },
 {
 "key": "36663805042786b29c39d0c805d5b3bc1890d8cc84f79e3b2eba1881e0b6f9a6",
@@ -21846,6 +21906,12 @@
 "text": "Gbogbo iwọntunwọnsi,"
 },
 {
+"key": "6974ef1477e0ec3499c30255d1b8f97bd50747da7afd68d20ebfe6a6ce7ba016",
+"lang": "yo",
+"source": "2 conversations avec un nouveau message.",
+"text": "2 ibaraẹnisọrọ pẹlu ifiranṣẹ titun kan."
+},
+{
 "key": "6983e27953888ec5e0e124cb9364142be52cba7aea8dfb2b504634c915bb00ee",
 "lang": "yo",
 "source": "Paiements",
@@ -24570,6 +24636,12 @@
 "text": "A san owo sisan lẹhin awọn ti o ṣaju rẹ."
 },
 {
+"key": "949f9efbac7c3366a4975d425f6e48d0a80930167d2f4551e058514dd1ec71fd",
+"lang": "yo",
+"source": "1 non lu",
+"text": "1 ai ka"
+},
+{
 "key": "94a82b120bb5a822e23701bd21658c048134f11af043202dbdc81233a1ebb149",
 "lang": "yo",
 "source": "Les examens blancs de vos enfants et leurs résultats.",
@@ -24640,6 +24712,12 @@
 "lang": "yo",
 "source": "Date limite de paiement",
 "text": "Isanwo akoko ipari"
+},
+{
+"key": "9614d42e1a15359e53b5f7e417c0f9b5e7b931dd54fc577f9765cf57b147dcb6",
+"lang": "yo",
+"source": "Vous avez 2 messages non lus.",
+"text": "O ni awọn ifiranṣẹ 2 ti a ko ka."
 },
 {
 "key": "961a659a4b62778ea6569eb2bc71cfec9ba2b8a86602db781a9691a621f9246e",
@@ -24820,6 +24898,12 @@
 "lang": "yo",
 "source": "Prochain événement",
 "text": "Next iṣẹlẹ"
+},
+{
+"key": "982b8e1a84cc85ed3592be73e8bc11f5c06e969c3f3fc2c7e611fc4004eaeb64",
+"lang": "yo",
+"source": "2 non lus",
+"text": "2 ai ka"
 },
 {
 "key": "984bdff862d4c678123094098a85c72aaeab186a317f2a0078b5792fd7f14df5",
@@ -28374,6 +28458,12 @@
 "text": "Awọn iṣeto"
 },
 {
+"key": "d4ebc8a9cf3965ee3a049af76da3e95ed85647b91ae3155d3f6091d51d3e55ed",
+"lang": "yo",
+"source": "Examen blanc de 2e",
+"text": "2nd odun Mock idanwo"
+},
+{
 "key": "d5018fcfce0921b15fc737aa875ba0025c7594c8856973082660513a96aec9cc",
 "lang": "yo",
 "source": "Le paiement en ligne n'est pas disponible pour le moment. Déclarez un paiement déjà fait ou réglez à l'établissement.",
@@ -29416,6 +29506,12 @@
 "lang": "yo",
 "source": "Matière, classe ou enseignant",
 "text": "Koko-ọrọ, kilasi tabi olukọ"
+},
+{
+"key": "e5cca30eb15eccf48ab831bfd2c3022a213730e83de63046b3bae49641dabfa4",
+"lang": "yo",
+"source": "Vous avez un message non lu.",
+"text": "O ni ifiranṣẹ ti a ko ka."
 },
 {
 "key": "e5cd4c12a1b2268263819307b7bbeb1e3757840524152ee1e628dc80f8917e86",

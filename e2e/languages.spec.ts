@@ -150,6 +150,9 @@ const DATA = [
   /@|https?:|127\.0\.0\.1|\/verifier\//,
   /^\+?[\d ]{8,}$/,
   /^\d{2}\/\d{2}\/\d{4} à \S+$/,
+  // Content other journeys wrote (a message, an exam title), marked with
+  // their unique suffix or a timestamp: user content, not interface text.
+  /\b(?=[a-z0-9]*\d)(?=[a-z0-9]*[a-z])[a-z0-9]{8}(?:-[a-z0-9]{5})?\b|\d{12,}/,
 ];
 
 function allowed(text: string) {
