@@ -6756,6 +6756,12 @@
 "text": "2 é cá kàn tlɔlɔ xá API e mɛ e nɔ zán Mobile Money lɛ é nɔ zán lɛ é ǎ; mɛ e nɔ sú akwɛ é wɛ nɔ kpé nukún dó nǔ enɛ wu."
 },
 {
+"key": "686f7ef567a51a8d82502fefc161f5b92651d9afcf2eced8014635091bb96de3",
+"lang": "fon",
+"source": "Merci à Finanfa Ronaldo, grâce à qui Classéo se lit et s'écoute en langues locales.",
+"text": "Finanfa Ronaldo wɛ, é wɛ zɔ́n bɔ è sixu xà bo lɛ́ ɖótó Classéo ɖò gbè tò ɔ tɔn lɛ mɛ."
+},
+{
 "key": "68759545a0a87ee31072dfb105e8aa78de4997e9086b8f6eb47ac1614618f8f4",
 "lang": "fon",
 "source": "2, compte des frais scolaires",
@@ -10444,6 +10450,12 @@
 "lang": "fon",
 "source": "Ajouter un cours ·",
 "text": "Gɔ́ nú wemaxɔmɛ ·"
+},
+{
+"key": "9cadac69d92b6f01e54345fc439d00faae4e3dd3b1f656a036810f7cb1b28573",
+"lang": "fon",
+"source": "La traduction des pages en fongbe et en yoruba, et les voix en fongbe, yoruba et haoussa.",
+"text": "Lilɛ wema lɛ dó Fongbe kpo Yoruba kpo mɛ, bo lɛ́ lilɛ gbè lɛ dó Fongbe, Yoruba kpo Hausa kpo mɛ."
 },
 {
 "key": "9cb8a860be5e914f51f84a72612a8bf9d1e44cfb8abfa0b5ccf91dbb88923980",
@@ -14212,6 +14224,12 @@
 "lang": "fon",
 "source": "Invitations en cours",
 "text": "Mɛylɔwema dìn tɔn lɛ"
+},
+{
+"key": "d9669a85fb541e4f4267c97bb79caf531b932a6b1af805f11967bb6f1de0faf4",
+"lang": "fon",
+"source": "Langues locales",
+"text": "Gbè xá ɔ mɛ tɔn lɛ"
 },
 {
 "key": "d9753b0f78f08151d5f7aa7c0846c0283f54f9c0da44f9911f3e70c8348f7a62",
@@ -23298,6 +23316,12 @@
 "text": "2 ko ni asopọ taara si awọn API ti awọn oniṣẹ Owo Alagbeka; Olupese owo sisan ni o tọju eyi."
 },
 {
+"key": "686f7ef567a51a8d82502fefc161f5b92651d9afcf2eced8014635091bb96de3",
+"lang": "yo",
+"source": "Merci à Finanfa Ronaldo, grâce à qui Classéo se lit et s'écoute en langues locales.",
+"text": "O ṣeun si Finanfa Ronaldo, ọpẹ si ẹniti Classéo le ka ati tẹtisi ni awọn ede agbegbe."
+},
+{
 "key": "68759545a0a87ee31072dfb105e8aa78de4997e9086b8f6eb47ac1614618f8f4",
 "lang": "yo",
 "source": "2, compte des frais scolaires",
@@ -26908,6 +26932,12 @@
 "lang": "yo",
 "source": "Ajouter un cours ·",
 "text": "Fi ẹkọ kan kun ·"
+},
+{
+"key": "9cadac69d92b6f01e54345fc439d00faae4e3dd3b1f656a036810f7cb1b28573",
+"lang": "yo",
+"source": "La traduction des pages en fongbe et en yoruba, et les voix en fongbe, yoruba et haoussa.",
+"text": "Itumọ awọn oju-iwe naa si Fongbe ati Yoruba, ati awọn ohun si Fongbe, Yoruba ati Hausa."
 },
 {
 "key": "9cb8a860be5e914f51f84a72612a8bf9d1e44cfb8abfa0b5ccf91dbb88923980",
@@ -30634,6 +30664,12 @@
 "lang": "yo",
 "source": "Invitations en cours",
 "text": "Awọn ifiwepe lọwọlọwọ"
+},
+{
+"key": "d9669a85fb541e4f4267c97bb79caf531b932a6b1af805f11967bb6f1de0faf4",
+"lang": "yo",
+"source": "Langues locales",
+"text": "Awọn ede agbegbe"
 },
 {
 "key": "d9753b0f78f08151d5f7aa7c0846c0283f54f9c0da44f9911f3e70c8348f7a62",

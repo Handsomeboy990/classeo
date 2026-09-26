@@ -100,6 +100,8 @@ export const PUBLIC = {
     photos: "Photographies",
     voices: "Voix de lecture",
     voiceSource: "Voir la source",
+    languages: "Langues locales",
+    languagesThanks: "Merci à Finanfa Ronaldo, grâce à qui Classéo se lit et s'écoute en langues locales.",
   },
   // Answers of the sign in and forgotten password actions, written in French
   // on the server (features/auth/actions.ts, features/password-help/actions.ts)
@@ -139,6 +141,7 @@ export const PROTECTED_NAMES = [
   "Savi",
   "Godomey",
   "Grand-Popo",
+  "Finanfa Ronaldo",
 ] as const;
 
 function values(node: unknown): string[] {
