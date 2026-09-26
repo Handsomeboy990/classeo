@@ -13,11 +13,11 @@ export const PUBLIC = {
   common: {
     language: "Langue",
     voice: "Voix",
-    apply: "Afficher",
     signIn: "Se connecter",
     home: "Classéo, accueil",
     backHome: "Retour à l'accueil",
     listen: "Écouter",
+    moreInfo: "Plus d'informations",
     listenFon: "Écouter en fongbe",
     listenYo: "Écouter en yoruba",
     photo: "Photo",

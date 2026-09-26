@@ -50,7 +50,7 @@ export function LoginForm({ next, showDemo, forgotHref }: { next?: string; showD
         <FormMessage title={t(S.failed)} />
         {next && <input type="hidden" name="next" value={next} />}
         <div className="flex flex-col gap-1">
-          <FormField label={t(S.identifier)} name="login" required hint={t(S.identifierHint)}>
+          <FormField label={t(S.identifier)} name="login" required info={t(S.identifierHint)}>
             <Input
               ref={loginRef}
               type="text"
