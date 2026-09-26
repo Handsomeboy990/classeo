@@ -2,10 +2,13 @@ import { CalendarCheck } from "lucide-react";
 import type { Metadata } from "next";
 
 import { EmptyState } from "@/components/kit/states";
+import { Alert } from "@/components/ui/alert";
+import { ButtonLink } from "@/components/ui/button";
 import { SectionTitle, SpokenSummary } from "@/features/family/components/blocks";
 import { AttendanceFigures, AttendanceHistory } from "@/features/family/components/sections";
 import { countWord, presenceRate, summariseAttendance } from "@/features/family/logic";
 import { attendanceOf, requireStudentSection } from "@/features/family/queries";
+import { can } from "@/lib/auth/authorize";
 import { formatPercent } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Présences" };
@@ -14,7 +17,7 @@ const dayFmt = new Intl.DateTimeFormat("fr-FR", { weekday: "long", day: "numeric
 
 export default async function AttendancePage({ params }: PageProps<"/espace/suivi/[studentId]/presences">) {
   const { studentId } = await params;
-  const { enrollment } = await requireStudentSection(studentId, "presences");
+  const { user, enrollment } = await requireStudentSection(studentId, "presences");
   const records = await attendanceOf(enrollment);
 
   if (!records.length) {
@@ -45,6 +48,19 @@ export default async function AttendancePage({ params }: PageProps<"/espace/suiv
     <div className="flex flex-col gap-5">
       <SpokenSummary text={text} label="Écouter les présences" />
       <AttendanceFigures absences={summary.absences} lates={summary.lates} excused={summary.excused} rate={rate} />
+      {absences.length > 0 && can(user, "family_document:create") && (
+        <Alert
+          tone="info"
+          title={`${absences.length} demi-journée${absences.length > 1 ? "s" : ""} d'absence non justifiée${absences.length > 1 ? "s" : ""}`}
+          action={
+            <ButtonLink href={`/espace/pieces-justificatifs?enfant=${studentId}`} size="sm" variant="secondary">
+              Justifier une absence
+            </ButtonLink>
+          }
+        >
+          Expliquez l&apos;absence en quelques mots, avec un justificatif si vous en avez un. L&apos;école vous répond.
+        </Alert>
+      )}
       <section aria-labelledby="history-title">
         <SectionTitle icon={CalendarCheck}>
           <span id="history-title">Historique jour par jour</span>
