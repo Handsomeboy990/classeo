@@ -80,7 +80,7 @@ export function AddTeacherDialog() {
               onSuccess={(state) => setMatches(((state?.data as { matches?: Match[] } | undefined)?.matches ?? []) as Match[])}
               className="flex flex-col gap-3 sm:flex-row sm:items-end"
             >
-              <FormField label="NPI, téléphone ou nom et prénom" name="q" required hint="Les accents et l'ordre des noms ne comptent pas." className="flex-1">
+              <FormField label="NPI, téléphone ou nom et prénom" name="q" required info="Les accents et l'ordre des noms ne comptent pas." className="flex-1">
                 <Input autoComplete="off" maxLength={100} placeholder="Par exemple : 2000000123, 0197451230 ou Issifou Nafissatou" />
               </FormField>
               <SubmitButton pendingLabel="Recherche…" className="sm:mb-6">

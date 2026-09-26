@@ -35,7 +35,7 @@ export function DecideForm({ examId }: { examId: string }) {
   return (
     <ActionForm action={decideExam} className="flex flex-col gap-4">
       <input type="hidden" name="examId" value={examId} />
-      <FormField label="Note de décision" name="note" required hint="Elle est transmise à l'établissement organisateur et aux partenaires.">
+      <FormField label="Note de décision" name="note" required info="Elle est transmise à l'établissement organisateur et aux partenaires.">
         <Textarea rows={4} maxLength={2000} />
       </FormField>
       <div className="grid grid-cols-2 gap-2 sm:flex sm:justify-end">

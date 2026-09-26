@@ -48,7 +48,7 @@ export function PayOnlineForm({ invoiceId, rest, installments, providerLabel, de
       )}
 
       {mode === "installments" && (
-        <ChoiceGroup legend="Tranches à payer" hint="Une tranche se paie après celles qui la précèdent.">
+        <ChoiceGroup legend="Tranches à payer" info="Une tranche se paie après celles qui la précèdent.">
           {installments.map((t, i) => (
             <Checkbox
               key={t.id}
@@ -64,7 +64,7 @@ export function PayOnlineForm({ invoiceId, rest, installments, providerLabel, de
         </ChoiceGroup>
       )}
 
-      <FormField label="Numéro Mobile Money (facultatif)" name="phone" hint="Il pré-remplit la page de paiement. Vous pourrez aussi payer par carte bancaire.">
+      <FormField label="Numéro Mobile Money (facultatif)" name="phone" info="Il pré-remplit la page de paiement. Vous pourrez aussi payer par carte bancaire.">
         <Input type="tel" inputMode="tel" autoComplete="tel" value={phone} onChange={(e) => setPhone(e.target.value)} leading={<Smartphone className="size-4" />} />
       </FormField>
 

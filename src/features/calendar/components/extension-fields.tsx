@@ -18,10 +18,10 @@ export function ExtensionFields({ academicYearId, schools, defaultUntil }: { aca
         <Radio name="target" value="all" checked={target === "all"} onChange={() => setTarget("all")} label="Tous les établissements" />
       </ChoiceGroup>
       {target === "schools" && <SchoolPicker schools={schools} />}
-      <FormField label="Jusqu'au" name="until" required hint="La saisie reste possible jusqu'à la fin de ce jour.">
+      <FormField label="Jusqu'au" name="until" required info="La saisie reste possible jusqu'à la fin de ce jour.">
         <Input type="date" defaultValue={defaultUntil} />
       </FormField>
-      <FormField label="Motif" name="reason" required hint="Il est communiqué aux établissements concernés.">
+      <FormField label="Motif" name="reason" required info="Il est communiqué aux établissements concernés.">
         <Textarea rows={3} maxLength={500} />
       </FormField>
     </>

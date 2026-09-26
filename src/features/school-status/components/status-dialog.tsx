@@ -50,7 +50,7 @@ export function SchoolStatusDialog({ id, name, status, size = "md" }: { id: stri
           <Radio key={c.value} name="status" value={c.value} checked={choice === c.value} onChange={() => setChoice(c.value)} label={c.label} description={SCHOOL_STATUS_EFFECTS[c.value]} />
         ))}
       </ChoiceGroup>
-      <FormField label="Motif" name="reason" required hint="Obligatoire. Il est affiché à l'établissement.">
+      <FormField label="Motif" name="reason" required info="Obligatoire. Il est affiché à l'établissement.">
         <Textarea rows={3} maxLength={500} />
       </FormField>
     </FormDialog>

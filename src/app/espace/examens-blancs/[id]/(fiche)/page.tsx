@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { InfoTip } from "@/components/kit/info-tip";
 import { ConfirmButton } from "@/components/kit/confirm-button";
 import { AverageLevel } from "@/components/kit/level";
 import { PageHeader } from "@/components/kit/page-header";
@@ -186,8 +187,10 @@ export default async function MockExamPage({ params }: PageProps<"/espace/examen
       {rooms.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle>Saisie des notes</CardTitle>
-            <CardDescription>Notes sur 20 de vos classes, matière par matière.</CardDescription>
+            <div className="flex items-center gap-1.5">
+              <CardTitle>Saisie des notes</CardTitle>
+              <InfoTip>Notes sur 20 de vos classes, matière par matière.</InfoTip>
+            </div>
           </CardHeader>
           <CardBody className="flex flex-wrap gap-2">
             {rooms.map((r) => (

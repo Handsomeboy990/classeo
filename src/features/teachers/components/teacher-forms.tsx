@@ -41,7 +41,7 @@ export function TeacherFields({ values }: { values?: TeacherValues }) {
       <FormField
         label="NPI"
         name="npi"
-        hint={values?.npi ? "Numéro personnel d'identification, enregistré au registre national." : "Facultatif. Numéro personnel d'identification, 10 chiffres."}
+        info={values?.npi ? "Numéro personnel d'identification, enregistré au registre national." : "Facultatif. Numéro personnel d'identification, 10 chiffres."}
       >
         <Input inputMode="numeric" maxLength={14} defaultValue={values?.npi ?? ""} readOnly={!!values?.npi} autoComplete="off" />
       </FormField>

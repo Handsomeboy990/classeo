@@ -71,7 +71,7 @@ export function CreateUserDialog({ roles, entities }: { roles: RoleOption[]; ent
                 <Input autoComplete="off" maxLength={80} />
               </FormField>
             </div>
-            <FormField label="Adresse e-mail" name="email" hint="Facultatif. La personne se connecte avec l'identifiant créé à partir de ses prénom et nom.">
+            <FormField label="Adresse e-mail" name="email" info="Facultatif. La personne se connecte avec l'identifiant créé à partir de ses prénom et nom.">
               <Input type="email" autoComplete="off" maxLength={200} />
             </FormField>
             <FormField label="Téléphone" name="phone">

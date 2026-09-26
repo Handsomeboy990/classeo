@@ -39,7 +39,7 @@ export function YearFields({ values }: { values: YearFormValues }) {
         <FormField label="Rentrée" name="startDate" required>
           <Input type="date" defaultValue={values.startDate} />
         </FormField>
-        <FormField label="Fin des cours" name="endDate" required hint="L'année se ferme d'elle-même le lendemain.">
+        <FormField label="Fin des cours" name="endDate" required info="L'année se ferme d'elle-même le lendemain.">
           <Input type="date" defaultValue={values.endDate} />
         </FormField>
       </div>

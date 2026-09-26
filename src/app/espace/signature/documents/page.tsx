@@ -2,13 +2,14 @@ import { BadgeCheck, FileText, GraduationCap } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { InfoTip } from "@/components/kit/info-tip";
 import { PageHeader } from "@/components/kit/page-header";
 import { SearchInput } from "@/components/kit/search-input";
 import { EmptyState } from "@/components/kit/states";
 import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
-import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { SignButton, SignClassButton } from "@/features/signatures/components/image-forms";
 import { SignatureNav } from "@/features/signatures/components/signature-nav";
 import { requireSchoolSigner, signatureTabs } from "@/features/signatures/nav";
@@ -51,8 +52,10 @@ export default async function DocumentsToSignPage({ searchParams }: PageProps<"/
         <Card>
           <CardHeader>
             <div>
-              <CardTitle>Bulletins publiés</CardTitle>
-              <CardDescription>Par classe et par période. Un bulletin corrigé après signature doit être signé à nouveau.</CardDescription>
+              <div className="flex items-center gap-1.5">
+                <CardTitle>Bulletins publiés</CardTitle>
+                <InfoTip>Par classe et par période. Un bulletin corrigé après signature doit être signé à nouveau.</InfoTip>
+              </div>
             </div>
           </CardHeader>
           {batches.length === 0 ? (
@@ -88,8 +91,10 @@ export default async function DocumentsToSignPage({ searchParams }: PageProps<"/
         <Card>
           <CardHeader>
             <div>
-              <CardTitle>Attestations et certificats de scolarité</CardTitle>
-              <CardDescription>Élèves inscrits cette année. L&apos;attestation couvre l&apos;année en cours, le certificat toute la scolarité dans l&apos;établissement.</CardDescription>
+              <div className="flex items-center gap-1.5">
+                <CardTitle>Attestations et certificats de scolarité</CardTitle>
+                <InfoTip>Élèves inscrits cette année. L&apos;attestation couvre l&apos;année en cours, le certificat toute la scolarité dans l&apos;établissement.</InfoTip>
+              </div>
             </div>
             <div className="w-full sm:w-72">
               <SearchInput placeholder="Nom ou matricule…" />

@@ -33,7 +33,7 @@ function Disabilities({ values }: { values?: string[] }) {
   const error = state?.fieldErrors?.disabilities?.[0];
   return (
     <div className="sm:col-span-2">
-      <ChoiceGroup legend="Besoins particuliers" hint="Pour adapter l'accueil, les supports et les évaluations.">
+      <ChoiceGroup legend="Besoins particuliers" info="Pour adapter l'accueil, les supports et les évaluations.">
         <div className="grid gap-x-6 sm:grid-cols-2">
           {DISABILITIES.map((d) => (
             <Checkbox key={d} name="disabilities[]" value={d} defaultChecked={values?.includes(d)} label={DISABILITY_LABELS[d]} aria-invalid={error ? true : undefined} />
@@ -89,7 +89,7 @@ export function StudentForm({ classes, guardians, values, cancelHref }: { classe
           <FormField label="Lieu de naissance" name="birthPlace">
             <Input defaultValue={values?.birthPlace ?? ""} maxLength={80} />
           </FormField>
-          <FormField label="Classe" name="classroomId" required hint={editing ? "Un changement de classe n'est possible qu'avant la première note." : undefined}>
+          <FormField label="Classe" name="classroomId" required info={editing ? "Un changement de classe n'est possible qu'avant la première note." : undefined}>
             <Select defaultValue={values?.classroomId ?? ""}>
               <option value="" disabled>
                 Choisir une classe
@@ -155,7 +155,7 @@ export function StudentForm({ classes, guardians, values, cancelHref }: { classe
                 <FormField label="Profession" name="guardianProfession">
                   <Input maxLength={80} />
                 </FormField>
-                <FormField label="Canal de contact préféré" name="guardianChannel" hint="L'appel vocal convient aux parents qui lisent peu.">
+                <FormField label="Canal de contact préféré" name="guardianChannel" info="L'appel vocal convient aux parents qui lisent peu.">
                   <Select defaultValue="APP">
                     {Object.entries(CHANNEL_LABELS).map(([k, v]) => (
                       <option key={k} value={k}>

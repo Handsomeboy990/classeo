@@ -94,7 +94,7 @@ export default async function SubjectsPage({ searchParams }: PageProps<"/espace/
           <FormDialog action={decideSubject} trigger={<><X aria-hidden /> Refuser</>} triggerVariant="danger-ghost" triggerSize="sm" triggerLabel={`Refuser ${s.name}`} title={`Refuser ${s.name}`} submitLabel="Refuser la proposition">
             <input type="hidden" name="id" value={s.id} />
             <input type="hidden" name="decision" value="REJECTED" />
-            <FormField label="Motif du refus" name="note" required hint="Il est transmis à l'établissement.">
+            <FormField label="Motif du refus" name="note" required info="Il est transmis à l'établissement.">
               <Textarea rows={3} maxLength={500} />
             </FormField>
           </FormDialog>
