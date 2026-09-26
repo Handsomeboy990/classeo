@@ -72,7 +72,7 @@ export function PageHeader({
       {actions && (
         <div
           className={cn(
-            "col-span-2 flex flex-wrap items-center gap-2 max-sm:[&>*]:grow",
+            "col-span-2 flex flex-wrap items-center gap-2 max-sm:[&>*]:grow max-sm:[&>*]:basis-[calc(50%-0.25rem)]",
             below ? "min-[100rem]:col-span-1" : "sm:col-span-1",
           )}
         >

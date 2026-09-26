@@ -49,7 +49,7 @@ export function LanguageMenu({
           aria-label={`${title} : ${current}`}
           title={`${title} : ${current}`}
           className={cn(
-            "group inline-flex h-10 items-center gap-1.5 rounded-full border px-2.5 text-sm font-bold tracking-wide transition-colors max-lg:h-11",
+            "group inline-flex h-10 items-center gap-1.5 rounded-full border px-2.5 text-sm font-bold tracking-wide transition-colors max-lg:h-11 max-sm:px-2.5",
             tone === "inverse"
               ? "border-white/40 bg-black/25 text-white backdrop-blur-sm hover:bg-black/40"
               : "border-border-strong bg-surface text-text hover:border-primary hover:bg-surface-2",
@@ -57,7 +57,7 @@ export function LanguageMenu({
         >
           <Languages className={cn("size-[1.125rem] shrink-0", tone === "inverse" ? "text-white" : "text-primary")} aria-hidden />
           <span aria-hidden>{code}</span>
-          <ChevronDown className="size-3.5 shrink-0 opacity-70 transition-transform group-aria-expanded:rotate-180" aria-hidden />
+          <ChevronDown className="size-3.5 shrink-0 opacity-70 transition-transform group-aria-expanded:rotate-180 max-sm:hidden" aria-hidden />
         </button>
       )}
     >

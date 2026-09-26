@@ -93,7 +93,12 @@ export function BarChart({
           <span />
           <span className="ds-bars-ticks">
             {ticks.map((f) => (
-              <span key={f} style={{ left: `${f * 100}%` }} data-edge={f === 0 ? "start" : f === 1 ? "end" : undefined}>
+              <span
+                key={f}
+                style={{ left: `${f * 100}%` }}
+                data-edge={f === 0 ? "start" : f === 1 ? "end" : undefined}
+                data-mid={ticks.length % 2 === 1 && f === ticks[(ticks.length - 1) / 2] ? "" : undefined}
+              >
                 {(tickFormat ?? format)(top * f)}
               </span>
             ))}

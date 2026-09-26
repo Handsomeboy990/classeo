@@ -2160,8 +2160,9 @@ a.ds-bars-row:hover .ds-bars-label {
 .ds-bars-ticks > span[data-edge="end"] {
   transform: translateX(-100%);
 }
+/* Phones: the two ends of the scale, and its middle when it has one. */
 @media (max-width: 39.999rem) {
-  .ds-bars-ticks > span:nth-child(even):not([data-edge]) {
+  .ds-bars-ticks > span:not([data-edge], [data-mid]) {
     display: none;
   }
 }

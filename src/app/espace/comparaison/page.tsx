@@ -155,7 +155,7 @@ export default async function ComparisonPage({ searchParams }: PageProps<"/espac
                 })}
                 format={(n) => formatIndicator(indicator, n)}
                 max={chartMax}
-                scale={chartMax === undefined ? "La barre la plus longue correspond à la valeur la plus élevée." : indicator === "meanAverage" ? "Échelle de 0 à 20." : indicator === "absenceRate" ? "Échelle de 0 à 20 %." : "Échelle de 0 à 100 %."}
+                scale={chartMax === undefined ? undefined : indicator === "meanAverage" ? "Échelle de 0 à 20." : indicator === "absenceRate" ? "Échelle de 0 à 20 %." : "Échelle de 0 à 100 %."}
               />
               {years.some((y) => (data.total[y.id]?.[indicator] ?? null) === null) && (
                 <p className="text-sm text-muted">

@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { BeninFlag } from "@/components/brand/flag";
+import { InfoTip } from "@/components/kit/info-tip";
 import { ReadAloud } from "@/components/kit/read-aloud";
 import { photo, shortCredit, type PhotoFile } from "@/features/public-pages/photos";
 import { PHOTO_IMAGES } from "@/features/public-pages/photo-images";
@@ -54,10 +55,10 @@ export default async function LandingPage({ searchParams }: PageProps<"/">) {
                 {node(PUBLIC.landing.title)}
               </h1>
               <p className="mt-5 max-w-xl text-lg leading-relaxed text-muted">{node(PUBLIC.landing.purpose)}</p>
-              <div className="mt-8 flex flex-col gap-3 min-[420px]:flex-row min-[420px]:flex-wrap min-[420px]:items-center">
+              <div className="mt-8 flex items-center gap-3">
                 <Link
                   href={withChoice("/connexion", lang, voice)}
-                  className="inline-flex min-h-12 items-center justify-center gap-2 rounded-control bg-primary px-6 text-base font-bold text-on-primary shadow-xs hover:bg-primary-hover"
+                  className="inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-control bg-primary px-6 text-base font-bold text-on-primary shadow-xs hover:bg-primary-hover sm:flex-none"
                 >
                   {t(PUBLIC.landing.enter)}
                   <ArrowRight className="size-5" aria-hidden />
@@ -140,11 +141,16 @@ export default async function LandingPage({ searchParams }: PageProps<"/">) {
 
         <section aria-labelledby="a11y-title" className="border-t border-border bg-surface">
           <div className="mx-auto grid max-w-7xl gap-4 px-4 py-12 sm:px-8 md:grid-cols-[16rem_1fr] md:gap-10 lg:py-16">
-            <h2 id="a11y-title" className="text-2xl font-extrabold text-balance">
-              {node(PUBLIC.landing.a11yTitle)}
-            </h2>
+            <div className="flex items-start gap-1.5">
+              <h2 id="a11y-title" className="text-2xl font-extrabold text-balance">
+                {node(PUBLIC.landing.a11yTitle)}
+              </h2>
+              <InfoTip label={t(PUBLIC.common.moreInfo)} className="mt-1.5">
+                {node(PUBLIC.landing.a11yBody)}
+              </InfoTip>
+            </div>
             <p className="max-w-3xl text-lg leading-relaxed text-muted">
-              {node(PUBLIC.landing.a11yVoice)} {node(PUBLIC.landing.a11yBody)} {node(PUBLIC.landing.a11ySettings)}
+              {node(PUBLIC.landing.a11yVoice)} {node(PUBLIC.landing.a11ySettings)}
             </p>
           </div>
         </section>

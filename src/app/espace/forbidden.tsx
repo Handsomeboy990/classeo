@@ -3,12 +3,12 @@ import { ShieldX } from "lucide-react";
 import { BackButton, StatusPage } from "@/components/kit/status-page";
 import { ButtonLink } from "@/components/ui/button";
 
-// Rendered by forbidden() outside the space (an API or a page of its own);
-// the pages of the space have theirs, inside the shell.
-export default function Forbidden() {
+// Rendered by forbidden() in a page of the space: the account is signed in
+// but its role does not cover this page. Inside the shell, the menu stays at
+// hand.
+export default function SpaceForbidden() {
   return (
     <StatusPage
-      standalone
       code="403"
       icon={<ShieldX />}
       tone="warning"
