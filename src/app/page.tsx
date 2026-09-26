@@ -50,7 +50,7 @@ export default async function LandingPage({ searchParams }: PageProps<"/">) {
               </p>
               <h1
                 id="hero-title"
-                className="mt-4 text-[min(2.25rem,10.5vw)] leading-[1.06] font-extrabold tracking-tight text-balance hyphens-auto sm:text-5xl lg:text-[3.5rem]"
+                className="mt-4 text-[min(2.25rem,10.5vw)] leading-[1.06] font-extrabold tracking-tight text-balance hyphens-none sm:text-5xl lg:text-[3.5rem]"
               >
                 {node(PUBLIC.landing.title)}
               </h1>
