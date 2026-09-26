@@ -9,7 +9,7 @@ import { toast } from "@/components/kit/toaster";
 import { Button } from "@/components/ui/button";
 import { parseGradeValue } from "@/lib/domain/grade-entry";
 import { round2 } from "@/lib/domain/grades";
-import { cn, formatAverage } from "@/lib/utils";
+import { formatAverage } from "@/lib/utils";
 
 import { saveResults } from "../actions";
 
@@ -205,10 +205,8 @@ export function ResultsGrid({
                               onChange={(e) => setValues((v) => ({ ...v, [r.enrollmentId]: { ...v[r.enrollmentId], [s.code]: e.target.value } }))}
                               onFocus={(e) => e.currentTarget.select()}
                               onKeyDown={(e) => onKeyDown(e, ri, ci)}
-                              className={cn(
-                                "h-10 w-16 rounded-md border bg-surface text-center font-semibold text-text tabular-nums focus:border-primary",
-                                error ? "border-danger bg-danger-soft" : changed ? "border-primary bg-primary-soft" : "border-border-strong",
-                              )}
+                              data-state={changed && !error ? "changed" : undefined}
+                              className="ds-cell"
                             />
                           ) : (
                             <span className="inline-block w-16 font-semibold tabular-nums">{value || <span className="text-muted">–</span>}</span>

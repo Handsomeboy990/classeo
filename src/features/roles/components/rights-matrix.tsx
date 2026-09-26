@@ -93,7 +93,7 @@ export function RightsMatrix({
                   <span className="inline-flex items-center gap-1" title={reason}>
                     <input
                       type="checkbox"
-                      className="size-5 accent-primary disabled:opacity-50"
+                      className="ds-check"
                       name={state === "editable" ? "permissions[]" : undefined}
                       value={code}
                       checked={on}

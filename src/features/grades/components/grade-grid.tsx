@@ -304,7 +304,8 @@ export function GradeGrid({
         onChange: (e: ChangeEvent<HTMLInputElement>) => setValues((v) => ({ ...v, [r.enrollmentId]: { ...v[r.enrollmentId], [c.key]: e.target.value } })),
         onFocus: (e: FocusEvent<HTMLInputElement>) => e.currentTarget.select(),
       },
-      tone: error ? "border-danger bg-danger-soft" : changed ? "border-primary bg-primary-soft" : waiting ? "border-warning border-dashed bg-warning-soft" : "border-border-strong",
+      tone: !error && waiting ? "border-warning border-dashed bg-warning-soft" : "",
+      state: error ? undefined : changed ? "changed" : undefined,
     };
   }
 
@@ -408,7 +409,9 @@ export function GradeGrid({
                               id={id}
                               {...f.props}
                               onKeyDown={(e) => onKeyDown(e, ri, ci)}
-                              className={cn("h-12 w-full min-w-0 rounded-control border bg-surface text-center text-base font-semibold text-text tabular-nums focus:border-primary", f.tone)}
+                              data-size="lg"
+                              data-state={f.state}
+                              className={cn("ds-cell", f.tone)}
                             />
                           ) : (
                             <span id={id} className="flex h-12 items-center justify-center rounded-control bg-surface-2 text-base font-semibold tabular-nums">
@@ -487,7 +490,8 @@ export function GradeGrid({
                               <input
                                 {...f.props}
                                 onKeyDown={(e) => onKeyDown(e, ri, ci)}
-                                className={cn("h-10 w-16 rounded-md border bg-surface text-center font-semibold text-text tabular-nums focus:border-primary", f.tone)}
+                                data-state={f.state}
+                                className={cn("ds-cell", f.tone)}
                               />
                             ) : (
                               <span className="inline-block w-16 font-semibold tabular-nums">{f.value || <span className="text-muted">–</span>}</span>

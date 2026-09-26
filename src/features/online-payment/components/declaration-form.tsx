@@ -5,7 +5,7 @@ import { useState } from "react";
 
 import { ActionForm, SubmitButton } from "@/components/kit/action-form";
 import { FormField } from "@/components/kit/form-field";
-import { Input, Select } from "@/components/ui/input";
+import { FileInput, Input, Select } from "@/components/ui/input";
 import { formatFcfa } from "@/lib/utils";
 
 import { declarePayment } from "../actions";
@@ -71,7 +71,7 @@ export function DeclarationForm({ invoiceId, max, accounts, suggestions, default
         <Input autoComplete="off" maxLength={60} value={transactionRef} onChange={(e) => setTransactionRef(e.target.value)} />
       </FormField>
       <FormField label="Preuve (facultatif)" name="proof" hint="Capture du SMS ou reçu de la banque : image ou PDF, 2 Mo au maximum.">
-        <input type="file" accept="image/jpeg,image/png,image/webp,application/pdf" className="max-w-full text-sm file:mr-3 file:rounded-control file:border file:border-border-strong file:bg-surface file:px-3 file:py-2 file:font-semibold" />
+        <FileInput accept="image/jpeg,image/png,image/webp,application/pdf" />
       </FormField>
       <SubmitButton pendingLabel="Envoi de la déclaration…">Déclarer ce paiement</SubmitButton>
     </ActionForm>
