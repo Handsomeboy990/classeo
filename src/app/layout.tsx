@@ -16,7 +16,7 @@ const display = Bricolage_Grotesque({ subsets: ["latin"], variable: "--font-disp
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"),
-  title: { default: "Classéo · Toute l'école, au même endroit", template: "%s · Classéo" },
+  title: { default: "Classéo · Le système éducatif, à portée de main", template: "%s · Classéo" },
   description:
     "Classéo, la plateforme de gestion scolaire pour le Bénin : inscriptions, notes, bulletins, présences, frais et messages, accessibles à tous, même hors ligne.",
   applicationName: "Classéo",

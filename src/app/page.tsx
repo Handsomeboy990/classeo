@@ -14,7 +14,7 @@ import { listenText, PUBLIC, PUBLIC_SPEECH } from "@/features/public-pages/texts
 import { publicChoice, withChoice } from "@/features/public-pages/translate";
 
 export const metadata: Metadata = {
-  title: { absolute: "Classéo · Toute l'école, au même endroit" },
+  title: { absolute: "Classéo · Le système éducatif, à portée de main" },
   description:
     "Classéo, la plateforme de gestion scolaire pour le Bénin : inscriptions, notes, bulletins, présences, frais et messages, pour l'équipe de l'établissement, les enseignants et les familles.",
 };

@@ -906,6 +906,12 @@
 "text": "Ðò alokan jí."
 },
 {
+"key": "0cb7cb78fb780036e20e1fd19762454e33550f202173ecccbf1bbfdf052083a3",
+"lang": "fon",
+"source": "Classéo · Le système éducatif, à portée de main",
+"text": "Classéo · Le système éducatif, à portée de main"
+},
+{
 "key": "0cc75acc661f42951e065ddb3287fd4007945ebd6e31fb8a751f535ca9a31e4c",
 "lang": "fon",
 "source": "Coef.",
@@ -2320,6 +2326,12 @@
 "lang": "fon",
 "source": "Dans « Messagerie », écrivez à un parent. Il peut lire votre message ou l'écouter.",
 "text": "Ðò “Wɛn” mɛ ɔ, wlan nǔ sɛ́dó mɛjitɔ́ ɖé. É sixu xà wɛn towe alǒ ɖótó."
+},
+{
+"key": "22a55df078832b62495dd9f68043d1ee98d6be26c73c9d96d5437863c56c4181",
+"lang": "fon",
+"source": "Merci à AWADEME Finanfa Ronaldo, grâce à qui Classéo se lit et s'écoute en langues locales.",
+"text": "AWADEME Finanfa Ronaldo wɛ, é wɛ zɔ́n bɔ è sixu xà bo lɛ́ ɖótó Classéo ɖò tò ɔ sín gbè lɛ mɛ."
 },
 {
 "key": "22d51e852503cd3eadf9ec409424d80f40f084821567cb6ce7fc2803a620669b",
@@ -4894,12 +4906,6 @@
 "lang": "fon",
 "source": "Modifier",
 "text": "Fín"
-},
-{
-"key": "42ee6e2154347e3deb0ad07e029db54fa802648a1a79c48c158ba074e41b603e",
-"lang": "fon",
-"source": "Toute l'école, au même endroit.",
-"text": "Wemaxɔmɛ ɔ bǐ, ɖò fí ɖokpo."
 },
 {
 "key": "4304ccfa3f662ac5b05654a85a1484def8f9e95ce181ebf82a4d7d7470159f1a",
@@ -7638,12 +7644,6 @@
 "text": "2 é cá kàn tlɔlɔ xá API e mɛ e nɔ zán Mobile Money lɛ é nɔ zán lɛ é ǎ; mɛ e nɔ sú akwɛ é wɛ nɔ kpé nukún dó nǔ enɛ wu."
 },
 {
-"key": "686f7ef567a51a8d82502fefc161f5b92651d9afcf2eced8014635091bb96de3",
-"lang": "fon",
-"source": "Merci à Finanfa Ronaldo, grâce à qui Classéo se lit et s'écoute en langues locales.",
-"text": "Finanfa Ronaldo wɛ, é wɛ zɔ́n bɔ è sixu xà bo lɛ́ ɖótó Classéo ɖò gbè tò ɔ tɔn lɛ mɛ."
-},
-{
 "key": "68759545a0a87ee31072dfb105e8aa78de4997e9086b8f6eb47ac1614618f8f4",
 "lang": "fon",
 "source": "2, compte des frais scolaires",
@@ -8836,6 +8836,12 @@
 "lang": "fon",
 "source": "Impossible de supprimer «",
 "text": "È sixu súnsún “."
+},
+{
+"key": "77bc86bf949cb3d7b3629ad79acb14f0d458ecaef29d0e8c8533fbce17a0b672",
+"lang": "fon",
+"source": "Le système éducatif, à portée de main.",
+"text": "Nǔkplɔnmɛ sín tuto ɔ, ɖò alɔ towe lɛ jí."
 },
 {
 "key": "77c29e769aaae00e1f621a25d7561148cb900bfd55a7df3d97f4110b6a57f17f",
@@ -15462,12 +15468,6 @@
 "text": "Akwɛ e è sɔ́ é ɖé tíìn ǎ alǒ è ko sú."
 },
 {
-"key": "d2a4b6d1ec9488a6d302da656516b1fcf500b8df68c0a728a50793b79e5b70c8",
-"lang": "fon",
-"source": "Classéo · Toute l'école, au même endroit",
-"text": "Classéo · Ecole bi, ɖo tɛn ɖokpo mɛ"
-},
-{
 "key": "d2b7f2fd755f2fcd25056ad06eca307fb5a3d85af0595de28e0958dbf495a86b",
 "lang": "fon",
 "source": "Examen blanc du BEPC",
@@ -19554,6 +19554,12 @@
 "text": "Lori foonu"
 },
 {
+"key": "0cb7cb78fb780036e20e1fd19762454e33550f202173ecccbf1bbfdf052083a3",
+"lang": "yo",
+"source": "Classéo · Le système éducatif, à portée de main",
+"text": "Classéo · Eto ẹkọ, ni arọwọto"
+},
+{
 "key": "0cc75acc661f42951e065ddb3287fd4007945ebd6e31fb8a751f535ca9a31e4c",
 "lang": "yo",
 "source": "Coef.",
@@ -20920,6 +20926,12 @@
 "lang": "yo",
 "source": "Dans « Messagerie », écrivez à un parent. Il peut lire votre message ou l'écouter.",
 "text": "Ni \"Fifiranṣẹ,\" kọ si obi kan. O le ka ifiranṣẹ rẹ tabi tẹtisi rẹ."
+},
+{
+"key": "22a55df078832b62495dd9f68043d1ee98d6be26c73c9d96d5437863c56c4181",
+"lang": "yo",
+"source": "Merci à AWADEME Finanfa Ronaldo, grâce à qui Classéo se lit et s'écoute en langues locales.",
+"text": "O ṣeun si AWADEME Finanfa Ronaldo, ọpẹ si ẹniti Classéo le ka ati tẹtisi ni awọn ede agbegbe."
 },
 {
 "key": "22d51e852503cd3eadf9ec409424d80f40f084821567cb6ce7fc2803a620669b",
@@ -23410,12 +23422,6 @@
 "lang": "yo",
 "source": "Modifier",
 "text": "Lati yipada"
-},
-{
-"key": "42ee6e2154347e3deb0ad07e029db54fa802648a1a79c48c158ba074e41b603e",
-"lang": "yo",
-"source": "Toute l'école, au même endroit.",
-"text": "Gbogbo ile-iwe, ni ibi kan."
 },
 {
 "key": "4304ccfa3f662ac5b05654a85a1484def8f9e95ce181ebf82a4d7d7470159f1a",
@@ -26046,12 +26052,6 @@
 "text": "2 ko ni asopọ taara si awọn API ti awọn oniṣẹ Owo Alagbeka; Olupese owo sisan ni o tọju eyi."
 },
 {
-"key": "686f7ef567a51a8d82502fefc161f5b92651d9afcf2eced8014635091bb96de3",
-"lang": "yo",
-"source": "Merci à Finanfa Ronaldo, grâce à qui Classéo se lit et s'écoute en langues locales.",
-"text": "O ṣeun si Finanfa Ronaldo, ọpẹ si ẹniti Classéo le ka ati tẹtisi ni awọn ede agbegbe."
-},
-{
 "key": "68759545a0a87ee31072dfb105e8aa78de4997e9086b8f6eb47ac1614618f8f4",
 "lang": "yo",
 "source": "2, compte des frais scolaires",
@@ -27190,6 +27190,12 @@
 "lang": "yo",
 "source": "Impossible de supprimer «",
 "text": "Ko le parẹ\""
+},
+{
+"key": "77bc86bf949cb3d7b3629ad79acb14f0d458ecaef29d0e8c8533fbce17a0b672",
+"lang": "yo",
+"source": "Le système éducatif, à portée de main.",
+"text": "Eto ẹkọ, ni ika ọwọ rẹ."
 },
 {
 "key": "77c29e769aaae00e1f621a25d7561148cb900bfd55a7df3d97f4110b6a57f17f",
@@ -33562,12 +33568,6 @@
 "lang": "yo",
 "source": "Une tranche choisie n'existe pas ou est déjà payée.",
 "text": "Ti yan trache ko si tẹlẹ tabi ti san tẹlẹ."
-},
-{
-"key": "d2a4b6d1ec9488a6d302da656516b1fcf500b8df68c0a728a50793b79e5b70c8",
-"lang": "yo",
-"source": "Classéo · Toute l'école, au même endroit",
-"text": "Classéo · Gbogbo ile-iwe, ni ibi kan"
 },
 {
 "key": "d2b7f2fd755f2fcd25056ad06eca307fb5a3d85af0595de28e0958dbf495a86b",

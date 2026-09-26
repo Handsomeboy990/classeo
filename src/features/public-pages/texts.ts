@@ -28,7 +28,7 @@ export const PUBLIC = {
     machine: "Traduction automatique : en cas de doute, le texte français fait foi.",
   },
   landing: {
-    title: "Toute l'école, au même endroit.",
+    title: "Le système éducatif, à portée de main.",
     purpose:
       "Inscriptions, notes, bulletins, présences, frais et messages : Classéo rassemble la vie de l'établissement, pour que l'équipe, les enseignants et les familles voient ce qui les concerne, au bon moment.",
     enter: "Accéder à mon espace",
@@ -101,7 +101,7 @@ export const PUBLIC = {
     voices: "Voix de lecture",
     voiceSource: "Voir la source",
     languages: "Langues locales",
-    languagesThanks: "Merci à Finanfa Ronaldo, grâce à qui Classéo se lit et s'écoute en langues locales.",
+    languagesThanks: "Merci à AWADEME Finanfa Ronaldo, grâce à qui Classéo se lit et s'écoute en langues locales.",
   },
   // Answers of the sign in and forgotten password actions, written in French
   // on the server (features/auth/actions.ts, features/password-help/actions.ts)
@@ -141,7 +141,7 @@ export const PROTECTED_NAMES = [
   "Savi",
   "Godomey",
   "Grand-Popo",
-  "Finanfa Ronaldo",
+  "AWADEME Finanfa Ronaldo",
 ] as const;
 
 function values(node: unknown): string[] {

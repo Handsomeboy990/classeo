@@ -8,7 +8,7 @@ import { chooseLanguage, expect, languageMenu, passwordField, test, uniqueSuffix
 // with the seed (no call to the translation service), and the photo
 // credits. The voice is not exercised here (slow, and quota bound).
 
-const FRENCH_TITLE = "Toute l'école, au même endroit.";
+const FRENCH_TITLE = "Le système éducatif, à portée de main.";
 
 async function expectNoHorizontalScroll(page: Page) {
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
