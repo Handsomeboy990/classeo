@@ -7752,6 +7752,12 @@
 "text": "Le chef d'établissement invite tous les parents d'élèves à la réunion de rentrée le samedi 2 octobre 3 à 2 h, dans la cour du collège."
 },
 {
+"key": "7dae84dbd079bc75450ea6cd7d4ebf914d1ab7d6aec4cea5fca09b8cee1015e9",
+"lang": "fon",
+"source": "Payer 2 3 FCFA en ligne",
+"text": "Mi sú 2 3 FCFA ɖò ɛntɛnɛti jí."
+},
+{
 "key": "7dc2502e506d53c1c80d94e406962bf50ea6a19805c0064785928003fa4425d6",
 "lang": "fon",
 "source": "Invitation à un examen blanc",
@@ -13014,6 +13020,12 @@
 "text": "È sú akpáxwé ɖé ."
 },
 {
+"key": "d2ef95d952ac4e1a2a19eb0c499fb18fe493d129a2afcd44482174bdd01622a7",
+"lang": "fon",
+"source": "Payer 2 en ligne",
+"text": "Sú 2 ɖò ɛntɛnɛti jí"
+},
+{
 "key": "d30219f2f564895f9f997546f14a2aad1f34efe6435c122ff4c97b64d3c98589",
 "lang": "fon",
 "source": "Taux de présence",
@@ -14164,6 +14176,12 @@
 "lang": "fon",
 "source": "Adaptez l'affichage",
 "text": "Ðyɔ nǔ e è nɔ xlɛ́ mɛ é."
+},
+{
+"key": "e5d6b34a661acea20b7f9e8afd771a29771821e428a1be66997f3f29d353e7c3",
+"lang": "fon",
+"source": "(MTN MoMo, Moov Money, Celtiis Cash ou carte bancaire). Classéo ne voit jamais votre code secret ni votre carte. Le reçu apparaît ici dès que le paiement est confirmé.",
+"text": "(MTN MoMo, Moov Akwɛ, Celtiis Akwɛ alǒ kati banki tɔn). Classéo nɔ mɔ kodɛ hwláhwlá towe alǒ kati towe gbeɖé ǎ. Enyi è ko xlɛ́ ɖɔ è sú akwɛ ɔ tlolo ɔ, wěɖexámɛ ɔ nɔ tɔ́n ɖò fí."
 },
 {
 "key": "e5e386c96e887f313b010ecf1eb8fea39d83cd508a18cd0d72c6e7d5e182c869",
@@ -23250,6 +23268,12 @@
 "text": "Olori idasile n pe gbogbo awọn obi si ipade-pada si ile-iwe ni Ọjọ Satidee Oṣu Kẹwa 2, 3 ni 2 owurọ, ni agbala ile-iwe."
 },
 {
+"key": "7dae84dbd079bc75450ea6cd7d4ebf914d1ab7d6aec4cea5fca09b8cee1015e9",
+"lang": "yo",
+"source": "Payer 2 3 FCFA en ligne",
+"text": "San 2 3 FCFA lori ayelujara"
+},
+{
 "key": "7dc2502e506d53c1c80d94e406962bf50ea6a19805c0064785928003fa4425d6",
 "lang": "yo",
 "source": "Invitation à un examen blanc",
@@ -28434,6 +28458,12 @@
 "text": "San ni apakan"
 },
 {
+"key": "d2ef95d952ac4e1a2a19eb0c499fb18fe493d129a2afcd44482174bdd01622a7",
+"lang": "yo",
+"source": "Payer 2 en ligne",
+"text": "Sanwo 2 lori ayelujara"
+},
+{
 "key": "d30219f2f564895f9f997546f14a2aad1f34efe6435c122ff4c97b64d3c98589",
 "lang": "yo",
 "source": "Taux de présence",
@@ -29566,6 +29596,12 @@
 "lang": "yo",
 "source": "Adaptez l'affichage",
 "text": "Mu ifihan badọgba"
+},
+{
+"key": "e5d6b34a661acea20b7f9e8afd771a29771821e428a1be66997f3f29d353e7c3",
+"lang": "yo",
+"source": "(MTN MoMo, Moov Money, Celtiis Cash ou carte bancaire). Classéo ne voit jamais votre code secret ni votre carte. Le reçu apparaît ici dès que le paiement est confirmé.",
+"text": "(MTN MoMo, Owo Moov, Owo Celtiis tabi kaadi banki). Classéo ko rii koodu aṣiri rẹ tabi kaadi rẹ rara. Iwe-ẹri naa han nibi ni kete ti sisanwo ti jẹrisi."
 },
 {
 "key": "e5e386c96e887f313b010ecf1eb8fea39d83cd508a18cd0d72c6e7d5e182c869",
