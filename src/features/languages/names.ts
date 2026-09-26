@@ -50,7 +50,8 @@ export async function namesFor(user: NonNullable<CurrentUser>): Promise<string[]
     places.push(e.classroom.name, e.school.name, e.school.commune.name, e.school.commune.department.name);
     if (e.student.birthPlace) places.push(e.student.birthPlace);
   }
-  const out = new Set(places);
+  // The name of the platform is a name too.
+  const out = new Set(["Classéo", ...places]);
   for (const p of people) {
     // "Sènami Hounkpatin", "HOUNKPATIN Sènami" on documents, and each part.
     out.add(`${p.firstName} ${p.lastName}`);
