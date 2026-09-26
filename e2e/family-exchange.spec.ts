@@ -86,6 +86,9 @@ test.describe("group messages", () => {
 });
 
 test.describe("pieces sent by families", () => {
+  // Three accounts and several pages per journey.
+  test.slow();
+
   test("a parent sends an enrollment piece and the school validates it @mobile", async ({ pageAs }) => {
     const label = `Certificat de scolarité ${uniqueSuffix()}`;
     const director = await pageAs("directeur");
@@ -127,8 +130,12 @@ test.describe("pieces sent by families", () => {
     const reason = `Rendez-vous chez le dentiste ${uniqueSuffix()}`;
     const parent = await pageAs("parent");
     await openSenami(parent);
-    await parent.getByRole("button", { name: "Justifier" }).first().click();
     const dialog = parent.getByRole("dialog", { name: /^Justifier l'absence du/ });
+    // A tap before hydration opens nothing: tap again until the form shows.
+    await expect(async () => {
+      await parent.getByRole("button", { name: "Justifier" }).first().click();
+      await expect(dialog).toBeVisible({ timeout: 2_000 });
+    }).toPass({ timeout: 30_000 });
     await dialog.getByLabel("Motif de l'absence").fill(reason);
     await dialog.getByRole("button", { name: "Envoyer la justification" }).click();
     await expect(parent.getByText("Justification envoyée. L'école vous répondra ici.")).toBeVisible();
