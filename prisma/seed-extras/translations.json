@@ -108,6 +108,12 @@
 "text": "È ma xà ǎ (2)."
 },
 {
+"key": "01eb06fdae2839d16cb8d16e94bfade645a4478277d35676b00c460e30da9e10",
+"lang": "fon",
+"source": "Moyenne semestrielle",
+"text": "Xwè vlɔɖówe sín linlin"
+},
+{
 "key": "01f1ab78f1cf82c93fe026d7c945ee1e936f87927ba020d1788648d7e9fff9f5",
 "lang": "fon",
 "source": "Résultats d'examen blanc",
@@ -354,6 +360,12 @@
 "text": "Nǔsumɛnukúnmɛ ɖaxó"
 },
 {
+"key": "06b4463b82dc5a3f5544ce00ef9bc2a71b1743376676840262c9cdd19ea7cbe7",
+"lang": "fon",
+"source": "Le bulletin apparaîtra ici dès que l'établissement l'aura publié, à la fin du semestre. Vous recevrez une notification.",
+"text": "Bulletin ɔ na tɔ́n ɖò fí tlolo e azɔ̌xwé ɔ na ɖè tɔ́n ɖò aklunɔzán gblamɛ fifó mɛ é. A na mɔ gbeɖiɖó ɖé."
+},
+{
 "key": "06b8858b9fbe165f3face1cbe3828075fc356cd24150a0eebea4456e1fc97daa",
 "lang": "fon",
 "source": "Soldée",
@@ -400,6 +412,12 @@
 "lang": "fon",
 "source": "aujourd'hui",
 "text": "égbé"
+},
+{
+"key": "075f0b0abb615e14886e5b9acd7acfa3dc517eec25e6483635ad1d3a0d67214b",
+"lang": "fon",
+"source": "MEMP et MESTFP, administration centrale",
+"text": "MEMP kpo MESTFP kpo, acɛkpikpa ɖaxó ɔ"
 },
 {
 "key": "076900c791ec4d832c73de7a050d44b2022478bbe9a68bf301ee613edef50581",
@@ -738,6 +756,12 @@
 "text": "Mɛjitɔ́ lɛ nɔ mɔ gbeɖiɖó ɖé."
 },
 {
+"key": "0d067f659e86235f01ad57e5687e67773613ef7e7aca8405c03de2fb16f45b00",
+"lang": "fon",
+"source": "État, ministère de l'Économie et des Finances",
+"text": "To ɔ, Ministère de l'économie et de l'argent"
+},
+{
 "key": "0d1d8a39318265226b6d4bf0f0a328bc8dc0247246994b3990420d5e2bf3018e",
 "lang": "fon",
 "source": "Le tableau de bord montre tes cours d'aujourd'hui,",
@@ -978,6 +1002,12 @@
 "text": "Azǎn enɛ jɛ aklunɔzán gblamɛ fifó ɖé jí. Kpɔ́n azǎn ɔ cobo hɛn."
 },
 {
+"key": "11d82981c09e4cc62d8ec6673286db7f15361a795250be4598207111ea13be63",
+"lang": "fon",
+"source": "Devoir surveillé 1",
+"text": "Azɔ̌ e è sɔ́ d’así nú mɛ é 1"
+},
+{
 "key": "11d8cd76cab9abff544968bb85e3128e772a96a96fa9c98d7d0c3afb83f89745",
 "lang": "fon",
 "source": "Référence trop longue.",
@@ -988,6 +1018,12 @@
 "lang": "fon",
 "source": "Cette invitation ne peut plus recevoir de réponse.",
 "text": "È sɔ́ sixu yí gbè nú mɛylɔwema enɛ ǎ."
+},
+{
+"key": "11eed2ffc29be6237796a924d2fd4ad51ba17eb949f4c99790bb08a29893df45",
+"lang": "fon",
+"source": "Autre confession",
+"text": "Nùɖiɖi ɖevo lɛ."
 },
 {
 "key": "12019ca4287d323fe73c974c7a7609fb351256c37897ed115095287a6fc71507",
@@ -1062,6 +1098,12 @@
 "text": "Gbeta kɔn wiwa dó tɛnkpɔn ɖaxó ɔ jí"
 },
 {
+"key": "144c6d94badc57a781f37a065508927383d583d17ee574297cee8a7b2848555b",
+"lang": "fon",
+"source": "Au secondaire public, les filles sont exonérées de la contribution scolaire depuis 2026-2027 : elles ne reçoivent pas de facture.",
+"text": "Ðò wemaxɔmɛ linsinmɛ tɔn to ɔ tɔn mɛ ɔ, è ɖè nyɔnu lɛ sín akwɛ e è nɔ na wemaxɔmɛ ɔ é mɛ sín 2026-2027: ye nɔ yí facture ǎ."
+},
+{
 "key": "1454fadfab79878a31104e81459e3aaa993a8c8dc218cd3949ae494bfa5aa1bc",
 "lang": "fon",
 "source": "QR code de vérification",
@@ -1114,6 +1156,12 @@
 "lang": "fon",
 "source": "Preuve (facultatif",
 "text": "Kúnnuɖenú (è sixu jló"
+},
+{
+"key": "15d4543db06f1805834fd2b26e782bd1d35249cfabbddf25f5bb58d5b89b1b8a",
+"lang": "fon",
+"source": "Privé",
+"text": "Mɛɖesunɔ tɔn"
 },
 {
 "key": "15ec9b3d72f31c6fcadf21d08471b080b4d26144ba6e407dc573a3328011a2ee",
@@ -1246,6 +1294,12 @@
 "lang": "fon",
 "source": "Frais scolaires",
 "text": "Azɔmɛkwɛ"
+},
+{
+"key": "181b3a442253a01577df67842307b85bd0edb018dcf6954ad3a70af723811a4b",
+"lang": "fon",
+"source": "Conseil de classe :",
+"text": "Nǔkplɔ́nmɛ azɔ̌mɛví lɛ tɔn:"
 },
 {
 "key": "18330d56be23eea115bb0790bc212db33f64a204f3cf8dd0b7006b056e3e202f",
@@ -1530,6 +1584,12 @@
 "text": "Tutoblonunutɔ́ ɔ kɛɖɛ wɛ nɔ sú tɛnkpɔn ɔ."
 },
 {
+"key": "1d8ccc1060313585684474293bb16ae0f436d0c9663aa44186dfa7706391b353",
+"lang": "fon",
+"source": "Officielle (arrêté n° 029 du 6 mai 2024) : (moyenne des interrogations écrites + chaque devoir surveillé) ÷ nombre de notes",
+"text": "Acɛkpikpa ɔ tɔn (sɛ́n 029gɔ́ azǎn 6gɔ́ ɔ Kɔnyásun 2024 tɔn): (nùkanbyɔ e è wlan lɛ é sín linlin + azɔ̌ e è kpé nukún dó wu é ɖokpo ɖokpo) ÷ wuntun nabi e è na é"
+},
+{
 "key": "1dfe9009cbb57c7fdcfeb21ac93bdeecc1c182ae67bde20174fa61feddb73b9d",
 "lang": "fon",
 "source": "Photographies",
@@ -1698,6 +1758,12 @@
 "text": "Mɛ 2 wɛ wá kplé sín hwenu e wemaxɔmɛ xwè ɔ bɛ́ é."
 },
 {
+"key": "208c6073c305fbaba6ee91f33ded36853d6a78e80a1820383359403819752423",
+"lang": "fon",
+"source": "Semestre",
+"text": "Wè"
+},
+{
 "key": "20a096b4d644ccaf50ea5e95ef5e354fb26ea2d125c786b17e27792b827d2d17",
 "lang": "fon",
 "source": "Le montant déclaré (",
@@ -1720,6 +1786,12 @@
 "lang": "fon",
 "source": "Aucune facture à payer",
 "text": "Facture ɖebu na su ǎ."
+},
+{
+"key": "211e806f6cd1842c9d52861930fe9d693e723a3dc97dd2beef535c124e341aab",
+"lang": "fon",
+"source": "Trimestre",
+"text": "Xota ɖokpo"
 },
 {
 "key": "2135f37cb4a79bbf17056a84c6621433341e39a08796e20cbfcddd0f074d48c5",
@@ -1806,6 +1878,12 @@
 "text": "Gǎn Azɔ̌xɔsa ɔ Tɔn"
 },
 {
+"key": "22780bcb70176beecb26c63b5cf14b75f5991dfed0855d82deb58f3543947834",
+"lang": "fon",
+"source": "Ministères en charge de l'éducation",
+"text": "Ministère e nɔ kpé nukún dó wemaxɔmɛ yiyi wu lɛ é."
+},
+{
 "key": "22827c8ad92e2faff10697d285ebf43be5ff545648d1578fe3e6234227756f0f",
 "lang": "fon",
 "source": "Oui, en lecture. Les pages déjà ouvertes (tableau de bord, bulletins, notes, présences, emploi du temps) restent lisibles hors ligne, et un bandeau signale la coupure. Les modifications demandent le réseau.",
@@ -1864,6 +1942,12 @@
 "lang": "fon",
 "source": "Commencez par la contribution scolaire : son montant, puis ses tranches.",
 "text": "Bɛ̌ kpo akwɛ e wemaxɔmɛ ɔ nɔ na é kpo: akwɛ nabi e é na é, enɛ gudo hǔn, akpáxwé tɔn lɛ."
+},
+{
+"key": "236ae6d7d3318ab26779896f4563995f090c44033ca4a9b7bc8d427e96bedcbb",
+"lang": "fon",
+"source": "DDESTFP de l'Atlantique",
+"text": "Atlantique DDESTFP"
 },
 {
 "key": "236f4f36581620830812af8bc2c07da44c6d7bad86fd2e2763f82a3e9b766be6",
@@ -2184,6 +2268,12 @@
 "text": "Vodungbé"
 },
 {
+"key": "281a04d08f77bbcad442d5840441765791b599366e16a96c5d1a9fa81adf90fc",
+"lang": "fon",
+"source": "Premier examen blanc départemental du BEPC, Atlantique",
+"text": "BEPC sín azɔ̌xɔsa sín tɛnkpɔn nukɔntɔn ɔ, Atlantique"
+},
+{
 "key": "281d3be5f5b4bf6ee44f1cb4ef71a2eaafb34ae72d7d4453c231b32975b4b25c",
 "lang": "fon",
 "source": "Le montant saisi (",
@@ -2200,6 +2290,12 @@
 "lang": "fon",
 "source": "Yoruba : voix du service de traduction, lecture en yoruba. Si elle ne répond pas, Kora lit en français.",
 "text": "Yoruba: gbè e è nɔ zán ɖò lilɛdógbeɖevomɛzɔ́ ɔ mɛ é, nǔxixa ɖò Yoruba-gbè mɛ. Enyi é ma yí gbè ǎ ɔ, Kora nɔ xà ɖò Flanségbe mɛ."
+},
+{
+"key": "28786e38687426b4a7b6341e6cb390f69a7fcb588a4ce0ff607b606b157a3ed9",
+"lang": "fon",
+"source": "Paie du personnel",
+"text": "Azɔ̌watɔ́ lɛ sín akwɛzinzan"
 },
 {
 "key": "287992a55157677c6c2375e1325732274f85a4d6189f5b7d7665775d81e4b678",
@@ -2254,6 +2350,12 @@
 "lang": "fon",
 "source": "Meilleure matière : Éducation physique et sportive.",
 "text": "Nǔkplɔnmɛ ɖagbe hugǎn ɔ: Agbazazɔ́wiwa kpo ayihundida lɛ kpo."
+},
+{
+"key": "28fcb1e515189db7e4aae90922efb33c222bbc64788a5d963b44396d5834114d",
+"lang": "fon",
+"source": "Participation de la communauté et des parents",
+"text": "Mɛ e ɖò xá ɔ mɛ lɛ é kpo mɛjitɔ́ lɛ kpo sín alɔɖiɖó"
 },
 {
 "key": "290106c8a56a482a98bae225bf0601591b410962084d18cdba6c684a4b2d8568",
@@ -2502,6 +2604,12 @@
 "text": "Mɛɖebǔ ma ɖò finɛ ǎ"
 },
 {
+"key": "2cb32d21be95b180d149b828e919ac257db186a76b785ebf04302b9cfdb6e089",
+"lang": "fon",
+"source": "DDEMP de l'Atlantique",
+"text": "DDEMP Atlantique tɔn"
+},
+{
 "key": "2cbc39903b50f4003e1b7b3a5b30fa38e2d5b00e53c7362d7f67beede2300d64",
 "lang": "fon",
 "source": "Aperçu non publié",
@@ -2580,6 +2688,12 @@
 "text": "Fí e ma sɔgbe ǎ é."
 },
 {
+"key": "2e2e949ae046c58b69b73f6dcb313823ddfac95643200272f4c4f01a4fc768f2",
+"lang": "fon",
+"source": "Exonérée (arrêté du 30 juillet 2026)",
+"text": "È ɖè è sín hwɛ mɛ (sɛ́n e è ɖetɔ́n ɖò azǎn 30gɔ́ ɔ Kɔnyásun 2026 tɔn gbè é)"
+},
+{
 "key": "2e3054e12ff491c6dc7d83e571a2cb03514d85981d19bd4be5f0a8aa91348144",
 "lang": "fon",
 "source": "Aide",
@@ -2620,6 +2734,12 @@
 "lang": "fon",
 "source": "Choisir un parent",
 "text": "Sɔ́ mɛjitɔ́ ɖé ."
+},
+{
+"key": "2ebb4d67cf95bc1f2306b30ed4a7a36fc6f9922e4b8b1a8c861997ed3c45b227",
+"lang": "fon",
+"source": "Paie",
+"text": "Axɔ́súsú"
 },
 {
 "key": "2ed17174a0aed17884c1ff1ab5f7a874fe8c837787b062c8787781c6af7ed553",
@@ -2718,6 +2838,12 @@
 "text": "CFA afatɔ́n atɔ́ɔ́n"
 },
 {
+"key": "2f8bff1934fe85a1224eb871cd1cb5d07a4080135ce17168394a0d6fabf0d3c2",
+"lang": "fon",
+"source": "Enseignant du privé",
+"text": "Mɛsi mɛɖesunɔ tɔn"
+},
+{
 "key": "2ff59981438804b8f44a740f3f5d61b21ac4226aeae0e65357360edfbaf13e32",
 "lang": "fon",
 "source": "Tous",
@@ -2728,6 +2854,12 @@
 "lang": "fon",
 "source": "contenu",
 "text": "vode"
+},
+{
+"key": "3021527224cf3726285379b939c255a7021e0c7b369c99c68209903fe96af4bc",
+"lang": "fon",
+"source": "Votre établissement applique la formule officielle. Les compositions s'activent dans les paramètres de l'établissement.",
+"text": "Azɔ̌xwé mitɔn nɔ zán xógbe e è sɔ́ ɖ’ayǐ ɖò acɛkpikpa ɔ glɔ́ é. É ɖò mɔ̌ có, è nɔ bló bɔ nǔ e è wlan lɛ é nɔ w’azɔ̌ ɖò nǔ e è sɔ́ ɖó te lɛ é mɛ."
 },
 {
 "key": "30334fbaf9e2cdf3427b55e4e44596f2f8e6f93731f887a443bcb20f03ee074f",
@@ -3024,6 +3156,12 @@
 "text": "Sɔ́ akwɛ gbɔn alokan jí alǒ sɛ́ akwɛ dó mɛ ɖevo"
 },
 {
+"key": "34e621e767ba23da685332c9ca7bbfbb940bccfdeaa3a7669a2bd45c4c4adf4b",
+"lang": "fon",
+"source": "Composition uniquement (usage d'établissement)",
+"text": "Nǔ e è wlan é kɛɖɛ (è nɔ zán ɖò tutoblonunu ɔ mɛ)"
+},
+{
 "key": "34eb2d98ec57adf9fa4048cc3c002f340c1f4a2cc6a7c818784412b19b5e89a4",
 "lang": "fon",
 "source": "Le matricule n'a pas pu être attribué. Réessayez.",
@@ -3046,6 +3184,12 @@
 "lang": "fon",
 "source": "Aperçu des bulletins de la classe, par rang",
 "text": "Kplékplé ɔ sín gbeɖiɖó lɛ sín xóta, sɔgbe xá tɛnmɛ e mɛ ye ɖè é"
+},
+{
+"key": "3522b2914f07dc8f0be15a78670a9158ed62f1284306fc9a1eaeaeaf0ec6b5d2",
+"lang": "fon",
+"source": "Budget de l'État et contribution scolaire",
+"text": "Akwɛzinzan to ɔ tɔn kpo akwɛ e wemaxɔmɛ lɛ nɔ na é kpo"
 },
 {
 "key": "3525b21997e54afd9b7505b0c270df4c71865e9a34cb17869bd8dc3ab2eece52",
@@ -3106,6 +3250,12 @@
 "lang": "fon",
 "source": "Limités à votre périmètre.",
 "text": "Limité à votre périmètre."
+},
+{
+"key": "360e3ef7c03a1dc4d63d8a6cc6355f6b99df285d4d2d393313f0b7104d9a1ea2",
+"lang": "fon",
+"source": "Notes du semestre",
+"text": "Nǔ e è wlan dó aklunɔzán gblamɛ ɖokpo mɛ é"
 },
 {
 "key": "36231d5829f4f6cd3c37f37bb1c7f68f0781f7450229e0559a0398fc3cb90ad3",
@@ -3264,6 +3414,12 @@
 "text": "“Klasi” lɛ nɔ sɔ́ mɛ̌si lɛ ɖó te."
 },
 {
+"key": "387b327928ade6d33ec8f35016067da4b88e41ad3cac0c7aefe81fcb4ad822be",
+"lang": "fon",
+"source": "Français : voix",
+"text": "Flansé: gbè"
+},
+{
 "key": "388d03b440a8b26d45cc816abb00744d33c3627bf7499547a9bdd6b485145f16",
 "lang": "fon",
 "source": "Puis-je utiliser 2 sans réseau ?",
@@ -3384,6 +3540,12 @@
 "text": "Un nɔte nu xɔntɔn ce"
 },
 {
+"key": "39af49197abb84a8f42de71b6e47a602b1591e662092a9394d1d45201b98e3b5",
+"lang": "fon",
+"source": "Semestre 2",
+"text": "Azan 2gɔ́ ɔ"
+},
+{
 "key": "39e13938bf7391aca2c9d8920126cd8f372ed07ca76a1b216e23bdb6ac79d5c0",
 "lang": "fon",
 "source": "Examens blancs de CM2, de 3e et de Tle organisés par votre établissement, auxquels il est invité ou qui lui sont imposés.",
@@ -3480,6 +3642,12 @@
 "text": "Avg. nǔwiwa"
 },
 {
+"key": "3b282b3722e14be31ba973cb2bc4a528b183a12151db6679630788bf1cfb9d9d",
+"lang": "fon",
+"source": "Cotisation de l'association des parents d'élèves",
+"text": "Nǔnina mɛjitɔ́ lɛ kpo mɛ̌si lɛ kpo tɔn"
+},
+{
 "key": "3b323c9f1ed935b6ce0d05a0493dabf6017bbcffa0fafe1af1862555c0962f19",
 "lang": "fon",
 "source": "En bref, facile à lire",
@@ -3568,6 +3736,12 @@
 "lang": "fon",
 "source": "Technique et de la Formation Professionnelle",
 "text": "Azɔ̌kplɔnmɛ Azɔ̌tuùntuùn Tɔn kpo Azɔ̌ Tɔn kpo"
+},
+{
+"key": "3be928e5df138060b91fe90a47df647712acc0a9ea0bd019d0357ad8e5df57af",
+"lang": "fon",
+"source": "Un reste à payer n'empêche jamais de recevoir le bulletin ni de passer un examen (arrêté n° 029 du 6 mai 2024, article 30).",
+"text": "Akwɛ e è ma ko sú ǎ é nɔ glɔ́n ali nú we gbeɖé bɔ a na yí wěɖexámɛwema ɔ alǒ tɛnkpɔn ɖé ǎ (sɛ́n 029gɔ́ ɔ, azǎn 6gɔ́ ɔ Kɔnyásun 2024 tɔn gbè, akpáxwé 30gɔ́ ɔ)."
 },
 {
 "key": "3beacd44e1929e6060887b9c129be7ae77037ad732730c5bcbed0eb96206c0bd",
@@ -3666,6 +3840,12 @@
 "text": "Un nyí tókúnɔ abǐ un nɔ se nǔ ganji ǎ."
 },
 {
+"key": "3d1ad43268db08b7dde00a5f61774354fba73533a3d5e284bac2b61eed0add27",
+"lang": "fon",
+"source": "La formule officielle ne compte pas de composition : mettez le nombre de compositions à 0.",
+"text": "Fómula acɛkpikpa ɔ tɔn nɔ xà nǔ e è wlan lɛ é ǎ: sɔ́ nǔ e è wlan lɛ é sín kɛ́n ɖó 0 jí."
+},
+{
 "key": "3d3161be29cfe9d8a6452b417f4ed1d4e068b7a66afa83ac609a6ae3aec6eceb",
 "lang": "fon",
 "source": "Notes du",
@@ -3714,6 +3894,12 @@
 "text": "Zǎn Classeo ɖò ɛntɛnɛti jí ǎ."
 },
 {
+"key": "3debc65ebed64b5119849502840e13ebd6a9c0dc1de5f22ac531227d7ff4acc6",
+"lang": "fon",
+"source": "État : son salaire est versé par le ministère de l",
+"text": "Tokpɔn ɔ: akwɛ tɔn ɔ, Ministère de"
+},
+{
 "key": "3df19439f138849629dd721bc6006658a22807dc8ab9b26b3868b7b486dd1bdf",
 "lang": "fon",
 "source": "Ce paiement a été remboursé par le prestataire.",
@@ -3742,6 +3928,12 @@
 "lang": "fon",
 "source": "Depuis le",
 "text": "Sín hwenu e."
+},
+{
+"key": "3e7d817b1e8d8d00fae61d0be3b89abc3bcd59bee89212385dca7c80058f24dc",
+"lang": "fon",
+"source": "Les primes et les retenues sont des montants positifs.",
+"text": "Akwɛ e è nɔ sú mɛ lɛ é kpo ee è nɔ ɖè sín akwɛzinzan mɛ lɛ é kpo nyí akwɛ ɖagbe."
 },
 {
 "key": "3e8fee27f8595284fc70e0e1560a32a108c2fa115390a7febdb67c7c047beab3",
@@ -3796,6 +3988,12 @@
 "lang": "fon",
 "source": "Choisir",
 "text": "Cyăn"
+},
+{
+"key": "3f2b473d497f71a4cff18a4af0166912e9d98752983e1fc51dbab0752136b7ea",
+"lang": "fon",
+"source": "Aspirant au métier d'enseignant (AME)",
+"text": "Mɛsizɔ́ ɔ jló na wà (AME)"
 },
 {
 "key": "3f56f652d6999da89ccde380024e98aa5c60d310f991e02afc80c602a14915bd",
@@ -4018,6 +4216,12 @@
 "lang": "fon",
 "source": "Les étapes utiles à votre profil",
 "text": "Afɔ e hɛn lè wá nú mɛɖesunɔ towe lɛ é"
+},
+{
+"key": "43aec759318ed2f440c11e3fcb0dc49b25adc5f970f39f27a7cee2a29a35cf55",
+"lang": "fon",
+"source": "Vacataire",
+"text": "Mɛ ɖokpo ɖokpo"
 },
 {
 "key": "43b7c75d56f02a885fd7ea66592af16ad33f3ddb82f31b786136d4b96821b3e2",
@@ -4246,6 +4450,12 @@
 "lang": "fon",
 "source": "Éducation scientifique et technologique, 2.",
 "text": "Nukplɔnmɛ nunywɛ xwitixwiti tɔn kpodo nunywɛ xwitixwiti tɔn kpo, 2."
+},
+{
+"key": "46d246aaa2b44e896c61699297a4309e1e301533df583907ebb0383ae3a8b3a8",
+"lang": "fon",
+"source": "Prévoyez au moins une interrogation écrite ou un devoir surveillé.",
+"text": "É hwe bǐ ɔ, bló tuto nú tɛnkpɔn wema jí tɔn alǒ azɔ̌ e è na kpé nukún dó wu é ɖokpo."
 },
 {
 "key": "46dc30a54644252c40e22ebc9844a666027ef84d9bbb31555dcfc2b03598a6a1",
@@ -4572,6 +4782,12 @@
 "text": "Xa"
 },
 {
+"key": "4c1ea81f816463fe350ec885652d15cc13eb3b74c2f8a15ace46c71deedb23a3",
+"lang": "fon",
+"source": "Islamique",
+"text": "Islamu"
+},
+{
 "key": "4c631e81207b404ad9259e8e1acc65c300c6bf58a1544e93c24f811faa316e0d",
 "lang": "fon",
 "source": "Pas de réseau : message gardé sur cet appareil. Il part automatiquement au retour du réseau.",
@@ -4600,6 +4816,12 @@
 "lang": "fon",
 "source": "Parent principal",
 "text": "Mɛjitɔ́ taji ɔ"
+},
+{
+"key": "4d206b4c4618a9698259009f852bb9f68166d969b2761ee9b32888acb04d2660",
+"lang": "fon",
+"source": "Semestres",
+"text": "Aklunɔzángbe"
 },
 {
 "key": "4d20c5101591bdf4d6ac3dc82bf8c8e3ec00cb85084732ecc230796398b1a958",
@@ -4672,6 +4894,12 @@
 "lang": "fon",
 "source": "Lien avec l'élève",
 "text": "Kancica e ɖò é kpo wemaxɔmɛví ɔ kpo tɛntin é ."
+},
+{
+"key": "4e5dfe2f2d3de3be34ddd043dc9528da4caef0674f4ad1619b09598b815ea8fb",
+"lang": "fon",
+"source": "Par exemple : 01 97 12 34 56",
+"text": "Ði kpɔ́ndéwú ɔ: 01 97 12 34 56"
 },
 {
 "key": "4eb8907c55cf1b3384ea8b8ccbbe2ceb39b2a9c8a1638117779b8dabd386c867",
@@ -4932,6 +5160,12 @@
 "text": "È wlan nyikɔ dó wema mɛ ɖò ."
 },
 {
+"key": "524d99429f5cb37668d90676c114b023ce44b42677699de5e095da1c76c5ec81",
+"lang": "fon",
+"source": "Notes de la période",
+"text": "Nǔ e è wlan dó hwe ɔ nu lɛ é."
+},
+{
 "key": "5274a6cdfdc1ccae7ff3de2c03b94469ee9be100b0a6ed7c84daa7fbf7efe657",
 "lang": "fon",
 "source": "Le fichier n'est pas en ligne. La transcription ci-dessous en donne le contenu complet.",
@@ -5106,6 +5340,12 @@
 "text": "Nǔwlanwlán kɛɖɛ"
 },
 {
+"key": "55de936d56f3198757bbd2d1dce9265ebea5e0d654ceec7f6be576d87b41edd2",
+"lang": "fon",
+"source": "Pas encore de note ce semestre.",
+"text": "Note ɖebu ko ɖo semestre elɔ mɛ a."
+},
+{
 "key": "55ecc4484560756b19b117a1d01e7b0525df1f110cb02c2e7dda33a3da7bd651",
 "lang": "fon",
 "source": "écrivez à un parent.",
@@ -5212,6 +5452,18 @@
 "lang": "fon",
 "source": "Déjà payé : 2 3 FCFA.",
 "text": "E ko sú: 2 3 FCFA."
+},
+{
+"key": "573068b35ea60d1151ae250153912d213c8ab7e48492e901df6cb3dc8b356f20",
+"lang": "fon",
+"source": "Protestante",
+"text": "Protestant lɛ"
+},
+{
+"key": "57576b86cc5ac60bd4b39bff8b0704fcdfeaafe59801ad410c4c8ad6af8d6d1a",
+"lang": "fon",
+"source": "Les retenues dépassent le salaire brut.",
+"text": "Nǔ e è nɔ ɖè sín akwɛzinzan mɛ lɛ é nɔ hugǎn akwɛzinzan ɖaxó ɔ."
 },
 {
 "key": "575cc71cdc8c49e161e21743f340e7403331b8e6121263e84ffd22bfa909995c",
@@ -5428,6 +5680,12 @@
 "lang": "fon",
 "source": "Ajoutez au moins une tranche.",
 "text": "É hwe bǐ ɔ, gɔ́ fɛ́n ɖokpo na."
+},
+{
+"key": "5a29d7397e9e3c36d4008a77c8ef874a4e88d95b83021a35fd8a5c40444363fc",
+"lang": "fon",
+"source": "Mes notes ce semestre",
+"text": "Nǔ e un mɔ ɖò aklunɔzán gblamɛ elɔ mɛ lɛ é"
 },
 {
 "key": "5a2af601e7a29281ca731ce1a9647cc70f51b0902dc18ca62f3d99c46840a6ed",
@@ -5736,6 +5994,12 @@
 "text": "IDBiba"
 },
 {
+"key": "5f35565b7e108c1496814e68a8396584f721e7e856208bb447f1fe75d4542f4f",
+"lang": "fon",
+"source": "Sans connexion, Kora lit avec la voix de cet appareil :",
+"text": "Kora nɔ xà nǔ kpo gbè e ɖò nǔ enɛ jí é kpo:"
+},
+{
 "key": "5f47464c231e5e50b2177edb2af3437ce75f25d1e24cfdf4a8974cef9ce5766f",
 "lang": "fon",
 "source": "Conversations avec l'école",
@@ -6006,6 +6270,12 @@
 "text": "Mi ɖe factures tɔn"
 },
 {
+"key": "623314a1e7e4a492314ee4639cc463c803e7d4823357000bdb5bc78c5a55b6d1",
+"lang": "fon",
+"source": "Moyenne simple des interrogations, devoirs et compositions (usage d'établissement)",
+"text": "Nukanbyɔ lɛ‚ xwegbezɔxwe lɛ kpodo xoɖiɖɔ lɛ kpo sin linlin yɔyɔ (azɔwiwa ɖo tuto ɔ mɛ)"
+},
+{
 "key": "62399d0eca24952e03db2f4a4eaab924baff9c660fec991c037181022e3de54e",
 "lang": "fon",
 "source": "En partenariat avec le ministère de la Santé, une campagne de vaccination gratuite sera organisée dans les établissements du 2 au 3 octobre 4. Les parents qui ne souhaitent pas faire vacciner leur enfant doivent en informer le chef d'établissement.",
@@ -6082,6 +6352,12 @@
 "lang": "fon",
 "source": "Comment agrandir le texte ou renforcer le contraste ?",
 "text": "Nɛ̌ è ka sixu bló bɔ nǔwlanwlán ɔ na gɔ́ngɔ́n alǒ bló bɔ vogbingbɔn ɔ na jɛji gbɔn?"
+},
+{
+"key": "63cf1517f7a5f435b78f887aecee56fabf80d8bfa13e97d9b913fcc616157597",
+"lang": "fon",
+"source": "Frais fixés par le promoteur",
+"text": "Akwɛ e mɛ e nɔ jla nǔ lɛ é nɔ sɔ́ é"
 },
 {
 "key": "63f79d49336e8a2400e265308b4497b631c1d85662b9531ed40d801c0b0b079d",
@@ -6196,6 +6472,12 @@
 "lang": "fon",
 "source": "Insuffisant",
 "text": "Hwé"
+},
+{
+"key": "6647787e655f0be3f2c3dd7f55329fe0b75c9462f70514836b43639cc45a9ee6",
+"lang": "fon",
+"source": "Sans connexion, Kora lit avec la voix de cet appareil",
+"text": "Kora nɔ xà nǔ kpo gbè e ɖò nǔ enɛ jí é kpo, enyi é ma ɖó kancica ǎ ɔ."
 },
 {
 "key": "6656ad0dc45f33385a95ff6865d615fd0c3db08062ca35f8294493704b399d96",
@@ -6384,10 +6666,22 @@
 "text": "e è ɖetɔ́n ɖò 2, 3 septembre é"
 },
 {
+"key": "68dc6c63f61befe0dfba72654a818b8eeb05e2c78562f55b3ed8d1086897174d",
+"lang": "fon",
+"source": "Autres frais",
+"text": "Akwɛ ɖevo lɛ."
+},
+{
 "key": "68e1ca575295bb5604fea711b5d2eff44006ce4bd985481083a76b71fce0daef",
 "lang": "fon",
 "source": "Validation",
 "text": "Nǔjlɛdonǔwu"
+},
+{
+"key": "68e7e51609e9165c2d2e19a13f59ff8ffec050942d4f4da0a8acfafb88c11583",
+"lang": "fon",
+"source": "Exclu",
+"text": "È ɖè è sín mɛ"
 },
 {
 "key": "69030db7ed0c275bae36fa4c639dbbea81b20e5d7bcf909bcee908abdc76d06b",
@@ -6484,6 +6778,12 @@
 "lang": "fon",
 "source": "Aucune note n'a encore été saisie : il n'y a rien à publier.",
 "text": "È ko wlan nǔ ɖebǔ dó mɛ ǎ: nǔɖe ɖè bo na ɖè tɔ́n ǎ."
+},
+{
+"key": "6b374985c9c76a60ff4b2f751dabc3f323ee2c1d1cf3a8c13903eec8d0999ac5",
+"lang": "fon",
+"source": "Cet enseignant est un agent de l'État : son salaire est versé par le ministère de l'Économie et des Finances, pas par l'établissement.",
+"text": "Mɛsi enɛ ɔ, acɛkpikpa sin mɛ wɛ e nyi : Ministère de l’Economie et de l’Argent wɛ nɔ na akwɛ tɔn, e ka nyi 'établissement' ǎ."
 },
 {
 "key": "6b385711ceafda09e90084fe0a82d0b58af82df57f60494486c372d954b3fdd1",
@@ -6622,6 +6922,12 @@
 "lang": "fon",
 "source": "Déjà facturés",
 "text": "È ko bló facture"
+},
+{
+"key": "6cde3ab8caf2f6f6e49f4ae9d700deec687e31e0336c2031f59afcc4a5f780d1",
+"lang": "fon",
+"source": "Pas encore de note ce semestre",
+"text": "Nukúnnúmɔjɛnǔmɛ ɖě ɖò aklunɔzán gbla elɔ mɛ ǎ"
 },
 {
 "key": "6ce111876c47b3171d1b62b75954bc751d6e738668bb80c04cb92cffeeeaa2bf",
@@ -6942,6 +7248,12 @@
 "text": "Mɛ e wá lɛ é sín agban"
 },
 {
+"key": "720e3c8bf822e3a073fb5bab03e10c1f65fa81fffc4de7ce3e16737aeb804c79",
+"lang": "fon",
+"source": "Franco-arabe",
+"text": "Flansé-Alabu"
+},
+{
 "key": "7215d4969db63d2f0a9c98b2db0e5fc44c666a54731254d23e0044137fa07be3",
 "lang": "fon",
 "source": "Il est à nouveau proposé aux parents.",
@@ -7038,6 +7350,12 @@
 "text": "Nǔ e è gbéjé kpɔ́n é wɛ."
 },
 {
+"key": "7372fbfc322e757b1278aef3ad2fb3c89ccd0a5ff18394b717be98e72a6571c6",
+"lang": "fon",
+"source": "Motivez l'exclusion dans l'observation du conseil.",
+"text": "Ðɔ hwɛjijɔ e wu è ɖè mɛ sín wěɖexámɛ ɔ xwixwedó mɛ é."
+},
+{
 "key": "73751ad05e1f66041aeeab44320323607a0b67cef9faee68b08b3d93eb4d629c",
 "lang": "fon",
 "source": "Lire la licence",
@@ -7048,6 +7366,12 @@
 "lang": "fon",
 "source": "Publication du contenu «",
 "text": "Nǔ e ɖ'emɛ é ɖetɔn «"
+},
+{
+"key": "7386ec7b04b971c370ab60d176bb13946ec1f245fd704955019f194607fd8ea0",
+"lang": "fon",
+"source": "Notes,",
+"text": "Nǔwlanwlán lɛ,"
 },
 {
 "key": "7395e721745e31e1f53838ad4b875d8e67cad2e02a97df9d3b9560007834fa0f",
@@ -7386,6 +7710,12 @@
 "text": "Ba wema ɖe, azɔmɛvi ɖokpo, facture..."
 },
 {
+"key": "781523df23974aa776742e16b1d49b4dd285fcc354c0a82120ca8cb49a2a7644",
+"lang": "fon",
+"source": "Direction départementale des enseignements maternel et primaire",
+"text": "Azɔ̌xɔsa E Nɔ Kpé Nukún Dó Wemaxɔmɛ Vǐ lɛ Tɔn Kpo Wemaxɔmɛ Kplɔnkplɔn Tɔn Kpo Wu É"
+},
+{
 "key": "783396789483e23c5b1f881cba966079670ccc6ba520702a809143dcbc7210dd",
 "lang": "fon",
 "source": "Type de frais créé",
@@ -7530,6 +7860,12 @@
 "text": "Ninɔmɛ e mɛ è nɔ ɖe xójlawema lɛ tɔ́n ɖè ɖò wemaxɔmɛ lɛ mɛ é"
 },
 {
+"key": "7a18228fc5d8b855e9c26ed92b8093226d109591bd3423266db22f638cf8c76a",
+"lang": "fon",
+"source": "Recherche de la voix…",
+"text": "Mi ba gbe..."
+},
+{
 "key": "7a29d90e37797b1300dcb431b4108f863d35858fc44c7f7a388eb7d16e775d28",
 "lang": "fon",
 "source": "Un rôle personnalisé agit au niveau national, d'un département, d'une commune ou d'un établissement.",
@@ -7606,6 +7942,12 @@
 "lang": "fon",
 "source": "Publié le",
 "text": "È ɖetɔ́n ɖò"
+},
+{
+"key": "7b5e71988b2615ce5313ec6bbc2f7baacfd71f85def0228e47a1eedeb07f5884",
+"lang": "fon",
+"source": "Conseil de classe : passe en classe supérieure",
+"text": "Nǔkplɔ́nmɛ azɔ̌mɛví lɛ tɔn: sɛ̀ tɛn yì azɔ̌mɛxwé e bɔ d’ewu é mɛ."
 },
 {
 "key": "7b8ca5d16e337ddaf46a8440fac924ca29d63dd7d3ab4b1928e56c286db93b27",
@@ -7764,10 +8106,22 @@
 "text": "Mɛylɔwema nú tɛnkpɔn ɖé"
 },
 {
+"key": "7dc441b101569c462ff8c11c06904bcf3f3d12b66f0acf548ade2bf3cd4db0f5",
+"lang": "fon",
+"source": "Dans « Ma scolarité », l'onglet « Notes » donne chaque note et ta moyenne provisoire du trimestre ou du semestre, selon ton établissement.",
+"text": "Ðò “Azɔmɛyiyi ce” mɛ ɔ, xójlawema “Kplékplé” ɔ nɔ na akpàkpà sɔ́ mɛ ɖokpo ɖokpo kpo akpàkpà sɔ́ mɛ nú táan klewun ɖé kpo nú sun atɔn alǒ sun ayizɛ́n, sɔgbe xá azɔ̌ e a nɔ wà é."
+},
+{
 "key": "7e30105bb70d3c11eab6017e1b0e98545877a29f246ae7f86b0808f5bc0809bd",
 "lang": "fon",
 "source": "Interrogation 1",
 "text": "Nùkanbyɔ 1"
+},
+{
+"key": "7e3bf8ac231a5921ee877e9b990422d68a3483655b0844083cea8439af86b398",
+"lang": "fon",
+"source": "Composition pondérée (usage d'établissement) : (moyenne des interrogations + moyenne des devoirs + 2 × composition) ÷ 4",
+"text": "Nǔ e è jlɛ́ dó nǔ wu é (nǔ e è nɔ zán ɖò tutoblonunu ɔ mɛ é): (nùkanbyɔ lɛ sín linlin + azɔ̌ e è sɔ́ d’así nú mɛ ɖò xwégbe é sín linlin + 2 × nǔ e è wlan é) ÷ 4"
 },
 {
 "key": "7e40ae139eea03bc8658feaed4b9832426d42dab6fd50b2e56de2a26320301bc",
@@ -7980,6 +8334,12 @@
 "text": "Nǔwiwa"
 },
 {
+"key": "81c84af1b062a16ad9f057081bdbeb78261c22e4dca954d171e05f29ca7605ce",
+"lang": "fon",
+"source": "Devoir surveillé 2",
+"text": "Azɔ̌ e è sɔ́ d’así nú mɛ é 2gɔ́ ɔ"
+},
+{
 "key": "81ea038ebdd1e23467b607bf1ae1ac7075743b510b9be639e052e3e1bd88cc3e",
 "lang": "fon",
 "source": "Attestation de scolarité de 2 (3-4) est signé électroniquement. Vous pouvez le télécharger ; son authenticité se vérifie avec le code 5.",
@@ -8008,6 +8368,12 @@
 "lang": "fon",
 "source": "Vous pouvez aussi payer au secrétariat de l'établissement.",
 "text": "A sixu lɛ́ sú akwɛ ɖò wema wlantɔ́ e nɔ kpé nukún dó tutoblonunu ɔ wu é."
+},
+{
+"key": "828450324fd4cf6fb00ccd0ff15d1e25f80676afb0253336bbfd42b7b45f486a",
+"lang": "fon",
+"source": "Renseignez d'abord le statut de l'enseignant (vacataire ou enseignant du privé) dans sa fiche.",
+"text": "Nukɔntɔn ɔ, mi wlan tɛnmɛ mɛsi ɔ tɔn (mɛsi hwenu kpɛɖe tɔn alo mɛsi wemaxɔmɛ mɛɖesunɔ tɔn) ɖo dosie yetɔn mɛ."
 },
 {
 "key": "831e35d453ae7dc4d20ba4181efb30d7b4db3dfde42f00b853a930a315c032dc",
@@ -8130,6 +8496,12 @@
 "text": "Kplɔnkplɔn lɛ"
 },
 {
+"key": "846493fab55d48da1dc82164b8fe91807fe5ddaea86785efd6b45a749f91ff82",
+"lang": "fon",
+"source": "Seul un établissement privé confessionnel a une confession.",
+"text": "Sinsɛn-núkplɔnmɛtɔ́ mɛɖesunɔ tɔn kɛɖɛ wɛ ɖó sinsɛn-núkplɔnmɛ."
+},
+{
 "key": "8491268d1d0e7a6c8e43badf41b92ac0fc06585c4789c32595c9a0d73e4c13a2",
 "lang": "fon",
 "source": "Aucune moyenne n'a encore été calculée.",
@@ -8146,6 +8518,12 @@
 "lang": "fon",
 "source": "Frais de scolarité de 2. Total : 3 4 FCFA. Déjà payé : 5 6 FCFA. Reste : 7 8 FCFA. Prochaine échéance : 9 8 FCFA avant le",
 "text": "Frais de scolarité de 2. Total : 3 4 FCFA. Déjà payé : 5 6 FCFA. Reste : 7 8 FCFA. Prochaine échéance : 9 8 FCFA avant le"
+},
+{
+"key": "84a30f5f2e88b07f0430c433ab2b9db911794f6299ba573b0818d99fa4f38ab2",
+"lang": "fon",
+"source": "Interrogation écrite 1",
+"text": "Nùkanbyɔ 1gɔ́ ɔ"
 },
 {
 "key": "84e35ee3064aa844786088d85f077c5f857f9c282a4dc48c11b48becae6d2dcc",
@@ -8406,6 +8784,12 @@
 "text": "Hwɛjijɔ e wu ."
 },
 {
+"key": "8844b4a4f3e72cbc9279ecace1da235f45ee083bf1f47bff3e720490eab3d86a",
+"lang": "fon",
+"source": "Français : voix de cet appareil,",
+"text": "Flanségbe: gbè nǔ élɔ́ tɔn,"
+},
+{
 "key": "88486503707422b3bb167e09677a2ee8de9e5aa2a2521d072c11d83bd703f814",
 "lang": "fon",
 "source": "Tante",
@@ -8472,6 +8856,12 @@
 "text": "È ɖetɔ́n"
 },
 {
+"key": "8938c37ab072b41427b70229ac8cc542d0d1ce5a4db6ea21cf9904034c3e3d2c",
+"lang": "fon",
+"source": "Choisissez la nature des frais.",
+"text": "Cyan lee è na sú akwɛ gbɔn é."
+},
+{
 "key": "8942c7844adab5b26d15c3ba24ee72cdeb887f2e06e2db4d89fd8c29c9716912",
 "lang": "fon",
 "source": "Fongbe : voix du service de traduction, lecture en fongbe.",
@@ -8524,6 +8914,12 @@
 "lang": "fon",
 "source": "Saisissez votre mot de passe.",
 "text": "Wlan xógbe hwláhwlá towe."
+},
+{
+"key": "8a17e299748ba3f650eeaa85ddede0db8e9ec2e519a87bd87a0de31b21eea138",
+"lang": "fon",
+"source": "Catholique",
+"text": "Katolika"
 },
 {
 "key": "8a24e8b23ed9d481119446d375690d41061885cafd47ea094333b14412375a39",
@@ -8592,6 +8988,12 @@
 "text": "A sixu yí; è nɔ gbéjé nǔgbo tɔn kpɔ́n kpo kodɛ 2gɔ́ ɔ kpo."
 },
 {
+"key": "8ad90c456e293572fc74881a0a30085f651faa9442ce076bda09b5ea7542889d",
+"lang": "fon",
+"source": "L'autorisation d'ouverture et le promoteur concernent les établissements non publics.",
+"text": "Acɛ e è na mɛ bɔ è na hun é kpo mɛ e nɔ bló tuto ɔ é kpo kàn azɔ̌xwé e ma nyí togun tɔn ǎ lɛ é."
+},
+{
 "key": "8b1a1df2b49371322790b965d7de7164bba8b140bf1009fb123003b99917b7d9",
 "lang": "fon",
 "source": "Signature électronique",
@@ -8652,6 +9054,12 @@
 "text": "Síbígbé"
 },
 {
+"key": "8bebee13275ff0a29b09a37db9d6084543254b1327b2feb8b988a33348bb385d",
+"lang": "fon",
+"source": "Moyenne trimestrielle",
+"text": "Azan atɔn mɛ"
+},
+{
 "key": "8bee405f6fec6e729796ff26259fe8a950442eec05d464f71d8c4e2ff0164b6a",
 "lang": "fon",
 "source": "Le périmètre choisi ne correspond pas au niveau du rôle.",
@@ -8676,6 +9084,12 @@
 "text": "Mɛylɔwema ɔ gbɛ́. È nɔ ɖɔ nú tutoblonunu ɔ."
 },
 {
+"key": "8c5b52c6f3c2a6e98aecc7bf530e0be65eea101cea3050218400328a94ce9886",
+"lang": "fon",
+"source": "Circonscription scolaire, maternelle et primaire",
+"text": "Azɔmɛxwe, yɔkpɔvu lɛ kpodo azɔmɛxwe kpɛvi lɛ kpo"
+},
+{
 "key": "8c5f244a5f713bc52bd4ae9369dea974afa2a1dafdbbcb73bd7609b10cfff826",
 "lang": "fon",
 "source": "Établissement suspendu",
@@ -8686,6 +9100,12 @@
 "lang": "fon",
 "source": "Brouillon",
 "text": "Ɖŏ wŭ"
+},
+{
+"key": "8c9665cd95cc76c1d4cdec9452b1f55c9701653428ec02831fa564111314d11a",
+"lang": "fon",
+"source": "Trimestres",
+"text": "Akpáxwé ɛnɛ"
 },
 {
 "key": "8c9a486a17e784b457927c7366aaaf5d7e5d024e8a77d983c90fa6eb4039e62a",
@@ -8802,6 +9222,12 @@
 "text": "Gɔ́ nǔkplɔnmɛ nukɔntɔn e ɖò wemaxɔmɛ elɔ mɛ é nú butɔn “Gɔ́ nǔkplɔnmɛ” ɔ na."
 },
 {
+"key": "8f3d8fd8b01a171e07f8d475b44110d0ba4a8612f901b02115c397b7325edee7",
+"lang": "fon",
+"source": "Un établissement public n'emploie pas d'enseignant du privé : choisissez vacataire.",
+"text": "Azɔ̌xwé to ɔ tɔn nɔ yí mɛ̌si mɛɖesunɔ tɔn ɖé ǎ: sɔ́ azɔ̌watɔ́ hwenu klewun tɔn ɖé."
+},
+{
 "key": "8f44f15e550e3bfba319e27320bfb1b42ec68996f46042a1dbcc5316a67cfbee",
 "lang": "fon",
 "source": "Absents du jour",
@@ -8842,6 +9268,12 @@
 "lang": "fon",
 "source": "Date trop ancienne.",
 "text": "Date ko xó dín."
+},
+{
+"key": "8fdee6022911fbb9c178e0dccbd86f317579fd594601c53e9e24eaa242f4ae76",
+"lang": "fon",
+"source": "Moyenne annuelle",
+"text": "Xwè ɖokpo ɖokpo mɛ"
 },
 {
 "key": "8fe8e73c62e1f404e4cd549b38722d566944d0da00f4dc11f749aa982e83b4f3",
@@ -8932,6 +9364,12 @@
 "lang": "fon",
 "source": "Édité le",
 "text": "È jlaɖó ɖò"
+},
+{
+"key": "911c12bdfff53d9273305672b7999e02722e5eefb36ffa4c42ae65be1897381d",
+"lang": "fon",
+"source": "Aucune facture à créer : tous les élèves concernés sont déjà facturés ou exonérés.",
+"text": "Facture ɖebu na blo a: azɔmɛvi e kan nu ɔ bi wɛ ko facture alo ye ko ɖe ye sin mɛ."
 },
 {
 "key": "91366659c439aad9ae955a08c4fbbfe4f8483abe62fa5f21b2715b7668c65b6c",
@@ -9070,6 +9508,12 @@
 "lang": "fon",
 "source": "Matricule 2 · 3, 4 · Inscrit",
 "text": "Numɛro 2 · 3, 4 · E wlan nyikɔ"
+},
+{
+"key": "92ff1b126135df9ad1ac4ef8bd5e124446ce0322ca5518c81cf52fb60d27810b",
+"lang": "fon",
+"source": "La maternelle et le primaire publics sont gratuits depuis 2006 : aucun frais ne peut être facturé aux familles.",
+"text": "Azɔmɛxwe yɔkpɔvu lɛ tɔn kpodo wemaxɔmɛ kpɛvi lɛ kpo ɔ, ye nɔ xɔ akwɛ sin 2006: è sixu yí akwɛ ɖebu ɖo hwɛndo lɛ sí ǎ."
 },
 {
 "key": "931be60646b72d3137494ddc3a7bf02fa392c3b1ea5dcdaf767ce0741f670eca",
@@ -9378,6 +9822,12 @@
 "text": "Aklunɔzán gblamɛ wè wɛ é na hugǎn."
 },
 {
+"key": "9710191d837d4d341040c5130f5801f37aa74aa0dde3fe09c9218b81a4ad2bf0",
+"lang": "fon",
+"source": "Bulletin du semestre 2",
+"text": "Gbè e è nɔ dó ɖò aklunɔzán gblamɛ 2gɔ́ ɔ mɛ é"
+},
+{
 "key": "9720b1be663991e30a696cac80f7be28ed6f5c408ad0cb42ea73e00d0c2c656f",
 "lang": "fon",
 "source": "Transaction introuvable sur le relevé Moov Money du 2 septembre.",
@@ -9418,6 +9868,12 @@
 "lang": "fon",
 "source": "Cours retiré :",
 "text": "Cours retrait:"
+},
+{
+"key": "979fb6377b41d4d062cdae7711f9eb0f316391598f6493f7cb5f55e2ce0fcb4e",
+"lang": "fon",
+"source": "Agent permanent de l'État (APE)",
+"text": "Acɛkpikpa sín Azɔ̌watɔ́ Hwebǐnu Tɔn (APE)"
 },
 {
 "key": "97a34d6219d1a6bbbab4c42b5951198dc1bac0d0e0056118a5b35179e1e6fb17",
@@ -9484,6 +9940,12 @@
 "lang": "fon",
 "source": "Aucun établissement de ce périmètre n'a de classe de ce niveau.",
 "text": "Azɔ̌xwé ɖebǔ ɖò xá elɔ mɛ bo ɖó klasi ɖò tɛn enɛ mɛ ǎ."
+},
+{
+"key": "986139168047a323fb2dddf52cb455ce41afac47d31e1dc60329096411c9d636",
+"lang": "fon",
+"source": "Français : voix de cet appareil",
+"text": "Flanségbe: gbè nǔ élɔ́ tɔn"
 },
 {
 "key": "988f7f9d5d35228e07631cd458aae7cf0ab65d4b95af797fe09a24e9cda37223",
@@ -9724,6 +10186,12 @@
 "lang": "fon",
 "source": "Un établissement choisi ne peut pas être invité : il doit être de votre département et avoir une classe de ce niveau.",
 "text": "È sixu ylɔ azɔ̌xwé e è sɔ́ é ɖé ǎ: é ɖó na gosin azɔ̌xɔsa mitɔn mɛ bo na ɖó azɔ̌xɔsa ɖò tɛn enɛ mɛ."
+},
+{
+"key": "9c0cfefef43ef12d7412ddd1f740acf52121f381dadad8d05b98b03879d42ff1",
+"lang": "fon",
+"source": "Examen blanc départemental du BEPC 2026, Atlantique",
+"text": "BEPC 2026 sín tɛnkpɔn ɖé ɖò azɔ̌xɔsa ɔ mɛ, Atlantique"
 },
 {
 "key": "9c245adad8c8b177f1f11e04fc3ed3b532c8ae14bafe90b13a76295a76069d58",
@@ -10008,6 +10476,12 @@
 "text": "Enyi a ma ko bló mɔ̌ ǎ ɔ, hɛn akwɛ e a sú é kpɔ́n ɖò alokan towe jí. Wema elɔ nɔ jla éɖesunɔ ɖó."
 },
 {
+"key": "a0057bc6380f6adcca6b71a0772bafb4077c69e3b50b8586b42efb5571330230",
+"lang": "fon",
+"source": "Devoir surveillé",
+"text": "È nɔ kpɔ́n azɔ̌ ɔ jí"
+},
+{
 "key": "a037f6e536a8d0604c59960b7744eea2467e38e3cab853bf526ef9fc97bc1889",
 "lang": "fon",
 "source": "Décidé par l'autorité, sans autre validation",
@@ -10048,6 +10522,12 @@
 "lang": "fon",
 "source": "ajoutez une fiche.",
 "text": "gɔ́ file ɖé na."
+},
+{
+"key": "a0f6311baaf7044de23a59318e91041900979ce4d79ad37eef954e1e775ce781",
+"lang": "fon",
+"source": "Cheffe de circonscription scolaire",
+"text": "Gǎn nú wemaxɔmɛ gbɛ́ta ɔ"
 },
 {
 "key": "a0fc53bca3ed7df1d70b297f1d8e1e9f6aca7a2d007d1e13db2d5d2a09409362",
@@ -10122,6 +10602,12 @@
 "text": "Cέnwíncέnwín"
 },
 {
+"key": "a269cf2d3a2abd906dfb2a10f42990231b0fdb468c94fe802ee355d335b0ef0f",
+"lang": "fon",
+"source": "Bulletin du semestre 1",
+"text": "Bulletin du semestre 1"
+},
+{
 "key": "a27a5f0b5e78314830ad51216ebbe90ba502b621834c7c34df39c85e5a62e865",
 "lang": "fon",
 "source": "Clôturer l'examen blanc ?",
@@ -10144,6 +10630,12 @@
 "lang": "fon",
 "source": "ans",
 "text": "xwè"
+},
+{
+"key": "a2e87f5725d88743b69abd4e5e7191804e960a60fdc244eb8d368ecf93ccf9c8",
+"lang": "fon",
+"source": "Semestre 1",
+"text": "Azan 1gɔ́ ɔ"
 },
 {
 "key": "a3169a489db4c7d3d55dbe6b46c7bac8fe86a78946cb4fa2ffb85ce7edea7cae",
@@ -10248,6 +10740,12 @@
 "text": "A sixu kpɔ́n nǔ lɛ bǐ, amɔ̌, è nɔ hɛn huzuhuzu ɖebǔ ɖ’ayǐ ǎ."
 },
 {
+"key": "a567902b0807bd1c2b140a5b685e2242d5206cd84de0d002f9dc0b785be4336a",
+"lang": "fon",
+"source": "Conseil de classe : exclu",
+"text": "Kplékplé mɛxo lɛ tɔn: è ɖè è sín mɛ"
+},
+{
 "key": "a58edb5f647debda98c4f9be65641b78e12e8c1b7aeb15631fc200fd5db89326",
 "lang": "fon",
 "source": "Le périmètre choisi est en dehors du vôtre.",
@@ -10272,6 +10770,12 @@
 "text": "Akwɛ súsú ɖě sɔgbe ǎ"
 },
 {
+"key": "a642ff79484176c1dd834b2eb2dfff30df5072f6ccf0e91a311bc4aa410397d2",
+"lang": "fon",
+"source": "Conseil de classe : redouble",
+"text": "Nùkplɔ́nmɛ azɔ̌mɛví lɛ tɔn: vɔ́"
+},
+{
 "key": "a65a8e46ff1f5a82d7e7148fb2b05f61fafcfc1ee467c40e84ff45135f304dc6",
 "lang": "fon",
 "source": "Déclarer ce paiement",
@@ -10282,6 +10786,12 @@
 "lang": "fon",
 "source": "professeure de mathématiques, vous a écrit.",
 "text": "mɛ̌si nùjlɛdonǔwu tɔn, wlan nǔ sɛ́dó we."
+},
+{
+"key": "a6736a69a3d5a534ee9ed37b7a11dab62e753b6d41a6217179681edcb0cc66f0",
+"lang": "fon",
+"source": "Officielle",
+"text": "Azɔ̌watɔ́"
 },
 {
 "key": "a67c1e2210340bac4f305beb3242dbca408d9b5ae98bafaaaf097c60f3c880e9",
@@ -10494,6 +11004,12 @@
 "text": "Rang dans l'établissement : 2ème égal · Rang général : 2ème égal sur 3 candidats classés"
 },
 {
+"key": "ab28d3156e97beb7ac0f4552b2ff1ae6456475ea7283d9f72d5975a8812c6ca8",
+"lang": "fon",
+"source": "Examen blanc du CEP, circonscription d'Abomey-Calavi",
+"text": "CEP sín tɛnkpɔn ɖé, Abomey-Calavi sín tokpɔn mɛ"
+},
+{
 "key": "ab2a83ba93aa9494548f8bd4b622cf344ebbb9542c3dba265c7c813a64ed5629",
 "lang": "fon",
 "source": "Type de frais créé :",
@@ -10678,6 +11194,12 @@
 "lang": "fon",
 "source": "Clair",
 "text": "Nyέnmínyέnmí"
+},
+{
+"key": "addfad9581cc1fb72beccefb8af13c36d5fae78b5bcf51d38339f72b82781731",
+"lang": "fon",
+"source": "Agent contractuel de l'État (ACE)",
+"text": "Mɛ e nɔ kpé nukún dó akɔjijɛ tò ɔ tɔn wu é (ACE)"
 },
 {
 "key": "adf37d8737da21d4b47db60c8e6b00fb60c1f677fede9fbaa0997c574667b821",
@@ -11178,6 +11700,12 @@
 "text": "Wema lɛ"
 },
 {
+"key": "b4e9e1c89835f59e1e03912c7e205388374b3c69c0f19ee8911ddd20bdbf4267",
+"lang": "fon",
+"source": "Chef de circonscription scolaire",
+"text": "Gǎn nú wemaxɔmɛ gbɛ́ta ɔ"
+},
+{
 "key": "b4f412316e6321353a6b36af9b0ae25f5190571e8ff4361aef916a8d48563ac1",
 "lang": "fon",
 "source": "Choisissez le parent.",
@@ -11208,10 +11736,22 @@
 "text": "Lun."
 },
 {
+"key": "b5243c351324788826a147d963cb208c87fc3e2b9cc61572d285e6f9f72b0e17",
+"lang": "fon",
+"source": "Conseil de classe",
+"text": "Kplékplé mɛxo lɛ tɔn"
+},
+{
 "key": "b527a0d8d0cd16bbc6d99a18f7afbfb246481b4185ace75675f09b1c62bdd8aa",
 "lang": "fon",
 "source": "1 FCFA · Mobile Money",
 "text": "1 FCFA · Akwɛ e è nɔ zán ɖò alokan jí é"
+},
+{
+"key": "b530476ef83898d4dddbcbaf384c4674395e02f06c490e464498af3e28f5e47a",
+"lang": "fon",
+"source": "Composition pondérée",
+"text": "Nǔ e è sɔ́ ɖó jlɛ̌ jí é"
 },
 {
 "key": "b55c7152828f9bfcc835c05be8235b10fa91403e52b1a90c629567ce818e7487",
@@ -12222,6 +12762,12 @@
 "text": "Nǔ e ɖò jijɛ wɛ lɛ é"
 },
 {
+"key": "c71ce8ccf3b4493267a168d7315294085b489fb8ccbf15b4cc2639cacd5c81a4",
+"lang": "fon",
+"source": "Nature",
+"text": "Lɔ̀"
+},
+{
 "key": "c74e343b2646ca0281955f9c882fc5110e2b7604f3d039534fd383c9fd909d9f",
 "lang": "fon",
 "source": "Suivre les frais",
@@ -12436,6 +12982,12 @@
 "lang": "fon",
 "source": "La voix",
 "text": "Gbe ɔ."
+},
+{
+"key": "c9a42ce0cf249e36edf65987d36a98234cbebb7efc010ff9ed6d0cbee5139b9a",
+"lang": "fon",
+"source": "Gratuit, subvention de l'État",
+"text": "Vɔ̌nu, alɔdó to ɔ tɔn"
 },
 {
 "key": "c9b3c38247f744e17dd26fda097d6a9ba9332586b6bdaa038bf8f313a863f2b8",
@@ -12654,6 +13206,12 @@
 "text": "Video alǒ xóɖiɖɔ ɖé ɖó na ɖó nǔ e è wlan dó wema jí é."
 },
 {
+"key": "cd7ea55c1b27a01b7df954fe904e83e62cc67ea977bbc49fd48df076f48a9024",
+"lang": "fon",
+"source": "Maternel et primaire",
+"text": "Nursery kpodo primaire kpo"
+},
+{
 "key": "cd889d3f003016a49eb606a85d08ccd689d536b37f00decf79bc8d6164b32067",
 "lang": "fon",
 "source": "Touchez le bouton rond en bas à droite de l'écran, ou ouvrez « Préférences » dans le menu. Vous y réglez la taille du texte, le contraste élevé, le thème sombre et la vitesse de la voix. Les réglages restent enregistrés sur cet appareil.",
@@ -12850,6 +13408,12 @@
 "lang": "fon",
 "source": "Contenu publié.",
 "text": "Nǔ e ɖ’emɛ lɛ é wɛ è ɖetɔ́n."
+},
+{
+"key": "d141462087996788697dd9d5703ca0886737c7b3757d30042bfbedfc5528cb4d",
+"lang": "fon",
+"source": "Les agents de l'État (APE, ACE, AME) sont inscrits au registre par le ministère : recherchez-les au registre pour les nommer.",
+"text": "Acɛkpikpa sín azɔ̌watɔ́ lɛ (APE, ACE, AME) wɛ ministère ɔ nɔ wlan dó wema mɛ: ba ye ɖò wema mɛ bo na dó ɖó nyikɔ nú ye."
 },
 {
 "key": "d141e9c9d4ac950f7b3d9dba5939d41da6f3c2d57a69d2a9a36bdb940b1a7177",
@@ -13188,6 +13752,12 @@
 "text": "Azɔmɛ 2gɔ́ ɔ"
 },
 {
+"key": "d6a76e38aef1fa7ca6634e333175f9d64d91a4e0abb8f577f0fb19697b06d093",
+"lang": "fon",
+"source": "Interrogation écrite",
+"text": "Nùkanbyɔ́wlanwlan."
+},
+{
 "key": "d6bd8c0aeee80fedb2dbf05c973100c3db04be90c072a88572533f2684131a36",
 "lang": "fon",
 "source": "Document",
@@ -13318,6 +13888,12 @@
 "lang": "fon",
 "source": "Note",
 "text": "Wlan wlan"
+},
+{
+"key": "d8df5407c9bc9cc6b4fa0b1a2b3ac8c29fe73b6a21d13433da3800b2e3928a85",
+"lang": "fon",
+"source": "Le salaire de base doit être supérieur à zéro.",
+"text": "Sunzanfókwɛ ɖaxó ɔ ɖó na hugǎn zéro."
 },
 {
 "key": "d90165150ef41a767051bcb73992d835b5c51458485e15131eda4c96da640efd",
@@ -13686,6 +14262,12 @@
 "text": "È sixu súnsún azɔ̌ e ɖò tutoblonunu ɔ mɛ é ɖé ǎ."
 },
 {
+"key": "ded1cf70a35f74ce2522ad04381ce68f4141cf273091091839eec00cf9a514e7",
+"lang": "fon",
+"source": "Passe en classe supérieure",
+"text": "Nɔ yì azɔ̌xɔsa e bɔ d’ewu é mɛ."
+},
+{
 "key": "dee0a49acf59f5860949abdf4cad73c22d63c3281759ec5c93ee9baa103d640c",
 "lang": "fon",
 "source": "Rang :",
@@ -13726,6 +14308,12 @@
 "lang": "fon",
 "source": "Référence de la transaction Mobile Money",
 "text": "Akwɛ e è nɔ zán ɖò alokan jí é sín wěɖexámɛ"
+},
+{
+"key": "df27cd8d88a0e38abb2bcd6a8f3c51abec882586a2583062ffbf01432f63f9b6",
+"lang": "fon",
+"source": "Le bulletin apparaîtra ici dès que l'établissement l'aura publié, à la fin",
+"text": "Xójlawema ɔ na tɔ́n ɖò fí tlolo bɔ tutoblonunu ɔ na ɖè tɔ́n, ɖò vivɔnu."
 },
 {
 "key": "df7df7c21033eb5aea536c3eb79871ada9e0fac95f0b0905f4ae5dac704fae8b",
@@ -14436,6 +15024,12 @@
 "text": "Nukúnkpémεwutɔ́"
 },
 {
+"key": "eba0e585905f17573a3c690c62fb7e8264117118cca4c2b92d1129bbcb7c89ae",
+"lang": "fon",
+"source": "Direction départementale des enseignements secondaire, technique et de la formation professionnelle",
+"text": "Azɔ̌xɔsa e nɔ kpé nukún dó wemaxɔmɛ linsinmɛ tɔn, azɔ̌kplɔnmɛ kpo azɔ̌kplɔnmɛ kpo wu é"
+},
+{
 "key": "ebf06011c6549ef640ce3ddf4d2355d6a3c64bbb67c26b8fa61e2e81dc467830",
 "lang": "fon",
 "source": "Sciences de la vie et de la terre",
@@ -14550,10 +15144,22 @@
 "text": "Kpɔ́n xójlawema ɔ ."
 },
 {
+"key": "ee67f88cdb7c2cbf3bffe5f5c73867253159d866b5367e7c33e076122539dc61",
+"lang": "fon",
+"source": "Interrogation écrite 2",
+"text": "Nùkanbyɔ 2gɔ́ ɔ"
+},
+{
 "key": "ee75a95a013e0e23c2c0f301bc3c898d95251ac2c8aa7a119a036bc84d7e7429",
 "lang": "fon",
 "source": "Appel enregistré pour la",
 "text": "È wlan ylɔylɔ nú."
+},
+{
+"key": "ee90a459443faf67986b292e6b44f8915e92ae20b7471c32b8b3770c8ffb1dcf",
+"lang": "fon",
+"source": "Secondaire, technique et formation professionnelle",
+"text": "Azɔ̌kplɔ́nmɛ linsinmɛ tɔn, azɔ̌tuùntuùn tɔn kpo azɔ̌kplɔnmɛ tɔn kpo"
 },
 {
 "key": "eeadd8fe31c258b1975ddfa38c011554a5b1433d13a3f56a21083bcb1d1605b8",
@@ -14952,6 +15558,12 @@
 "text": "Wɛn e è sɛ́ dó é."
 },
 {
+"key": "f4a431886a527170ffb11300b8bdbd8fe302fed346ca55baa40b310bc8e1b825",
+"lang": "fon",
+"source": "Redouble",
+"text": "Lɛ́ ɖɔ̀"
+},
+{
 "key": "f4a8b396f55b2e6904d49267f2f7b3c22eb3975138332650ab903b3f8b1ac205",
 "lang": "fon",
 "source": "Voir le bulletin du Trimestre 2 3-4",
@@ -14962,6 +15574,12 @@
 "lang": "fon",
 "source": "une campagne de vaccination gratuite sera organisée dans les établissements du 5 au 16 octobre 2026.",
 "text": "è na bló tuto nú abɔtaxixo vɔ̌nu ɖé ɖò azɔ̌xwé lɛ mɛ sín azǎn 5gɔ́ ɔ jɛ azǎn 16gɔ́ ɔ Kɔnyásun 2026 tɔn gbè."
+},
+{
+"key": "f4c704fba5a4d2626de3b28be31747f68c195bf259c45ce8f25ec4b7877dae50",
+"lang": "fon",
+"source": "Ministères",
+"text": "Sinsɛnzɔ́ lɛ"
 },
 {
 "key": "f4db1e48476f60753980b10d66219042b3a3d9c65c9cc77a53d81b88fd869c64",
@@ -15114,6 +15732,12 @@
 "text": "Ba azɔxwe ɖe, tokpɔn ɖe..."
 },
 {
+"key": "f7750ccb41eb15156a01a2271e95a5b9a588d42113e44ed22ba4c07714d3f298",
+"lang": "fon",
+"source": "Choisissez d'abord votre mot de passe personnel.",
+"text": "Jɛ nukɔn ɔ, sɔ́ xógbe hwláhwlá towe ɖesunɔ tɔn."
+},
+{
 "key": "f78c8018bc08ed962a90d62cf48b9c2f54167cef824e20befb4abbe557dfa81d",
 "lang": "fon",
 "source": "Bulletins en PDF",
@@ -15264,6 +15888,12 @@
 "text": "È ɖè nǔ e ɖ’emɛ lɛ é síìn."
 },
 {
+"key": "f9e5161f87d3d3025a3fa538bc7127c63a7e0e3db25bde15757578c9484dc2fe",
+"lang": "fon",
+"source": "Prévoyez au moins une composition pour cette formule.",
+"text": "É hwe bǐ ɔ, bló tuto nú nǔ e è na bló é ɖokpo nú xógbe enɛ."
+},
+{
 "key": "f9e7d49e47452469603c94c862eb32b6a6b99d6ef2bc81b1e3cfc2b3b0c54ef9",
 "lang": "fon",
 "source": "Identifiant",
@@ -15334,6 +15964,12 @@
 "lang": "fon",
 "source": "Tutrice",
 "text": "Mɛsi"
+},
+{
+"key": "fa93beee724c35c725d225b76ada7cff5ea978b9d9118e8267d720c9d1aef5cd",
+"lang": "fon",
+"source": "Ma paie",
+"text": "Sunzanfókwɛ ce"
 },
 {
 "key": "fa9a546df17b2e2b4a84f66cc09b6fae6dab501d7eecdda0c4800bff2ebc2c9b",
@@ -15828,6 +16464,12 @@
 "text": "Ti ko ka (2"
 },
 {
+"key": "01eb06fdae2839d16cb8d16e94bfade645a4478277d35676b00c460e30da9e10",
+"lang": "yo",
+"source": "Moyenne semestrielle",
+"text": "Idaji-odun apapọ"
+},
+{
 "key": "01f1ab78f1cf82c93fe026d7c945ee1e936f87927ba020d1788648d7e9fff9f5",
 "lang": "yo",
 "source": "Résultats d'examen blanc",
@@ -16068,6 +16710,12 @@
 "text": "Gbogbogbo mọrírì"
 },
 {
+"key": "06b4463b82dc5a3f5544ce00ef9bc2a71b1743376676840262c9cdd19ea7cbe7",
+"lang": "yo",
+"source": "Le bulletin apparaîtra ici dès que l'établissement l'aura publié, à la fin du semestre. Vous recevrez une notification.",
+"text": "Iwe itẹjade naa yoo han nibi ni kete ti ile-ẹkọ naa ba ṣe atẹjade ni opin igba ikawe naa. Iwọ yoo gba iwifunni kan."
+},
+{
 "key": "06b8858b9fbe165f3face1cbe3828075fc356cd24150a0eebea4456e1fc97daa",
 "lang": "yo",
 "source": "Soldée",
@@ -16114,6 +16762,12 @@
 "lang": "yo",
 "source": "aujourd'hui",
 "text": "Loni"
+},
+{
+"key": "075f0b0abb615e14886e5b9acd7acfa3dc517eec25e6483635ad1d3a0d67214b",
+"lang": "yo",
+"source": "MEMP et MESTFP, administration centrale",
+"text": "MEMP ati MESTFP, iṣakoso aarin"
 },
 {
 "key": "076900c791ec4d832c73de7a050d44b2022478bbe9a68bf301ee613edef50581",
@@ -16434,6 +17088,12 @@
 "text": "Awọn obi gba iwifunni kan."
 },
 {
+"key": "0d067f659e86235f01ad57e5687e67773613ef7e7aca8405c03de2fb16f45b00",
+"lang": "yo",
+"source": "État, ministère de l'Économie et des Finances",
+"text": "Ipinle, Ijoba ti Aje ati Isuna"
+},
+{
 "key": "0d21f986cd4d2e369cc2b1468acaa2f42d8fabe1ca3d07000e174d4b4f665987",
 "lang": "yo",
 "source": "L'école a repris le lundi 2 septembre. Les inscriptions restent ouvertes jusqu'au",
@@ -16668,6 +17328,12 @@
 "text": "Yi ọjọ ṣubu lori kan ìparí. Ṣayẹwo ọjọ ṣaaju fifipamọ."
 },
 {
+"key": "11d82981c09e4cc62d8ec6673286db7f15361a795250be4598207111ea13be63",
+"lang": "yo",
+"source": "Devoir surveillé 1",
+"text": "Ipinfunni Iṣeduro 1"
+},
+{
 "key": "11d8cd76cab9abff544968bb85e3128e772a96a96fa9c98d7d0c3afb83f89745",
 "lang": "yo",
 "source": "Référence trop longue.",
@@ -16678,6 +17344,12 @@
 "lang": "yo",
 "source": "Cette invitation ne peut plus recevoir de réponse.",
 "text": "A ko le dahun ipe yi mo."
+},
+{
+"key": "11eed2ffc29be6237796a924d2fd4ad51ba17eb949f4c99790bb08a29893df45",
+"lang": "yo",
+"source": "Autre confession",
+"text": "Igbagbo miiran"
 },
 {
 "key": "12019ca4287d323fe73c974c7a7609fb351256c37897ed115095287a6fc71507",
@@ -16752,6 +17424,12 @@
 "text": "Ṣiṣe ipinnu lori idanwo ẹlẹgàn"
 },
 {
+"key": "144c6d94badc57a781f37a065508927383d583d17ee574297cee8a7b2848555b",
+"lang": "yo",
+"source": "Au secondaire public, les filles sont exonérées de la contribution scolaire depuis 2026-2027 : elles ne reçoivent pas de facture.",
+"text": "Ni ile-iwe giga ti gbogbo eniyan, awọn ọmọbirin ti jẹ alayokuro lati ilowosi ile-iwe lati ọdun 2026-2027: wọn ko gba iwe-owo kan."
+},
+{
 "key": "1454fadfab79878a31104e81459e3aaa993a8c8dc218cd3949ae494bfa5aa1bc",
 "lang": "yo",
 "source": "QR code de vérification",
@@ -16804,6 +17482,12 @@
 "lang": "yo",
 "source": "Preuve (facultatif",
 "text": "Ẹri (aṣayan"
+},
+{
+"key": "15d4543db06f1805834fd2b26e782bd1d35249cfabbddf25f5bb58d5b89b1b8a",
+"lang": "yo",
+"source": "Privé",
+"text": "Ikọkọ"
 },
 {
 "key": "15ec9b3d72f31c6fcadf21d08471b080b4d26144ba6e407dc573a3328011a2ee",
@@ -16930,6 +17614,12 @@
 "lang": "yo",
 "source": "Frais scolaires",
 "text": "Awọn idiyele ile-iwe"
+},
+{
+"key": "181b3a442253a01577df67842307b85bd0edb018dcf6954ad3a70af723811a4b",
+"lang": "yo",
+"source": "Conseil de classe :",
+"text": "Imọran kilasi:"
 },
 {
 "key": "18330d56be23eea115bb0790bc212db33f64a204f3cf8dd0b7006b056e3e202f",
@@ -17208,6 +17898,12 @@
 "text": "Nikan oluṣeto tilekun kẹhìn."
 },
 {
+"key": "1d8ccc1060313585684474293bb16ae0f436d0c9663aa44186dfa7706391b353",
+"lang": "yo",
+"source": "Officielle (arrêté n° 029 du 6 mai 2024) : (moyenne des interrogations écrites + chaque devoir surveillé) ÷ nombre de notes",
+"text": "Oṣiṣẹ (aṣẹ no. 029 ti May 6, 2024): (apapọ awọn ibeere kikọ + iṣẹ iyansilẹ kọọkan) ÷ nọmba awọn ami"
+},
+{
 "key": "1dfe9009cbb57c7fdcfeb21ac93bdeecc1c182ae67bde20174fa61feddb73b9d",
 "lang": "yo",
 "source": "Photographies",
@@ -17376,6 +18072,12 @@
 "text": "Wiwa ti 2 lati ibẹrẹ ọdun ile-iwe."
 },
 {
+"key": "208c6073c305fbaba6ee91f33ded36853d6a78e80a1820383359403819752423",
+"lang": "yo",
+"source": "Semestre",
+"text": "Idaji"
+},
+{
 "key": "20a096b4d644ccaf50ea5e95ef5e354fb26ea2d125c786b17e27792b827d2d17",
 "lang": "yo",
 "source": "Le montant déclaré (",
@@ -17398,6 +18100,12 @@
 "lang": "yo",
 "source": "Aucune facture à payer",
 "text": "Ko si owo lati san"
+},
+{
+"key": "211e806f6cd1842c9d52861930fe9d693e723a3dc97dd2beef535c124e341aab",
+"lang": "yo",
+"source": "Trimestre",
+"text": "Mẹẹdogun"
 },
 {
 "key": "2135f37cb4a79bbf17056a84c6621433341e39a08796e20cbfcddd0f074d48c5",
@@ -17484,6 +18192,12 @@
 "text": "Oludari Ẹka"
 },
 {
+"key": "22780bcb70176beecb26c63b5cf14b75f5991dfed0855d82deb58f3543947834",
+"lang": "yo",
+"source": "Ministères en charge de l'éducation",
+"text": "Awọn ile-iṣẹ ijọba ti o ni itọju eto-ẹkọ"
+},
+{
 "key": "22827c8ad92e2faff10697d285ebf43be5ff545648d1578fe3e6234227756f0f",
 "lang": "yo",
 "source": "Oui, en lecture. Les pages déjà ouvertes (tableau de bord, bulletins, notes, présences, emploi du temps) restent lisibles hors ligne, et un bandeau signale la coupure. Les modifications demandent le réseau.",
@@ -17542,6 +18256,12 @@
 "lang": "yo",
 "source": "Commencez par la contribution scolaire : son montant, puis ses tranches.",
 "text": "Bẹrẹ pẹlu ilowosi ile-iwe: iye rẹ, lẹhinna awọn ipin rẹ."
+},
+{
+"key": "236ae6d7d3318ab26779896f4563995f090c44033ca4a9b7bc8d427e96bedcbb",
+"lang": "yo",
+"source": "DDESTFP de l'Atlantique",
+"text": "Atlantic DDESTFP"
 },
 {
 "key": "236f4f36581620830812af8bc2c07da44c6d7bad86fd2e2763f82a3e9b766be6",
@@ -17850,6 +18570,12 @@
 "text": "Sunday"
 },
 {
+"key": "281a04d08f77bbcad442d5840441765791b599366e16a96c5d1a9fa81adf90fc",
+"lang": "yo",
+"source": "Premier examen blanc départemental du BEPC, Atlantique",
+"text": "First BEPC Eka Mock kẹhìn, Atlantic"
+},
+{
 "key": "281d3be5f5b4bf6ee44f1cb4ef71a2eaafb34ae72d7d4453c231b32975b4b25c",
 "lang": "yo",
 "source": "Le montant saisi (",
@@ -17866,6 +18592,12 @@
 "lang": "yo",
 "source": "Yoruba : voix du service de traduction, lecture en yoruba. Si elle ne répond pas, Kora lit en français.",
 "text": "Yoruba: ohùn iṣẹ itumọ, kika ni ede Yoruba. Ti ko ba dahun, Kora ka ni Faranse."
+},
+{
+"key": "28786e38687426b4a7b6341e6cb390f69a7fcb588a4ce0ff607b606b157a3ed9",
+"lang": "yo",
+"source": "Paie du personnel",
+"text": "Owo-owo osise"
 },
 {
 "key": "287992a55157677c6c2375e1325732274f85a4d6189f5b7d7665775d81e4b678",
@@ -17920,6 +18652,12 @@
 "lang": "yo",
 "source": "Meilleure matière : Éducation physique et sportive.",
 "text": "Koko-ọrọ ti o dara julọ: Ẹkọ ti ara ati awọn ere idaraya."
+},
+{
+"key": "28fcb1e515189db7e4aae90922efb33c222bbc64788a5d963b44396d5834114d",
+"lang": "yo",
+"source": "Participation de la communauté et des parents",
+"text": "Agbegbe ati Obi Ilowosi"
 },
 {
 "key": "290106c8a56a482a98bae225bf0601591b410962084d18cdba6c684a4b2d8568",
@@ -18162,6 +18900,12 @@
 "text": "Aini ti"
 },
 {
+"key": "2cb32d21be95b180d149b828e919ac257db186a76b785ebf04302b9cfdb6e089",
+"lang": "yo",
+"source": "DDEMP de l'Atlantique",
+"text": "Atlantic DDEMP"
+},
+{
 "key": "2cbc39903b50f4003e1b7b3a5b30fa38e2d5b00e53c7362d7f67beede2300d64",
 "lang": "yo",
 "source": "Aperçu non publié",
@@ -18234,6 +18978,12 @@
 "text": "Faili ti ko tọ."
 },
 {
+"key": "2e2e949ae046c58b69b73f6dcb313823ddfac95643200272f4c4f01a4fc768f2",
+"lang": "yo",
+"source": "Exonérée (arrêté du 30 juillet 2026)",
+"text": "Yọọ kuro (aṣẹ ti Oṣu Keje Ọjọ 30, Ọdun 2026)"
+},
+{
 "key": "2e3054e12ff491c6dc7d83e571a2cb03514d85981d19bd4be5f0a8aa91348144",
 "lang": "yo",
 "source": "Aide",
@@ -18274,6 +19024,12 @@
 "lang": "yo",
 "source": "Choisir un parent",
 "text": "Yan obi kan"
+},
+{
+"key": "2ebb4d67cf95bc1f2306b30ed4a7a36fc6f9922e4b8b1a8c861997ed3c45b227",
+"lang": "yo",
+"source": "Paie",
+"text": "Sanwo"
 },
 {
 "key": "2ed17174a0aed17884c1ff1ab5f7a874fe8c837787b062c8787781c6af7ed553",
@@ -18372,6 +19128,12 @@
 "text": "cinq mille francs CFA"
 },
 {
+"key": "2f8bff1934fe85a1224eb871cd1cb5d07a4080135ce17168394a0d6fabf0d3c2",
+"lang": "yo",
+"source": "Enseignant du privé",
+"text": "Olukọni aladani"
+},
+{
 "key": "2ff59981438804b8f44a740f3f5d61b21ac4226aeae0e65357360edfbaf13e32",
 "lang": "yo",
 "source": "Tous",
@@ -18382,6 +19144,12 @@
 "lang": "yo",
 "source": "contenu",
 "text": "akoonu"
+},
+{
+"key": "3021527224cf3726285379b939c255a7021e0c7b369c99c68209903fe96af4bc",
+"lang": "yo",
+"source": "Votre établissement applique la formule officielle. Les compositions s'activent dans les paramètres de l'établissement.",
+"text": "Idasile rẹ lo ilana agbekalẹ. Awọn akopọ ti mu ṣiṣẹ ni awọn eto idasile."
 },
 {
 "key": "304126407371af5664d536e90e392419e17376ed722424c31943c8252c296cb3",
@@ -18672,6 +19440,12 @@
 "text": "Sanwo nipasẹ Mobile Owo tabi gbigbe"
 },
 {
+"key": "34e621e767ba23da685332c9ca7bbfbb940bccfdeaa3a7669a2bd45c4c4adf4b",
+"lang": "yo",
+"source": "Composition uniquement (usage d'établissement)",
+"text": "Akopọ nikan (lilo idasile)"
+},
+{
 "key": "34eb2d98ec57adf9fa4048cc3c002f340c1f4a2cc6a7c818784412b19b5e89a4",
 "lang": "yo",
 "source": "Le matricule n'a pas pu être attribué. Réessayez.",
@@ -18694,6 +19468,12 @@
 "lang": "yo",
 "source": "Aperçu des bulletins de la classe, par rang",
 "text": "Akopọ ti awọn ijabọ kilasi, nipasẹ ipo"
+},
+{
+"key": "3522b2914f07dc8f0be15a78670a9158ed62f1284306fc9a1eaeaeaf0ec6b5d2",
+"lang": "yo",
+"source": "Budget de l'État et contribution scolaire",
+"text": "Isuna ipinlẹ ati ilowosi ile-iwe"
 },
 {
 "key": "3525b21997e54afd9b7505b0c270df4c71865e9a34cb17869bd8dc3ab2eece52",
@@ -18754,6 +19534,12 @@
 "lang": "yo",
 "source": "Limités à votre périmètre.",
 "text": "Ni opin si agbegbe rẹ."
+},
+{
+"key": "360e3ef7c03a1dc4d63d8a6cc6355f6b99df285d4d2d393313f0b7104d9a1ea2",
+"lang": "yo",
+"source": "Notes du semestre",
+"text": "Awọn akọsilẹ igba ikawe"
 },
 {
 "key": "36231d5829f4f6cd3c37f37bb1c7f68f0781f7450229e0559a0398fc3cb90ad3",
@@ -18906,6 +19692,12 @@
 "text": "Awọn obi ti ko fẹ lati gba ọmọ wọn ni ajesara gbọdọ sọ fun olori idasile naa."
 },
 {
+"key": "387b327928ade6d33ec8f35016067da4b88e41ad3cac0c7aefe81fcb4ad822be",
+"lang": "yo",
+"source": "Français : voix",
+"text": "Faranse: ohun"
+},
+{
 "key": "388d03b440a8b26d45cc816abb00744d33c3627bf7499547a9bdd6b485145f16",
 "lang": "yo",
 "source": "Puis-je utiliser 2 sans réseau ?",
@@ -19020,6 +19812,12 @@
 "text": "Mo ṣe aṣoju alabaṣepọ kan"
 },
 {
+"key": "39af49197abb84a8f42de71b6e47a602b1591e662092a9394d1d45201b98e3b5",
+"lang": "yo",
+"source": "Semestre 2",
+"text": "Igba ikawe 2"
+},
+{
 "key": "39e13938bf7391aca2c9d8920126cd8f372ed07ca76a1b216e23bdb6ac79d5c0",
 "lang": "yo",
 "source": "Examens blancs de CM2, de 3e et de Tle organisés par votre établissement, auxquels il est invité ou qui lui sont imposés.",
@@ -19116,6 +19914,12 @@
 "text": "Apapọ aseyori"
 },
 {
+"key": "3b282b3722e14be31ba973cb2bc4a528b183a12151db6679630788bf1cfb9d9d",
+"lang": "yo",
+"source": "Cotisation de l'association des parents d'élèves",
+"text": "Àkópọ̀ ẹgbẹ́ òbí àti olùkọ́"
+},
+{
 "key": "3b323c9f1ed935b6ce0d05a0493dabf6017bbcffa0fafe1af1862555c0962f19",
 "lang": "yo",
 "source": "En bref, facile à lire",
@@ -19204,6 +20008,12 @@
 "lang": "yo",
 "source": "Technique et de la Formation Professionnelle",
 "text": "Imọ-ẹrọ ati Ikẹkọ Ọjọgbọn"
+},
+{
+"key": "3be928e5df138060b91fe90a47df647712acc0a9ea0bd019d0357ad8e5df57af",
+"lang": "yo",
+"source": "Un reste à payer n'empêche jamais de recevoir le bulletin ni de passer un examen (arrêté n° 029 du 6 mai 2024, article 30).",
+"text": "Isanwo to dayato si ko ṣe idiwọ fun ọ lati gba kaadi ijabọ tabi ṣiṣe idanwo (aṣẹ no. 029 ti May 6, 2024, article 30)."
 },
 {
 "key": "3beacd44e1929e6060887b9c129be7ae77037ad732730c5bcbed0eb96206c0bd",
@@ -19302,6 +20112,12 @@
 "text": "Aditi ni mi tabi alagidi gbo."
 },
 {
+"key": "3d1ad43268db08b7dde00a5f61774354fba73533a3d5e284bac2b61eed0add27",
+"lang": "yo",
+"source": "La formule officielle ne compte pas de composition : mettez le nombre de compositions à 0.",
+"text": "Ilana osise ko ka awọn akopọ: ṣeto nọmba awọn akopọ si 0."
+},
+{
 "key": "3d3161be29cfe9d8a6452b417f4ed1d4e068b7a66afa83ac609a6ae3aec6eceb",
 "lang": "yo",
 "source": "Notes du",
@@ -19350,6 +20166,12 @@
 "text": "Lo Classeo offline"
 },
 {
+"key": "3debc65ebed64b5119849502840e13ebd6a9c0dc1de5f22ac531227d7ff4acc6",
+"lang": "yo",
+"source": "État : son salaire est versé par le ministère de l",
+"text": "Ipinle: rẹ ekunwo ti wa ni san nipasẹ awọn Ministry of"
+},
+{
 "key": "3df19439f138849629dd721bc6006658a22807dc8ab9b26b3868b7b486dd1bdf",
 "lang": "yo",
 "source": "Ce paiement a été remboursé par le prestataire.",
@@ -19378,6 +20200,12 @@
 "lang": "yo",
 "source": "Depuis le",
 "text": "Niwon awọn"
+},
+{
+"key": "3e7d817b1e8d8d00fae61d0be3b89abc3bcd59bee89212385dca7c80058f24dc",
+"lang": "yo",
+"source": "Les primes et les retenues sont des montants positifs.",
+"text": "Awọn ere ati awọn iyokuro jẹ iye to dara."
 },
 {
 "key": "3e8fee27f8595284fc70e0e1560a32a108c2fa115390a7febdb67c7c047beab3",
@@ -19432,6 +20260,12 @@
 "lang": "yo",
 "source": "Choisir",
 "text": "Yan"
+},
+{
+"key": "3f2b473d497f71a4cff18a4af0166912e9d98752983e1fc51dbab0752136b7ea",
+"lang": "yo",
+"source": "Aspirant au métier d'enseignant (AME)",
+"text": "Ni ireti si oojọ ikọni (AME)"
 },
 {
 "key": "3f56f652d6999da89ccde380024e98aa5c60d310f991e02afc80c602a14915bd",
@@ -19636,6 +20470,12 @@
 "lang": "yo",
 "source": "L'élève quitte l'établissement pour un autre. Ses notes et présences restent consultables.",
 "text": "Ọmọ ile-iwe fi idasile silẹ fun miiran. Awọn akọsilẹ ati wiwa rẹ wa ni wiwo."
+},
+{
+"key": "43aec759318ed2f440c11e3fcb0dc49b25adc5f970f39f27a7cee2a29a35cf55",
+"lang": "yo",
+"source": "Vacataire",
+"text": "Olukuluku"
 },
 {
 "key": "43b7c75d56f02a885fd7ea66592af16ad33f3ddb82f31b786136d4b96821b3e2",
@@ -19864,6 +20704,12 @@
 "lang": "yo",
 "source": "Éducation scientifique et technologique, 2.",
 "text": "Ẹkọ imọ-jinlẹ ati imọ-ẹrọ, 2."
+},
+{
+"key": "46d246aaa2b44e896c61699297a4309e1e301533df583907ebb0383ae3a8b3a8",
+"lang": "yo",
+"source": "Prévoyez au moins une interrogation écrite ou un devoir surveillé.",
+"text": "Gbero o kere ju idanwo kikọ kan tabi iṣẹ iyansilẹ abojuto."
 },
 {
 "key": "46dc30a54644252c40e22ebc9844a666027ef84d9bbb31555dcfc2b03598a6a1",
@@ -20184,6 +21030,12 @@
 "text": "Pẹlu"
 },
 {
+"key": "4c1ea81f816463fe350ec885652d15cc13eb3b74c2f8a15ace46c71deedb23a3",
+"lang": "yo",
+"source": "Islamique",
+"text": "Islam"
+},
+{
 "key": "4c631e81207b404ad9259e8e1acc65c300c6bf58a1544e93c24f811faa316e0d",
 "lang": "yo",
 "source": "Pas de réseau : message gardé sur cet appareil. Il part automatiquement au retour du réseau.",
@@ -20212,6 +21064,12 @@
 "lang": "yo",
 "source": "Parent principal",
 "text": "Obi akọkọ"
+},
+{
+"key": "4d206b4c4618a9698259009f852bb9f68166d969b2761ee9b32888acb04d2660",
+"lang": "yo",
+"source": "Semestres",
+"text": "Awọn igba ikawe"
 },
 {
 "key": "4d20c5101591bdf4d6ac3dc82bf8c8e3ec00cb85084732ecc230796398b1a958",
@@ -20284,6 +21142,12 @@
 "lang": "yo",
 "source": "Lien avec l'élève",
 "text": "Isopọ pẹlu ọmọ ile-iwe"
+},
+{
+"key": "4e5dfe2f2d3de3be34ddd043dc9528da4caef0674f4ad1619b09598b815ea8fb",
+"lang": "yo",
+"source": "Par exemple : 01 97 12 34 56",
+"text": "Fun apẹẹrẹ: 01 97 12 34 56"
 },
 {
 "key": "4eb8907c55cf1b3384ea8b8ccbbe2ceb39b2a9c8a1638117779b8dabd386c867",
@@ -20544,6 +21408,12 @@
 "text": "Forukọsilẹ lori"
 },
 {
+"key": "524d99429f5cb37668d90676c114b023ce44b42677699de5e095da1c76c5ec81",
+"lang": "yo",
+"source": "Notes de la période",
+"text": "Awọn akọsilẹ lati akoko"
+},
+{
 "key": "5274a6cdfdc1ccae7ff3de2c03b94469ee9be100b0a6ed7c84daa7fbf7efe657",
 "lang": "yo",
 "source": "Le fichier n'est pas en ligne. La transcription ci-dessous en donne le contenu complet.",
@@ -20712,6 +21582,12 @@
 "text": "Tiwqn nikan"
 },
 {
+"key": "55de936d56f3198757bbd2d1dce9265ebea5e0d654ceec7f6be576d87b41edd2",
+"lang": "yo",
+"source": "Pas encore de note ce semestre.",
+"text": "Ko si awọn onipò sibẹsibẹ igba ikawe yii."
+},
+{
 "key": "55ecc4484560756b19b117a1d01e7b0525df1f110cb02c2e7dda33a3da7bd651",
 "lang": "yo",
 "source": "écrivez à un parent.",
@@ -20812,6 +21688,18 @@
 "lang": "yo",
 "source": "Déjà payé : 2 3 FCFA.",
 "text": "Ti san tẹlẹ: 2 3 FCFA."
+},
+{
+"key": "573068b35ea60d1151ae250153912d213c8ab7e48492e901df6cb3dc8b356f20",
+"lang": "yo",
+"source": "Protestante",
+"text": "Alatẹnumọ"
+},
+{
+"key": "57576b86cc5ac60bd4b39bff8b0704fcdfeaafe59801ad410c4c8ad6af8d6d1a",
+"lang": "yo",
+"source": "Les retenues dépassent le salaire brut.",
+"text": "Deductions koja gross ekunwo."
 },
 {
 "key": "575cc71cdc8c49e161e21743f340e7403331b8e6121263e84ffd22bfa909995c",
@@ -21028,6 +21916,12 @@
 "lang": "yo",
 "source": "Ajoutez au moins une tranche.",
 "text": "Fi o kere ju bibẹ kan kun."
+},
+{
+"key": "5a29d7397e9e3c36d4008a77c8ef874a4e88d95b83021a35fd8a5c40444363fc",
+"lang": "yo",
+"source": "Mes notes ce semestre",
+"text": "Awọn ipele mi ni igba ikawe yii"
 },
 {
 "key": "5a2af601e7a29281ca731ce1a9647cc70f51b0902dc18ca62f3d99c46840a6ed",
@@ -21312,6 +22206,12 @@
 "text": "Ibeere ID"
 },
 {
+"key": "5f35565b7e108c1496814e68a8396584f721e7e856208bb447f1fe75d4542f4f",
+"lang": "yo",
+"source": "Sans connexion, Kora lit avec la voix de cet appareil :",
+"text": "Laisi asopọ, Kora ka pẹlu ohun ẹrọ yii:"
+},
+{
 "key": "5f47464c231e5e50b2177edb2af3437ce75f25d1e24cfdf4a8974cef9ce5766f",
 "lang": "yo",
 "source": "Conversations avec l'école",
@@ -21564,6 +22464,12 @@
 "text": "Ṣe ina awọn risiti"
 },
 {
+"key": "623314a1e7e4a492314ee4639cc463c803e7d4823357000bdb5bc78c5a55b6d1",
+"lang": "yo",
+"source": "Moyenne simple des interrogations, devoirs et compositions (usage d'établissement)",
+"text": "Apapọ awọn ibeere ti o rọrun, iṣẹ amurele ati awọn akopọ (lilo idasile)"
+},
+{
 "key": "62399d0eca24952e03db2f4a4eaab924baff9c660fec991c037181022e3de54e",
 "lang": "yo",
 "source": "En partenariat avec le ministère de la Santé, une campagne de vaccination gratuite sera organisée dans les établissements du 2 au 3 octobre 4. Les parents qui ne souhaitent pas faire vacciner leur enfant doivent en informer le chef d'établissement.",
@@ -21640,6 +22546,12 @@
 "lang": "yo",
 "source": "Comment agrandir le texte ou renforcer le contraste ?",
 "text": "Bawo ni lati ṣe alekun ọrọ naa tabi mu iyatọ pọ si?"
+},
+{
+"key": "63cf1517f7a5f435b78f887aecee56fabf80d8bfa13e97d9b913fcc616157597",
+"lang": "yo",
+"source": "Frais fixés par le promoteur",
+"text": "Awọn owo ti a ṣeto nipasẹ olupolowo"
 },
 {
 "key": "63f79d49336e8a2400e265308b4497b631c1d85662b9531ed40d801c0b0b079d",
@@ -21748,6 +22660,12 @@
 "lang": "yo",
 "source": "Insuffisant",
 "text": "Ti ko to"
+},
+{
+"key": "6647787e655f0be3f2c3dd7f55329fe0b75c9462f70514836b43639cc45a9ee6",
+"lang": "yo",
+"source": "Sans connexion, Kora lit avec la voix de cet appareil",
+"text": "Laisi asopọ, Kora ka pẹlu ohun ẹrọ yii"
 },
 {
 "key": "6656ad0dc45f33385a95ff6865d615fd0c3db08062ca35f8294493704b399d96",
@@ -21930,10 +22848,22 @@
 "text": "atejade lori Kẹsán 2, 3"
 },
 {
+"key": "68dc6c63f61befe0dfba72654a818b8eeb05e2c78562f55b3ed8d1086897174d",
+"lang": "yo",
+"source": "Autres frais",
+"text": "Awọn idiyele miiran"
+},
+{
 "key": "68e1ca575295bb5604fea711b5d2eff44006ce4bd985481083a76b71fce0daef",
 "lang": "yo",
 "source": "Validation",
 "text": "Ifọwọsi"
+},
+{
+"key": "68e7e51609e9165c2d2e19a13f59ff8ffec050942d4f4da0a8acfafb88c11583",
+"lang": "yo",
+"source": "Exclu",
+"text": "Iyasoto"
 },
 {
 "key": "69030db7ed0c275bae36fa4c639dbbea81b20e5d7bcf909bcee908abdc76d06b",
@@ -22024,6 +22954,12 @@
 "lang": "yo",
 "source": "Aucune note n'a encore été saisie : il n'y a rien à publier.",
 "text": "Ko si awọn akọsilẹ ti a ti tẹ sii sibẹsibẹ: ko si nkankan lati gbejade."
+},
+{
+"key": "6b374985c9c76a60ff4b2f751dabc3f323ee2c1d1cf3a8c13903eec8d0999ac5",
+"lang": "yo",
+"source": "Cet enseignant est un agent de l'État : son salaire est versé par le ministère de l'Économie et des Finances, pas par l'établissement.",
+"text": "Olukọni yii jẹ aṣoju ipinle: owo-osu rẹ jẹ nipasẹ Ile-iṣẹ ti Aje ati Isuna, kii ṣe nipasẹ idasile."
 },
 {
 "key": "6b60bcff0d38eab79062362ab52ea72e7e5a2ad20a17b43c76170e4fed49c6e1",
@@ -22156,6 +23092,12 @@
 "lang": "yo",
 "source": "Déjà facturés",
 "text": "Tẹlẹ risiti"
+},
+{
+"key": "6cde3ab8caf2f6f6e49f4ae9d700deec687e31e0336c2031f59afcc4a5f780d1",
+"lang": "yo",
+"source": "Pas encore de note ce semestre",
+"text": "Ko si ite sibẹsibẹ yi ikawe"
 },
 {
 "key": "6ce111876c47b3171d1b62b75954bc751d6e738668bb80c04cb92cffeeeaa2bf",
@@ -22476,6 +23418,12 @@
 "text": "Wiwa wiwa"
 },
 {
+"key": "720e3c8bf822e3a073fb5bab03e10c1f65fa81fffc4de7ce3e16737aeb804c79",
+"lang": "yo",
+"source": "Franco-arabe",
+"text": "Franco-Arab"
+},
+{
 "key": "7215d4969db63d2f0a9c98b2db0e5fc44c666a54731254d23e0044137fa07be3",
 "lang": "yo",
 "source": "Il est à nouveau proposé aux parents.",
@@ -22572,6 +23520,12 @@
 "text": "Atunwo funni nipasẹ"
 },
 {
+"key": "7372fbfc322e757b1278aef3ad2fb3c89ccd0a5ff18394b717be98e72a6571c6",
+"lang": "yo",
+"source": "Motivez l'exclusion dans l'observation du conseil.",
+"text": "Fun awọn idi fun iyasoto ni akiyesi imọran."
+},
+{
 "key": "73751ad05e1f66041aeeab44320323607a0b67cef9faee68b08b3d93eb4d629c",
 "lang": "yo",
 "source": "Lire la licence",
@@ -22582,6 +23536,12 @@
 "lang": "yo",
 "source": "Publication du contenu «",
 "text": "Titejade akoonu «"
+},
+{
+"key": "7386ec7b04b971c370ab60d176bb13946ec1f245fd704955019f194607fd8ea0",
+"lang": "yo",
+"source": "Notes,",
+"text": "Awọn akọsilẹ,"
 },
 {
 "key": "7395e721745e31e1f53838ad4b875d8e67cad2e02a97df9d3b9560007834fa0f",
@@ -22908,6 +23868,12 @@
 "text": "Wa itọkasi kan, ọmọ ile-iwe kan, risiti…"
 },
 {
+"key": "781523df23974aa776742e16b1d49b4dd285fcc354c0a82120ca8cb49a2a7644",
+"lang": "yo",
+"source": "Direction départementale des enseignements maternel et primaire",
+"text": "Itọkasi Ẹka ti Nursery ati Ẹkọ Alakọbẹrẹ"
+},
+{
 "key": "783396789483e23c5b1f881cba966079670ccc6ba520702a809143dcbc7210dd",
 "lang": "yo",
 "source": "Type de frais créé",
@@ -23046,6 +24012,12 @@
 "text": "Ipo ti ikede awọn iwe itẹjade nipasẹ kilasi"
 },
 {
+"key": "7a18228fc5d8b855e9c26ed92b8093226d109591bd3423266db22f638cf8c76a",
+"lang": "yo",
+"source": "Recherche de la voix…",
+"text": "Wa ohun…"
+},
+{
 "key": "7a29d90e37797b1300dcb431b4108f863d35858fc44c7f7a388eb7d16e775d28",
 "lang": "yo",
 "source": "Un rôle personnalisé agit au niveau national, d'un département, d'une commune ou d'un établissement.",
@@ -23122,6 +24094,12 @@
 "lang": "yo",
 "source": "Publié le",
 "text": "Atejade lori"
+},
+{
+"key": "7b5e71988b2615ce5313ec6bbc2f7baacfd71f85def0228e47a1eedeb07f5884",
+"lang": "yo",
+"source": "Conseil de classe : passe en classe supérieure",
+"text": "Imọran kilasi: gbe lọ si kilasi atẹle"
 },
 {
 "key": "7b8ca5d16e337ddaf46a8440fac924ca29d63dd7d3ab4b1928e56c286db93b27",
@@ -23280,10 +24258,22 @@
 "text": "Pipe si idanwo ẹlẹgàn"
 },
 {
+"key": "7dc441b101569c462ff8c11c06904bcf3f3d12b66f0acf548ade2bf3cd4db0f5",
+"lang": "yo",
+"source": "Dans « Ma scolarité », l'onglet « Notes » donne chaque note et ta moyenne provisoire du trimestre ou du semestre, selon ton établissement.",
+"text": "Ninu “Ẹkọ mi”, taabu “Awọn giredi” funni ni ipele kọọkan ati aropin ipese rẹ fun mẹẹdogun tabi igba ikawe, da lori idasile rẹ."
+},
+{
 "key": "7e30105bb70d3c11eab6017e1b0e98545877a29f246ae7f86b0808f5bc0809bd",
 "lang": "yo",
 "source": "Interrogation 1",
 "text": "Ibeere 1"
+},
+{
+"key": "7e3bf8ac231a5921ee877e9b990422d68a3483655b0844083cea8439af86b398",
+"lang": "yo",
+"source": "Composition pondérée (usage d'établissement) : (moyenne des interrogations + moyenne des devoirs + 2 × composition) ÷ 4",
+"text": "Àkópọ̀ ìwọ̀n (ìlo ìmúdásílẹ̀): (àpapọ̀ àwọn ìbéèrè + ìpíndọ́gba iṣẹ́ àṣetiléwá + 2 ×àkópọ̀) ÷ 4"
 },
 {
 "key": "7e40ae139eea03bc8658feaed4b9832426d42dab6fd50b2e56de2a26320301bc",
@@ -23490,6 +24480,12 @@
 "text": "Iṣẹlẹ"
 },
 {
+"key": "81c84af1b062a16ad9f057081bdbeb78261c22e4dca954d171e05f29ca7605ce",
+"lang": "yo",
+"source": "Devoir surveillé 2",
+"text": "Iṣẹ-ṣiṣe Proctored 2"
+},
+{
 "key": "81ea038ebdd1e23467b607bf1ae1ac7075743b510b9be639e052e3e1bd88cc3e",
 "lang": "yo",
 "source": "Attestation de scolarité de 2 (3-4) est signé électroniquement. Vous pouvez le télécharger ; son authenticité se vérifie avec le code 5.",
@@ -23518,6 +24514,12 @@
 "lang": "yo",
 "source": "Vous pouvez aussi payer au secrétariat de l'établissement.",
 "text": "O tun le sanwo ni akọwe idasile."
+},
+{
+"key": "828450324fd4cf6fb00ccd0ff15d1e25f80676afb0253336bbfd42b7b45f486a",
+"lang": "yo",
+"source": "Renseignez d'abord le statut de l'enseignant (vacataire ou enseignant du privé) dans sa fiche.",
+"text": "Ni akọkọ tẹ ipo olukọ sii (olukọ ile-iwe igba diẹ tabi aladani) ninu faili wọn."
 },
 {
 "key": "831e35d453ae7dc4d20ba4181efb30d7b4db3dfde42f00b853a930a315c032dc",
@@ -23640,6 +24642,12 @@
 "text": "Awọn kilasi"
 },
 {
+"key": "846493fab55d48da1dc82164b8fe91807fe5ddaea86785efd6b45a749f91ff82",
+"lang": "yo",
+"source": "Seul un établissement privé confessionnel a une confession.",
+"text": "Nikan idasile ile-ikọkọ aladani kan ni o ni ipin kan."
+},
+{
 "key": "8491268d1d0e7a6c8e43badf41b92ac0fc06585c4789c32595c9a0d73e4c13a2",
 "lang": "yo",
 "source": "Aucune moyenne n'a encore été calculée.",
@@ -23656,6 +24664,12 @@
 "lang": "yo",
 "source": "Frais de scolarité de 2. Total : 3 4 FCFA. Déjà payé : 5 6 FCFA. Reste : 7 8 FCFA. Prochaine échéance : 9 8 FCFA avant le",
 "text": "Frais de scolarité de 2. Total : 3 4 FCFA. Déjà payé : 5 6 FCFA. Reste : 7 8 FCFA. Prochaine échéance : 9 8 FCFA avant le"
+},
+{
+"key": "84a30f5f2e88b07f0430c433ab2b9db911794f6299ba573b0818d99fa4f38ab2",
+"lang": "yo",
+"source": "Interrogation écrite 1",
+"text": "Ibeere ti a kọ 1"
 },
 {
 "key": "84e35ee3064aa844786088d85f077c5f857f9c282a4dc48c11b48becae6d2dcc",
@@ -23910,6 +24924,12 @@
 "text": "Idi fun"
 },
 {
+"key": "8844b4a4f3e72cbc9279ecace1da235f45ee083bf1f47bff3e720490eab3d86a",
+"lang": "yo",
+"source": "Français : voix de cet appareil,",
+"text": "Faranse: ohun ẹrọ yii,"
+},
+{
 "key": "88486503707422b3bb167e09677a2ee8de9e5aa2a2521d072c11d83bd703f814",
 "lang": "yo",
 "source": "Tante",
@@ -23976,6 +24996,12 @@
 "text": "Atejade"
 },
 {
+"key": "8938c37ab072b41427b70229ac8cc542d0d1ce5a4db6ea21cf9904034c3e3d2c",
+"lang": "yo",
+"source": "Choisissez la nature des frais.",
+"text": "Yan iru awọn idiyele."
+},
+{
 "key": "8942c7844adab5b26d15c3ba24ee72cdeb887f2e06e2db4d89fd8c29c9716912",
 "lang": "yo",
 "source": "Fongbe : voix du service de traduction, lecture en fongbe.",
@@ -24022,6 +25048,12 @@
 "lang": "yo",
 "source": "Saisissez votre mot de passe.",
 "text": "Tẹ ọrọ igbaniwọle rẹ sii."
+},
+{
+"key": "8a17e299748ba3f650eeaa85ddede0db8e9ec2e519a87bd87a0de31b21eea138",
+"lang": "yo",
+"source": "Catholique",
+"text": "Catholic"
 },
 {
 "key": "8a24e8b23ed9d481119446d375690d41061885cafd47ea094333b14412375a39",
@@ -24084,6 +25116,12 @@
 "text": "O le ṣe igbasilẹ rẹ; ododo rẹ jẹri pẹlu koodu 2."
 },
 {
+"key": "8ad90c456e293572fc74881a0a30085f651faa9442ce076bda09b5ea7542889d",
+"lang": "yo",
+"source": "L'autorisation d'ouverture et le promoteur concernent les établissements non publics.",
+"text": "Aṣẹ ṣiṣi ati olupolowo ni ifiyesi awọn idasile ti kii ṣe ti gbogbo eniyan."
+},
+{
 "key": "8b1a1df2b49371322790b965d7de7164bba8b140bf1009fb123003b99917b7d9",
 "lang": "yo",
 "source": "Signature électronique",
@@ -24144,6 +25182,12 @@
 "text": "OJO SABATI"
 },
 {
+"key": "8bebee13275ff0a29b09a37db9d6084543254b1327b2feb8b988a33348bb385d",
+"lang": "yo",
+"source": "Moyenne trimestrielle",
+"text": "Idamẹrin mẹẹdogun"
+},
+{
 "key": "8bee405f6fec6e729796ff26259fe8a950442eec05d464f71d8c4e2ff0164b6a",
 "lang": "yo",
 "source": "Le périmètre choisi ne correspond pas au niveau du rôle.",
@@ -24168,6 +25212,12 @@
 "text": "Ifiwepe kọ. Ọganaisa ti wa ni iwifunni."
 },
 {
+"key": "8c5b52c6f3c2a6e98aecc7bf530e0be65eea101cea3050218400328a94ce9886",
+"lang": "yo",
+"source": "Circonscription scolaire, maternelle et primaire",
+"text": "Ile-iwe, nọsìrì ati agbegbe ile-iwe alakọbẹrẹ"
+},
+{
 "key": "8c5f244a5f713bc52bd4ae9369dea974afa2a1dafdbbcb73bd7609b10cfff826",
 "lang": "yo",
 "source": "Établissement suspendu",
@@ -24178,6 +25228,12 @@
 "lang": "yo",
 "source": "Brouillon",
 "text": "Akọpamọ"
+},
+{
+"key": "8c9665cd95cc76c1d4cdec9452b1f55c9701653428ec02831fa564111314d11a",
+"lang": "yo",
+"source": "Trimestres",
+"text": "Awọn mẹẹdogun"
 },
 {
 "key": "8c9a486a17e784b457927c7366aaaf5d7e5d024e8a77d983c90fa6eb4039e62a",
@@ -24294,6 +25350,12 @@
 "text": "Ṣafikun iṣẹ ikẹkọ akọkọ ti kilasi yii pẹlu bọtini “Fi ipa-ọna kun”."
 },
 {
+"key": "8f3d8fd8b01a171e07f8d475b44110d0ba4a8612f901b02115c397b7325edee7",
+"lang": "yo",
+"source": "Un établissement public n'emploie pas d'enseignant du privé : choisissez vacataire.",
+"text": "Idasile ti gbogbo eniyan ko gba olukọ aladani: yan oṣiṣẹ igba diẹ."
+},
+{
 "key": "8f44f15e550e3bfba319e27320bfb1b42ec68996f46042a1dbcc5316a67cfbee",
 "lang": "yo",
 "source": "Absents du jour",
@@ -24334,6 +25396,12 @@
 "lang": "yo",
 "source": "Date trop ancienne.",
 "text": "Ọjọ ti dagba ju."
+},
+{
+"key": "8fdee6022911fbb9c178e0dccbd86f317579fd594601c53e9e24eaa242f4ae76",
+"lang": "yo",
+"source": "Moyenne annuelle",
+"text": "Lododun apapọ"
 },
 {
 "key": "8fe8e73c62e1f404e4cd549b38722d566944d0da00f4dc11f749aa982e83b4f3",
@@ -24424,6 +25492,12 @@
 "lang": "yo",
 "source": "Édité le",
 "text": "Ṣatunkọ lori"
+},
+{
+"key": "911c12bdfff53d9273305672b7999e02722e5eefb36ffa4c42ae65be1897381d",
+"lang": "yo",
+"source": "Aucune facture à créer : tous les élèves concernés sont déjà facturés ou exonérés.",
+"text": "Ko si iwe-ẹri lati ṣẹda: gbogbo awọn ọmọ ile-iwe ti o kan jẹ iwe-ẹri tẹlẹ tabi yọkuro."
 },
 {
 "key": "91366659c439aad9ae955a08c4fbbfe4f8483abe62fa5f21b2715b7668c65b6c",
@@ -24562,6 +25636,12 @@
 "lang": "yo",
 "source": "Matricule 2 · 3, 4 · Inscrit",
 "text": "Nọmba 2 · 3, 4 · Iforukọsilẹ"
+},
+{
+"key": "92ff1b126135df9ad1ac4ef8bd5e124446ce0322ca5518c81cf52fb60d27810b",
+"lang": "yo",
+"source": "La maternelle et le primaire publics sont gratuits depuis 2006 : aucun frais ne peut être facturé aux familles.",
+"text": "Ile-iwe nọsìrì ti gbogbo eniyan ati ile-iwe alakọbẹrẹ ti jẹ ọfẹ lati ọdun 2006: ko si awọn idiyele ti a le gba fun awọn idile."
 },
 {
 "key": "931be60646b72d3137494ddc3a7bf02fa392c3b1ea5dcdaf767ce0741f670eca",
@@ -24864,6 +25944,12 @@
 "text": "Ni ọsẹ meji julọ."
 },
 {
+"key": "9710191d837d4d341040c5130f5801f37aa74aa0dde3fe09c9218b81a4ad2bf0",
+"lang": "yo",
+"source": "Bulletin du semestre 2",
+"text": "Semester 2 kaadi iroyin"
+},
+{
 "key": "9720b1be663991e30a696cac80f7be28ed6f5c408ad0cb42ea73e00d0c2c656f",
 "lang": "yo",
 "source": "Transaction introuvable sur le relevé Moov Money du 2 septembre.",
@@ -24904,6 +25990,12 @@
 "lang": "yo",
 "source": "Cours retiré :",
 "text": "Ẹkọ ti yọkuro:"
+},
+{
+"key": "979fb6377b41d4d062cdae7711f9eb0f316391598f6493f7cb5f55e2ce0fcb4e",
+"lang": "yo",
+"source": "Agent permanent de l'État (APE)",
+"text": "Aṣoju Ipinle Yẹ (APE)"
 },
 {
 "key": "97a34d6219d1a6bbbab4c42b5951198dc1bac0d0e0056118a5b35179e1e6fb17",
@@ -24970,6 +26062,12 @@
 "lang": "yo",
 "source": "Aucun établissement de ce périmètre n'a de classe de ce niveau.",
 "text": "Ko si idasile ni agbegbe yii ti o ni kilasi ni ipele yii."
+},
+{
+"key": "986139168047a323fb2dddf52cb455ce41afac47d31e1dc60329096411c9d636",
+"lang": "yo",
+"source": "Français : voix de cet appareil",
+"text": "Faranse: ohun ẹrọ yii"
 },
 {
 "key": "988f7f9d5d35228e07631cd458aae7cf0ab65d4b95af797fe09a24e9cda37223",
@@ -25198,6 +26296,12 @@
 "lang": "yo",
 "source": "Un établissement choisi ne peut pas être invité : il doit être de votre département et avoir une classe de ce niveau.",
 "text": "A ko le pe idasile ti o yan: o gbọdọ jẹ lati ẹka rẹ ki o ni kilasi ni ipele yii."
+},
+{
+"key": "9c0cfefef43ef12d7412ddd1f740acf52121f381dadad8d05b98b03879d42ff1",
+"lang": "yo",
+"source": "Examen blanc départemental du BEPC 2026, Atlantique",
+"text": "BEPC 2026 Departmental Mock kẹhìn, Atlantic"
 },
 {
 "key": "9c245adad8c8b177f1f11e04fc3ed3b532c8ae14bafe90b13a76295a76069d58",
@@ -25476,6 +26580,12 @@
 "text": "Ṣe ijẹrisi sisanwo lori foonu rẹ ti o ko ba ti ṣe bẹ tẹlẹ. Oju-iwe yii ṣe imudojuiwọn funrararẹ."
 },
 {
+"key": "a0057bc6380f6adcca6b71a0772bafb4077c69e3b50b8586b42efb5571330230",
+"lang": "yo",
+"source": "Devoir surveillé",
+"text": "Abojuto iṣẹ"
+},
+{
 "key": "a037f6e536a8d0604c59960b7744eea2467e38e3cab853bf526ef9fc97bc1889",
 "lang": "yo",
 "source": "Décidé par l'autorité, sans autre validation",
@@ -25516,6 +26626,12 @@
 "lang": "yo",
 "source": "ajoutez une fiche.",
 "text": "fi faili kun."
+},
+{
+"key": "a0f6311baaf7044de23a59318e91041900979ce4d79ad37eef954e1e775ce781",
+"lang": "yo",
+"source": "Cheffe de circonscription scolaire",
+"text": "Olori agbegbe ile-iwe"
 },
 {
 "key": "a0fc53bca3ed7df1d70b297f1d8e1e9f6aca7a2d007d1e13db2d5d2a09409362",
@@ -25590,6 +26706,12 @@
 "text": "Opoiye"
 },
 {
+"key": "a269cf2d3a2abd906dfb2a10f42990231b0fdb468c94fe802ee355d335b0ef0f",
+"lang": "yo",
+"source": "Bulletin du semestre 1",
+"text": "Semester 1 kaadi iroyin"
+},
+{
 "key": "a27a5f0b5e78314830ad51216ebbe90ba502b621834c7c34df39c85e5a62e865",
 "lang": "yo",
 "source": "Clôturer l'examen blanc ?",
@@ -25612,6 +26734,12 @@
 "lang": "yo",
 "source": "ans",
 "text": "odun"
+},
+{
+"key": "a2e87f5725d88743b69abd4e5e7191804e960a60fdc244eb8d368ecf93ccf9c8",
+"lang": "yo",
+"source": "Semestre 1",
+"text": "Igba ikawe 1"
 },
 {
 "key": "a3169a489db4c7d3d55dbe6b46c7bac8fe86a78946cb4fa2ffb85ce7edea7cae",
@@ -25716,6 +26844,12 @@
 "text": "O le wo ohun gbogbo, ṣugbọn ko si iyipada ti o fipamọ"
 },
 {
+"key": "a567902b0807bd1c2b140a5b685e2242d5206cd84de0d002f9dc0b785be4336a",
+"lang": "yo",
+"source": "Conseil de classe : exclu",
+"text": "Igbimọ kilasi: yọkuro"
+},
+{
 "key": "a58edb5f647debda98c4f9be65641b78e12e8c1b7aeb15631fc200fd5db89326",
 "lang": "yo",
 "source": "Le périmètre choisi est en dehors du vôtre.",
@@ -25740,6 +26874,12 @@
 "text": "Ko si ibaamu owo sisan"
 },
 {
+"key": "a642ff79484176c1dd834b2eb2dfff30df5072f6ccf0e91a311bc4aa410397d2",
+"lang": "yo",
+"source": "Conseil de classe : redouble",
+"text": "Imọran kilasi: tun ṣe"
+},
+{
 "key": "a65a8e46ff1f5a82d7e7148fb2b05f61fafcfc1ee467c40e84ff45135f304dc6",
 "lang": "yo",
 "source": "Déclarer ce paiement",
@@ -25750,6 +26890,12 @@
 "lang": "yo",
 "source": "professeure de mathématiques, vous a écrit.",
 "text": "oluko mathimatiki, kowe si o."
+},
+{
+"key": "a6736a69a3d5a534ee9ed37b7a11dab62e753b6d41a6217179681edcb0cc66f0",
+"lang": "yo",
+"source": "Officielle",
+"text": "Osise"
 },
 {
 "key": "a67c1e2210340bac4f305beb3242dbca408d9b5ae98bafaaaf097c60f3c880e9",
@@ -25962,6 +27108,12 @@
 "text": "Ipo ni idasile: 2nd tied · Gbogbogbo ipo: 2nd ti so ninu 3 ni ipo oludije"
 },
 {
+"key": "ab28d3156e97beb7ac0f4552b2ff1ae6456475ea7283d9f72d5975a8812c6ca8",
+"lang": "yo",
+"source": "Examen blanc du CEP, circonscription d'Abomey-Calavi",
+"text": "Idanwo ẹlẹgàn CEP, agbegbe Abomey-Calavi"
+},
+{
 "key": "ab2a83ba93aa9494548f8bd4b622cf344ebbb9542c3dba265c7c813a64ed5629",
 "lang": "yo",
 "source": "Type de frais créé :",
@@ -26146,6 +27298,12 @@
 "lang": "yo",
 "source": "Clair",
 "text": "Ko o"
+},
+{
+"key": "addfad9581cc1fb72beccefb8af13c36d5fae78b5bcf51d38339f72b82781731",
+"lang": "yo",
+"source": "Agent contractuel de l'État (ACE)",
+"text": "Aṣoju adehun ipinlẹ (ACE)"
 },
 {
 "key": "adf37d8737da21d4b47db60c8e6b00fb60c1f677fede9fbaa0997c574667b821",
@@ -26640,6 +27798,12 @@
 "text": "Awọn iwe aṣẹ"
 },
 {
+"key": "b4e9e1c89835f59e1e03912c7e205388374b3c69c0f19ee8911ddd20bdbf4267",
+"lang": "yo",
+"source": "Chef de circonscription scolaire",
+"text": "Olori agbegbe ile-iwe"
+},
+{
 "key": "b4f412316e6321353a6b36af9b0ae25f5190571e8ff4361aef916a8d48563ac1",
 "lang": "yo",
 "source": "Choisissez le parent.",
@@ -26670,10 +27834,22 @@
 "text": "Mon."
 },
 {
+"key": "b5243c351324788826a147d963cb208c87fc3e2b9cc61572d285e6f9f72b0e17",
+"lang": "yo",
+"source": "Conseil de classe",
+"text": "Igbimọ kilasi"
+},
+{
 "key": "b527a0d8d0cd16bbc6d99a18f7afbfb246481b4185ace75675f09b1c62bdd8aa",
 "lang": "yo",
 "source": "1 FCFA · Mobile Money",
 "text": "1 FCFA · Mobile Owo"
+},
+{
+"key": "b530476ef83898d4dddbcbaf384c4674395e02f06c490e464498af3e28f5e47a",
+"lang": "yo",
+"source": "Composition pondérée",
+"text": "Tiwqn Tiwqn"
 },
 {
 "key": "b55c7152828f9bfcc835c05be8235b10fa91403e52b1a90c629567ce818e7487",
@@ -27666,6 +28842,12 @@
 "text": "Ìṣe iṣẹlẹ"
 },
 {
+"key": "c71ce8ccf3b4493267a168d7315294085b489fb8ccbf15b4cc2639cacd5c81a4",
+"lang": "yo",
+"source": "Nature",
+"text": "Iseda"
+},
+{
 "key": "c74e343b2646ca0281955f9c882fc5110e2b7604f3d039534fd383c9fd909d9f",
 "lang": "yo",
 "source": "Suivre les frais",
@@ -27880,6 +29062,12 @@
 "lang": "yo",
 "source": "La voix",
 "text": "Ohùn naa"
+},
+{
+"key": "c9a42ce0cf249e36edf65987d36a98234cbebb7efc010ff9ed6d0cbee5139b9a",
+"lang": "yo",
+"source": "Gratuit, subvention de l'État",
+"text": "Ọfẹ, iranlọwọ ipinlẹ"
 },
 {
 "key": "c9b3c38247f744e17dd26fda097d6a9ba9332586b6bdaa038bf8f313a863f2b8",
@@ -28098,6 +29286,12 @@
 "text": "Fídíò tàbí ohun ohun gbọ́dọ̀ ní ìkọ̀wé rẹ̀."
 },
 {
+"key": "cd7ea55c1b27a01b7df954fe904e83e62cc67ea977bbc49fd48df076f48a9024",
+"lang": "yo",
+"source": "Maternel et primaire",
+"text": "Nursery ati jc"
+},
+{
 "key": "cd889d3f003016a49eb606a85d08ccd689d536b37f00decf79bc8d6164b32067",
 "lang": "yo",
 "source": "Touchez le bouton rond en bas à droite de l'écran, ou ouvrez « Préférences » dans le menu. Vous y réglez la taille du texte, le contraste élevé, le thème sombre et la vitesse de la voix. Les réglages restent enregistrés sur cet appareil.",
@@ -28288,6 +29482,12 @@
 "lang": "yo",
 "source": "Contenu publié.",
 "text": "Akoonu ti a tẹjade."
+},
+{
+"key": "d141462087996788697dd9d5703ca0886737c7b3757d30042bfbedfc5528cb4d",
+"lang": "yo",
+"source": "Les agents de l'État (APE, ACE, AME) sont inscrits au registre par le ministère : recherchez-les au registre pour les nommer.",
+"text": "Awọn aṣoju ipinlẹ (APE, ACE, AME) ti wa ni titẹ sinu iforukọsilẹ nipasẹ iṣẹ-iranṣẹ: wa wọn ninu iforukọsilẹ lati lorukọ wọn."
 },
 {
 "key": "d141e9c9d4ac950f7b3d9dba5939d41da6f3c2d57a69d2a9a36bdb940b1a7177",
@@ -28626,6 +29826,12 @@
 "text": "Ẹkọ ti 2"
 },
 {
+"key": "d6a76e38aef1fa7ca6634e333175f9d64d91a4e0abb8f577f0fb19697b06d093",
+"lang": "yo",
+"source": "Interrogation écrite",
+"text": "Ibeere ti a kọ"
+},
+{
 "key": "d6bd8c0aeee80fedb2dbf05c973100c3db04be90c072a88572533f2684131a36",
 "lang": "yo",
 "source": "Document",
@@ -28750,6 +29956,12 @@
 "lang": "yo",
 "source": "Note",
 "text": "Akiyesi"
+},
+{
+"key": "d8df5407c9bc9cc6b4fa0b1a2b3ac8c29fe73b6a21d13433da3800b2e3928a85",
+"lang": "yo",
+"source": "Le salaire de base doit être supérieur à zéro.",
+"text": "Oṣuwọn ipilẹ gbọdọ jẹ tobi ju odo lọ."
 },
 {
 "key": "d90165150ef41a767051bcb73992d835b5c51458485e15131eda4c96da640efd",
@@ -29118,6 +30330,12 @@
 "text": "Ipa eto ko le paarẹ."
 },
 {
+"key": "ded1cf70a35f74ce2522ad04381ce68f4141cf273091091839eec00cf9a514e7",
+"lang": "yo",
+"source": "Passe en classe supérieure",
+"text": "Gbe soke si tókàn kilasi"
+},
+{
 "key": "dee0a49acf59f5860949abdf4cad73c22d63c3281759ec5c93ee9baa103d640c",
 "lang": "yo",
 "source": "Rang :",
@@ -29158,6 +30376,12 @@
 "lang": "yo",
 "source": "Référence de la transaction Mobile Money",
 "text": "Mobile Owo idunadura itọkasi"
+},
+{
+"key": "df27cd8d88a0e38abb2bcd6a8f3c51abec882586a2583062ffbf01432f63f9b6",
+"lang": "yo",
+"source": "Le bulletin apparaîtra ici dès que l'établissement l'aura publié, à la fin",
+"text": "Iwe itẹjade naa yoo han nibi ni kete ti idasile ti ṣe atẹjade, ni ipari"
 },
 {
 "key": "df7df7c21033eb5aea536c3eb79871ada9e0fac95f0b0905f4ae5dac704fae8b",
@@ -29838,6 +31062,12 @@
 "text": "Olukọni"
 },
 {
+"key": "eba0e585905f17573a3c690c62fb7e8264117118cca4c2b92d1129bbcb7c89ae",
+"lang": "yo",
+"source": "Direction départementale des enseignements secondaire, technique et de la formation professionnelle",
+"text": "Itọnisọna Ẹka ti Atẹle, Ẹkọ Imọ-ẹrọ ati Ikẹkọ Iṣẹ"
+},
+{
 "key": "ebf06011c6549ef640ce3ddf4d2355d6a3c64bbb67c26b8fa61e2e81dc467830",
 "lang": "yo",
 "source": "Sciences de la vie et de la terre",
@@ -29952,10 +31182,22 @@
 "text": "Wo iwe itẹjade naa"
 },
 {
+"key": "ee67f88cdb7c2cbf3bffe5f5c73867253159d866b5367e7c33e076122539dc61",
+"lang": "yo",
+"source": "Interrogation écrite 2",
+"text": "Ibeere ti a kọ 2"
+},
+{
 "key": "ee75a95a013e0e23c2c0f301bc3c898d95251ac2c8aa7a119a036bc84d7e7429",
 "lang": "yo",
 "source": "Appel enregistré pour la",
 "text": "Ipe ti o gba silẹ fun"
+},
+{
+"key": "ee90a459443faf67986b292e6b44f8915e92ae20b7471c32b8b3770c8ffb1dcf",
+"lang": "yo",
+"source": "Secondaire, technique et formation professionnelle",
+"text": "Atẹle, imọ-ẹrọ ati ikẹkọ ọjọgbọn"
 },
 {
 "key": "eeadd8fe31c258b1975ddfa38c011554a5b1433d13a3f56a21083bcb1d1605b8",
@@ -30336,6 +31578,12 @@
 "text": "Ifiranṣẹ ranṣẹ."
 },
 {
+"key": "f4a431886a527170ffb11300b8bdbd8fe302fed346ca55baa40b310bc8e1b825",
+"lang": "yo",
+"source": "Redouble",
+"text": "Tun"
+},
+{
 "key": "f4a8b396f55b2e6904d49267f2f7b3c22eb3975138332650ab903b3f8b1ac205",
 "lang": "yo",
 "source": "Voir le bulletin du Trimestre 2 3-4",
@@ -30346,6 +31594,12 @@
 "lang": "yo",
 "source": "une campagne de vaccination gratuite sera organisée dans les établissements du 5 au 16 octobre 2026.",
 "text": "ipolongo ajesara ọfẹ kan yoo ṣeto ni awọn idasile lati Oṣu Kẹwa ọjọ 5 si 16, 2026."
+},
+{
+"key": "f4c704fba5a4d2626de3b28be31747f68c195bf259c45ce8f25ec4b7877dae50",
+"lang": "yo",
+"source": "Ministères",
+"text": "Awọn ile-iṣẹ ijọba"
 },
 {
 "key": "f4db1e48476f60753980b10d66219042b3a3d9c65c9cc77a53d81b88fd869c64",
@@ -30498,6 +31752,12 @@
 "text": "Wa idasile kan, agbegbe kan…"
 },
 {
+"key": "f7750ccb41eb15156a01a2271e95a5b9a588d42113e44ed22ba4c07714d3f298",
+"lang": "yo",
+"source": "Choisissez d'abord votre mot de passe personnel.",
+"text": "Ni akọkọ yan ọrọ igbaniwọle ti ara ẹni."
+},
+{
 "key": "f78c8018bc08ed962a90d62cf48b9c2f54167cef824e20befb4abbe557dfa81d",
 "lang": "yo",
 "source": "Bulletins en PDF",
@@ -30636,6 +31896,12 @@
 "text": "Akoonu kuro."
 },
 {
+"key": "f9e5161f87d3d3025a3fa538bc7127c63a7e0e3db25bde15757578c9484dc2fe",
+"lang": "yo",
+"source": "Prévoyez au moins une composition pour cette formule.",
+"text": "Gbero o kere ju akojọpọ kan fun agbekalẹ yii."
+},
+{
 "key": "f9e7d49e47452469603c94c862eb32b6a6b99d6ef2bc81b1e3cfc2b3b0c54ef9",
 "lang": "yo",
 "source": "Identifiant",
@@ -30706,6 +31972,12 @@
 "lang": "yo",
 "source": "Tutrice",
 "text": "Olukọni"
+},
+{
+"key": "fa93beee724c35c725d225b76ada7cff5ea978b9d9118e8267d720c9d1aef5cd",
+"lang": "yo",
+"source": "Ma paie",
+"text": "Oya mi"
 },
 {
 "key": "fa9a546df17b2e2b4a84f66cc09b6fae6dab501d7eecdda0c4800bff2ebc2c9b",
