@@ -1,0 +1,1770 @@
+openapi: 3.1.0
+info:
+  title: Classéo HTTP API
+  version: "5.0"
+  summary: Route handlers of the Classéo Next.js application, and the internal voice function.
+  description: |
+    Every HTTP route under `src/app/api`, plus the Python voice function
+    `api/kora-tts.py`. This is not a public API for third parties: the routes
+    serve the Classéo interface itself (downloads, polling, speech,
+    translation, offline replay) and two external callers (the FedaPay
+    webhook, and a signed out visitor holding a signed clip address).
+
+    Most writes do not go through these routes: they are Next.js server
+    actions, described in `docs/api/README.md`.
+
+    Conventions:
+    - Authentication is the `classeo_session` cookie set at sign in (an HS256
+      JWT carrying the session id; the session row is checked for revocation,
+      expiry and an active account on every request). Server side, the
+      permission code and the territorial scope of the account decide what
+      is returned.
+    - Unknown ids and ids outside the caller's scope get the same 404, so ids
+      cannot be probed.
+    - Downloads and exports refuse an account under a temporary password
+      (403), as pages and server actions do.
+    - Error bodies are either plain French text (`Accès refusé`,
+      `Introuvable`, `Document introuvable`) or JSON `{"error": "<French
+      message>"}`, depending on the route; both forms are described per
+      response below. Messages are meant for display to the user.
+    - Rate limits are fixed window counters stored in PostgreSQL
+      (`src/lib/rate-limit.ts`), shared by every instance. A limit keyed by
+      address only applies when the client address is trusted (on Vercel, or
+      with `TRUST_PROXY=true`); otherwise all requests share the key
+      `direct`.
+servers:
+  - url: http://localhost:3000
+    description: Local development server
+tags:
+  - name: Files
+    description: Uploaded files stored in the database.
+  - name: Exports
+    description: CSV exports (semicolon separated, UTF-8 with BOM, audited).
+  - name: Documents
+    description: PDF documents, each registered with a verification code and a QR code.
+  - name: Payments
+    description: Online payment status and the provider webhook.
+  - name: Offline
+    description: Replay of entries typed without network.
+  - name: Voice
+    description: French voice (Piper, Siwis) and cached speech clips.
+  - name: Languages
+    description: Translation and voices in local languages through api229langues.
+  - name: Internal
+    description: Called by the Next.js server only, never by a browser.
+
+paths:
+  /api/files/{id}:
+    get:
+      tags: [Files]
+      operationId: getFile
+      summary: Serve an uploaded file after an access check
+      description: |
+        Reads a `FileBlob` and checks the caller may see it, by purpose:
+        school logos for any signed in user; student photos within the
+        enrollment scope; signatures and stamps for their owner only;
+        documents sent by schools to their authorities for staff only;
+        payment proofs within the invoice scope; voice notes for the
+        participants of the conversation (or staff of a participating
+        institution); family pieces through `canReadFamilyFile`
+        (`src/features/family-documents/access.ts`). The `Content-Type` is the
+        type sniffed at upload, never the declared one. Health pieces are
+        sent with `Cache-Control: private, no-store`; other files with
+        `private, max-age=300`. SVG files carry a sandboxing CSP. Byte ranges
+        are supported for audio players.
+
+        Source: `src/app/api/files/[id]/route.ts`.
+      security:
+        - sessionCookie: []
+      parameters:
+        - $ref: "#/components/parameters/IdPath"
+        - name: Range
+          in: header
+          required: false
+          description: A single byte range, for example `bytes=0-1023`.
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The whole file.
+          headers:
+            Content-Disposition:
+              description: "`attachment` for a PDF, `inline` otherwise."
+              schema:
+                type: string
+            Accept-Ranges:
+              schema:
+                type: string
+                const: bytes
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        "206":
+          description: The requested byte range.
+          headers:
+            Content-Range:
+              schema:
+                type: string
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        "404":
+          $ref: "#/components/responses/NotFoundText"
+        "416":
+          description: Range not satisfiable. `Content-Range` gives `bytes */<size>`.
+
+  /api/export/bulletins:
+    get:
+      tags: [Exports]
+      operationId: exportReportCards
+      summary: Report cards of a class for a period (CSV)
+      description: |
+        Computed from the grades, one line per student with rank, subject
+        averages, general average, mention, appreciation and publication
+        state. Empty file when the class or period is unknown or outside the
+        scope. Permission `report_card:export`.
+
+        Source: `src/app/api/export/bulletins/route.ts`.
+      security:
+        - sessionCookie: []
+      x-permission: report_card:export
+      parameters:
+        - $ref: "#/components/parameters/ClasseQuery"
+        - $ref: "#/components/parameters/PeriodeQuery"
+      responses:
+        "200":
+          $ref: "#/components/responses/Csv"
+        "403":
+          $ref: "#/components/responses/ForbiddenText"
+
+  /api/export/eleves:
+    get:
+      tags: [Exports]
+      operationId: exportStudents
+      summary: Students of the caller's scope (CSV)
+      description: |
+        Same filters as the student list, at most 5 000 rows. Permission
+        `student:export`.
+
+        Source: `src/app/api/export/eleves/route.ts`.
+      security:
+        - sessionCookie: []
+      x-permission: student:export
+      parameters:
+        - $ref: "#/components/parameters/SearchQuery"
+        - name: classe
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: statut
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [ACTIVE, WITHDRAWN, TRANSFERRED, ALL]
+            default: ACTIVE
+      responses:
+        "200":
+          $ref: "#/components/responses/Csv"
+        "403":
+          $ref: "#/components/responses/ForbiddenText"
+
+  /api/export/enseignants:
+    get:
+      tags: [Exports]
+      operationId: exportTeacherRegistry
+      summary: Teacher registry of the caller's territory (CSV)
+      description: |
+        One line per person with the schools of their appointments inside the
+        territory. Permission `teacher:export`.
+
+        Source: `src/app/api/export/enseignants/route.ts`.
+      security:
+        - sessionCookie: []
+      x-permission: teacher:export
+      parameters:
+        - $ref: "#/components/parameters/SearchQuery"
+        - $ref: "#/components/parameters/DepartementQuery"
+        - $ref: "#/components/parameters/CommuneQuery"
+        - name: plusieurs
+          in: query
+          required: false
+          description: "`oui` keeps only people appointed in several schools."
+          schema:
+            type: string
+            enum: [oui]
+      responses:
+        "200":
+          $ref: "#/components/responses/Csv"
+        "403":
+          $ref: "#/components/responses/ForbiddenText"
+
+  /api/export/etablissements:
+    get:
+      tags: [Exports]
+      operationId: exportSchools
+      summary: Schools of the caller's scope (CSV)
+      description: |
+        Same filters as the school list. Permission `school:export`.
+
+        Source: `src/app/api/export/etablissements/route.ts`.
+      security:
+        - sessionCookie: []
+      x-permission: school:export
+      parameters:
+        - $ref: "#/components/parameters/SearchQuery"
+        - $ref: "#/components/parameters/DepartementQuery"
+        - $ref: "#/components/parameters/CommuneQuery"
+        - name: secteur
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [PUBLIC, PRIVATE, CONFESSIONAL, COMMUNITY]
+        - name: cycle
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [PRESCHOOL, PRIMARY, SECONDARY, TECHNICAL]
+        - name: statut
+          in: query
+          required: false
+          description: School status code (`src/features/schools/labels.ts`).
+          schema:
+            type: string
+      responses:
+        "200":
+          $ref: "#/components/responses/Csv"
+        "403":
+          $ref: "#/components/responses/ForbiddenText"
+
+  /api/export/factures:
+    get:
+      tags: [Exports]
+      operationId: exportInvoices
+      summary: Invoices of the caller's scope (CSV)
+      description: |
+        Same filters as the invoice list, at most 20 000 rows. Permission
+        `fee:export`.
+
+        Source: `src/app/api/export/factures/route.ts`.
+      security:
+        - sessionCookie: []
+      x-permission: fee:export
+      parameters:
+        - $ref: "#/components/parameters/SearchQuery"
+        - name: statut
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [PENDING, PARTIALLY_PAID, PAID, OVERDUE, CANCELLED]
+        - name: classe
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          $ref: "#/components/responses/Csv"
+        "403":
+          $ref: "#/components/responses/ForbiddenText"
+
+  /api/export/journal:
+    get:
+      tags: [Exports]
+      operationId: exportAuditLog
+      summary: Activity log of the caller's scope (CSV)
+      description: |
+        Same filters as the activity log page, at most 10 000 rows. Dates are
+        read in Benin time. Permission `audit:export`.
+
+        Source: `src/app/api/export/journal/route.ts`.
+      security:
+        - sessionCookie: []
+      x-permission: audit:export
+      parameters:
+        - name: action
+          in: query
+          required: false
+          schema:
+            type: string
+            maxLength: 40
+        - name: ressource
+          in: query
+          required: false
+          schema:
+            type: string
+            maxLength: 40
+        - name: utilisateur
+          in: query
+          required: false
+          schema:
+            type: string
+            maxLength: 100
+        - $ref: "#/components/parameters/DuQuery"
+        - $ref: "#/components/parameters/AuQuery"
+      responses:
+        "200":
+          $ref: "#/components/responses/Csv"
+        "403":
+          $ref: "#/components/responses/ForbiddenText"
+
+  /api/export/notes:
+    get:
+      tags: [Exports]
+      operationId: exportGrades
+      summary: Grades of one sheet, or subject averages of a class (CSV)
+      description: |
+        Either `fiche` (every grade of one sheet, with average and rank), or
+        `classe` and `periode` (subject averages and general average of a
+        class for a period). The file name depends on the data. Permission
+        `grade:export`.
+
+        Source: `src/app/api/export/notes/route.ts`.
+      security:
+        - sessionCookie: []
+      x-permission: grade:export
+      parameters:
+        - name: fiche
+          in: query
+          required: false
+          description: Grade sheet id.
+          schema:
+            type: string
+        - $ref: "#/components/parameters/ClasseQuery"
+        - $ref: "#/components/parameters/PeriodeQuery"
+      responses:
+        "200":
+          $ref: "#/components/responses/Csv"
+        "403":
+          $ref: "#/components/responses/ForbiddenText"
+
+  /api/export/paiements:
+    get:
+      tags: [Exports]
+      operationId: exportPayments
+      summary: Payments of the caller's scope (CSV)
+      description: |
+        Same filters as the payment list, at most 20 000 rows. Permission
+        `payment:export`.
+
+        Source: `src/app/api/export/paiements/route.ts`.
+      security:
+        - sessionCookie: []
+      x-permission: payment:export
+      parameters:
+        - $ref: "#/components/parameters/SearchQuery"
+        - name: mode
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [CASH, MOBILE_MONEY, BANK_TRANSFER, CHEQUE]
+      responses:
+        "200":
+          $ref: "#/components/responses/Csv"
+        "403":
+          $ref: "#/components/responses/ForbiddenText"
+
+  /api/export/presences:
+    get:
+      tags: [Exports]
+      operationId: exportAttendance
+      summary: Attendance of a class between two dates (CSV)
+      description: |
+        31 days at most: `du` is moved forward when the range is longer. By
+        default, the seven days ending today. At most 20 000 rows. Permission
+        `attendance:export`.
+
+        Source: `src/app/api/export/presences/route.ts`.
+      security:
+        - sessionCookie: []
+      x-permission: attendance:export
+      parameters:
+        - $ref: "#/components/parameters/ClasseQuery"
+        - $ref: "#/components/parameters/DuQuery"
+        - $ref: "#/components/parameters/AuQuery"
+      responses:
+        "200":
+          $ref: "#/components/responses/Csv"
+        "403":
+          $ref: "#/components/responses/ForbiddenText"
+
+  /api/export/statistiques:
+    get:
+      tags: [Exports]
+      operationId: exportStatistics
+      summary: Indicators of the caller's scope (CSV)
+      description: |
+        One line per child territory plus a total line. `departement` and
+        `commune` narrow the scope; a filter outside the caller's scope is
+        refused with 403. Permission `statistics:export`.
+
+        Source: `src/app/api/export/statistiques/route.ts`.
+      security:
+        - sessionCookie: []
+      x-permission: statistics:export
+      parameters:
+        - $ref: "#/components/parameters/DepartementQuery"
+        - $ref: "#/components/parameters/CommuneQuery"
+      responses:
+        "200":
+          $ref: "#/components/responses/Csv"
+        "403":
+          $ref: "#/components/responses/ForbiddenText"
+
+  /api/export/utilisateurs:
+    get:
+      tags: [Exports]
+      operationId: exportUsers
+      summary: Accounts of the caller's scope (CSV)
+      description: |
+        Explicit column list: no password hash, no lockout counters.
+        Permission `user:export`.
+
+        Source: `src/app/api/export/utilisateurs/route.ts`.
+      security:
+        - sessionCookie: []
+      x-permission: user:export
+      parameters:
+        - $ref: "#/components/parameters/SearchQuery"
+        - name: role
+          in: query
+          required: false
+          description: Role id.
+          schema:
+            type: string
+        - name: statut
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [active, inactive]
+      responses:
+        "200":
+          $ref: "#/components/responses/Csv"
+        "403":
+          $ref: "#/components/responses/ForbiddenText"
+
+  /api/pdf/attestation/{studentId}:
+    get:
+      tags: [Documents]
+      operationId: pdfEnrollmentCertificate
+      summary: Certificate of enrollment for the active year
+      description: |
+        School staff for their students, a parent for their own children.
+        Carries the head's signature when the same content was signed.
+        Permission `student:view`.
+
+        Source: `src/app/api/pdf/attestation/[studentId]/route.ts`.
+      security:
+        - sessionCookie: []
+      x-permission: student:view
+      parameters:
+        - $ref: "#/components/parameters/StudentIdPath"
+      responses:
+        "200":
+          $ref: "#/components/responses/Pdf"
+        "403":
+          $ref: "#/components/responses/ForbiddenText"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+
+  /api/pdf/bulletin-paie/{id}:
+    get:
+      tags: [Documents]
+      operationId: pdfSchoolPayslip
+      summary: A payslip printed by the school that issued it
+      description: |
+        Permission `payroll:export`.
+
+        Source: `src/app/api/pdf/bulletin-paie/[id]/route.ts`.
+      security:
+        - sessionCookie: []
+      x-permission: payroll:export
+      parameters:
+        - $ref: "#/components/parameters/IdPath"
+      responses:
+        "200":
+          $ref: "#/components/responses/Pdf"
+        "403":
+          $ref: "#/components/responses/ForbiddenText"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+
+  /api/pdf/bulletin:
+    get:
+      tags: [Documents]
+      operationId: pdfReportCard
+      summary: Report card of one student for one period
+      description: |
+        Either `id` (a published report card, family space) or `inscription`
+        and `periode` (staff and family). A family only reaches the published
+        cards of its own children; staff may download a preview before
+        publication. Only a published card can carry the head's signature.
+        Permission `report_card:view`.
+
+        Source: `src/app/api/pdf/bulletin/route.ts`.
+      security:
+        - sessionCookie: []
+      x-permission: report_card:view
+      parameters:
+        - name: id
+          in: query
+          required: false
+          description: Published report card id.
+          schema:
+            type: string
+        - name: inscription
+          in: query
+          required: false
+          description: Enrollment id.
+          schema:
+            type: string
+        - $ref: "#/components/parameters/PeriodeQuery"
+      responses:
+        "200":
+          $ref: "#/components/responses/Pdf"
+        "403":
+          $ref: "#/components/responses/ForbiddenText"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+
+  /api/pdf/bulletins:
+    get:
+      tags: [Documents]
+      operationId: pdfClassReportCards
+      summary: Report cards of a whole class for a period, one page per student
+      description: |
+        Permission `report_card:export`.
+
+        Source: `src/app/api/pdf/bulletins/route.ts`.
+      security:
+        - sessionCookie: []
+      x-permission: report_card:export
+      parameters:
+        - $ref: "#/components/parameters/ClasseQuery"
+        - $ref: "#/components/parameters/PeriodeQuery"
+      responses:
+        "200":
+          $ref: "#/components/responses/Pdf"
+        "403":
+          $ref: "#/components/responses/ForbiddenText"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+
+  /api/pdf/certificat/{studentId}:
+    get:
+      tags: [Documents]
+      operationId: pdfSchoolingCertificate
+      summary: Certificate of schooling (every year spent in the school)
+      description: |
+        School staff for their pupils, a parent for their own children.
+        Signed when the head signed this content. Permission `student:view`.
+
+        Source: `src/app/api/pdf/certificat/[studentId]/route.ts`.
+      security:
+        - sessionCookie: []
+      x-permission: student:view
+      parameters:
+        - $ref: "#/components/parameters/StudentIdPath"
+      responses:
+        "200":
+          $ref: "#/components/responses/Pdf"
+        "403":
+          $ref: "#/components/responses/ForbiddenText"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+
+  /api/pdf/emploi-du-temps:
+    get:
+      tags: [Documents]
+      operationId: pdfTimetable
+      summary: Week timetable of a class, of the caller, or of a teacher
+      description: |
+        `classe` for a class, `enseignant` for a teacher of the caller's
+        school, neither for the signed in teacher. Permission
+        `timetable:view`.
+
+        Source: `src/app/api/pdf/emploi-du-temps/route.ts`.
+      security:
+        - sessionCookie: []
+      x-permission: timetable:view
+      parameters:
+        - name: classe
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: enseignant
+          in: query
+          required: false
+          description: Teacher id.
+          schema:
+            type: string
+        - name: semaine
+          in: query
+          required: false
+          description: Any day of the week, `YYYY-MM-DD`.
+          schema:
+            type: string
+            format: date
+      responses:
+        "200":
+          $ref: "#/components/responses/Pdf"
+        "403":
+          $ref: "#/components/responses/ForbiddenText"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+
+  /api/pdf/examens-blancs/{id}:
+    get:
+      tags: [Documents]
+      operationId: pdfMockExamResults
+      summary: Results sheet of an approved or closed mock exam
+      description: |
+        School ranking, subject averages and the candidates the account may
+        see by name. 404 when the `exams.mock` feature flag is off, or the
+        exam is not approved or closed. Permission `mock_exam:export`.
+
+        Source: `src/app/api/pdf/examens-blancs/[id]/route.ts`.
+      security:
+        - sessionCookie: []
+      x-permission: mock_exam:export
+      parameters:
+        - $ref: "#/components/parameters/IdPath"
+      responses:
+        "200":
+          $ref: "#/components/responses/Pdf"
+        "403":
+          $ref: "#/components/responses/ForbiddenText"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+
+  /api/pdf/facture/{id}:
+    get:
+      tags: [Documents]
+      operationId: pdfInvoice
+      summary: Invoice with its lines, installments and payments received
+      description: |
+        Permission `fee:view`.
+
+        Source: `src/app/api/pdf/facture/[id]/route.ts`.
+      security:
+        - sessionCookie: []
+      x-permission: fee:view
+      parameters:
+        - $ref: "#/components/parameters/IdPath"
+      responses:
+        "200":
+          $ref: "#/components/responses/Pdf"
+        "403":
+          $ref: "#/components/responses/ForbiddenText"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+
+  /api/pdf/fiche-appel/{classroomId}:
+    get:
+      tags: [Documents]
+      operationId: pdfAttendanceSheet
+      summary: Attendance sheet of a class for a day
+      description: |
+        Permission `attendance:view`.
+
+        Source: `src/app/api/pdf/fiche-appel/[classroomId]/route.ts`.
+      security:
+        - sessionCookie: []
+      x-permission: attendance:view
+      parameters:
+        - $ref: "#/components/parameters/ClassroomIdPath"
+        - name: date
+          in: query
+          required: false
+          description: "`YYYY-MM-DD`, today by default."
+          schema:
+            type: string
+            format: date
+      responses:
+        "200":
+          $ref: "#/components/responses/Pdf"
+        "403":
+          $ref: "#/components/responses/ForbiddenText"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+
+  /api/pdf/liste-de-classe/{classroomId}:
+    get:
+      tags: [Documents]
+      operationId: pdfClassList
+      summary: Students of a class
+      description: |
+        Matricule, sex, birth date and, for accounts that may see parents,
+        the guardian's phone. Permission `student:view`.
+
+        Source: `src/app/api/pdf/liste-de-classe/[classroomId]/route.ts`.
+      security:
+        - sessionCookie: []
+      x-permission: student:view
+      parameters:
+        - $ref: "#/components/parameters/ClassroomIdPath"
+      responses:
+        "200":
+          $ref: "#/components/responses/Pdf"
+        "403":
+          $ref: "#/components/responses/ForbiddenText"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+
+  /api/pdf/ma-paie/{id}:
+    get:
+      tags: [Documents]
+      operationId: pdfOwnPayslip
+      summary: A teacher's own validated payslip ("Ma paie")
+      description: |
+        Permission `payslip:view`.
+
+        Source: `src/app/api/pdf/ma-paie/[id]/route.ts`.
+      security:
+        - sessionCookie: []
+      x-permission: payslip:view
+      parameters:
+        - $ref: "#/components/parameters/IdPath"
+      responses:
+        "200":
+          $ref: "#/components/responses/Pdf"
+        "403":
+          $ref: "#/components/responses/ForbiddenText"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+
+  /api/pdf/recu/{id}:
+    get:
+      tags: [Documents]
+      operationId: pdfReceipt
+      summary: Receipt of one payment
+      description: |
+        The reference printed is the payment's own reference. Permission
+        `payment:view`.
+
+        Source: `src/app/api/pdf/recu/[id]/route.ts`.
+      security:
+        - sessionCookie: []
+      x-permission: payment:view
+      parameters:
+        - $ref: "#/components/parameters/IdPath"
+      responses:
+        "200":
+          $ref: "#/components/responses/Pdf"
+        "403":
+          $ref: "#/components/responses/ForbiddenText"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+
+  /api/pdf/releve/{studentId}:
+    get:
+      tags: [Documents]
+      operationId: pdfTranscript
+      summary: Term transcript of a student (every grade of the running period)
+      description: |
+        Permission `grade:view`.
+
+        Source: `src/app/api/pdf/releve/[studentId]/route.ts`.
+      security:
+        - sessionCookie: []
+      x-permission: grade:view
+      parameters:
+        - $ref: "#/components/parameters/StudentIdPath"
+      responses:
+        "200":
+          $ref: "#/components/responses/Pdf"
+        "403":
+          $ref: "#/components/responses/ForbiddenText"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+
+  /api/pdf/statistiques:
+    get:
+      tags: [Documents]
+      operationId: pdfStatistics
+      summary: Key indicators and breakdown of the caller's scope
+      description: |
+        The PDF twin of the statistics CSV export: same permission
+        (`statistics:export`), same narrowing filters.
+
+        Source: `src/app/api/pdf/statistiques/route.ts`.
+      security:
+        - sessionCookie: []
+      x-permission: statistics:export
+      parameters:
+        - $ref: "#/components/parameters/DepartementQuery"
+        - $ref: "#/components/parameters/CommuneQuery"
+      responses:
+        "200":
+          $ref: "#/components/responses/Pdf"
+        "403":
+          $ref: "#/components/responses/ForbiddenText"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+
+  /api/paiements/en-ligne/{id}:
+    get:
+      tags: [Payments]
+      operationId: getOnlinePayment
+      summary: State of an online payment, polled by the return page
+      description: |
+        Only the payer reads it. While the payment is `CREATED` or `PENDING`
+        and the row was not updated for ten seconds, the provider's API is
+        asked directly (a webhook cannot reach a local installation); the
+        result is applied through the same locked settlement as the webhook.
+
+        Source: `src/app/api/paiements/en-ligne/[id]/route.ts`.
+      security:
+        - sessionCookie: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Online payment id (40 characters at most).
+          schema:
+            type: string
+            maxLength: 40
+      responses:
+        "200":
+          description: Current state.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OnlinePaymentState"
+        "404":
+          $ref: "#/components/responses/NotFoundText"
+
+  /api/paiements/{provider}/webhook:
+    post:
+      tags: [Payments]
+      operationId: paymentWebhook
+      summary: Notification of the payment provider (FedaPay)
+      description: |
+        Public. Nothing is trusted before the signature of the raw body is
+        verified: `X-FEDAPAY-SIGNATURE` holds `t=<unix>,s=<hex>`, the HMAC
+        SHA-256 of `<t>.<raw body>` with `FEDAPAY_WEBHOOK_SECRET`, compared in
+        constant time, with five minutes of tolerance either way. The
+        transaction is then matched to an `OnlinePayment` by its provider
+        reference (and its `online_payment_id` metadata when present) and
+        applied under a row lock, so a repeated delivery, or a delivery
+        racing the return page, records the payment once.
+
+        Declare `<APP_URL>/api/paiements/fedapay/webhook` in the FedaPay
+        dashboard.
+
+        Source: `src/app/api/paiements/[provider]/webhook/route.ts`,
+        `src/lib/payments/providers/fedapay.ts`,
+        `src/features/online-payment/settle.ts`.
+      security:
+        - fedapaySignature: []
+      parameters:
+        - name: provider
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [fedapay]
+      requestBody:
+        required: true
+        description: The provider's event, 100 000 characters at most, read raw.
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FedapayEvent"
+      responses:
+        "200":
+          description: |
+            Acknowledged. `ignored` is set for an event that is not a
+            transaction, or a transaction unknown to Classéo (acknowledged so
+            the provider does not retry).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WebhookAck"
+        "400":
+          description: Missing, unreadable, invalid or stale signature, or no webhook secret configured.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Unknown provider. Body `Inconnu` (text/plain).
+        "413":
+          description: Body over 100 000 characters. Body `Trop volumineux` (text/plain).
+
+  /api/offline/replay:
+    post:
+      tags: [Offline]
+      operationId: replayOfflineEntry
+      summary: Replay one entry typed without network
+      description: |
+        Sent by the page (or the service worker's Background Sync) when the
+        network returns. Checks, in order: same origin (`Sec-Fetch-Site` and
+        `Origin` against the host), JSON content type, body size (512 KiB),
+        schema; then the session user must be the account that typed the
+        entry; an entry already decided under the same `clientId` gets the
+        same answer; the permission of the online action is required
+        (`grade:update`, `attendance:create` or `message:create`); the target
+        must still be writable (school open, year open) and unchanged since
+        the device read it (`baseline`); finally the very same server action
+        as the online save runs, with its own validation, scope checks and
+        audit.
+
+        Rate limit: 300 requests per user per 15 minutes (answer `retry`,
+        429).
+
+        Source: `src/app/api/offline/replay/route.ts`,
+        `src/features/offline/replay.ts`, `src/features/offline/rules.ts`.
+      security:
+        - sessionCookie: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReplayRequest"
+      responses:
+        "200":
+          description: "`applied` (written now, or already written: `duplicate`) or `rejected` for good (conflict, closed year, lost right, invalid data)."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReplayOutcome"
+        "400":
+          description: Unreadable JSON or body not matching the schema (`rejected`).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReplayOutcome"
+        "401":
+          description: No valid session, or a temporary password (`auth`). The entry stays queued.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReplayOutcome"
+        "403":
+          description: Cross origin request (`rejected`), or the session belongs to another account (`other-user`, the entry stays sealed on the device).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReplayOutcome"
+        "413":
+          description: Body over 512 KiB (`rejected`).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReplayOutcome"
+        "415":
+          description: Content type is not JSON (`rejected`).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReplayOutcome"
+        "429":
+          description: Rate limit reached (`retry`).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReplayOutcome"
+        "503":
+          description: Temporary failure, or the same entry is being written by another request (`retry`).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReplayOutcome"
+
+  /api/voix:
+    get:
+      tags: [Voice]
+      operationId: getFrenchVoice
+      summary: Whether the server French voice is available
+      description: |
+        `{"voice": "Siwis"}` when the voice function is configured and has not
+        failed recently, `{"voice": null}` when the browser must use its own
+        voice. Public.
+
+        Source: `src/app/api/voix/route.ts`, `src/lib/voice/piper.ts`.
+      security: []
+      responses:
+        "200":
+          description: Voice state.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [voice]
+                properties:
+                  voice:
+                    type: [string, "null"]
+                    enum: [Siwis, null]
+    post:
+      tags: [Voice]
+      operationId: speakFrench
+      summary: One part of a French text read by Piper (voice Siwis)
+      description: |
+        The browser sends the whole text and the number of a part; the server
+        cuts the text the same way (`src/lib/voice/speech-text.ts`) and
+        answers the address of the cached clip, synthesising it first when
+        needed (cache first: a clip already made is never asked for again).
+        A signed in user may have any text read; a signed out visitor only
+        the texts of the public pages (allowlist compared by hash,
+        `src/lib/voice/public-texts.ts`), and gets a clip address carrying a
+        signed token. Any failure answers 503 and the browser reads with its
+        own voice.
+
+        Rate limits: 120 requests per minute per signed in user, 30 per
+        minute per address when signed out; and at most 500 new clips
+        synthesised per signed in user per day (cached clips are free).
+      security:
+        - sessionCookie: []
+        - {}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [text, part]
+              properties:
+                text:
+                  type: string
+                  minLength: 1
+                  maxLength: 12000
+                part:
+                  type: integer
+                  minimum: 0
+                  maximum: 200
+      responses:
+        "200":
+          description: Address of the clip and number of parts of the text.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [clip, parts]
+                properties:
+                  clip:
+                    type: string
+                    description: "`/api/langues/audio/<id>`, with `?t=<token>` for a signed out visitor."
+                    examples: ["/api/langues/audio/cm1abc?t=0123456789abcdef0123456789abcdef"]
+                  parts:
+                    type: integer
+        "400":
+          $ref: "#/components/responses/JsonError"
+        "401":
+          description: Signed out and the text is not a public text.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          $ref: "#/components/responses/JsonError"
+        "503":
+          description: Voice function not configured, failing, or the daily budget is spent.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /api/langues/audio/{id}:
+    get:
+      tags: [Voice]
+      operationId: getSpeechClip
+      summary: A cached speech clip (French or local language)
+      description: |
+        Any signed in user may read a clip (it holds text the platform
+        already showed; the id is unguessable). A signed out visitor needs
+        the `t` token handed out with the clips of the public texts: an HMAC
+        of the clip id keyed by `SESSION_SECRET`, which never expires.
+        Content addressed: cached for a day, immutable.
+
+        Source: `src/app/api/langues/audio/[id]/route.ts`,
+        `src/lib/voice/clip-token.ts`.
+      security:
+        - sessionCookie: []
+        - clipToken: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            maxLength: 64
+      responses:
+        "200":
+          description: The clip.
+          content:
+            audio/wav:
+              schema:
+                type: string
+                format: binary
+            audio/mpeg:
+              schema:
+                type: string
+                format: binary
+        "404":
+          $ref: "#/components/responses/NotFoundText"
+
+  /api/langues/interface:
+    post:
+      tags: [Languages]
+      operationId: translateInterface
+      summary: Cached translations of the interface strings of a page
+      description: |
+        Answers from the cache only, at once. Strings not cached yet are
+        queued and translated in the background after the response, 100 per
+        request to the service, within its quota; the page stays in French
+        for them until a later visit. A string the service could not
+        translate (cached as its own French text) is not sent back.
+
+        Requires `translation:view` and the `languages.translation` flag on
+        for the language. Rate limit: 240 requests per user per minute.
+
+        Source: `src/app/api/langues/interface/route.ts`,
+        `src/features/languages/guard.ts`,
+        `src/features/languages/service.ts`.
+      security:
+        - sessionCookie: []
+      x-permission: translation:view
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [lang, texts]
+              properties:
+                lang:
+                  $ref: "#/components/schemas/TargetLanguage"
+                texts:
+                  type: array
+                  maxItems: 800
+                  items:
+                    type: string
+                    maxLength: 600
+      responses:
+        "200":
+          description: Translations found, keyed by normalised French source, and the number of strings queued.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [lang, translations, pending]
+                properties:
+                  lang:
+                    $ref: "#/components/schemas/TargetLanguage"
+                  translations:
+                    type: object
+                    additionalProperties:
+                      type: string
+                  pending:
+                    type: integer
+        "400":
+          $ref: "#/components/responses/JsonError"
+        "401":
+          $ref: "#/components/responses/JsonError"
+        "403":
+          $ref: "#/components/responses/JsonError"
+        "429":
+          $ref: "#/components/responses/JsonError"
+
+  /api/langues/contenu:
+    post:
+      tags: [Languages]
+      operationId: translateContent
+      summary: An announcement or a message translated on request
+      description: |
+        Paragraph by paragraph, from the cache first, the rest in one or two
+        requests to the service (waiting up to 20 seconds for the quota). A
+        paragraph the service could not translate comes back in French with
+        `translated: false`.
+
+        Requires `translation:view`. Rate limit: 10 requests per user per
+        minute.
+
+        Source: `src/app/api/langues/contenu/route.ts`.
+      security:
+        - sessionCookie: []
+      x-permission: translation:view
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [lang, text]
+              properties:
+                lang:
+                  $ref: "#/components/schemas/TargetLanguage"
+                text:
+                  type: string
+                  minLength: 1
+                  maxLength: 8000
+      responses:
+        "200":
+          description: The paragraphs, translated where possible.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [lang, paragraphs, complete]
+                properties:
+                  lang:
+                    $ref: "#/components/schemas/TargetLanguage"
+                  paragraphs:
+                    type: array
+                    items:
+                      type: object
+                      required: [source, text, translated]
+                      properties:
+                        source:
+                          type: string
+                        text:
+                          type: string
+                        translated:
+                          type: boolean
+                  complete:
+                    type: boolean
+        "400":
+          $ref: "#/components/responses/JsonError"
+        "401":
+          $ref: "#/components/responses/JsonError"
+        "403":
+          $ref: "#/components/responses/JsonError"
+        "429":
+          $ref: "#/components/responses/JsonError"
+        "503":
+          description: No paragraph could be translated; the text stays in French.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /api/langues/voix:
+    post:
+      tags: [Languages]
+      operationId: speakLocalLanguage
+      summary: Speech in Fongbe, Yoruba or Hausa for a French text
+      description: |
+        Translated (cache first), cut into pieces, each piece synthesised by
+        the service once and kept as a file; at most three pieces per
+        request. Answers the clips to play in order. On any failure the
+        browser reads the French text with its own voice.
+
+        Signed in users need `translation:view`. Signed out visitors are
+        served only the texts of the public pages (same allowlist as
+        `/api/voix`), and get clip addresses carrying a signed token. The
+        `languages.voice` flag must list the voice. Rate limit: 8 requests
+        per minute per user, or per address when signed out.
+
+        Source: `src/app/api/langues/voix/route.ts`.
+      security:
+        - sessionCookie: []
+        - {}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [lang, text]
+              properties:
+                lang:
+                  type: string
+                  enum: [fon, yo, ha]
+                text:
+                  type: string
+                  minLength: 1
+                  maxLength: 6000
+      responses:
+        "200":
+          description: Clip addresses, in reading order.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [clips, complete]
+                properties:
+                  clips:
+                    type: array
+                    items:
+                      type: string
+                  complete:
+                    type: boolean
+                    description: False when the text had more pieces than one request synthesises.
+        "400":
+          $ref: "#/components/responses/JsonError"
+        "401":
+          $ref: "#/components/responses/JsonError"
+        "403":
+          $ref: "#/components/responses/JsonError"
+        "429":
+          $ref: "#/components/responses/JsonError"
+        "503":
+          description: The local language voice is not available for now.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /api/kora-tts:
+    post:
+      tags: [Internal]
+      operationId: synthesiseFrench
+      summary: Python voice function (Piper, fr_FR-siwis-medium)
+      description: |
+        A Vercel Python function (`api/kora-tts.py`), called only by the
+        Next.js route `/api/voix` on the server, never by a browser. The key
+        in `X-Kora-Key` is `KORA_TTS_SECRET` when set, otherwise the hex HMAC
+        SHA-256 of the string `kora-tts` keyed by `SESSION_SECRET` (same
+        derivation in `src/lib/voice/piper.ts`). The model (63 MB) is
+        downloaded from a pinned revision on the first request of an instance
+        and checked against its sha256. Outside Vercel, run
+        `scripts/kora-tts-local.py` and set `KORA_TTS_URL`; the path is then
+        whatever that URL names.
+      security:
+        - koraKey: []
+      servers:
+        - url: https://your-deployment.vercel.app
+          description: Same deployment as the Next.js application
+        - url: http://127.0.0.1:8765
+          description: Local run of scripts/kora-tts-local.py
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [text]
+              properties:
+                text:
+                  type: string
+                  minLength: 1
+                  maxLength: 1000
+      responses:
+        "200":
+          description: 16 bit mono WAV.
+          headers:
+            X-Kora-Voice:
+              schema:
+                type: string
+                const: fr_FR-siwis-medium
+            X-Kora-Ms:
+              description: Synthesis time in milliseconds.
+              schema:
+                type: string
+          content:
+            audio/wav:
+              schema:
+                type: string
+                format: binary
+        "400":
+          description: Invalid body (empty, over 16 000 bytes, not JSON) or invalid text.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Missing or wrong key.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "405":
+          description: Any method other than POST.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Nothing to pronounce in the text.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Synthesis failed.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+components:
+  securitySchemes:
+    sessionCookie:
+      type: apiKey
+      in: cookie
+      name: classeo_session
+      description: |
+        Set by the sign in server action: an HS256 JWT signed with
+        `SESSION_SECRET` carrying the session id, httpOnly, SameSite=Lax,
+        Secure on HTTPS, valid eight hours. The session row is checked on
+        every request and can be revoked.
+    clipToken:
+      type: apiKey
+      in: query
+      name: t
+      description: HMAC of the clip id keyed by `SESSION_SECRET`, handed out by the speech routes for the public texts only.
+    fedapaySignature:
+      type: apiKey
+      in: header
+      name: X-FEDAPAY-SIGNATURE
+      description: "`t=<unix>,s=<hex>`: HMAC SHA-256 of `<t>.<raw body>` with `FEDAPAY_WEBHOOK_SECRET`, five minutes of tolerance."
+    koraKey:
+      type: apiKey
+      in: header
+      name: X-Kora-Key
+      description: Internal key shared by the Next.js server and the voice function.
+
+  parameters:
+    IdPath:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        maxLength: 64
+    StudentIdPath:
+      name: studentId
+      in: path
+      required: true
+      schema:
+        type: string
+    ClassroomIdPath:
+      name: classroomId
+      in: path
+      required: true
+      schema:
+        type: string
+    ClasseQuery:
+      name: classe
+      in: query
+      required: false
+      description: Classroom id.
+      schema:
+        type: string
+    PeriodeQuery:
+      name: periode
+      in: query
+      required: false
+      description: School period id (trimester or semester, by the school's periodicity).
+      schema:
+        type: string
+    SearchQuery:
+      name: q
+      in: query
+      required: false
+      description: Free text search, cut to 100 characters.
+      schema:
+        type: string
+        maxLength: 100
+    DepartementQuery:
+      name: departement
+      in: query
+      required: false
+      description: Department id, narrows the caller's scope.
+      schema:
+        type: string
+    CommuneQuery:
+      name: commune
+      in: query
+      required: false
+      description: Commune id, narrows the caller's scope.
+      schema:
+        type: string
+    DuQuery:
+      name: du
+      in: query
+      required: false
+      description: First day, `YYYY-MM-DD`.
+      schema:
+        type: string
+        format: date
+    AuQuery:
+      name: au
+      in: query
+      required: false
+      description: Last day, `YYYY-MM-DD`.
+      schema:
+        type: string
+        format: date
+
+  responses:
+    Csv:
+      description: |
+        CSV file: semicolon separator, CRLF line ends, UTF-8 with BOM,
+        values starting with `=`, `+`, `-`, `@`, tab or CR prefixed with a
+        quote to neutralise spreadsheet formulas. The export is written to
+        the activity log with its row count.
+      headers:
+        Content-Disposition:
+          schema:
+            type: string
+            examples: ['attachment; filename="eleves.csv"']
+      content:
+        text/csv:
+          schema:
+            type: string
+    Pdf:
+      description: |
+        PDF file. Each download gets a verification code and a QR code
+        pointing to `/verifier/<code>`, and is registered with the SHA-256 of
+        the exact file sent (a signed copy reuses the code of its
+        signature). The download is written to the activity log with the
+        reference and the code.
+      headers:
+        Content-Disposition:
+          schema:
+            type: string
+      content:
+        application/pdf:
+          schema:
+            type: string
+            format: binary
+    ForbiddenText:
+      description: No session, missing permission, temporary password, or a filter outside the scope. Body `Accès refusé`.
+      content:
+        text/plain:
+          schema:
+            type: string
+            const: Accès refusé
+    NotFoundText:
+      description: Unknown, outside the scope, or not allowed, all with the same answer. Body `Introuvable`.
+      content:
+        text/plain:
+          schema:
+            type: string
+            const: Introuvable
+    DocumentNotFound:
+      description: Unknown or outside the scope. Body `Document introuvable`.
+      content:
+        text/plain:
+          schema:
+            type: string
+            const: Document introuvable
+    JsonError:
+      description: Error with a French message for display.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+
+  schemas:
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+          description: French message, safe to show.
+          examples: ["Demande invalide."]
+    TargetLanguage:
+      type: string
+      description: Fongbe, Yoruba, Bariba, Adja, Ewe, Hausa. Only the languages listed in the `languages.translation` flag are accepted.
+      enum: [fon, yo, bab, adj, ee, ha]
+    OnlinePaymentState:
+      type: object
+      required: [status, amount, invoiceId, payment]
+      properties:
+        status:
+          type: string
+          enum: [CREATED, PENDING, APPROVED, DECLINED, CANCELED, REFUNDED]
+        amount:
+          type: integer
+          description: FCFA (XOF).
+        invoiceId:
+          type: string
+        payment:
+          description: The recorded payment once approved, for the receipt link.
+          oneOf:
+            - type: "null"
+            - type: object
+              required: [id, reference]
+              properties:
+                id:
+                  type: string
+                reference:
+                  type: string
+    FedapayEvent:
+      type: object
+      description: FedaPay webhook event. Only `transaction.*` events with an entity are applied.
+      properties:
+        name:
+          type: string
+          examples: [transaction.approved]
+        entity:
+          type: object
+          properties:
+            id:
+              type: [integer, string]
+            status:
+              type: string
+              enum: [pending, approved, declined, canceled, refunded, transferred]
+            amount:
+              type: integer
+            currency:
+              type: object
+              properties:
+                iso:
+                  type: string
+                  examples: [XOF]
+            custom_metadata:
+              type: object
+              properties:
+                online_payment_id:
+                  type: string
+    WebhookAck:
+      type: object
+      required: [received]
+      properties:
+        received:
+          type: boolean
+          const: true
+        ignored:
+          type: string
+          description: Event name, or `unknown transaction`.
+        status:
+          type: string
+          description: State of the online payment after the event.
+        recorded:
+          type: boolean
+          description: True when this delivery recorded the payment.
+    ReplayRequest:
+      type: object
+      required: [clientId, userId, kind, payload, createdAt]
+      properties:
+        clientId:
+          type: string
+          format: uuid
+          description: Made on the device when the user pressed save; makes the write idempotent.
+        userId:
+          type: string
+          maxLength: 64
+          description: Account that typed the entry.
+        kind:
+          type: string
+          enum: [grades, attendance, message]
+        payload:
+          description: The input of the online server action (`saveGrades`, `saveAttendance`, `sendMessage`).
+          oneOf:
+            - $ref: "#/components/schemas/GradesPayload"
+            - $ref: "#/components/schemas/AttendancePayload"
+            - $ref: "#/components/schemas/MessagePayload"
+        baseline:
+          description: What the device had read before the user typed (grades or attendance), compared with the server's current values to tell a safe overwrite from a conflict.
+        createdAt:
+          type: integer
+          minimum: 0
+          description: Milliseconds since the epoch, on the device.
+    GradeCell:
+      type: object
+      required: [enrollmentId, type, sequence, value]
+      properties:
+        enrollmentId:
+          type: string
+        type:
+          type: string
+          enum: [INTERROGATION, DEVOIR, COMPOSITION]
+        sequence:
+          type: integer
+          minimum: 1
+          maximum: 6
+        value:
+          type: [number, "null"]
+          minimum: 0
+          maximum: 20
+          description: Two decimals at most; null deletes the grade.
+    GradesPayload:
+      type: object
+      required: [sheetId, cells]
+      properties:
+        sheetId:
+          type: string
+        cells:
+          type: array
+          minItems: 1
+          maxItems: 3000
+          items:
+            $ref: "#/components/schemas/GradeCell"
+    AttendancePayload:
+      type: object
+      required: [classroomId, date, half, records]
+      properties:
+        classroomId:
+          type: string
+        date:
+          type: string
+          format: date
+        half:
+          type: string
+          enum: [MORNING, AFTERNOON]
+        records:
+          type: array
+          maxItems: 200
+          items:
+            type: object
+            required: [enrollmentId, status]
+            properties:
+              enrollmentId:
+                type: string
+              status:
+                type: string
+                enum: [PRESENT, ABSENT, LATE, EXCUSED]
+              reason:
+                type: string
+                maxLength: 200
+    MessagePayload:
+      type: object
+      required: [conversationId, body]
+      properties:
+        conversationId:
+          type: string
+        body:
+          type: string
+    ReplayOutcome:
+      oneOf:
+        - type: object
+          required: [outcome]
+          properties:
+            outcome:
+              const: applied
+            message:
+              type: string
+            duplicate:
+              type: boolean
+        - type: object
+          required: [outcome, reason]
+          properties:
+            outcome:
+              const: rejected
+            reason:
+              type: string
+              description: French reason; for a conflict it names the students and evaluations concerned.
+        - type: object
+          required: [outcome]
+          properties:
+            outcome:
+              const: auth
+        - type: object
+          required: [outcome]
+          properties:
+            outcome:
+              const: other-user
+        - type: object
+          required: [outcome]
+          properties:
+            outcome:
+              const: retry
+            reason:
+              type: string
