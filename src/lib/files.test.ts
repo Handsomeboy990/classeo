@@ -49,6 +49,8 @@ describe("validateUpload", () => {
       expect(validateUpload("voice_note", { size: 20, type: "audio/ogg" }, ogg)).toBe("audio/ogg");
       expect(validateUpload("voice_note", { size: 20, type: "audio/mp4" }, ftyp("iso5"))).toBe("audio/mp4");
       expect(validateUpload("voice_note", { size: 20, type: "audio/mp4" }, ftyp("M4A "))).toBe("audio/mp4");
+      const wav = new Uint8Array([0x52, 0x49, 0x46, 0x46, 0, 0, 0, 0, 0x57, 0x41, 0x56, 0x45, 0x66, 0x6d, 0x74, 0x20]);
+      expect(validateUpload("voice_note", { size: wav.length, type: "audio/wav" }, wav)).toBe("audio/wav");
     });
     it("ignores the declared type: the bytes decide", () => {
       expect(validateUpload("voice_note", { size: 20, type: "text/html" }, ebml("webm"))).toBe("audio/webm");

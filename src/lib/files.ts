@@ -27,8 +27,9 @@ const LIMITS: Record<FilePurpose, { maxBytes: number; types: string[] }> = {
   document: { maxBytes: 5_000_000, types: ["application/pdf", "image/jpeg", "image/png"] },
   payment_proof: { maxBytes: 2_000_000, types: ["application/pdf", "image/jpeg", "image/png", "image/webp"] },
   tts_audio: { maxBytes: 4_000_000, types: ["audio/wav", "audio/mpeg"] },
-  // Two minutes of speech: about 0.5 MB in Opus, 1 MB in AAC.
-  voice_note: { maxBytes: 2_000_000, types: ["audio/webm", "audio/ogg", "audio/mp4"] },
+  // Two minutes of speech: about 0.5 MB in Opus, 1 MB in AAC. WAV, which
+  // every browser plays, is what the demonstration data holds.
+  voice_note: { maxBytes: 2_000_000, types: ["audio/webm", "audio/ogg", "audio/mp4", "audio/wav"] },
   // A phone photo is resized in the browser first; a scanned PDF may be
   // heavier.
   family_document: { maxBytes: 3_000_000, types: ["application/pdf", "image/jpeg", "image/png", "image/webp"] },
