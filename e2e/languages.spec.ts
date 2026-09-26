@@ -151,14 +151,20 @@ const DATA = [
   /@|https?:|127\.0\.0\.1|\/verifier\//,
   /^\+?[\d ]{8,}$/,
   /^\d{2}\/\d{2}\/\d{4} à \S+$/,
-  // Content other journeys wrote (a message, an exam title), marked with
-  // their unique suffix or a timestamp: user content, not interface text.
-  /\b(?=[a-z0-9]*\d)(?=[a-z0-9]*[a-z])[a-z0-9]{8}(?:-[a-z0-9]{5})?\b|\d{12,}/,
 ];
+
+// Content other journeys wrote (a message, an exam title) carries their
+// unique suffix, a timestamp in base 36 or in figures: user content, not
+// interface text.
+function writtenByJourney(text: string) {
+  const now = Date.now();
+  const recent = (n: number) => Math.abs(n - now) < 30 * 86_400_000;
+  return (text.match(/\b[a-z0-9]{8}\b/g) ?? []).some((t) => recent(parseInt(t, 36))) || (text.match(/\d{13}/g) ?? []).some((t) => recent(Number(t)));
+}
 
 function allowed(text: string) {
   const bare = text.replace(/^[\s·,()]+|[\s·,()]+$/g, "");
-  return NAME.test(bare) || DATA.some((re) => re.test(bare)) || bare.split(/\s*[·,]\s*/).every((part) => NAME.test(part) || DATA.some((re) => re.test(part)));
+  return writtenByJourney(bare) || NAME.test(bare) || DATA.some((re) => re.test(bare)) || bare.split(/\s*[·,]\s*/).every((part) => NAME.test(part) || DATA.some((re) => re.test(part)));
 }
 
 async function setLanguage(page: Page, lang: "fr" | "fon") {
