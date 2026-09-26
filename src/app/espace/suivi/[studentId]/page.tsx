@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { EmptyState } from "@/components/kit/states";
+import { Badge } from "@/components/ui/badge";
 import { SpokenSummary } from "@/features/family/components/blocks";
 import { PrintButton } from "@/components/kit/print-button";
 import { ReportCardSheet } from "@/features/family/components/sections";
@@ -12,6 +13,7 @@ import { can } from "@/lib/auth/authorize";
 import { param } from "@/lib/list";
 import { loadReportCard } from "@/lib/pdf/data/report-cards";
 import { PdfDownloadLink } from "@/lib/pdf/download-link";
+import { COUNCIL_DECISION_LABELS, COUNCIL_DECISION_TONES } from "@/lib/domain/council";
 import { ofThePeriod } from "@/lib/domain/periodicity";
 import { documentReference } from "@/lib/pdf/format";
 import { PrintReportCard } from "@/lib/pdf/print/report-card";
@@ -75,6 +77,11 @@ export default async function ReportCardsPage({ params, searchParams }: PageProp
           {[...byYear.entries()].map(([year, list]) => (
             <div key={year} className="flex flex-wrap items-center gap-2">
               <span className="w-24 text-sm font-semibold text-muted">{year}</span>
+              {list[0]?.decision && (
+                <Badge tone={COUNCIL_DECISION_TONES[list[0].decision.decision]} title={list[0].decision.note ?? undefined}>
+                  Conseil de classe : {COUNCIL_DECISION_LABELS[list[0].decision.decision].toLowerCase()}
+                </Badge>
+              )}
               {[...list].reverse().map((c) => (
                 <Link
                   key={c.id}

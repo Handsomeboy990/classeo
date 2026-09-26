@@ -595,22 +595,23 @@ enum EnrollmentStatus {
 }
 
 model Enrollment {
-  id             String              @id @default(cuid())
-  studentId      String
-  student        Student             @relation(fields: [studentId], references: [id])
-  schoolId       String
-  school         School              @relation(fields: [schoolId], references: [id])
-  classroomId    String
-  classroom      Classroom           @relation(fields: [classroomId], references: [id])
-  academicYearId String
-  academicYear   AcademicYear        @relation(fields: [academicYearId], references: [id])
-  status         EnrollmentStatus    @default(ACTIVE)
-  isRepeating    Boolean             @default(false)
-  enrolledAt     DateTime            @default(now())
-  grades         Grade[]
-  reportCards    ReportCard[]
-  attendances    StudentAttendance[]
-  invoices       Invoice[]
+  id              String                @id @default(cuid())
+  studentId       String
+  student         Student               @relation(fields: [studentId], references: [id])
+  schoolId        String
+  school          School                @relation(fields: [schoolId], references: [id])
+  classroomId     String
+  classroom       Classroom             @relation(fields: [classroomId], references: [id])
+  academicYearId  String
+  academicYear    AcademicYear          @relation(fields: [academicYearId], references: [id])
+  status          EnrollmentStatus      @default(ACTIVE)
+  isRepeating     Boolean               @default(false)
+  enrolledAt      DateTime              @default(now())
+  grades          Grade[]
+  reportCards     ReportCard[]
+  attendances     StudentAttendance[]
+  invoices        Invoice[]
+  councilDecision ClassCouncilDecision?
 
   @@unique([studentId, academicYearId])
   @@index([classroomId])
@@ -692,6 +693,28 @@ model ReportCard {
   publishedBy    User         @relation(fields: [publishedById], references: [id])
 
   @@unique([enrollmentId, periodId])
+}
+
+// End of year decision of the class council for a pupil (MESTFP order
+// n° 029 of 2024, articles 60 to 63): passage with a yearly average of at
+// least 10/20, repetition below; exclusion is decided by the council.
+enum CouncilDecision {
+  PROMOTED
+  REPEAT
+  EXCLUDED
+}
+
+model ClassCouncilDecision {
+  id            String          @id @default(cuid())
+  enrollmentId  String          @unique
+  enrollment    Enrollment      @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  decision      CouncilDecision
+  // The yearly average the council had before it, kept as decided.
+  yearlyAverage Decimal?        @db.Decimal(5, 2)
+  note          String?
+  decidedById   String
+  decidedAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
 }
 
 // ---------------------------------------------------------------------------

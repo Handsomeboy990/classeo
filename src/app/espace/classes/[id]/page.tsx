@@ -86,6 +86,11 @@ export default async function ClassPage(props: PageProps<"/espace/classes/[id]">
         }`}
         actions={
           <>
+            {can(user, "report_card:view") && (
+              <ButtonLink href={`/espace/classes/${classroom.id}/conseil`} variant="secondary">
+                Conseil de classe
+              </ButtonLink>
+            )}
             {options && (
               <EditClassDialog
                 options={options}

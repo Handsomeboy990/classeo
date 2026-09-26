@@ -93,7 +93,7 @@ export async function reportCardsOf(user: User, studentId: string) {
     where: { enrollment: { AND: [enrollmentWhere(user), { studentId }] } },
     include: {
       period: { select: { name: true, order: true, academicYear: { select: { label: true } } } },
-      enrollment: { select: { classroom: { select: { name: true } }, school: { select: { name: true } } } },
+      enrollment: { select: { classroom: { select: { name: true } }, school: { select: { name: true } }, councilDecision: { select: { decision: true, note: true } } } },
     },
     orderBy: [{ period: { academicYear: { startDate: "desc" } } }, { period: { order: "desc" } }],
   });
@@ -110,6 +110,8 @@ export async function reportCardsOf(user: User, studentId: string) {
     appreciation: c.appreciation,
     publishedAt: c.publishedAt,
     lines: parseReportLines(c.lines),
+    // The end of year decision of the class council, once taken.
+    decision: c.enrollment.councilDecision,
   }));
 }
 
