@@ -13,6 +13,8 @@ import type { CurrentUser } from "@/lib/auth/session";
 import { cn, formatAverage, formatDate } from "@/lib/utils";
 
 import { DateLeaf, formatEventDate, PictoTile, SectionTitle, SpokenSummary } from "./components/blocks";
+import { ofThePeriod, thisPeriod } from "@/lib/domain/periodicity";
+
 import { beninToday, countWord, spokenTime } from "./logic";
 import { childOverview, type ChildOverview } from "./overview";
 import { classResources, followedEnrollments, unreadMessageCount, upcomingEvents } from "./queries";
@@ -180,8 +182,8 @@ function ChildPanel({ overview: o, isParent }: { overview: ChildOverview; isPare
           <PictoTile icon={FileText} title="Dernier bulletin" href={base} footer={o.lastReport?.periodLabel}>
             {o.lastReport ? <AverageLevel average={o.lastReport.average} /> : <p className="text-sm text-muted">Pas encore de bulletin publié.</p>}
           </PictoTile>
-          <PictoTile icon={NotebookPen} tone="accent" title="Notes du trimestre" href={`${base}/notes`} footer={o.term.period ? `${o.term.period.name} · ${countWord(gradeCount, "note", "notes").toLowerCase()}` : undefined}>
-            {o.term.average !== null ? <AverageLevel average={o.term.average} /> : <p className="text-sm text-muted">Pas encore de note ce trimestre.</p>}
+          <PictoTile icon={NotebookPen} tone="accent" title={`Notes ${ofThePeriod(o.term.periodicity)}`} href={`${base}/notes`} footer={o.term.period ? `${o.term.period.name} · ${countWord(gradeCount, "note", "notes").toLowerCase()}` : undefined}>
+            {o.term.average !== null ? <AverageLevel average={o.term.average} /> : <p className="text-sm text-muted">Pas encore de note {thisPeriod(o.term.periodicity)}.</p>}
           </PictoTile>
           <PictoTile
             icon={CalendarCheck}
@@ -233,7 +235,7 @@ function TermGrades({ overview: o }: { overview: ChildOverview }) {
   return (
     <section aria-labelledby="my-grades-title">
       <SectionTitle icon={NotebookPen} action={<ButtonLink href={`/espace/suivi/${o.enrollment.student.id}/notes`} variant="ghost" size="sm">Tout voir</ButtonLink>}>
-        <span id="my-grades-title">Mes notes ce trimestre</span>
+        <span id="my-grades-title">Mes notes {thisPeriod(o.term.periodicity)}</span>
       </SectionTitle>
       {withGrades.length ? (
         <ul className="divide-y divide-border rounded-card border border-border bg-surface [&_.rounded-full]:flex-wrap">

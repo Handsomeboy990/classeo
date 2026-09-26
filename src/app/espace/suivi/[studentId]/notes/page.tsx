@@ -8,9 +8,10 @@ import { TermGradesList } from "@/features/family/components/sections";
 import { beninToday } from "@/features/family/logic";
 import { requireStudentSection, termGrades } from "@/features/family/queries";
 import { mention } from "@/lib/domain/grades";
+import { thisPeriod } from "@/lib/domain/periodicity";
 import { formatAverage } from "@/lib/utils";
 
-export const metadata: Metadata = { title: "Notes du trimestre" };
+export const metadata: Metadata = { title: "Notes de la période" };
 
 export default async function TermGradesPage({ params }: PageProps<"/espace/suivi/[studentId]/notes">) {
   const { studentId } = await params;
@@ -24,7 +25,7 @@ export default async function TermGradesPage({ params }: PageProps<"/espace/suiv
       <EmptyState
         className="rounded-card border border-border bg-surface"
         icon={<NotebookPen className="size-7" />}
-        title="Pas encore de note ce trimestre"
+        title={`Pas encore de note ${thisPeriod(term.periodicity)}`}
         description="Les notes s'affichent ici dès qu'un enseignant les saisit, et la moyenne est recalculée à chaque note."
       />
     );

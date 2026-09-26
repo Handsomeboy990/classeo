@@ -31,6 +31,7 @@ import { can, requirePermission } from "@/lib/auth/authorize";
 import { ATTENDANCE_LABELS, isoToDate, todayIso } from "@/lib/domain/attendance";
 import { formatRank } from "@/lib/domain/report-card";
 import { param } from "@/lib/list";
+import { shortPeriodName } from "@/lib/domain/periodicity";
 import { PdfDownloadLink } from "@/lib/pdf/download-link";
 import { formatAverage, formatDate, formatNumber, formatPercent } from "@/lib/utils";
 import { plural } from "@/features/classes/text";
@@ -272,7 +273,7 @@ export default async function StudentPage(props: PageProps<"/espace/eleves/[id]"
       {rights.grades && (
         <Card className="mt-6">
           <CardHeader>
-            <CardTitle>Notes du {period?.name ?? "trimestre"}</CardTitle>
+            <CardTitle>{period ? `Notes, ${period.name}` : "Notes de la période"}</CardTitle>
           </CardHeader>
           {grades.length === 0 ? (
             <EmptyState title="Aucune matière" description="Aucune inscription active cette année." />
@@ -354,7 +355,7 @@ export default async function StudentPage(props: PageProps<"/espace/eleves/[id]"
               <CardBody className="border-b border-border">
                 <LineChart
                   label="Évolution de la moyenne générale d'un bulletin à l'autre"
-                  labels={[...reportCards].reverse().map((r) => `${r.period.name.replace(/^Trimestre\s+(\d+)$/i, "T$1")} ${r.period.academicYear.label.slice(2, 4)}-${r.period.academicYear.label.slice(-2)}`)}
+                  labels={[...reportCards].reverse().map((r) => `${shortPeriodName(r.period.name)} ${r.period.academicYear.label.slice(2, 4)}-${r.period.academicYear.label.slice(-2)}`)}
                   series={[{ name: "Moyenne générale", values: [...reportCards].reverse().map((r) => (r.generalAverage === null ? null : Number(r.generalAverage))) }]}
                   min={0}
                   max={20}

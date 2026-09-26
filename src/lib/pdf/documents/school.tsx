@@ -65,7 +65,7 @@ function Transcript({ data, meta }: { data: TranscriptData; meta: DocumentMeta }
       />
       <View style={{ marginTop: 10 }}>
         <Notice tone="info" title="Relevé provisoire">
-          Notes saisies à ce jour. La moyenne évolue jusqu&apos;à la clôture du trimestre ; seul le bulletin publié fait foi.
+          Notes saisies à ce jour. La moyenne évolue jusqu&apos;à la clôture de la période ; seul le bulletin publié fait foi.
         </Notice>
       </View>
       <DataTable

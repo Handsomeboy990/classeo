@@ -9,6 +9,7 @@ import { enrollmentWhere } from "@/lib/auth/scope";
 import { requireUser, type CurrentUser } from "@/lib/auth/session";
 import { db } from "@/lib/db";
 import { DEFAULT_FORMULA, generalAverage, subjectAverage } from "@/lib/domain/grades";
+import { periodsOf } from "@/lib/domain/periodicity";
 
 import { beninToday, parseReportLines, sortSlots, weekRange, type SchoolDay } from "./logic";
 import { allowedSections, SECTION_PERMISSIONS, type StudentFileSection } from "./sections";
@@ -37,7 +38,7 @@ export function currentPeriod<P extends Period>(periods: P[], today: SchoolDay):
 const enrollmentInclude = {
   student: { select: { id: true, firstName: true, lastName: true, gender: true, matricule: true, birthDate: true, photoFileId: true } },
   classroom: { select: { id: true, name: true, level: { select: { name: true } } } },
-  school: { select: { id: true, name: true, communeId: true, commune: { select: { name: true, departmentId: true } } } },
+  school: { select: { id: true, name: true, communeId: true, periodicity: true, commune: { select: { name: true, departmentId: true } } } },
   academicYear: { select: { id: true, label: true } },
 } satisfies Prisma.EnrollmentInclude;
 
@@ -130,8 +131,10 @@ export async function lastReportCard(user: User, studentId: string) {
 // the domain rules (never stored, never recomputed differently here).
 export async function termGrades(enrollment: FamilyEnrollment, today: SchoolDay = beninToday()) {
   const year = await activeYear();
-  const period = year ? currentPeriod(year.periods, today) : null;
-  if (!period) return { period: null, subjects: [], average: null };
+  // The periods of the child's school: semesters or trimesters.
+  const periodicity = enrollment.school.periodicity;
+  const period = year ? currentPeriod(periodsOf(year.periods, periodicity), today) : null;
+  if (!period) return { period: null, periodicity, subjects: [], average: null };
   const assignments = await db.courseAssignment.findMany({
     where: { classroomId: enrollment.classroomId },
     include: {
@@ -157,7 +160,7 @@ export async function termGrades(enrollment: FamilyEnrollment, today: SchoolDay 
       ...breakdown,
     };
   });
-  return { period, subjects, average: generalAverage(subjects) };
+  return { period, periodicity, subjects, average: generalAverage(subjects) };
 }
 
 export async function attendanceOf(enrollment: FamilyEnrollment) {

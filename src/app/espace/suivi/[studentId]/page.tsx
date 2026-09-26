@@ -12,6 +12,7 @@ import { can } from "@/lib/auth/authorize";
 import { param } from "@/lib/list";
 import { loadReportCard } from "@/lib/pdf/data/report-cards";
 import { PdfDownloadLink } from "@/lib/pdf/download-link";
+import { ofThePeriod } from "@/lib/domain/periodicity";
 import { documentReference } from "@/lib/pdf/format";
 import { PrintReportCard } from "@/lib/pdf/print/report-card";
 import { cn } from "@/lib/utils";
@@ -41,7 +42,7 @@ export default async function ReportCardsPage({ params, searchParams }: PageProp
         className="rounded-card border border-border bg-surface"
         icon={<FileText className="size-7" />}
         title="Aucun bulletin publié pour le moment"
-        description="Le bulletin apparaîtra ici dès que l'établissement l'aura publié, à la fin du trimestre. Vous recevrez une notification."
+        description={`Le bulletin apparaîtra ici dès que l'établissement l'aura publié, à la fin ${ofThePeriod(enrollment.school.periodicity)}. Vous recevrez une notification.`}
         action={attestation ?? undefined}
       />
     );

@@ -76,8 +76,8 @@ async function countRows(scope: StatScope, childLevel: CompareChildLevel, yearId
       FROM "StudentAttendance" a JOIN base b ON b.id = a."enrollmentId" GROUP BY 1, 2
     ),
     avgs AS (
-      SELECT b.y, b.cid, avg(rc."generalAverage")::float8 AS m
-      FROM "ReportCard" rc JOIN base b ON b.id = rc."enrollmentId"
+      SELECT b.y, b.cid, round((sum(rc."generalAverage" * CASE WHEN p."periodicity" = 'SEMESTER' AND p."order" >= 2 THEN 2 ELSE 1 END) / sum(CASE WHEN p."periodicity" = 'SEMESTER' AND p."order" >= 2 THEN 2 ELSE 1 END))::numeric, 2)::float8 AS m
+      FROM "ReportCard" rc JOIN base b ON b.id = rc."enrollmentId" JOIN "SchoolPeriod" p ON p.id = rc."periodId"
       WHERE rc."generalAverage" IS NOT NULL GROUP BY b.id, b.y, b.cid
     ),
     res AS (

@@ -2,6 +2,7 @@ import { BackToChildren } from "@/features/family/components/sections";
 import { SectionTabs, type SectionKey } from "@/features/family/components/section-tabs";
 import { requireStudentFile } from "@/features/family/queries";
 import { allowedSections } from "@/features/family/sections";
+import { ofThePeriod } from "@/lib/domain/periodicity";
 import { StudentAvatar } from "@/features/students/components/student-avatar";
 
 // Header and section navigation of a student file. Every page below calls
@@ -14,7 +15,7 @@ export default async function StudentFileLayout({ children, params }: LayoutProp
 
   const labels: Record<SectionKey, string> = {
     bulletins: "Bulletins",
-    notes: "Notes du trimestre",
+    notes: `Notes ${ofThePeriod(enrollment.school.periodicity)}`,
     presences: "Présences",
     "emploi-du-temps": "Emploi du temps",
     frais: "Frais",

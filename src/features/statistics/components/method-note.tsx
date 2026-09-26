@@ -16,8 +16,9 @@ export function MethodNote({ stats }: { stats: ScopeStatistics }) {
         <li>Élèves, filles et handicap : inscriptions actives de l&apos;année {stats.yearLabel ?? "en cours"}.</li>
         <li>Taux d&apos;absence : demi-journées relevées absentes (justifiées ou non) sur l&apos;ensemble des demi-journées relevées cette année. Un retard compte comme une présence.</li>
         <li>
-          Réussite et moyenne : bulletins publiés en {stats.previousYearLabel ?? "année précédente"}. La moyenne annuelle d&apos;un élève est la moyenne de ses trois
-          trimestres ; le taux de réussite est la part des moyennes annuelles égales ou supérieures à 10/20.
+          Réussite et moyenne : bulletins publiés en {stats.previousYearLabel ?? "année précédente"}. La moyenne annuelle d&apos;un élève suit l&apos;article 59 de
+          l&apos;arrêté n° 029 du 6 mai 2024 : moyenne des trois trimestres, ou (premier semestre + 2 × second semestre) ÷ 3 dans les établissements évalués par
+          semestre. Le taux de réussite est la part des moyennes annuelles égales ou supérieures à 10/20.
         </li>
         <li>
           {stats.previousYearLabel === stats.yearLabel

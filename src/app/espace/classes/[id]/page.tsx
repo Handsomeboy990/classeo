@@ -267,7 +267,7 @@ export default async function ClassPage(props: PageProps<"/espace/classes/[id]">
           )}
           {computed && computed.missingSheets.length > 0 && (
             <CardBody className="border-t border-border text-sm text-muted">
-              Matières sans fiche de notes ce trimestre : {computed.missingSheets.join(", ")}.
+              Matières sans fiche de notes en {period?.name.toLowerCase() ?? "cette période"} : {computed.missingSheets.join(", ")}.
             </CardBody>
           )}
         </Card>
