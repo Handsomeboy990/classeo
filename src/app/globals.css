@@ -2283,6 +2283,15 @@ html:is([data-text="xl"], [data-text="xxl"]) .ds-bars-grid {
   overflow: visible;
   overflow-wrap: break-word;
 }
+.ds-tip[data-size="lg"] {
+  max-width: min(28rem, calc(100vw - 1rem));
+}
+.ds-tip-body {
+  display: block;
+  max-height: min(60vh, 26rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
 .ds-tip:not([data-open]) {
   display: none;
 }

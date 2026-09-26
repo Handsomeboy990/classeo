@@ -23,6 +23,7 @@ export function PageHeader({
   title,
   description,
   info,
+  infoSize,
   listen,
   actions,
   readable = true,
@@ -31,6 +32,8 @@ export function PageHeader({
   title: string;
   description?: string;
   info?: ReactNode;
+  // lg for a longer note (a method), see InfoTip.
+  infoSize?: "md" | "lg";
   // A text of its own to speak instead of the page (a spoken summary).
   listen?: { text: string; label: string };
   actions?: ReactNode;
@@ -49,7 +52,7 @@ export function PageHeader({
         <div className="flex min-w-0 items-center gap-1.5">
           <h1 className="min-w-0 text-[1.625rem] leading-tight font-bold text-balance text-text sm:text-3xl">{title}</h1>
           {info && (
-            <InfoTip label={`À propos de la page ${title}`} className="mt-0.5">
+            <InfoTip label={`À propos de la page ${title}`} size={infoSize} className="mt-0.5">
               {info}
             </InfoTip>
           )}

@@ -34,6 +34,7 @@ export function InfoTip({
   children,
   label = "Plus d'informations",
   id: tipIdProp,
+  size = "md",
   className,
 }: {
   // The explanation. Plain phrasing content (text, strong, links).
@@ -43,6 +44,9 @@ export function InfoTip({
   // Id of the bubble's text, for a field that also points at it with its
   // own aria-describedby (FormField info).
   id?: string;
+  // lg: a wider bubble for a short list (a method note); it scrolls when
+  // taller than the window allows.
+  size?: "md" | "lg";
   className?: string;
 }) {
   const id = useId();
@@ -173,8 +177,8 @@ export function InfoTip({
       >
         <Info aria-hidden />
       </button>
-      <span ref={tip} id={tipId} role="tooltip" popover="manual" className="ds-tip" onPointerEnter={enter} onPointerLeave={leave}>
-        {children}
+      <span ref={tip} id={tipId} role="tooltip" popover="manual" className="ds-tip" data-size={size === "lg" ? "lg" : undefined} onPointerEnter={enter} onPointerLeave={leave}>
+        <span className="ds-tip-body">{children}</span>
       </span>
     </span>
   );
