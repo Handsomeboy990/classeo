@@ -183,9 +183,11 @@ year comparison has five years to show:
   conversations, notifications, the register of issued documents, family
   pieces and the activity log.
 
-A full seed takes about two minutes on a local database (2 min 10 s measured,
-about 370 MB, 96 000 enrollments, 204 000 report cards, 299 000 attendance
-marks); expect a few minutes more against Neon over the network.
+A full seed takes two to three minutes on a local database (2 min 10 s to
+2 min 50 s measured on a shared laptop; about 370 MB, 42 500 pupils, 96 000
+enrollments, 204 000 report cards, 185 000 marks, 299 000 attendance marks);
+expect a few minutes more against Neon over the network. The large tables
+are written with one query per batch (`prisma/seed-lib/bulk.ts`).
 
 ### Environment variables
 

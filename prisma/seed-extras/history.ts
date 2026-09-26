@@ -430,6 +430,18 @@ export async function seedHistoryExtras(db: PrismaClient, ctx: SeedContext) {
   // 9. A password reset handled in the past -------------------------------------
   const colleague = await db.user.findFirst({ where: { schoolId: ceg, role: { code: "TEACHER" }, id: { not: teacher } }, orderBy: { username: "desc" }, select: { id: true } });
   if (colleague) await db.passwordHelpRequest.create({ data: { userId: colleague.id, status: "RESOLVED", contact: "0196552310", handledById: director, handledAt: at("2025-01-14T10:20:00Z"), note: "Mot de passe réinitialisé, remis en main propre.", createdAt: at("2025-01-14T07:45:00Z") } });
+  // Up the chain: the circonscription to its direction (handled last
+  // year), a departmental direction to the ministry (waiting).
+  await db.passwordHelpRequest.create({ data: { userId: inspector, status: "RESOLVED", contact: "0197214580", handledById: ddemp, handledAt: at("2025-10-06T09:10:00Z"), note: "Nouveau mot de passe communiqué par téléphone.", createdAt: at("2025-10-06T07:30:00Z") } });
+  const zou = await db.user.findFirst({ where: { scopeLevel: "DEPARTMENT", chain: "PRIMARY", department: { name: "Zou" } }, select: { id: true } });
+  if (zou) await db.passwordHelpRequest.create({ data: { userId: zou.id, contact: "0166784120", createdAt: at("2026-09-24T16:20:00Z") } });
+
+  // 10. The demonstration student's own conversation with her teacher -------
+  await conversation("Exercices pour l'examen blanc", [teacher, ctx.ids.student], [
+    { from: ctx.ids.student, body: "Bonjour Madame. Pouvez-vous m'indiquer les exercices à revoir pour l'examen blanc de mathématiques ?", at: "2026-04-28T18:10:00Z" },
+    { from: teacher, body: "Bonjour Sènami. Revois les fiches sur les équations et le théorème de Pythagore, puis fais les annales de l'an dernier, dans les ressources de la classe.", at: "2026-04-29T07:05:00Z" },
+    { from: ctx.ids.student, body: "Merci Madame, je m'y mets ce soir.", at: "2026-04-29T12:30:00Z" },
+  ]);
 
   console.log(`history extras: ${requests.length} requests, ${docs.length} document requests, ${contents.length} contents, ${notifications.length} notifications, ${issued.length} issued documents, ${logs.length} log entries`);
 }
