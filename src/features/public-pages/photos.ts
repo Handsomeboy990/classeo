@@ -143,7 +143,7 @@ export const LANGUAGE_CREDITS = [
   {
     id: "api229langues",
     subject: "La traduction des pages en fongbe et en yoruba, et les voix en fongbe, yoruba et haoussa.",
-    author: "Finanfa Ronaldo (api229langues)",
+    author: "AWADEME Finanfa Ronaldo (api229langues)",
     sourceUrl: "https://api229langues.vercel.app",
   },
 ] as const satisfies readonly LanguageCredit[];

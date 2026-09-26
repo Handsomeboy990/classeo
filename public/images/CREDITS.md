@@ -27,7 +27,7 @@ Generated from src/features/public-pages/photos.ts by
 
 | Service | Use | Author | Source |
 |---|---|---|---|
-| `api229langues` | La traduction des pages en fongbe et en yoruba, et les voix en fongbe, yoruba et haoussa. | Finanfa Ronaldo (api229langues) | https://api229langues.vercel.app |
+| `api229langues` | La traduction des pages en fongbe et en yoruba, et les voix en fongbe, yoruba et haoussa. | AWADEME Finanfa Ronaldo (api229langues) | https://api229langues.vercel.app |
 
 Licences: CC BY 4.0 https://creativecommons.org/licenses/by/4.0/ and
 CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0/.
