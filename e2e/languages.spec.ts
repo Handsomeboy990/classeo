@@ -194,8 +194,15 @@ async function expectTranslated(page: Page, checks: Check[]) {
   const left: Record<string, Seen[]> = {};
   for (const c of checks) {
     const french = await show(page, c.path, "fr", c.open);
-    const fongbe = await show(page, c.path, "fon", c.open);
-    const rest = leftInFrench(french, fongbe, allowed);
+    let rest = leftInFrench(french, await show(page, c.path, "fon", c.open), allowed);
+    // Texts rendered after an action (form errors, a toast) are translated
+    // by one more request once they appear: read the page again for a few
+    // seconds before calling a text untranslated, so a slow machine is not
+    // mistaken for a gap.
+    for (let tries = 0; rest.length && tries < 8; tries++) {
+      await page.waitForTimeout(1000);
+      rest = leftInFrench(french, await visibleTexts(page), allowed);
+    }
     if (rest.length) left[c.name] = rest;
   }
   await setLanguage(page, "fr");
