@@ -9,8 +9,9 @@ import { ForbiddenError } from "@/lib/auth/authorize";
 import type { CurrentUser } from "@/lib/auth/session";
 import { db } from "@/lib/db";
 import { mailboxUsername, MAX_INSTITUTION_RECIPIENTS, parseMailboxUsername } from "@/lib/domain/institutions";
-import { excerpt } from "@/lib/domain/messaging";
+import { excerpt, VOICE_NOTE_MAX_MS, VOICE_NOTE_MIN_MS, voiceLabel } from "@/lib/domain/messaging";
 import { DomainError } from "@/lib/errors";
+import { saveUpload } from "@/lib/files";
 import { notify } from "@/lib/notify";
 import { hitRateLimit } from "@/lib/rate-limit";
 import { withSubmission } from "@/features/offline/submission";
@@ -63,6 +64,7 @@ const personSchema = z.object({
 // Group sends fan out conversations and notifications: kept to a pace a
 // person writing by hand never reaches.
 const GROUP_SENDS_PER_HOUR = 20;
+const VOICE_NOTES_PER_10_MIN = 30;
 
 const institutionSchema = z.object({
   mode: z.literal("institution"),
@@ -169,22 +171,60 @@ export const sendMessage = createAction({
   schema: z.object({ conversationId: z.string().min(1).max(40), body, clientId: z.uuid().optional() }),
   handler: (input, user) =>
     withSubmission(user, input.clientId, "message", async () => {
-    // Scoped lookup: only a participant, or the staff of a participating
-    // institution, finds the conversation.
-    const conversation = await db.conversation.findFirst({
-      where: { AND: [{ id: input.conversationId }, conversationWhere(user)] },
-      select: { id: true, participants: { select: partySelect } },
-    });
-    if (!conversation) throw new DomainError("Cette conversation est introuvable.");
-    const { me } = sides(user, conversation.participants);
-    if (!me) throw new DomainError("Cette conversation est introuvable.");
-    const now = new Date();
-    const message = await db.message.create({ data: { conversationId: conversation.id, senderId: user.id, body: input.body, createdAt: now } });
-    await db.conversation.update({ where: { id: conversation.id }, data: { updatedAt: now } });
-    await db.conversationParticipant.update({ where: { conversationId_userId: { conversationId: conversation.id, userId: me.userId } }, data: { lastReadAt: now } });
-    const on = me.kind === "PERSON" ? null : me.name;
-    await audit(user, { action: "create", resource: "message", resourceId: message.id, summary: on ? `Message envoyé pour ${on}` : "Message envoyé", metadata: { conversationId: conversation.id } });
-    await notifyOthers(user, conversation.id, input.body, on);
-    return "Message envoyé.";
+      const conversation = await ownConversation(user, input.conversationId);
+      await post(user, conversation, { body: input.body }, input.body);
+      return "Message envoyé.";
+    }),
+});
+
+// Scoped lookup: only a participant, or the staff of a participating
+// institution, finds the conversation.
+async function ownConversation(user: User, conversationId: string) {
+  const conversation = await db.conversation.findFirst({
+    where: { AND: [{ id: conversationId }, conversationWhere(user)] },
+    select: { id: true, participants: { select: partySelect } },
+  });
+  const me = conversation ? sides(user, conversation.participants).me : null;
+  if (!conversation || !me) throw new DomainError("Cette conversation est introuvable.");
+  return { id: conversation.id, me };
+}
+
+async function post(user: User, conversation: Awaited<ReturnType<typeof ownConversation>>, data: { body: string; audioFileId?: string; audioDurationMs?: number }, preview: string) {
+  const { me } = conversation;
+  const now = new Date();
+  const message = await db.message.create({ data: { conversationId: conversation.id, senderId: user.id, createdAt: now, ...data } });
+  await db.conversation.update({ where: { id: conversation.id }, data: { updatedAt: now } });
+  await db.conversationParticipant.update({ where: { conversationId_userId: { conversationId: conversation.id, userId: me.userId } }, data: { lastReadAt: now } });
+  const on = me.kind === "PERSON" ? null : me.name;
+  const what = data.audioFileId ? "Message vocal envoyé" : "Message envoyé";
+  await audit(user, { action: "create", resource: "message", resourceId: message.id, summary: on ? `${what} pour ${on}` : what, metadata: { conversationId: conversation.id } });
+  await notifyOthers(user, conversation.id, preview, on);
+}
+
+// A voice note: the recording is checked from its bytes (WebM, Ogg or MP4
+// audio, 2 MB at most), stored as a file only the participants can open
+// (/api/files/[id]), and posted as a message. Voice notes need a
+// connection: the offline queue holds text only.
+export const sendVoiceNote = createAction({
+  permission: "message:create",
+  schema: z.object({
+    conversationId: z.string().min(1).max(40),
+    audio: z.instanceof(File, { message: "Aucun enregistrement reçu." }).refine((f) => f.size > 0, "L'enregistrement est vide."),
+    durationMs: z.coerce
+      .number()
+      .int()
+      .min(VOICE_NOTE_MIN_MS, "Message trop court : gardez le bouton un peu plus longtemps.")
+      .max(VOICE_NOTE_MAX_MS + 1500, "Un message vocal dure 2 minutes au plus."),
+    clientId: z.uuid().optional(),
+  }),
+  handler: (input, user) =>
+    withSubmission(user, input.clientId, "message", async () => {
+      const conversation = await ownConversation(user, input.conversationId);
+      const limit = await hitRateLimit(`voice-note:${user.id}`, VOICE_NOTES_PER_10_MIN, 600_000);
+      if (!limit.allowed) throw new DomainError("Trop de messages vocaux d'affilée. Attendez quelques minutes.");
+      const durationMs = Math.min(input.durationMs, VOICE_NOTE_MAX_MS);
+      const audioFileId = await saveUpload(user, "voice_note", new File([input.audio], "message-vocal", { type: input.audio.type }));
+      await post(user, conversation, { body: "", audioFileId, audioDurationMs: durationMs }, voiceLabel(durationMs));
+      return "Message vocal envoyé.";
     }),
 });

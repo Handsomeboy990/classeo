@@ -237,7 +237,7 @@ export async function listConversations(user: User) {
     take: 100,
     include: {
       participants: { select: partySelect },
-      messages: { orderBy: { createdAt: "desc" }, take: 1, select: { body: true, createdAt: true, senderId: true, sender: { select: authorSelect } } },
+      messages: { orderBy: { createdAt: "desc" }, take: 1, select: { body: true, audioFileId: true, audioDurationMs: true, createdAt: true, senderId: true, sender: { select: authorSelect } } },
     },
   });
   return rows.map((c) => {
@@ -263,7 +263,7 @@ export async function getThread(user: User, id: string) {
     where: { AND: [{ id }, conversationWhere(user)] },
     include: {
       participants: { select: partySelect },
-      messages: { orderBy: { createdAt: "desc" }, take: 200, select: { id: true, body: true, createdAt: true, senderId: true, sender: { select: authorSelect } } },
+      messages: { orderBy: { createdAt: "desc" }, take: 200, select: { id: true, body: true, audioFileId: true, audioDurationMs: true, createdAt: true, senderId: true, sender: { select: authorSelect } } },
     },
   });
   if (!c) return null;
@@ -272,6 +272,8 @@ export async function getThread(user: User, id: string) {
   const messages = [...c.messages].reverse().map((m) => ({
     id: m.id,
     body: m.body,
+    // A voice note: played from /api/files, which checks participation again.
+    audio: m.audioFileId ? { url: `/api/files/${m.audioFileId}`, durationMs: m.audioDurationMs ?? 0 } : null,
     createdAt: m.createdAt,
     mine: m.senderId === user.id,
     mySide: fromMySide(user, me, m, parties),

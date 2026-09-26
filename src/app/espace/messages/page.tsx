@@ -12,7 +12,7 @@ import { NewConversation } from "@/features/messages/new-conversation";
 import { allowedContacts, institutionDirectory, institutionOf, listConversations } from "@/features/messages/queries";
 import { can, requirePermission } from "@/lib/auth/authorize";
 import { institutionName, receipt } from "@/lib/domain/institutions";
-import { excerpt } from "@/lib/domain/messaging";
+import { excerpt, voiceLabel } from "@/lib/domain/messaging";
 import { cn, formatDateTime, formatNumber } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Messagerie" };
@@ -90,7 +90,7 @@ export default async function MessagesPage({ searchParams }: PageProps<"/espace/
                       {c.last && (
                         <p className="mt-0.5 truncate text-sm text-muted">
                           {c.last.senderId === user.id ? "Vous : " : c.lastIsMine ? `${c.last.sender.firstName} ${c.last.sender.lastName} : ` : ""}
-                          {excerpt(c.last.body, 90)}
+                          {c.last.audioFileId ? voiceLabel(c.last.audioDurationMs) : excerpt(c.last.body, 90)}
                         </p>
                       )}
                     </div>
