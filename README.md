@@ -15,8 +15,11 @@ local languages. The interface is in French.
 
 This readme is for engineers and technical reviewers. Depth lives in
 [docs/](docs/):
-[architecture](docs/architecture.md), [security](docs/security.md),
+[architecture](docs/architecture.md), [main flows](docs/flows.md),
+[HTTP API and server actions](docs/api/README.md),
+[deployment runbook](docs/deployment.md),
 [payment providers](docs/payment-providers.md), [roadmap](docs/roadmap.md).
+Detailed security notes are kept outside the repository.
 
 ## Features by role
 
@@ -161,8 +164,10 @@ off when its variables are empty, and the platform still works.
 | `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT` | web push; generate with `npx web-push generate-vapid-keys` |
 | `FEDAPAY_ENV`, `FEDAPAY_SECRET_KEY`, `FEDAPAY_PUBLIC_KEY`, `FEDAPAY_WEBHOOK_SECRET` | online payment; without the secret key only declarations are offered. Webhook: `<APP_URL>/api/paiements/fedapay/webhook` |
 | `KORA_TTS_URL`, `KORA_TTS_SECRET` | the French voice function outside Vercel, and an optional key overriding the one derived from `SESSION_SECRET` |
-| `LANGUES229_API_URL`, `LANGUES229_HF_TOKEN`, `LANGUES229_API_KEY` | api229langues credentials, for live translation, local language voices and `scripts/pretranslate.ts`; not in `.env.example`, add them when needed |
-| `DEMO_MODE` | `off` hides the demo account panel on the sign in page |
+| `LANGUES229_API_URL`, `LANGUES229_HF_TOKEN`, `LANGUES229_API_KEY` | api229langues credentials, for live translation, local language voices and `scripts/pretranslate.ts`; all three are needed |
+| `DEMO_MODE` | demo account panel on the public sign in page: shown in development unless `off`, shown in a production build only with `on`, never on the Vercel production deployment |
+| `DEMO_ACCESS_TOKEN` | opens the secret demo sign in page `/acces/<token>`; at least 32 letters, digits, `-` or `_`; empty keeps it closed (404) |
+| `DEMO_PASSWORD` | shared password of the demo accounts, for the seed, `scripts/set-demo-password.ts` and the secret page; required for a production seed |
 | `TRUST_PROXY` | `true` behind a reverse proxy other than Vercel, to enable the per address sign in limit |
 | `FORCE_HTTPS` | `true` behind an HTTPS proxy outside Vercel: secure cookies and HSTS |
 | `VERCEL_AUTOMATION_BYPASS_SECRET` | lets `/api/voix` reach the voice function on a protected preview deployment |
@@ -180,8 +185,21 @@ in `.env`. Messages are read at http://localhost:8025.
 ### Demo accounts
 
 The seed creates one account per role, defined in `src/lib/demo/accounts.ts`.
-They share one password, shown on the sign in page, where one click fills the
-form. Sign in with the identifier or the e-mail.
+They share one password, `DEMO_PASSWORD`. Sign in with the identifier or the
+e-mail.
+
+- **Local development**: `/connexion` shows a "Comptes de démonstration"
+  panel where one click fills the form. Without `DEMO_PASSWORD`, the seed
+  and the panel use the development fallback of `src/lib/demo/password.ts`.
+- **Production**: `/connexion` never shows the panel. It lives on a secret
+  sign in page, `https://<domain>/acces/<DEMO_ACCESS_TOKEN>`, which is not
+  linked anywhere, not indexed and answers 404 to a wrong token. The owner
+  sends that address to the people invited to try the platform. The
+  password comes from `DEMO_PASSWORD` on the server; see
+  [the deployment runbook](docs/deployment.md#demo-access).
+
+Never publish the token or the production password, in the repository or
+anywhere else.
 
 | Identifier | E-mail | Role |
 |---|---|---|
@@ -198,7 +216,8 @@ form. Sign in with the identifier or the e-mail.
 | senami.hounkpatin | eleve@classeo.bj | Student, 3e A |
 | estelle.amoussou | partenaire@classeo.bj | Partner organisation, read only |
 
-Set `DEMO_MODE=off` on any deployment holding real data.
+On a deployment holding real data, leave `DEMO_ACCESS_TOKEN` empty and do not
+seed the demo accounts.
 
 ### Local voice function
 
@@ -254,17 +273,36 @@ each file):
   `setup` (signs in each role once), `desktop` (1366 px), `mobile` (375 px, the
   journeys tagged `@mobile`).
 
+The suite depends on freshly seeded data: on a reused database the order
+dependent journeys fail. Reseed before every run.
+
+It runs without any outside service. Next.js loads `.env` by itself and
+does not override a variable that is already set, so unsetting a variable in
+the shell is not enough: set the service variables to empty for the build and
+the server, and point `DATABASE_URL` at the local database (set any other
+Neon connection variable your `.env` holds to empty as well). Run this way,
+the v4 suite passed 101 of 101 journeys:
+
 ```bash
-npm run db:reset      # the suite expects freshly seeded data
+export SMTP_HOST= SMTP_USER= SMTP_PASSWORD=
+export FEDAPAY_SECRET_KEY= FEDAPAY_PUBLIC_KEY= FEDAPAY_WEBHOOK_SECRET=
+export LANGUES229_API_URL= LANGUES229_API_KEY= LANGUES229_HF_TOKEN=
+export DATABASE_URL="postgresql://classeo:classeo@localhost:55432/classeo"
+export DEMO_ACCESS_TOKEN="$(openssl rand -hex 32)"   # the secret demo page journey
+npm run db:reset      # wipes and reseeds this database
 npm run build
 npm run test:e2e      # starts scripts/start-e2e.sh on E2E_PORT (3000)
 ```
 
-`E2E_BASE_URL` targets a server that is already running instead. To keep the
-run free of outside services, leave `SMTP_HOST`, `VAPID_*`,
-`FEDAPAY_SECRET_KEY`, `LANGUES229_*` and `KORA_TTS_URL` unset for the build and
-the server: translations come from the seeded cache, and the voice journeys
-pass with or without the voice function.
+Translations then come from the seeded cache, and the voice journeys pass
+with or without the voice function (`KORA_TTS_URL`). `E2E_BASE_URL` targets
+a server that is already running instead; `E2E_HOSTNAME` sets the address
+the test server listens on (127.0.0.1), `E2E_PASSWORD` the demo password if
+it was changed, and `E2E_SCREENSHOTS` or `E2E_SHOTS_DIR` a folder for the
+screenshots some journeys take. The server runs without `DEMO_MODE`, as
+production does: the public sign in page then shows no demo panel, and the
+secret page journey reads the same `DEMO_ACCESS_TOKEN` as the server (it is
+skipped when the variable is empty).
 
 - **CI** (`.github/workflows/ci.yml`, on pushes to `main` and on pull
   requests): typecheck, lint, unit tests, migrations, build and
@@ -273,29 +311,25 @@ pass with or without the voice function.
 
 ## Deployment
 
-Production runs on Vercel with a Neon database.
+Production runs on Vercel with a Neon database; a merge to `main` deploys it
+automatically. The full procedure, rollback and post deployment checklist
+are in the [deployment runbook](docs/deployment.md). The points that have
+already caused an incident or a doubt:
 
-- `vercel.json` pins the functions to the `lhr1` region and declares
-  `api/kora-tts.py` (90 s maximum duration). Vercel installs `requirements.txt`
-  for it; the voice needs no extra variable there, its key is derived from
-  `SESSION_SECRET`.
-- Order for a release that changes the schema: `npm run db:deploy` against the
-  production `DATABASE_URL`, then `npm run db:sync-roles`, then deploy. When
-  translations changed, `npx tsx scripts/load-translations.ts`. The build does
-  not run migrations.
-- Environment variables: `DATABASE_URL` and `SESSION_SECRET` in every
-  environment, with a distinct secret per environment. In production also
-  `APP_URL`, `NEXT_PUBLIC_APP_URL`, the SMTP, VAPID, FedaPay (`FEDAPAY_ENV=live`)
-  and api229langues variables, and `DEMO_MODE=off` once real data is loaded.
-  Previews behind Vercel protection need `VERCEL_AUTOMATION_BYPASS_SECRET` for
-  the voice.
-- Outside Vercel, the `Dockerfile` builds the standalone server; set
-  `FORCE_HTTPS` and `TRUST_PROXY` behind an HTTPS proxy, and run the voice
-  function separately with `KORA_TTS_URL`.
-
-After a deployment, check at least: `/connexion` loads, a sign in works, `GET
-/api/voix` reports the voice, a PDF downloads and its QR code opens
-`/verifier/<code>`, and the FedaPay webhook is declared in the dashboard.
+- **Migrations first.** The build runs no migration. Run
+  `npx prisma migrate deploy` against the production `DATABASE_URL`, then
+  `npm run db:sync-roles`, and only then merge. On 2026-09-25 code reached
+  production before its migrations and sign in returned 500.
+- **Translations**: when `prisma/seed-extras/translations.json` changed,
+  `npx tsx scripts/load-translations.ts --dry-run`, then without
+  `--dry-run`.
+- **Voice function**: `vercel.json` declares `api/kora-tts.py` (region
+  `lhr1`, 90 s maximum duration), and Vercel installs `requirements.txt` for
+  it during the build, as a preview build log and a Siwis clip served by
+  production on 2026-09-26 confirmed. Its key is derived from
+  `SESSION_SECRET`; previews behind Vercel protection also need
+  `VERCEL_AUTOMATION_BYPASS_SECRET`.
+- **Reseed** (`SEED_RESET=true`) destroys all data: demo environments only.
 
 ## Security and data protection
 
@@ -303,8 +337,8 @@ Passwords are hashed with argon2id, sessions are database backed and revocable,
 sign in is rate limited with lockout, every action and page checks its
 permission and the territorial scope on the server, inputs are validated with
 zod, security headers include a CSP without third party scripts, and sensitive
-actions are written to an audit log. Details, audit findings and accepted
-advisories: [docs/security.md](docs/security.md).
+actions are written to an audit log. Detailed security notes, audit findings
+and accepted advisories are kept outside the repository.
 
 Personal data of minors is processed, including health documents, which are
 deleted once the school has decided on them. Processing in Benin falls under
@@ -316,7 +350,7 @@ Benin, is still to be prepared (see [docs/roadmap.md](docs/roadmap.md)).
 
 ```
 api/              Python voice function (Vercel)
-docs/             architecture, security, payments, roadmap
+docs/             architecture, flows, API, deployment, security, payments, roadmap
 e2e/              Playwright journeys and fixtures
 prisma/           schema, migrations, seed, sync-roles, seed extras
 public/           service worker, photos and their credits
@@ -328,6 +362,10 @@ src/lib/          auth, domain rules, pdf, voice, mail, payments, cache, audit
 ```
 
 ## Credits and licences
+
+The code of Classéo is proprietary, all rights reserved: see
+[LICENSE](LICENSE). The repository is visible for reference only, and viewing
+it grants no licence. Third party works keep their own licences:
 
 - **Photos**: Wikimedia Commons, credited on the `/credits` page and in
   [public/images/CREDITS.md](public/images/CREDITS.md) (CC BY 4.0, CC BY-SA 4.0

@@ -1,0 +1,29 @@
+<!doctype html>
+<!--
+  Browser for openapi.yaml, rendered by Redoc loaded from a CDN. Not served by
+  the application. Serve this folder over HTTP (a browser refuses to fetch the
+  spec from a file:// page), for example:
+    python3 -m http.server 8081 --directory docs/api
+  then open http://localhost:8081/
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Classéo HTTP API</title>
+    <style>
+      body {
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <redoc spec-url="openapi.yaml"></redoc>
+    <script
+      src="https://cdn.jsdelivr.net/npm/redoc@2.5.4/bundles/redoc.standalone.js"
+      integrity="sha384-w447zOpYfw/1Tv/5AK9NfHTlQIqE3RVR6KY62jCyy9zNDgO64cMwGGP1Fj0zJVf5"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>

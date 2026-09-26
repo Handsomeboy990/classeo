@@ -89,7 +89,7 @@ export function generalAverage(subjects: { average: number | null; coefficient: 
   return round2(counted.reduce((a, s) => a + (s.average as number) * s.coefficient, 0) / totalCoef);
 }
 
-// Competition ranking with ties: 15, 15, 12 ranks 1, 1, 3. Entries without a
+// Ranking with shared places ("1224" ranking): 15, 15, 12 ranks 1, 1, 3. Entries without a
 // value get no rank.
 export function rankEntries<T>(entries: T[], value: (e: T) => number | null): Map<T, number | null> {
   const ranked = entries

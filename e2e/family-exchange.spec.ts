@@ -22,11 +22,20 @@ async function openSenami(parent: Page) {
 }
 
 // Opens the pending piece of the queue whose page shows this text: the
-// queue may hold pieces other journeys sent at the same time.
+// queue may hold pieces other journeys sent at the same time. It lists the
+// oldest first, 20 per page, so a new piece may sit on a later page.
 async function openPending(staff: Page, type: "ENROLLMENT" | "ABSENCE" | "MEDICAL", text: string) {
-  await staff.goto(`/espace/pieces-familles?type=${type}`);
-  await expect(staff.getByRole("heading", { level: 1, name: "Pièces des familles" })).toBeVisible();
-  const hrefs = await staff.getByRole("table").getByRole("link").evaluateAll((links) => links.map((a) => a.getAttribute("href")!));
+  const hrefs: string[] = [];
+  for (let page = 1; page <= 10; page++) {
+    await staff.goto(`/espace/pieces-familles?type=${type}&page=${page}`);
+    await expect(staff.getByRole("heading", { level: 1, name: "Pièces des familles" })).toBeVisible();
+    const table = staff.getByRole("table");
+    if (!(await table.count())) break;
+    const links = await table.getByRole("link").evaluateAll((items) => items.map((a) => a.getAttribute("href")!));
+    if (!links.length) break;
+    hrefs.push(...links);
+    if (links.length < 20) break;
+  }
   for (const href of hrefs.reverse()) {
     await staff.goto(href);
     if (await staff.getByText(text, { exact: false }).first().isVisible()) return href;
@@ -126,14 +135,17 @@ test.describe("pieces sent by families", () => {
     await expect(parent.getByRole("listitem").filter({ hasText: label }).getByText("Validée")).toBeVisible();
   });
 
-  test("a parent justifies an absence and the school accepts it @mobile", async ({ pageAs }) => {
+  test("a parent justifies an absence and the school accepts it @mobile", async ({ pageAs, isMobile }) => {
     const reason = `Rendez-vous chez le dentiste ${uniqueSuffix()}`;
     const parent = await pageAs("parent");
     await openSenami(parent);
     const dialog = parent.getByRole("dialog", { name: /^Justifier l'absence du/ });
     // A tap before hydration opens nothing: tap again until the form shows.
     await expect(async () => {
-      await parent.getByRole("button", { name: "Justifier" }).first().click();
+      // The desktop and mobile runs share the parent account and run at the
+      // same time: each justifies a different absence.
+      const buttons = parent.getByRole("button", { name: "Justifier" });
+      await (isMobile ? buttons.last() : buttons.first()).click();
       await expect(dialog).toBeVisible({ timeout: 2_000 });
     }).toPass({ timeout: 30_000 });
     await dialog.getByLabel("Motif de l'absence").fill(reason);

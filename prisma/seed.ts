@@ -4,6 +4,10 @@
 //
 // Safety: refuses to run on a database that already has users unless
 // SEED_RESET=true is set, because it truncates every table first.
+//
+// The demo accounts get the password of DEMO_PASSWORD. Without it, a local
+// run uses the development fallback of src/lib/demo/password.ts and a
+// production run (NODE_ENV=production) refuses to start.
 
 import "dotenv/config";
 
@@ -15,7 +19,8 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient, type Prisma } from "../src/generated/prisma/client";
 import { DEFAULT_ROLES, PERMISSIONS } from "../src/lib/auth/permissions";
 import { nextFreeUsername, usernameBase } from "../src/lib/auth/username";
-import { DEMO_ACCOUNTS, DEMO_PASSWORD } from "../src/lib/demo/accounts";
+import { DEMO_ACCOUNTS } from "../src/lib/demo/accounts";
+import { resolveDemoPassword } from "../src/lib/demo/password";
 import { seedExtras } from "./seed-extras";
 import { generalAverage, rankEntries, round2 } from "../src/lib/domain/grades";
 import { defaultPeriodicity } from "../src/lib/domain/periodicity";
@@ -185,6 +190,12 @@ function schoolDays(from: string, to: string) {
 // ---------------------------------------------------------------------------
 
 async function main() {
+  const demoPassword = resolveDemoPassword();
+  if (!demoPassword) {
+    console.error("DEMO_PASSWORD is not set. A production seed needs the demo account password in DEMO_PASSWORD. Nothing done.");
+    process.exitCode = 1;
+    return;
+  }
   const existing = await db.user.count().catch(() => 0);
   if (existing > 0 && process.env.SEED_RESET !== "true") {
     console.log(`Database already holds ${existing} users. Set SEED_RESET=true to wipe and reseed. Nothing done.`);
@@ -195,7 +206,7 @@ async function main() {
   const tables = await db.$queryRaw<{ tablename: string }[]>`SELECT tablename FROM pg_tables WHERE schemaname = 'public' AND tablename <> '_prisma_migrations'`;
   if (tables.length) await db.$executeRawUnsafe(`TRUNCATE TABLE ${tables.map((t) => `"${t.tablename}"`).join(", ")} CASCADE`);
 
-  const passwordHash = await hash(DEMO_PASSWORD, { memoryCost: 19456, timeCost: 2, parallelism: 1 });
+  const passwordHash = await hash(demoPassword, { memoryCost: 19456, timeCost: 2, parallelism: 1 });
 
   // Permissions and roles --------------------------------------------------
   await db.permission.createMany({ data: PERMISSIONS.map((p) => ({ ...p, id: id() })) });

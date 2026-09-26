@@ -4194,12 +4194,6 @@
 "text": "Kodu nǔjlɛdonǔwu tɔn"
 },
 {
-"key": "3a26e60e63d84ce192ac7e4f43cc2879937c8aac433ed99c983ab6bf62742fcb",
-"lang": "fon",
-"source": "Plateforme nationale de l'éducation, prototype présenté au défi EduTech Bénin, 2026.",
-"text": "Azɔmɛxwe to ɔ tɔn, kpɔndewu ɖee è xlɛ ɖo EduTech Benin sin tɛnkpɔn ɔ hwenu, 2026."
-},
-{
 "key": "3a429e8a6a9fe6f65983d1277999ca001f891f7fae10d264693813c0a10f5f05",
 "lang": "fon",
 "source": "Votre prénom et votre nom, séparés par un point. Par exemple : afiavi.hounkpatin",
@@ -8746,12 +8740,6 @@
 "lang": "fon",
 "source": "Référence de la transaction (SMS de confirmation) *",
 "text": "Xójlawema nǔxixa tɔn (SMS ɖexlɛ́ ɖɔ nǔgbo wɛ) *"
-},
-{
-"key": "768e872f655128904fc9c96da3b91a9ac671e9931bd2898b41b9f8dfd654a07c",
-"lang": "fon",
-"source": "Prototype présenté au défi EduTech Bénin 2026.",
-"text": "Nǔjlɛdonǔwu e è xlɛ́ ɖò EduTech Benin 2026 sín tɛnkpɔn ɔ hwenu é."
 },
 {
 "key": "769e1bf941083be18895677d62d4ee24da385526cb1ee40ff147941e5b1a0a00",
@@ -22734,12 +22722,6 @@
 "text": "Kodu afimo"
 },
 {
-"key": "3a26e60e63d84ce192ac7e4f43cc2879937c8aac433ed99c983ab6bf62742fcb",
-"lang": "yo",
-"source": "Plateforme nationale de l'éducation, prototype présenté au défi EduTech Bénin, 2026.",
-"text": "Syeed eto ẹkọ orilẹ-ede, apẹrẹ ti a gbekalẹ ni ipenija EduTech Benin, 2026."
-},
-{
 "key": "3a429e8a6a9fe6f65983d1277999ca001f891f7fae10d264693813c0a10f5f05",
 "lang": "yo",
 "source": "Votre prénom et votre nom, séparés par un point. Par exemple : afiavi.hounkpatin",
@@ -27112,12 +27094,6 @@
 "lang": "yo",
 "source": "Référence de la transaction (SMS de confirmation) *",
 "text": "Itọkasi iṣowo (SMS ìmúdájú) *"
-},
-{
-"key": "768e872f655128904fc9c96da3b91a9ac671e9931bd2898b41b9f8dfd654a07c",
-"lang": "yo",
-"source": "Prototype présenté au défi EduTech Bénin 2026.",
-"text": "Afọwọṣe ti a gbekalẹ ni ipenija EduTech Benin 2026."
 },
 {
 "key": "769e1bf941083be18895677d62d4ee24da385526cb1ee40ff147941e5b1a0a00",

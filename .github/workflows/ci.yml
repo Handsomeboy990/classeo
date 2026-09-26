@@ -36,7 +36,7 @@ jobs:
       # High advisories currently come only from the Prisma CLI tree
       # (deepmerge-ts in config loading, mysql2 driver unused with
       # PostgreSQL); neither runs in the deployed app and the only fix is a
-      # downgrade to Prisma 6. Accepted and tracked in docs/security.md.
+      # downgrade to Prisma 6. Accepted and tracked in the security notes.
       # The build still fails on any critical advisory.
       - run: npm audit --omit=dev --audit-level=critical
 
@@ -46,6 +46,8 @@ jobs:
     env:
       DATABASE_URL: postgresql://classeo:classeo@localhost:5432/classeo
       SESSION_SECRET: ci-only-secret-0123456789abcdef0123456789
+      # Opens the secret demo sign in page of the CI server only.
+      DEMO_ACCESS_TOKEN: ci-only-demo-access-token-0123456789abcdef
       # TRUST_PROXY stays unset: without a trusted proxy every request shares
       # one address, so the per address login limit is off and only the per
       # account limit applies.

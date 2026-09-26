@@ -1,10 +1,11 @@
 import path from "node:path";
 
-import { DEMO_PASSWORD } from "../../src/lib/demo/accounts";
+import { LOCAL_DEMO_PASSWORD, resolveDemoPassword } from "../../src/lib/demo/password";
 
-// Seeded demonstration accounts used by the suite (prisma/seed.ts). The
-// password can be overridden for an environment where it was changed.
-export const PASSWORD = process.env.E2E_PASSWORD ?? DEMO_PASSWORD;
+// Seeded demonstration accounts used by the suite (prisma/seed.ts). Their
+// password is the one the seed used: DEMO_PASSWORD, or the local development
+// fallback. E2E_PASSWORD overrides it for an environment where it was changed.
+export const PASSWORD = process.env.E2E_PASSWORD ?? resolveDemoPassword() ?? LOCAL_DEMO_PASSWORD;
 
 export const ACCOUNTS = {
   ministre: "ministre@classeo.bj",
