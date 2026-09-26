@@ -7,7 +7,8 @@ import { EmptyState } from "./states";
 
 const TONE = { primary: "var(--chart-1)", info: "var(--chart-2)", accent: "var(--chart-3)", warning: "var(--chart-3)", danger: "var(--chart-danger)" } as const;
 
-export type BarDatum = { label: string; value: number; href?: string; tone?: keyof typeof TONE };
+// detail: a second, smaller line under the name (amounts behind a rate).
+export type BarDatum = { label: string; detail?: string; value: number; href?: string; tone?: keyof typeof TONE };
 
 // Horizontal bar chart, drawn in HTML and CSS: no chart library, rendered on
 // the server, readable at any text size and in print. Each row is its name,
@@ -66,6 +67,12 @@ export function BarChart({
               <>
                 <span className="ds-bars-label">
                   {d.label}
+                  {d.detail && (
+                    <span className="ds-bars-detail">
+                      <span className="sr-only">, </span>
+                      {d.detail}
+                    </span>
+                  )}
                   <span className="sr-only"> : </span>
                 </span>
                 <span className="ds-bars-track">

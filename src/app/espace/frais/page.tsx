@@ -30,7 +30,8 @@ export default async function FeesOverviewPage() {
     <>
       <PageHeader
         title="Frais et paiements"
-        description={`Recouvrement des frais scolaires${year ? `, année ${year.label}` : ""} · ${user.scope.label}`}
+        description={`${year ? `Année ${year.label} · ` : ""}${user.scope.label}`}
+        info="Recouvrement des frais scolaires : ce qui est attendu, encaissé et reste à recouvrer, par classe."
         actions={
           can(user, "fee:view") ? (
             <ButtonLink href="/espace/frais/factures" variant="secondary">
@@ -84,7 +85,8 @@ export default async function FeesOverviewPage() {
                   max={100}
                   format={(n) => `${n} %`}
                   data={overview.byClass.map((c) => ({
-                    label: `${c.name} · ${formatFcfa(c.collected)} sur ${formatFcfa(c.expected)}`,
+                    label: c.name,
+                    detail: `${formatFcfa(c.collected)} sur ${formatFcfa(c.expected)}`,
                     value: Math.round(c.rate * 100),
                     tone: c.rate < 0.5 ? ("danger" as const) : ("primary" as const),
                     href: can(user, "fee:view") ? `/espace/frais/factures?classe=${c.id}` : undefined,

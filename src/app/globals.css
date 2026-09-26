@@ -2099,6 +2099,15 @@ a.ds-bars-row:hover .ds-bars-label {
     animation: none;
   }
 }
+.ds-bars-detail {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 400;
+  line-height: 1.2;
+}
 .ds-bars-value {
   position: absolute;
   top: 50%;
