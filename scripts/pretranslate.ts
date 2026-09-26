@@ -3,10 +3,22 @@
 // messages, announcements, help), so that parents see them translated on
 // their first visit without waiting for the background queue.
 //
+// With --public, the closed list of the public pages instead
+// (src/features/public-pages/texts.ts): signed out visitors never reach the
+// service, so these must be ready before anyone asks. The rows are then
+// written into prisma/seed-extras/translations.json, shipped with the seed
+// and loaded into production by scripts/seed-public-translations.ts.
+//
 // Usage:
 //   npx tsx scripts/pretranslate.ts --dry-run            list what would be sent
 //   npx tsx scripts/pretranslate.ts --lang fon,yo        translate (default: fon,yo)
 //   npx tsx scripts/pretranslate.ts --lang fon --max 300 at most 300 strings
+//   npx tsx scripts/pretranslate.ts --public             the public pages, saved in the seed
+//   npx tsx scripts/pretranslate.ts --from strings.json  the strings of a JSON
+//     list instead of the source scan, such as the sentences and templates a
+//     page run collects (the scan cannot rebuild a sentence split by inline
+//     elements, nor a template of names and figures)
+// Then scripts/export-translations.ts writes the new rows into the seed.
 //
 // Strings already cached are never sent again. Requests carry 100 strings
 // and respect the quota of the service (5 requests per minute per token),
@@ -15,7 +27,7 @@
 
 import "dotenv/config";
 
-import { readdirSync, readFileSync, statSync } from "node:fs";
+import { readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
 import { PrismaPg } from "@prisma/adapter-pg";
@@ -26,6 +38,7 @@ import { cacheKey } from "../src/features/languages/cache-key";
 import { isTargetLanguage, type TargetLanguage } from "../src/features/languages/languages";
 import { batches, isCandidate, normalise } from "../src/features/languages/text";
 import { realClock, TokenBucket } from "../src/features/languages/token-bucket";
+import { publicSources } from "../src/features/public-pages/texts";
 
 const ROOT = path.resolve(__dirname, "..");
 const SOURCES = [
@@ -40,6 +53,15 @@ const SOURCES = [
   "src/features/help",
   "src/features/students",
   "src/features/notifications",
+  "src/features/mock-exams",
+  "src/features/online-payment",
+  "src/features/student-history",
+  "src/features/offline",
+  "src/features/pwa",
+  "src/features/push",
+  "src/features/school-status",
+  "src/features/languages/translate-content.tsx",
+  "src/features/languages/voice-info.tsx",
   "src/app/espace/(accueil)",
   "src/app/espace/suivi",
   "src/app/espace/bulletins",
@@ -51,9 +73,21 @@ const SOURCES = [
   "src/app/espace/aide",
   "src/app/espace/notifications",
   "src/app/espace/preferences",
+  "src/app/espace/examens-blancs",
+  "src/app/espace/payer",
+  "src/app/espace/eleves/[id]",
+  "src/app/espace/bulletins/[enrollmentId]",
+  "src/app/espace/frais/factures",
+  "src/app/espace/frais/paiements",
+  "src/app/espace/layout.tsx",
+  "src/app/espace/error.tsx",
+  "src/app/layout.tsx",
+  "src/components/ui",
   "src/components/kit",
   "src/components/shell",
   "src/lib/navigation.ts",
+  "src/lib/action.ts",
+  "src/lib/errors.ts",
   "src/lib/domain",
 ];
 
@@ -114,12 +148,29 @@ function arg(name: string) {
   return i === -1 ? undefined : (process.argv[i + 1] ?? "");
 }
 
+const SEED_FILE = path.join(ROOT, "prisma/seed-extras/translations.json");
+type Row = { key: string; lang: string; source: string; text: string };
+
+// Same layout as the file already holds: sorted by language then key, one
+// field per line, so a new run only adds lines to the diff.
+function writeSeed(rows: Row[]) {
+  const sorted = [...rows].sort((a, b) => (a.lang === b.lang ? (a.key < b.key ? -1 : a.key > b.key ? 1 : 0) : a.lang < b.lang ? -1 : 1));
+  const body = sorted.map((r) => `{\n${(["key", "lang", "source", "text"] as const).map((k) => `${JSON.stringify(k)}: ${JSON.stringify(r[k])}`).join(",\n")}\n}`);
+  writeFileSync(SEED_FILE, `[\n${body.join(",\n")}\n]`);
+}
+
 async function main() {
-  const strings = collect();
+  const publicPages = process.argv.includes("--public");
+  const strings = publicPages ? publicSources().map(normalise) : collect();
   const dryRun = process.argv.includes("--dry-run");
   const langs = (arg("lang") ?? "fon,yo").split(",").map((l) => l.trim());
   const max = Number(arg("max") ?? "100000");
   for (const l of langs) if (!isTargetLanguage(l)) throw new Error(`Unknown language: ${l}`);
+  const from = arg("from");
+  if (from) {
+    const list = (JSON.parse(readFileSync(path.resolve(from), "utf8")) as unknown[]).filter((s): s is string => typeof s === "string");
+    strings.splice(0, strings.length, ...new Set(list.map(normalise).filter(isCandidate)));
+  }
 
   const db = new PrismaClient({ adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL! }) });
   const baseUrl = process.env.LANGUES229_API_URL;
@@ -181,6 +232,24 @@ async function main() {
         if (error instanceof QuotaError) console.error(`${lang}: quota reached, run again in a minute`);
         else throw error;
       }
+    }
+    if (publicPages && !dryRun) {
+      // Every cached row of the public texts goes into the seed, the ones
+      // the service could not translate included (stored as their French
+      // text, so they are not asked again).
+      const rows = await db.translation.findMany({
+        where: { lang: { in: langs }, key: { in: strings.map(cacheKey) } },
+        select: { key: true, lang: true, source: true, text: true },
+      });
+      const seed = JSON.parse(readFileSync(SEED_FILE, "utf8")) as Row[];
+      const byId = new Map(seed.map((r) => [`${r.lang}:${r.key}`, r]));
+      let added = 0;
+      for (const r of rows) {
+        if (!byId.has(`${r.lang}:${r.key}`)) added++;
+        byId.set(`${r.lang}:${r.key}`, r);
+      }
+      writeSeed([...byId.values()]);
+      console.log(`${SEED_FILE}: ${added} rows added, ${byId.size} in all`);
     }
   } finally {
     console.log(`Requests to the translation service: ${calls}`);

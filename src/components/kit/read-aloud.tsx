@@ -4,10 +4,10 @@ import { Square, Volume2 } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { frenchTextOf, speechLanguage } from "@/features/languages/client";
-import { inLanguage } from "@/features/languages/languages";
+import { inLanguage, type TargetLanguage } from "@/features/languages/languages";
 import { TranslateContent } from "@/features/languages/translate-content";
 import { cn } from "@/lib/utils";
-import { isSupported, playClips, primeAudio, speak, stop as stopVoice } from "@/lib/voice/kora";
+import { playClips, primeAudio, speak, stop as stopVoice } from "@/lib/voice/kora";
 
 import { toast } from "./toaster";
 
@@ -30,15 +30,19 @@ function readableText(root: HTMLElement) {
 }
 
 // "Kora", the voice of Classéo (see lib/voice/kora.ts). Reads a text, or the
-// readable text of an element, with a French female voice from the device:
-// no download, no server, works offline once the page is loaded. For a user
-// who chose Fon, Yoruba or Hausa (translation:view), it reads in that
-// language with the voice of the translation service, and falls back to
-// French whenever that voice is not available. With a text of its own, it
-// also offers "Traduire en ..." to the same users.
+// readable text of an element: in French with the voice of the server
+// (Siwis, the same on every device), or with the device's own French
+// female voice when the server cannot (outage, offline). In Fon,
+// Yoruba or Hausa with the voice of the translation service, for a user who
+// chose that language (translation:view), or for any visitor when `lang` is
+// given, as on the public pages; `text` is then the French source, the
+// server translates it. A local voice that fails falls back to French. With
+// a text of its own, it also offers "Traduire en ..." to the users holding
+// translation:view.
 export function ReadAloud({
   text,
   targetId,
+  lang,
   label = "Écouter",
   className,
   compact = false,
@@ -46,6 +50,9 @@ export function ReadAloud({
 }: {
   text?: string;
   targetId?: string;
+  // Language to read in. Absent: the language chosen by the user, French
+  // for everyone else.
+  lang?: "fr" | "fon" | "yo" | "ha";
   label?: string;
   className?: string;
   // true: icon only. "mobile": icon only below 40rem, labelled above.
@@ -59,16 +66,22 @@ export function ReadAloud({
   useEffect(() => () => stopVoice(), []);
 
   function french(content: string) {
-    if (!isSupported()) {
-      setSpeaking(false);
-      toast("error", "La lecture vocale n'est pas disponible sur ce navigateur.");
-      return;
-    }
+    primeAudio();
     setSpeaking(true);
-    void speak(content, () => setSpeaking(false));
+    setPreparing(true);
+    void speak(
+      content,
+      (outcome) => {
+        setPreparing(false);
+        setSpeaking(false);
+        if (outcome === "unavailable") toast("error", "La lecture vocale n'est pas disponible sur ce navigateur.");
+        else if (outcome === "failed") toast("error", "La lecture s'est interrompue.");
+      },
+      () => setPreparing(false),
+    );
   }
 
-  async function local(content: string, target: NonNullable<ReturnType<typeof speechLanguage>>) {
+  async function local(content: string, target: TargetLanguage) {
     primeAudio();
     setSpeaking(true);
     setPreparing(true);
@@ -76,18 +89,18 @@ export function ReadAloud({
       const res = await fetch("/api/langues/voix", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ lang: target.lang, text: content.slice(0, 6000) }),
+        body: JSON.stringify({ lang: target, text: content.slice(0, 6000) }),
       });
       const body = (await res.json().catch(() => ({}))) as { clips?: string[] };
       if (!res.ok || !body.clips?.length) throw new Error();
       setPreparing(false);
-      await playClips(body.clips, (ok) => {
+      await playClips(body.clips, (outcome) => {
         setSpeaking(false);
-        if (!ok) toast("error", "La lecture s'est interrompue.");
+        if (outcome === "failed") toast("error", "La lecture s'est interrompue.");
       });
     } catch {
       setPreparing(false);
-      toast("error", `La voix ${inLanguage(target.lang)} n'est pas disponible pour le moment : lecture en français.`);
+      toast("error", `La voix ${inLanguage(target)} n'est pas disponible pour le moment : lecture en français.`);
       french(content);
     }
   }
@@ -96,8 +109,8 @@ export function ReadAloud({
     const target = targetId ? document.getElementById(targetId) : null;
     const content = text ?? (target ? readableText(target) : "");
     if (!content.trim()) return;
-    const lang = speechLanguage();
-    if (lang) void local(content, lang);
+    const language = lang ? (lang === "fr" ? null : lang) : (speechLanguage()?.lang ?? null);
+    if (language) void local(content, language);
     else french(content);
   }
 

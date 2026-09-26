@@ -1,59 +1,98 @@
 "use client";
 
-import { ChevronDown, Eye, EyeOff, LogIn } from "lucide-react";
+import { ChevronDown, CircleHelp, LogIn } from "lucide-react";
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { unstable_rethrow } from "next/navigation";
+import { useRef } from "react";
 
-import { ActionForm, SubmitButton } from "@/components/kit/action-form";
+import { ActionForm, FormMessage, SubmitButton } from "@/components/kit/action-form";
 import { FormField } from "@/components/kit/form-field";
+import { useText } from "@/components/kit/text-provider";
 import { Input } from "@/components/ui/input";
+import type { ActionState } from "@/lib/action";
+import { PUBLIC } from "@/features/public-pages/texts";
 import { DEMO_ACCOUNTS, DEMO_PASSWORD } from "@/lib/demo/accounts";
 
 import { login } from "./actions";
+import { PasswordInput } from "./password-input";
 
-export function LoginForm({ next, showDemo }: { next?: string; showDemo: boolean }) {
-  const [visible, setVisible] = useState(false);
-  const emailRef = useRef<HTMLInputElement>(null);
+const S = PUBLIC.signIn;
+
+// A lost network must not end on an error page: the person keeps what they
+// typed and reads what happened. A redirect (signed in) goes on as usual.
+async function submit(prev: ActionState, formData: FormData): Promise<ActionState> {
+  try {
+    return await login(prev, formData);
+  } catch (error) {
+    unstable_rethrow(error);
+    return { ok: false, message: S.offline };
+  }
+}
+
+// Sign in with the identifier made of the person's names. Texts come from
+// the public list (features/public-pages/texts.ts), shown in the language of
+// the page; the refusal of the server is shown in the form, above the
+// fields, and read out by screen readers.
+export function LoginForm({ next, showDemo, forgotHref }: { next?: string; showDemo: boolean; forgotHref: string }) {
+  const { t } = useText();
+  const loginRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
 
-  function fill(login: string) {
-    if (emailRef.current) emailRef.current.value = login;
+  function fill(username: string) {
+    if (loginRef.current) loginRef.current.value = username;
     if (passwordRef.current) passwordRef.current.value = DEMO_PASSWORD;
     passwordRef.current?.focus();
   }
 
   return (
     <div className="flex flex-col gap-6">
-      <ActionForm action={login} successToast={false} className="flex flex-col gap-4">
+      <ActionForm action={submit} successToast={false} errorToast={false} className="flex flex-col gap-5">
+        <FormMessage title={t(S.failed)} />
         {next && <input type="hidden" name="next" value={next} />}
-        <FormField label="Identifiant" name="login" required hint="Votre prénom et votre nom séparés par un point, par exemple afiavi.hounkpatin.">
-          <Input ref={emailRef} type="text" autoComplete="username" autoCapitalize="none" autoCorrect="off" spellCheck={false} placeholder="prenom.nom" />
-        </FormField>
-        <div className="relative">
-          <FormField label="Mot de passe" name="password" required>
-            <Input ref={passwordRef} type={visible ? "text" : "password"} autoComplete="current-password" className="pr-12" />
+        <div className="flex flex-col gap-1">
+          <FormField label={t(S.identifier)} name="login" required hint={t(S.identifierHint)}>
+            <Input
+              ref={loginRef}
+              type="text"
+              autoComplete="username"
+              autoCapitalize="none"
+              autoCorrect="off"
+              spellCheck={false}
+              enterKeyHint="next"
+              placeholder="prenom.nom"
+              maxLength={200}
+            />
           </FormField>
-          <button
-            type="button"
-            onClick={() => setVisible((v) => !v)}
-            className="absolute top-[1.625rem] right-0 inline-flex size-11 items-center justify-center rounded-md text-muted hover:text-text"
-            aria-label={visible ? "Masquer le mot de passe" : "Afficher le mot de passe"}
-            aria-pressed={visible}
-          >
-            {visible ? <EyeOff className="size-5" aria-hidden /> : <Eye className="size-5" aria-hidden />}
-          </button>
+          <details className="group text-sm">
+            <summary className="-ml-1 inline-flex min-h-11 cursor-pointer list-none items-center gap-1.5 rounded-md px-1 font-semibold text-primary [&::-webkit-details-marker]:hidden">
+              <CircleHelp className="size-4 shrink-0" aria-hidden />
+              {t(S.identifierHelp)}
+              <ChevronDown className="size-4 shrink-0 transition-transform group-open:rotate-180" aria-hidden />
+            </summary>
+            <div className="mt-1 flex flex-col gap-1.5 rounded-control bg-surface-2 px-3.5 py-3 leading-relaxed text-text">
+              <p>{t(S.identifierWhere)}</p>
+              <p>{t(S.identifierTwin)}</p>
+              <p>{t(S.identifierNoEmail)}</p>
+            </div>
+          </details>
         </div>
-        <Link href="/mot-de-passe-oublie" className="-mt-1 self-end text-sm font-semibold text-primary underline-offset-4 hover:underline">
-          Mot de passe oublié ?
-        </Link>
-        <SubmitButton size="lg" pendingLabel="Connexion…" className="mt-1 w-full">
-          <LogIn aria-hidden /> Se connecter
+        <div className="flex flex-col gap-1">
+          <FormField label={t(S.password)} name="password" required>
+            <PasswordInput ref={passwordRef} autoComplete="current-password" enterKeyHint="go" maxLength={200} showLabel={t(S.showPassword)} hideLabel={t(S.hidePassword)} />
+          </FormField>
+          <Link href={forgotHref} className="-mr-1 inline-flex min-h-11 items-center self-end rounded-md px-1 text-sm font-semibold text-primary underline-offset-4 hover:underline">
+            {t(S.forgot)}
+          </Link>
+        </div>
+        <SubmitButton size="lg" pendingLabel={t(S.pending)} className="w-full">
+          <LogIn aria-hidden /> {t(PUBLIC.common.signIn)}
         </SubmitButton>
       </ActionForm>
 
       {showDemo && (
         // Closed by default: the form comes first, the jury opens the list.
-        <details className="group rounded-card border border-border bg-surface-2">
+        // For the presentation only, in French.
+        <details lang="fr" className="group rounded-card border border-border bg-surface-2">
           <summary className="flex min-h-12 cursor-pointer list-none items-center gap-3 px-4 py-2 [&::-webkit-details-marker]:hidden">
             <span className="min-w-0 flex-1">
               <span className="block text-sm font-bold text-text">Comptes de démonstration</span>

@@ -78,6 +78,8 @@ describe("text rules", () => {
     expect(polish("Bonjour", "ku do zanzan")).toBe("Ku do zanzan");
     expect(polish("Trimestre 1", "Akɔ 2")).toBeNull();
     expect(polish("Trimestre 1", "Akɔ 1")).toBe("Akɔ 1");
+    expect(polish("Le 10 octobre 2026", "Zosun 2026 10")).toBe("Zosun 2026 10");
+    expect(polish("Le 10 octobre 2026", "Zosun 2026")).toBeNull();
     expect(polish("Ajouter un cours", "Gɔ́ nú wemaxɔmɛ .")).toBe("Gɔ́ nú wemaxɔmɛ.");
     expect(polish("Bonjour", "")).toBeNull();
     expect(polish("Bonjour", 42)).toBeNull();
