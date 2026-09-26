@@ -153,7 +153,7 @@ export async function seedFamilyExchange(db: PrismaClient, ctx: SeedContext) {
     "Sortie pédagogique au jardin botanique",
     [teacher, parent],
     [
-      { from: teacher, body: "Bonjour Madame Hounkpatin. La classe visite le jardin botanique de Porto-Novo le vendredi 2 octobre. Sènami peut-elle venir ? Il faut une autorisation signée.", at: at("2026-09-24T12:30:00Z") },
+      { from: teacher, body: "Bonjour Madame Hounkpatin. Vendredi, la classe va visiter le jardin des plantes de Porto-Novo. Sènami peut-elle venir ? Il faut une autorisation signée.", at: at("2026-09-24T12:30:00Z") },
       { from: parent, body: "", at: at("2026-09-24T18:45:00Z"), audio: { seconds: 6, seed: 1 } },
       { from: teacher, body: "", at: at("2026-09-25T07:20:00Z"), audio: { seconds: 4, seed: 2 } },
     ],
