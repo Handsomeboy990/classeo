@@ -1,3 +1,5 @@
+import { randomBytes } from "node:crypto";
+
 // Seeded randomness for the seed: the same seed always gives the same draws.
 // Each part of the seed that must not move the draws of another keeps its
 // own generator.
@@ -30,3 +32,14 @@ export function createRng(seed: number) {
 }
 
 export const clamp = (n: number, min: number, max: number) => Math.min(max, Math.max(min, n));
+
+// A random identifier shaped like Prisma's cuid (25 characters): shorter
+// than a UUID, which counts on the hundreds of thousands of rows of the
+// past years (every id is also in one or more indexes).
+const ALPHABET = "0123456789abcdefghijklmnopqrstuvwxyz";
+export function shortId() {
+  const bytes = randomBytes(24);
+  let s = "c";
+  for (const b of bytes) s += ALPHABET[b % 36];
+  return s;
+}
