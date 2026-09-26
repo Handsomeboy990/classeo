@@ -47,8 +47,9 @@ function splitLabel(text: string) {
 // service this way, and one entry serves every family.
 const NUMBER = "\\d+(?:[.,]\\d+)*";
 // Identifiers are values too, never words to translate: "FAC-2026-0242",
-// "BJ26000242", "K6W9P-5GQMY" (capitals and figures, at least one of each).
-const CODE = "(?<![\\p{L}\\p{N}])(?=[A-Z0-9-]*\\d)(?=[A-Z0-9-]*[A-Z][0-9-]*[A-Z])[A-Z0-9][A-Z0-9-]{4,}(?![\\p{L}\\p{N}])";
+// "BJ26000242", "K6W9P-5GQMY" (capitals and figures, at least one of each),
+// "MPMUHRBYLWAPOEV" (a transaction reference, ten capitals or more).
+const CODE = "(?<![\\p{L}\\p{N}])(?:(?=[A-Z0-9-]*\\d)(?=[A-Z0-9-]*[A-Z][0-9-]*[A-Z])[A-Z0-9][A-Z0-9-]{4,}|[A-Z]{10,})(?![\\p{L}\\p{N}])";
 
 // The names a page may show (the reader, their children, their schools,
 // the teachers they write to), longest first so a full name is one slot.

@@ -10,6 +10,8 @@ describe("number templates", () => {
     expect(numberTemplate("Mes enfants")).toBeNull();
     // Identifiers are one value, never words.
     expect(numberTemplate("Réf. BUL-2026-0SPIJLF")?.key).toBe("Réf. 2");
+    expect(numberTemplate("réf. MPMUHRBYLWAPOEV")?.key).toBe("réf. 2");
+    expect(numberTemplate("Voir la FACTURE")).toBeNull();
     expect(numberTemplate("Facture FAC-2026-0242 · CE2 A")?.key).toBe("Facture 2 · CE3 A");
     expect(lookupKeys("3 absences")).toEqual(["3 absences", "2 absences"]);
   });
