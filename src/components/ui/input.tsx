@@ -2,6 +2,8 @@ import type { ComponentProps, CSSProperties, ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
 
+import { InfoTip } from "@/components/kit/info-tip";
+
 import { DateField } from "./date-field";
 import { FileInput } from "./file-input";
 import { SelectField } from "./select";
@@ -128,21 +130,26 @@ export function Switch(props: ChoiceProps) {
 export function ChoiceGroup({
   legend,
   hint,
+  info,
   children,
   orientation = "vertical",
   className,
 }: {
   legend: ReactNode;
   hint?: ReactNode;
+  // Background text, in an info bubble after the legend (kept out of it, so
+  // the group's name stays the legend alone).
+  info?: string;
   children: ReactNode;
   orientation?: "vertical" | "horizontal";
   className?: string;
 }) {
   return (
     <fieldset className={cn("min-w-0", className)}>
-      <legend className="text-sm font-semibold text-text">{legend}</legend>
-      {hint && <p className="mt-0.5 text-sm text-muted">{hint}</p>}
-      <div className={cn("mt-1.5 flex", orientation === "horizontal" ? "flex-wrap gap-x-6" : "flex-col")}>{children}</div>
+      <legend className={cn("text-sm font-semibold text-text", info && "float-left mr-1.5")}>{legend}</legend>
+      {info && <InfoTip label="Plus d'informations sur ce choix">{info}</InfoTip>}
+      {hint && <p className="clear-left mt-0.5 text-sm text-muted">{hint}</p>}
+      <div className={cn("clear-left mt-1.5 flex", orientation === "horizontal" ? "flex-wrap gap-x-6" : "flex-col")}>{children}</div>
     </fieldset>
   );
 }
