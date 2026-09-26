@@ -217,13 +217,14 @@ export const reviewFamilyDocument = createAction({
       metadata: { decision, kind: doc.kind, fileDeleted: dropFile },
     });
     const family = [...(await guardianUserIds([doc.enrollmentId])), doc.submittedById];
-    const period = doc.kind === "MEDICAL" && doc.startsOn && doc.endsOn ? ` Dispense d'EPS du ${formatDate(doc.startsOn)} au ${formatDate(doc.endsOn)}.` : "";
+    // One date, last: the translation layer writes a date that ends a sentence.
+    const period = doc.kind === "MEDICAL" && doc.endsOn ? ` Dispense d'EPS jusqu'au ${formatDate(doc.endsOn)}` : "";
     await notify(family, {
       kind: "family_document",
       // Short sentences with the name and the dates apart, so the translation
       // layer finds each one (names and dates are template values).
       title: accepted ? `Pièce validée : ${what}` : `Pièce refusée : ${what}`,
-      body: accepted ? `C'est en ordre pour ${child}.${period}` : `Pour ${child}. Motif : ${note}`,
+      body: accepted ? `Pour ${child}.${period}` : `Pour ${child}. Motif : ${note}`,
       link: `/espace/pieces-justificatifs?enfant=${doc.student.id}`,
     });
     if (accepted) return doc.kind === "ABSENCE" ? "Justification acceptée : l'absence est excusée." : dropFile ? "Pièce validée. Le fichier de santé est supprimé, seule la décision est gardée." : "Pièce validée.";

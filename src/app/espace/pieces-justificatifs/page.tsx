@@ -142,7 +142,7 @@ export default async function FamilyPiecesPage({ searchParams }: PageProps<"/esp
                           triggerVariant={latest ? "secondary" : "primary"}
                           triggerSize="sm"
                           title={p.label}
-                          description={`${current.student.firstName} ${current.student.lastName}, ${current.classroom.name}.`}
+                          description={`${current.student.firstName} ${current.student.lastName}, ${current.classroom.name}`}
                           submitLabel="Envoyer"
                           pendingLabel="Envoi…"
                         >
@@ -195,7 +195,7 @@ export default async function FamilyPiecesPage({ searchParams }: PageProps<"/esp
                           triggerVariant={latest ? "secondary" : "primary"}
                           triggerSize="sm"
                           title={`Justifier l'absence du ${when}`}
-                          description={`${current.student.firstName} ${current.student.lastName}, ${current.classroom.name}.`}
+                          description={`${current.student.firstName} ${current.student.lastName}, ${current.classroom.name}`}
                           submitLabel="Envoyer la justification"
                           pendingLabel="Envoi…"
                         >
@@ -232,7 +232,7 @@ export default async function FamilyPiecesPage({ searchParams }: PageProps<"/esp
               triggerVariant="secondary"
               triggerSize="sm"
               title="Certificat médical pour une dispense d'EPS"
-              description={`${current.student.firstName} ${current.student.lastName}, ${current.classroom.name}.`}
+              description={`${current.student.firstName} ${current.student.lastName}, ${current.classroom.name}`}
               submitLabel="Envoyer le certificat"
               pendingLabel="Envoi…"
             >
