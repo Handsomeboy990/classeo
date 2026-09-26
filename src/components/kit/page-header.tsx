@@ -52,12 +52,12 @@ export function PageHeader({
         <div className="flex min-w-0 items-center gap-1.5">
           <h1 className="min-w-0 text-[1.625rem] leading-tight font-bold text-balance text-text sm:text-3xl">{title}</h1>
           {info && (
-            <InfoTip label={`À propos de la page ${title}`} size={infoSize} className="mt-0.5">
+            <InfoTip label="À propos de cette page" size={infoSize} className="mt-0.5">
               {info}
             </InfoTip>
           )}
         </div>
-        {description && <p className="mt-1 max-w-2xl text-sm text-pretty text-muted sm:text-base">{description}</p>}
+        {description && <p data-page-detail className="mt-1 max-w-2xl text-sm text-pretty text-muted sm:text-base">{description}</p>}
       </div>
       {listen ? (
         <span className="inline-flex">

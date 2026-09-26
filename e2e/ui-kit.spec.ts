@@ -29,7 +29,7 @@ test.describe("info bubble", () => {
     await expect(info).toBeFocused();
   });
 
-  test("toggles with a tap and closes with a tap elsewhere @mobile", async ({ page }) => {
+  test("toggles with a tap and closes with a tap elsewhere @mobile-only", async ({ page }) => {
     await page.goto("/connexion");
     const info = page.getByRole("button", { name: "Plus d'informations sur ce champ" });
     const tip = page.getByRole("tooltip").filter({ hasText: "Votre prénom et votre nom" });
@@ -54,7 +54,7 @@ test.describe("info bubble", () => {
       await expect(page.getByRole("heading", { level: 1, name: "Statistiques" })).toBeVisible();
       const method = page.getByRole("tooltip").filter({ hasText: "Méthode de calcul" });
       await expect(method).toBeHidden();
-      await page.getByRole("button", { name: "À propos de la page Statistiques" }).click();
+      await page.getByRole("button", { name: "À propos de cette page" }).click();
       await expect(method).toBeVisible();
       await expect(method).toContainText("Taux d'absence");
     });
