@@ -13,7 +13,7 @@ import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input, Textarea } from "@/components/ui/input";
 import { submitFamilyDocument } from "@/features/family-documents/actions";
 import { PieceFileField } from "@/features/family-documents/components/forms";
-import { familyEnrollments, familyFile, type FamilyDocRow } from "@/features/family-documents/queries";
+import { familyEnrollments, familyFile, markSeen, type FamilyDocRow } from "@/features/family-documents/queries";
 import { canSendAgain, STATUS_LABELS, STATUS_TONES } from "@/features/family-documents/rules";
 import { requirePermission } from "@/lib/auth/authorize";
 import { todayIso } from "@/lib/domain/attendance";
@@ -63,7 +63,7 @@ export default async function FamilyPiecesPage({ searchParams }: PageProps<"/esp
   const wanted = param(sp, "enfant");
   const current = children.find((c) => c.student.id === wanted) ?? children[0]!;
   const today = todayIso();
-  const file = await familyFile(user, current, today);
+  const [file] = await Promise.all([familyFile(user, current, today), markSeen(user, `/espace/pieces-justificatifs?enfant=${current.student.id}`)]);
   const child = current.student.firstName;
   const canSend = !file.blocked;
   const toJustify = file.absences.filter((a) => a.status === "ABSENT" && canSendAgain(a.docs));

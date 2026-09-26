@@ -200,3 +200,9 @@ export async function classDispensations(user: User, classroomId: string, today 
     orderBy: [{ startsOn: "asc" }],
   });
 }
+
+// Opening the page a notification points to marks it read, so the badge of
+// the menu entry goes down, as for a conversation.
+export async function markSeen(user: User, link: string) {
+  await db.notification.updateMany({ where: { userId: user.id, readAt: null, link }, data: { readAt: new Date() } });
+}

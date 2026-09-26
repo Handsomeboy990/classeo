@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { ReviewForm } from "@/features/family-documents/components/forms";
-import { staffDoc } from "@/features/family-documents/queries";
+import { markSeen, staffDoc } from "@/features/family-documents/queries";
 import { KIND_LABELS, STATUS_LABELS, STATUS_TONES } from "@/features/family-documents/rules";
 import { requirePermission } from "@/lib/auth/authorize";
 import { fileUrl, sizeLabel } from "@/lib/files";
@@ -22,6 +22,7 @@ export default async function FamilyPiecePage({ params }: PageProps<"/espace/pie
   const { id } = await params;
   const doc = await staffDoc(user, id);
   if (!doc) notFound();
+  await markSeen(user, `/espace/pieces-familles/${doc.id}`);
 
   const title = doc.kind === "ENROLLMENT" ? (doc.requiredPiece?.label ?? KIND_LABELS.ENROLLMENT) : KIND_LABELS[doc.kind];
   const image = doc.file && doc.file.mimeType.startsWith("image/");
