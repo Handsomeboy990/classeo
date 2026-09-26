@@ -4,7 +4,38 @@ import { generalAverage, mention, rankEntries, subjectAverage, type GradeInput }
 
 const g = (type: GradeInput["type"], value: number | null, maxValue = 20): GradeInput => ({ type, value, maxValue });
 
-describe("subjectAverage", () => {
+describe("subjectAverage, official formula (arrêté n° 029 of 6 May 2024, annex 3)", () => {
+  it("counts the interrogations average as one mark and each devoir surveillé as one: (MEPE + NPS1 + NPS2) / 3", () => {
+    // MEPE = (12 + 14) / 2 = 13; M = (13 + 10 + 16) / 3 = 13.
+    const r = subjectAverage("OFFICIAL_2024", [g("INTERROGATION", 12), g("INTERROGATION", 14), g("DEVOIR", 10), g("DEVOIR", 16)]);
+    expect(r.interrogationAverage).toBe(13);
+    expect(r.average).toBe(13);
+  });
+
+  it("divides by four with three devoirs surveillés: (MEPE + NPS1 + NPS2 + NPS3) / 4", () => {
+    // MEPE = (8 + 11 + 14) / 3 = 11; M = (11 + 9 + 12 + 16) / 4 = 12.
+    const r = subjectAverage("OFFICIAL_2024", [g("INTERROGATION", 8), g("INTERROGATION", 11), g("INTERROGATION", 14), g("DEVOIR", 9), g("DEVOIR", 12), g("DEVOIR", 16)]);
+    expect(r.average).toBe(12);
+  });
+
+  it("gives no double weight to any mark, unlike the composition practice", () => {
+    const grades = [g("INTERROGATION", 10), g("DEVOIR", 12), g("DEVOIR", 17)];
+    expect(subjectAverage("OFFICIAL_2024", grades).average).toBe(13); // (10 + 12 + 17) / 3
+    expect(subjectAverage("WEIGHTED_STANDARD", grades).average).toBe(12.25); // (10 + 14.5) / 2
+  });
+
+  it("ignores compositions and leaves out a missing component", () => {
+    expect(subjectAverage("OFFICIAL_2024", [g("DEVOIR", 11), g("DEVOIR", 15), g("COMPOSITION", 2)]).average).toBe(13);
+    expect(subjectAverage("OFFICIAL_2024", [g("INTERROGATION", 9), g("INTERROGATION", 12)]).average).toBe(10.5);
+    expect(subjectAverage("OFFICIAL_2024", [g("DEVOIR", null)]).average).toBeNull();
+  });
+
+  it("normalises marks not given on 20", () => {
+    expect(subjectAverage("OFFICIAL_2024", [g("INTERROGATION", 7, 10), g("DEVOIR", 30, 40)]).average).toBe(14.5); // (14 + 15) / 2
+  });
+});
+
+describe("subjectAverage, school formulas", () => {
   it("applies (interrogations + devoir + 2 x composition) / 4", () => {
     const r = subjectAverage("WEIGHTED_STANDARD", [g("INTERROGATION", 12), g("INTERROGATION", 14), g("DEVOIR", 10), g("COMPOSITION", 15)]);
     expect(r.interrogationAverage).toBe(13);

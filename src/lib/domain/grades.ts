@@ -1,7 +1,18 @@
 // Grade rules transposed from the scolarite project (GradeService.php).
 // Pure functions, no database access, fully unit tested.
 
-export type Formula = "WEIGHTED_STANDARD" | "SIMPLE_AVERAGE" | "COMPOSITION_ONLY";
+export type Formula = "OFFICIAL_2024" | "WEIGHTED_STANDARD" | "SIMPLE_AVERAGE" | "COMPOSITION_ONLY";
+
+// The formula applied when nothing else is chosen: the national rule.
+export const DEFAULT_FORMULA: Formula = "OFFICIAL_2024";
+
+// Formulas that use compositions: a school practice (common in private
+// schools), offered only to schools that enabled it.
+export const COMPOSITION_FORMULAS: Formula[] = ["WEIGHTED_STANDARD", "SIMPLE_AVERAGE", "COMPOSITION_ONLY"];
+
+export function usesComposition(formula: Formula) {
+  return COMPOSITION_FORMULAS.includes(formula);
+}
 export type GradeKind = "INTERROGATION" | "DEVOIR" | "COMPOSITION";
 
 export type GradeInput = { type: GradeKind; value: number | null; maxValue: number };
@@ -26,16 +37,27 @@ function averageOn20(grades: GradeInput[]): number | null {
 }
 
 // Subject average for a period.
-// WEIGHTED_STANDARD: (interrogations average + devoir + 2 x composition) / 4,
-// the usual rule in francophone West African schools. A missing component is
-// left out and its weight with it.
+// OFFICIAL_2024: MESTFP order n° 029 of 6 May 2024 (article 59, annex 3).
+// The average of the interrogations counts as one mark and each devoir
+// surveillé as one mark, without any double weight:
+// (MEPE + NPS1 + NPS2) / 3, or (MEPE + NPS1 + NPS2 + NPS3) / 4.
+// Compositions are not part of the national rule and are ignored.
+// WEIGHTED_STANDARD: (interrogations average + devoirs average + 2 x
+// composition) / 4, a school practice kept for the schools that use it.
+// In both, a missing component is left out and its weight with it.
 export function subjectAverage(formula: Formula, grades: GradeInput[]): SubjectBreakdown {
   const interrogationAverage = averageOn20(grades.filter((g) => g.type === "INTERROGATION"));
   const devoirAverage = averageOn20(grades.filter((g) => g.type === "DEVOIR"));
   const compositionAverage = averageOn20(grades.filter((g) => g.type === "COMPOSITION"));
 
   let average: number | null = null;
-  if (formula === "COMPOSITION_ONLY") {
+  if (formula === "OFFICIAL_2024") {
+    const marks = [
+      ...(interrogationAverage === null ? [] : [interrogationAverage]),
+      ...grades.filter((g) => g.type === "DEVOIR" && g.value !== null && g.maxValue > 0).map((g) => ((g.value as number) / g.maxValue) * 20),
+    ];
+    average = marks.length ? round2(marks.reduce((a, b) => a + b, 0) / marks.length) : null;
+  } else if (formula === "COMPOSITION_ONLY") {
     average = compositionAverage;
   } else if (formula === "SIMPLE_AVERAGE") {
     const values = [interrogationAverage, devoirAverage, compositionAverage].filter((v): v is number => v !== null);
