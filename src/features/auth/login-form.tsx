@@ -11,12 +11,17 @@ import { useText } from "@/components/kit/text-provider";
 import { Input } from "@/components/ui/input";
 import type { ActionState } from "@/lib/action";
 import { PUBLIC } from "@/features/public-pages/texts";
-import { DEMO_ACCOUNTS, DEMO_PASSWORD } from "@/lib/demo/accounts";
+import { DEMO_ACCOUNTS } from "@/lib/demo/accounts";
 
 import { login } from "./actions";
 import { PasswordInput } from "./password-input";
 
 const S = PUBLIC.signIn;
+
+// The demonstration panel. The shared password reaches the browser only when
+// the server holds it and the page may show it (src/lib/demo); otherwise the
+// panel fills the identifier alone and the password is typed.
+export type DemoPanel = { password: string | null };
 
 // A lost network must not end on an error page: the person keeps what they
 // typed and reads what happened. A redirect (signed in) goes on as usual.
@@ -33,14 +38,14 @@ async function submit(prev: ActionState, formData: FormData): Promise<ActionStat
 // the public list (features/public-pages/texts.ts), shown in the language of
 // the page; the refusal of the server is shown in the form, above the
 // fields, and read out by screen readers.
-export function LoginForm({ next, showDemo, forgotHref }: { next?: string; showDemo: boolean; forgotHref: string }) {
+export function LoginForm({ next, demo, forgotHref }: { next?: string; demo: DemoPanel | null; forgotHref: string }) {
   const { t } = useText();
   const loginRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
 
   function fill(username: string) {
     if (loginRef.current) loginRef.current.value = username;
-    if (passwordRef.current) passwordRef.current.value = DEMO_PASSWORD;
+    if (passwordRef.current && demo?.password) passwordRef.current.value = demo.password;
     passwordRef.current?.focus();
   }
 
@@ -89,7 +94,7 @@ export function LoginForm({ next, showDemo, forgotHref }: { next?: string; showD
         </SubmitButton>
       </ActionForm>
 
-      {showDemo && (
+      {demo && (
         // Closed by default: the form comes first. Demo data only, in
         // French.
         <details lang="fr" className="group rounded-card border border-border bg-surface-2">
@@ -102,7 +107,13 @@ export function LoginForm({ next, showDemo, forgotHref }: { next?: string; showD
           </summary>
           <div className="border-t border-border px-2 pt-2 pb-3">
             <p className="px-2 pb-2 text-xs text-muted">
-              Mot de passe commun : <code className="font-semibold text-text">{DEMO_PASSWORD}</code>
+              {demo.password ? (
+                <>
+                  Mot de passe commun : <code className="font-semibold text-text">{demo.password}</code>
+                </>
+              ) : (
+                "Le mot de passe commun vous est communiqué séparément."
+              )}
             </p>
             <ul className="flex flex-col">
               {DEMO_ACCOUNTS.map((a) => (

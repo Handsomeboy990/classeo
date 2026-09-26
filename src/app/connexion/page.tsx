@@ -1,29 +1,18 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
-import { AuthShell } from "@/features/auth/auth-shell";
-import { LoginForm } from "@/features/auth/login-form";
-import { publicTranslator } from "@/features/public-pages/server";
-import { PUBLIC, PUBLIC_SPEECH } from "@/features/public-pages/texts";
-import { publicChoice, withChoice } from "@/features/public-pages/translate";
+import { SignInPage } from "@/features/auth/sign-in-page";
 import { getCurrentUser } from "@/lib/auth/session";
-import { param } from "@/lib/list";
+import { showPublicDemoPanel } from "@/lib/demo/access";
+import { resolveDemoPassword } from "@/lib/demo/password";
 
 export const metadata: Metadata = { title: "Connexion" };
 
-// Sign in, in French, Fongbe or Yoruba (?lang=, ?voix=). See AuthShell for
-// the frame and LoginForm for the form.
+// The public sign in page. The demonstration panel shows on a development
+// machine only (src/lib/demo/access.ts); a deployment offers it at the secret
+// address of src/app/acces/[token] instead.
 export default async function LoginPage({ searchParams }: PageProps<"/connexion">) {
   if (await getCurrentUser()) redirect("/espace");
-  const sp = await searchParams;
-  const { lang, voice } = publicChoice(sp);
-  const tr = await publicTranslator(lang);
-  const next = param(sp, "next");
-  const showDemo = process.env.DEMO_MODE !== "off";
-
-  return (
-    <AuthShell tr={tr} voice={voice} aside="signin" title={PUBLIC.signIn.title} description={PUBLIC.signIn.intro} descriptionAs="info" listen={PUBLIC_SPEECH.signIn} extra={{ next }}>
-      <LoginForm next={next} showDemo={showDemo} forgotHref={withChoice("/mot-de-passe-oublie", lang, voice)} />
-    </AuthShell>
-  );
+  const demo = showPublicDemoPanel() ? { password: resolveDemoPassword() } : null;
+  return <SignInPage searchParams={await searchParams} demo={demo} />;
 }

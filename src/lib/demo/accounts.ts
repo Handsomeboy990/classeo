@@ -1,8 +1,8 @@
-// Demonstration accounts shown on the sign in page so a visitor can try every
-// role. They exist only in seeded demo data. Accounts sign in with the
-// identifier built from their names; the e-mail still works for those that
-// have one.
-export const DEMO_PASSWORD = "Classeo2026";
+// Demonstration accounts shown on the demo panel of the sign in page so a
+// visitor can try every role. They exist only in seeded demo data. Accounts
+// sign in with the identifier built from their names; the e-mail still works
+// for those that have one. Their shared password is not here: see
+// ./password.ts.
 
 export const DEMO_ACCOUNTS = [
   { username: "adjoa.houngbedji", email: "ministre@classeo.bj", role: "Administratrice nationale", scope: "Ministères, tout le Bénin" },

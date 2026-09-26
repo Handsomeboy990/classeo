@@ -22,6 +22,13 @@ export async function hitRateLimit(key: string, limit: number, windowMs: number)
   return { allowed: row.count <= limit, count: row.count, retryAfterMs: Math.max(0, retryAfterMs) };
 }
 
+// Whether a key is over its limit, without counting a new attempt: for a
+// check that must refuse a blocked caller even when this attempt is valid.
+export async function isRateLimited(key: string, limit: number, windowMs: number) {
+  const current = await db.rateLimit.findUnique({ where: { key }, select: { count: true, windowStart: true } });
+  return !!current && current.windowStart.getTime() > Date.now() - windowMs && current.count >= limit;
+}
+
 export async function resetRateLimit(key: string) {
   await db.rateLimit.deleteMany({ where: { key } });
 }
