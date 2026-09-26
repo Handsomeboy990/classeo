@@ -13986,6 +13986,12 @@
 "text": "Filtre par type"
 },
 {
+"key": "d9807bf4df8a84ffcc6d9d080eff57977ef9e921391e8f60a9f6775d4501ee5a",
+"lang": "fon",
+"source": "Au plus 2 FCFA.",
+"text": "É sukpɔ́ hú mɔ̌ ɔ, 2 FCFA wɛ."
+},
+{
 "key": "d994059345149207da9f204e770b9846a77221db9eb0fcf9942f1b628947ddef",
 "lang": "fon",
 "source": "Moyenne générale : 2 sur 3, Insuffisant.",
@@ -30106,6 +30112,12 @@
 "lang": "yo",
 "source": "Filtrer par type",
 "text": "Àlẹmọ nipa iru"
+},
+{
+"key": "d9807bf4df8a84ffcc6d9d080eff57977ef9e921391e8f60a9f6775d4501ee5a",
+"lang": "yo",
+"source": "Au plus 2 FCFA.",
+"text": "Iye ti o ga julọ 2 FCFA."
 },
 {
 "key": "d994059345149207da9f204e770b9846a77221db9eb0fcf9942f1b628947ddef",
