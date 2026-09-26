@@ -3,7 +3,10 @@ import type { ComponentProps, CSSProperties, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 import { DateField } from "./date-field";
+import { FileInput } from "./file-input";
 import { SelectField } from "./select";
+
+export { FileInput };
 
 // Form controls. The look lives in globals.css (.ds-field, .ds-check,
 // .ds-switch): tokens drive light, dark and high contrast alike, and a
@@ -58,6 +61,12 @@ export function Input({
   // Dates get the calendar of the design system (ui/date-field.tsx), which
   // keeps the native field as its value and as the fallback.
   if (props.type === "date" && leading == null && trailing == null) return <DateField className={className} fieldSize={fieldSize} {...props} />;
+  // Files get the drop zone of the design system (ui/file-input.tsx).
+  if (props.type === "file") {
+    const { type: _type, ...rest } = props;
+    void _type;
+    return <FileInput className={className} {...rest} />;
+  }
   return (
     <Adorned leading={leading} trailing={trailing} wrapperClassName={wrapperClassName}>
       <input className={cn("ds-field", className)} data-size={fieldSize === "md" ? undefined : fieldSize} {...props} />

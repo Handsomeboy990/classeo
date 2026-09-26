@@ -33,16 +33,20 @@ const CLOSE_DELAY = 120;
 export function InfoTip({
   children,
   label = "Plus d'informations",
+  id: tipIdProp,
   className,
 }: {
   // The explanation. Plain phrasing content (text, strong, links).
   children: ReactNode;
   // Accessible name of the button, e.g. "À propos du taux de réussite".
   label?: string;
+  // Id of the bubble's text, for a field that also points at it with its
+  // own aria-describedby (FormField info).
+  id?: string;
   className?: string;
 }) {
   const id = useId();
-  const tipId = `${id}-tip`;
+  const tipId = tipIdProp ?? `${id}-tip`;
   const button = useRef<HTMLButtonElement>(null);
   const tip = useRef<HTMLSpanElement>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
