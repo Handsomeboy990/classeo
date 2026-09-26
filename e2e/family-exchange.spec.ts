@@ -161,7 +161,11 @@ test.describe("pieces sent by families", () => {
     await expect(parent.getByText(`Absence excusée : Justifiée : ${reason}`)).toBeVisible();
   });
 
-  test("a medical certificate is validated, then its file is gone @mobile", async ({ pageAs }) => {
+  test("a medical certificate is validated, then its file is gone @mobile", async ({ pageAs, isMobile }) => {
+    // One medical piece may wait per child: the desktop and mobile runs share
+    // the parent account and would refuse each other's certificate. The
+    // mobile layout of these pages is covered by the two tests above.
+    test.skip(isMobile, "the desktop run sends the child's medical certificate");
     // A period unique to the run, to find the piece in the queue.
     const offset = 30 + Math.floor(Math.random() * 300);
     const parent = await pageAs("parent");

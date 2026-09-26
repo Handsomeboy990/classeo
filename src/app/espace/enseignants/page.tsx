@@ -133,9 +133,9 @@ async function Registry({ user, sp }: { user: User; sp: SearchParams }) {
       primary: true,
       cell: (r) => (
         <div>
-          <p className="font-semibold">
+          <Link href={`/espace/enseignants/registre/${r.id}`} className="font-semibold text-primary hover:underline">
             {r.lastName} {r.firstName}
-          </p>
+          </Link>
           <span className="block font-mono text-xs text-muted">{r.npi ? `NPI ${r.npi}` : "Sans NPI"}</span>
         </div>
       ),
@@ -231,7 +231,7 @@ async function Registry({ user, sp }: { user: User; sp: SearchParams }) {
       <PageHeader
         title="Registre des enseignants"
         description={user.scope.label}
-        info="Une fiche par personne, avec tous ses établissements."
+        info="Une fiche par personne, avec tous ses établissements. Ouvrez une ligne pour voir la fiche de l'enseignant."
         actions={
           <>
             {keepsRegistry && (
@@ -263,6 +263,7 @@ async function Registry({ user, sp }: { user: User; sp: SearchParams }) {
         rows={rows}
         columns={columns}
         rowKey={(r) => r.id}
+        rowHref={(r) => `/espace/enseignants/registre/${r.id}`}
         total={total}
         page={page}
         pageSize={pageSize}
