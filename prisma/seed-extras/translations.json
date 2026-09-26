@@ -6330,6 +6330,12 @@
 "text": "Kplé mɛjitɔ́ azɔmɛvi lɛ tɔn"
 },
 {
+"key": "5c162ebcb4fbeae0a3e3cbbe81f39045208215b4b67cfba5a3401f23b6aa24f7",
+"lang": "fon",
+"source": "Une absence",
+"text": "Mɛ e ma ɖò finɛ ǎ é ɖé"
+},
+{
 "key": "5c54999455cab4cc4a19ed835459900ea7b1eb9b2e7362f6d23bc3c99e729143",
 "lang": "fon",
 "source": "Deux décimales au maximum.",
@@ -7438,6 +7444,12 @@
 "lang": "fon",
 "source": "Si cet identifiant correspond à un compte actif, votre demande est arrivée chez la personne qui gère votre compte : le chef d'établissement pour les élèves, les parents et le personnel ; la circonscription pour un chef d'établissement ; puis la direction départementale et le ministère. Elle vous remettra un mot de passe temporaire, en personne ou au numéro indiqué.",
 "text": "Nú nǔ e nɔ xlɛ́ mɛ é enɛ sɔgbe xá akɔnta e ɖò azɔ̌ wà wɛ é ɖé ɔ, nǔ e a byɔ é ko yì mɛ e nɔ kpé nukún dó akɔnta towe wu é gɔ́n: ​​gǎn e nɔ kpé nukún dó wemaxɔmɛví lɛ, mɛjitɔ́ lɛ kpo azɔ̌watɔ́ lɛ kpo wu é; tokpɔn e mɛ è nɔ sɔ́ mɛ ɖó é nú gǎn e è ɖó ayǐ é ɖé; enɛ gudo ɔ, azɔ̌xɔsa ɔ sín gǎn lɛ kpo sinsɛnzɔ́ ɔ kpo. É na na we password nú táan klewun ɖé, é na wá kpɔ́n we alǒ ɖò nɔtɛn e è xlɛ́ é jí."
+},
+{
+"key": "6b911025cb285eed933a98ef306e25e50eb8f960bcdbc97c6b4821ee2daa9e84",
+"lang": "fon",
+"source": "Une absence cette semaine.",
+"text": "Absence ɖé ɖò aklunɔzán gbla elɔ mɛ."
 },
 {
 "key": "6b988a59e04b2f4667bb471b857d0d408b2613d464fc48488c76b38cb0e2d997",
@@ -18480,6 +18492,12 @@
 "text": "Kaabo 2. O ni ifiranṣẹ ti a ko ka."
 },
 {
+"key": "0b7a4de51bb9e2104f8e97bab87b1c6a6515eb839501689eef21c353fd0c44c9",
+"lang": "yo",
+"source": "Une absence cette semaine",
+"text": "An isansa ose yi"
+},
+{
 "key": "0b7d9c97d9792cda8fb44cd2af3e3aa5d18400ccd170d3cd51f95a44c5d5ff86",
 "lang": "yo",
 "source": "Télécharger en PDF, bulletin du Trimestre 2 3-4",
@@ -23790,6 +23808,12 @@
 "text": "Ipade ti awọn obi ti awọn ọmọ ile-iwe"
 },
 {
+"key": "5c162ebcb4fbeae0a3e3cbbe81f39045208215b4b67cfba5a3401f23b6aa24f7",
+"lang": "yo",
+"source": "Une absence",
+"text": "Isansa"
+},
+{
 "key": "5c54999455cab4cc4a19ed835459900ea7b1eb9b2e7362f6d23bc3c99e729143",
 "lang": "yo",
 "source": "Deux décimales au maximum.",
@@ -24838,6 +24862,12 @@
 "lang": "yo",
 "source": "Si cet identifiant correspond à un compte actif, votre demande est arrivée chez la personne qui gère votre compte : le chef d'établissement pour les élèves, les parents et le personnel ; la circonscription pour un chef d'établissement ; puis la direction départementale et le ministère. Elle vous remettra un mot de passe temporaire, en personne ou au numéro indiqué.",
 "text": "Ti idanimọ yii ba ni ibamu si akọọlẹ ti nṣiṣe lọwọ, ibeere rẹ ti de ọdọ ẹniti o ṣakoso akọọlẹ rẹ: ori idasile fun awọn ọmọ ile-iwe, awọn obi ati oṣiṣẹ; agbegbe fun olori idasile; lẹhinna iṣakoso ẹka ati iṣẹ-iranṣẹ. Yoo fun ọ ni ọrọ igbaniwọle igba diẹ, ni eniyan tabi ni nọmba ti o tọka."
+},
+{
+"key": "6b911025cb285eed933a98ef306e25e50eb8f960bcdbc97c6b4821ee2daa9e84",
+"lang": "yo",
+"source": "Une absence cette semaine.",
+"text": "An isansa ose yi."
 },
 {
 "key": "6b988a59e04b2f4667bb471b857d0d408b2613d464fc48488c76b38cb0e2d997",
