@@ -59,3 +59,6 @@ test-results/
 # python (api/kora-tts.py)
 __pycache__/
 .venv/
+
+# security notes, kept outside version control
+docs/security.md

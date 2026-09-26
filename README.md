@@ -17,8 +17,9 @@ This readme is for engineers and technical reviewers. Depth lives in
 [docs/](docs/):
 [architecture](docs/architecture.md), [main flows](docs/flows.md),
 [HTTP API and server actions](docs/api/README.md),
-[deployment runbook](docs/deployment.md), [security](docs/security.md),
+[deployment runbook](docs/deployment.md),
 [payment providers](docs/payment-providers.md), [roadmap](docs/roadmap.md).
+Detailed security notes are kept outside the repository.
 
 ## Features by role
 
@@ -316,8 +317,8 @@ Passwords are hashed with argon2id, sessions are database backed and revocable,
 sign in is rate limited with lockout, every action and page checks its
 permission and the territorial scope on the server, inputs are validated with
 zod, security headers include a CSP without third party scripts, and sensitive
-actions are written to an audit log. Details, audit findings and accepted
-advisories: [docs/security.md](docs/security.md).
+actions are written to an audit log. Detailed security notes, audit findings
+and accepted advisories are kept outside the repository.
 
 Personal data of minors is processed, including health documents, which are
 deleted once the school has decided on them. Processing in Benin falls under

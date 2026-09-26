@@ -3,9 +3,9 @@
 For engineers joining the project or reviewing it. It describes how the
 platform is built and why; the journeys step by step are in
 [flows.md](flows.md), the HTTP routes and server actions in
-[api/](api/README.md), operations in [deployment.md](deployment.md), security
-controls in [security.md](security.md), and what is not built yet in
-[roadmap.md](roadmap.md).
+[api/](api/README.md), operations in [deployment.md](deployment.md), and what
+is not built yet in [roadmap.md](roadmap.md). Detailed security notes are kept
+outside the repository.
 
 ## 1. Summary
 
@@ -243,8 +243,8 @@ Rules:
   - User scoped data is never shared across users.
   - Static assets are immutable; the service worker serves the offline
     shell and the private pages of the signed in account only.
-- **Security.** Summary here, details and audit findings in
-  [security.md](security.md).
+- **Security.** Summary here; detailed notes and audit findings are kept
+  outside the repository.
   - argon2id hashes, signed httpOnly SameSite=Lax cookies, revocable
     sessions of eight hours.
   - Forced password change after any temporary password.

@@ -36,7 +36,7 @@ jobs:
       # High advisories currently come only from the Prisma CLI tree
       # (deepmerge-ts in config loading, mysql2 driver unused with
       # PostgreSQL); neither runs in the deployed app and the only fix is a
-      # downgrade to Prisma 6. Accepted and tracked in docs/security.md.
+      # downgrade to Prisma 6. Accepted and tracked in the security notes.
       # The build still fails on any critical advisory.
       - run: npm audit --omit=dev --audit-level=critical
 
