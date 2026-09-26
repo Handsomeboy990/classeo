@@ -156,6 +156,12 @@
 "text": "Wemaxɔmɛ e ɖò xá mitɔn mɛ lɛ é sín nyikɔ ɖò “Etablissement” kpo “Territoire” kpo mɛ."
 },
 {
+"key": "028fd4133ef2752a0e0f4495c86e32befcda2272ecee76fe1d1ced17ed039812",
+"lang": "fon",
+"source": "semestre 2",
+"text": "azan 2gɔ́ ɔ"
+},
+{
 "key": "02a72abb8d163ba13a0d172c94c87a089a38b7306dafa57235b851e0a2db2ea3",
 "lang": "fon",
 "source": "Notifications désactivées sur cet appareil.",
@@ -208,6 +214,12 @@
 "lang": "fon",
 "source": "À vérifier",
 "text": "È na gbéjé kpɔ́n."
+},
+{
+"key": "03a4344645f3845274f956e015f7bd1622255b1f02df3b61a95cfe163da943da",
+"lang": "fon",
+"source": "Voir le bulletin du Semestre 1 2-3",
+"text": "Kpɔ́n xójlawema Semestre 1 tɔn 2-3."
 },
 {
 "key": "03ef125b57374e10cbb48ba3903c748de02de59ee35d1e9d75e021fa6c1dd8cf",
@@ -4044,6 +4056,12 @@
 "text": "Wɛn towe"
 },
 {
+"key": "40571be6e91601fd2e3e67545a632177ff403d437cbc662c8381987eabef426d",
+"lang": "fon",
+"source": "Bulletin de 2, Semestre 3 4-5. Moyenne générale : 6 sur 7, Insuffisant. Rang : 8e sur 9. Appréciation : Résultats insuffisants, un soutien est recommandé.",
+"text": "Kati Gbè 2gɔ́ ɔ, Akpáxwé 3gɔ́ ɔ 4-5. Ðò linlin mɛ bǐ mlɛ́mlɛ́: 6 ɖò 7 jí, É kpé ǎ. Rank: 8ème sur 9. Évaluation: Nǔ e è mɔ lɛ é ma kpé ǎ, è nɔ kplɔ́n mɛ ɖɔ è ni nɔ gudo nú mɛ."
+},
+{
 "key": "406310837f3002dcc30ca82e5bcc0bc29a10f1c2d66087d2130226aa72dab68f",
 "lang": "fon",
 "source": "Adaptez l'affichage,",
@@ -5980,6 +5998,12 @@
 "lang": "fon",
 "source": "Horaire",
 "text": "Ganxixo ɖokpo ɖokpo mɛ"
+},
+{
+"key": "5f227958efd4fc64f8d485194b3045ec38ac32e5e412343950b4e974530dff2e",
+"lang": "fon",
+"source": "Semestre 2 3-4",
+"text": "Akpáxwé 2gɔ́ ɔ 3-4."
 },
 {
 "key": "5f2fe86d8602750321056e69c9081ddd0648c84e68a8fc802228e489f8d45760",
@@ -8050,6 +8074,12 @@
 "lang": "fon",
 "source": "Choisissez un mode de paiement.",
 "text": "Cyan wlɛnwín akwɛzinzan tɔn ɖé."
+},
+{
+"key": "7cda53cf042ae2e56b40d1123030e9ecef8a7f589611fbcee19aceaf807eb3f6",
+"lang": "fon",
+"source": "DDESTFP de l'Atlantique (Direction départementale)",
+"text": "DDESTFP Atlantique tɔn (Azɔwatɛn ɔ sín Azɔ̌xɔsa)"
 },
 {
 "key": "7cf7725efaab2605277c28023ae54a1d0c0bce5cbcf748af84aa887231918269",
@@ -11862,6 +11892,12 @@
 "text": "Tóɖiɖó gló"
 },
 {
+"key": "b7c42542900919f9c7c1d8c8f57767a99ed800b360c43bd16dd993b6cc5dedbe",
+"lang": "fon",
+"source": "Voir le bulletin du Semestre 2 3-4",
+"text": "Kpɔ́n xójlawema Semestre 2gɔ́ ɔ tɔn 3-4."
+},
+{
 "key": "b7c59dcb82a83804875ba677b152e407de7d1e06cb9b670472cd2e0b2c8b238d",
 "lang": "fon",
 "source": "Dans « Présences »",
@@ -11890,6 +11926,12 @@
 "lang": "fon",
 "source": "Le rôle doit conserver",
 "text": "Azɔ̌ ɔ ɖó na nɔ."
+},
+{
+"key": "b8696c198c3735d3f314cd29076fb4a06ece6f1d6e0b94695737ff56682f9929",
+"lang": "fon",
+"source": "Semestre 1 · 2 notes",
+"text": "Azan 1 · 2 nùwlanwlan"
 },
 {
 "key": "b8892909214073cbc5dd10f60a78da867252be4a249adc41d96ccf8265087e84",
@@ -13872,6 +13914,12 @@
 "text": "Bonjour Madame 2. 3 a bien commencé l'année, mais elle a été notée absente ce matin, jeudi 4 septembre. Pouvez-vous me dire si tout va bien ? Madame 5, professeure de mathématiques"
 },
 {
+"key": "d880be65dacd7fb1fbdadd186aafcc4fe84e337f144f51b662f6a64745e6871c",
+"lang": "fon",
+"source": "Le bulletin du second semestre 2-3 de 4 est disponible.",
+"text": "Gbè e è nɔ dó ɖò aklunɔzán gblamɛ wegɔ ɔ mɛ é 2-3 ɖò 4 jí ɖò finɛ."
+},
+{
 "key": "d89fd6e0199099f64eddb47af705951e4d3abd6ea276fe6e1493bdbbeb47e475",
 "lang": "fon",
 "source": "2 3 FCFA · Espèces",
@@ -14620,6 +14668,12 @@
 "lang": "fon",
 "source": "Le type de frais et son échéancier seront supprimés. Un type de frais déjà facturé ne peut pas être supprimé : désactivez-le.",
 "text": "È na ɖè akwɛ alɔkpa e è nɔ sú é kpo tuto tɔn kpo síìn. Akwɛ alɔkpa e è ko yí ɖ’ayǐ é ɖé sixu súnsún ǎ: deactivé-le."
+},
+{
+"key": "e3dd72180b8fb9f2692e586f9ac8b76c15ca09887f9ad19fc5ba367075df4df8",
+"lang": "fon",
+"source": "Notes de 2, semestre 1. Moyenne provisoire : 3 sur 4, Passable. 5 matières notées sur 5. Meilleure matière : Éducation physique et sportive. À travailler : Histoire-Géographie.",
+"text": "Kplékplé 2gɔ́ ɔ, aklunɔzán gblamɛ 1gɔ́ ɔ. Akpáxwé hwenu klewun tɔn: 3 ɖò 4 jí, Fair. 5 sujets notés sur 5. Nǔkplɔnmɛ ɖagbe hugǎn ɔ: Agbazazɔ́wiwa kpo ayihundida lɛ kpo. Bo na w’azɔ̌ d’eji: Tan-Ayikúngban."
 },
 {
 "key": "e3eb63b1f6ea758cbf09cbe4305361c2ad205952a1ee0b865518ad1bbfa823ad",
@@ -16506,6 +16560,12 @@
 "text": "Kudo the hwenu"
 },
 {
+"key": "028fd4133ef2752a0e0f4495c86e32befcda2272ecee76fe1d1ced17ed039812",
+"lang": "yo",
+"source": "semestre 2",
+"text": "igba ikawe 2"
+},
+{
 "key": "02a72abb8d163ba13a0d172c94c87a089a38b7306dafa57235b851e0a2db2ea3",
 "lang": "yo",
 "source": "Notifications désactivées sur cet appareil.",
@@ -16558,6 +16618,12 @@
 "lang": "yo",
 "source": "À vérifier",
 "text": "Lati ṣayẹwo"
+},
+{
+"key": "03a4344645f3845274f956e015f7bd1622255b1f02df3b61a95cfe163da943da",
+"lang": "yo",
+"source": "Voir le bulletin du Semestre 1 2-3",
+"text": "Wo Semester 1 iwe itẹjade 2-3"
 },
 {
 "key": "03ef125b57374e10cbb48ba3903c748de02de59ee35d1e9d75e021fa6c1dd8cf",
@@ -20316,6 +20382,12 @@
 "text": "Ifiranṣẹ rẹ"
 },
 {
+"key": "40571be6e91601fd2e3e67545a632177ff403d437cbc662c8381987eabef426d",
+"lang": "yo",
+"source": "Bulletin de 2, Semestre 3 4-5. Moyenne générale : 6 sur 7, Insuffisant. Rang : 8e sur 9. Appréciation : Résultats insuffisants, un soutien est recommandé.",
+"text": "Kaadi Iroyin 2, Semester 3 4-5. Apapọ apapọ: 6 ninu 7, Ti ko to. Ipo: 8th ninu 9. Ayẹwo: Awọn esi ti ko to, atilẹyin ni a ṣe iṣeduro."
+},
+{
 "key": "4076872bc06a23caad19cbc552b5857b18a76c4bf978e4a2165c5893303e6ac1",
 "lang": "yo",
 "source": "Prénoms",
@@ -22192,6 +22264,12 @@
 "lang": "yo",
 "source": "Horaire",
 "text": "Wakati"
+},
+{
+"key": "5f227958efd4fc64f8d485194b3045ec38ac32e5e412343950b4e974530dff2e",
+"lang": "yo",
+"source": "Semestre 2 3-4",
+"text": "Igba ikawe 2 3-4"
 },
 {
 "key": "5f2fe86d8602750321056e69c9081ddd0648c84e68a8fc802228e489f8d45760",
@@ -24202,6 +24280,12 @@
 "lang": "yo",
 "source": "Choisissez un mode de paiement.",
 "text": "Yan ọna isanwo kan."
+},
+{
+"key": "7cda53cf042ae2e56b40d1123030e9ecef8a7f589611fbcee19aceaf807eb3f6",
+"lang": "yo",
+"source": "DDESTFP de l'Atlantique (Direction départementale)",
+"text": "DDESTFP ti Atlantic (Itọsọna Ẹka)"
 },
 {
 "key": "7cf7725efaab2605277c28023ae54a1d0c0bce5cbcf748af84aa887231918269",
@@ -27960,6 +28044,12 @@
 "text": "Aigbọran gbigbọ"
 },
 {
+"key": "b7c42542900919f9c7c1d8c8f57767a99ed800b360c43bd16dd993b6cc5dedbe",
+"lang": "yo",
+"source": "Voir le bulletin du Semestre 2 3-4",
+"text": "Wo Semester 2 iwe itẹjade 3-4"
+},
+{
 "key": "b832002da297545ff2c6cc36303a5f9b9779a2d7e47ba81c07ef86aca92181c0",
 "lang": "yo",
 "source": "Invoice",
@@ -27982,6 +28072,12 @@
 "lang": "yo",
 "source": "Le rôle doit conserver",
 "text": "Awọn ipa gbọdọ pa"
+},
+{
+"key": "b8696c198c3735d3f314cd29076fb4a06ece6f1d6e0b94695737ff56682f9929",
+"lang": "yo",
+"source": "Semestre 1 · 2 notes",
+"text": "Semester 1 · 2 awọn akọsilẹ"
 },
 {
 "key": "b8892909214073cbc5dd10f60a78da867252be4a249adc41d96ccf8265087e84",
@@ -29940,6 +30036,12 @@
 "text": "Hello Madam 2. 3 bẹrẹ ọdun daradara, ṣugbọn o ṣe akiyesi pe ko si ni owurọ yii, Ojobo Oṣu Kẹsan ọjọ 4th. Ṣe o le sọ fun mi ti ohun gbogbo ba dara? Madame 5, olukọ mathimatiki"
 },
 {
+"key": "d880be65dacd7fb1fbdadd186aafcc4fe84e337f144f51b662f6a64745e6871c",
+"lang": "yo",
+"source": "Le bulletin du second semestre 2-3 de 4 est disponible.",
+"text": "Kaadi ijabọ igba ikawe keji 2-3 ti 4 wa."
+},
+{
 "key": "d89fd6e0199099f64eddb47af705951e4d3abd6ea276fe6e1493bdbbeb47e475",
 "lang": "yo",
 "source": "2 3 FCFA · Espèces",
@@ -30676,6 +30778,12 @@
 "lang": "yo",
 "source": "Le type de frais et son échéancier seront supprimés. Un type de frais déjà facturé ne peut pas être supprimé : désactivez-le.",
 "text": "Iru ọya ati iṣeto rẹ yoo yọkuro. Iru ọya ti o ti gba agbara tẹlẹ ko le paarẹ: mu maṣiṣẹ."
+},
+{
+"key": "e3dd72180b8fb9f2692e586f9ac8b76c15ca09887f9ad19fc5ba367075df4df8",
+"lang": "yo",
+"source": "Notes de 2, semestre 1. Moyenne provisoire : 3 sur 4, Passable. 5 matières notées sur 5. Meilleure matière : Éducation physique et sportive. À travailler : Histoire-Géographie.",
+"text": "Awọn ipele 2, igba ikawe 1. Apapọ igba diẹ: 3 ninu 4, Fair. Awọn koko-ọrọ 5 ti o wa ninu 5. Koko-ọrọ ti o dara julọ: Ẹkọ ti ara ati awọn ere idaraya. Lati ṣiṣẹ lori: History-Geography."
 },
 {
 "key": "e3eb63b1f6ea758cbf09cbe4305361c2ad205952a1ee0b865518ad1bbfa823ad",
