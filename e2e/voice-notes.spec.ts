@@ -2,9 +2,11 @@ import { authFile } from "./support/accounts";
 import { expect, test } from "./support/fixtures";
 
 // Voice notes, recorded with Chromium's fake microphone (a steady tone) and
-// its automatic consent, then played by the recipient.
+// its automatic consent, then played by the recipient. The permission is
+// also granted to the context, so no prompt can hold the recorder back.
 test.use({
   storageState: authFile("parent"),
+  permissions: ["microphone"],
   launchOptions: { args: ["--use-fake-device-for-media-stream", "--use-fake-ui-for-media-stream"] },
 });
 
