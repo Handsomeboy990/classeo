@@ -259,6 +259,9 @@ export const DEFAULT_ROLES: {
       ...only("audit", "view"),
       ...all("mock_exam"),
       ...all("payroll"),
+      // Held so the head keeps every right of the teacher role, which it
+      // assigns; "Ma paie" shows only for accounts that teach.
+      ...only("payslip", "view"),
     ],
   },
   {
