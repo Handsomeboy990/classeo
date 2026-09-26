@@ -44,7 +44,7 @@ export function PageHeader({
   return (
     <div
       className={cn(
-        "mb-5 grid grid-cols-[minmax(0,1fr)_auto] items-start gap-x-3 gap-y-3.5 sm:mb-8 sm:gap-y-4",
+        "ds-page-header mb-5 grid grid-cols-[minmax(0,1fr)_auto] items-start gap-x-3 gap-y-3.5 sm:mb-8 sm:gap-y-4",
         below ? "min-[100rem]:grid-cols-[minmax(0,1fr)_auto_auto] min-[100rem]:items-end" : "sm:grid-cols-[minmax(0,1fr)_auto_auto] sm:items-end",
       )}
     >

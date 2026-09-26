@@ -2546,3 +2546,12 @@ html:is([data-text="xl"], [data-text="xxl"]) .ds-bars-grid {
   background: none;
   color: var(--text);
 }
+
+/*
+ * A page header inside a column that already spaces its children (flex or
+ * grid with a gap) drops its own bottom margin: the gap alone separates it
+ * from the content, never the gap plus the margin.
+ */
+:is(.flex-col, .grid)[class*="gap-"] > .ds-page-header {
+  margin-bottom: 0;
+}
