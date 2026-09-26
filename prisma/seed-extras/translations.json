@@ -102,6 +102,12 @@
 "text": "Kudo Madame 2. E ɖo azɔn jɛ wɛ"
 },
 {
+"key": "01db948fb43e909d22263aa0c2d54809d3992572969b1180a8064f24f58d8c7a",
+"lang": "fon",
+"source": "Non lues (2",
+"text": "È ma xà ǎ (2)."
+},
+{
 "key": "01f1ab78f1cf82c93fe026d7c945ee1e936f87927ba020d1788648d7e9fff9f5",
 "lang": "fon",
 "source": "Résultats d'examen blanc",
@@ -292,6 +298,12 @@
 "lang": "fon",
 "source": "Moyenne générale au moins égale à 10",
 "text": "Gbɔn vo nú enɛ ɔ, é hwe bǐ ɔ, é sɔgbe xá 10"
+},
+{
+"key": "059e0348cf9f4cddcb468e7bc37523c92e2500a0c9e789a2749a3e351e757917",
+"lang": "fon",
+"source": "Ce navigateur ne peut pas recevoir les notifications de 2.",
+"text": "Navigateur elɔ sixu yi gbeɖiɖe lɛ sin 2 mɛ ǎ."
 },
 {
 "key": "05cb092d618cd828a94acdde5f4e0be0eb71562d7a2b9560d5f53d3672da8532",
@@ -624,6 +636,12 @@
 "text": "Sɔ́ dó PDF jí, xójlawema 2gɔ́ ɔ sín xójlawema 3-4."
 },
 {
+"key": "0b81a85d7bc0e4bb14d493c50a8978e39f8e1d6388358fd932da27bdadde57b1",
+"lang": "fon",
+"source": "2 notifications non lues.",
+"text": "2 gbeɖiɖó e è ma xà ǎ lɛ é."
+},
+{
 "key": "0bb63de67f415e2fada614d27906e2af7bec1bab23728e2cead0eda243598345",
 "lang": "fon",
 "source": "Personne à appeler.",
@@ -694,6 +712,12 @@
 "lang": "fon",
 "source": "Administrateur national",
 "text": "Acɛkpikpa To ɔ tɔn"
+},
+{
+"key": "0e6df7dfe7489d6b2665533f549f79280c468648db5960a1f99d8fde1b1941df",
+"lang": "fon",
+"source": "Ouvrir : Paiement confirmé",
+"text": "Hun: È yí gbè nú akwɛ e è na sú é"
 },
 {
 "key": "0e6f54735989d45e68dfaced18b267bfe92854758c0e0d655954bec6cf1ad342",
@@ -1012,6 +1036,12 @@
 "lang": "fon",
 "source": "Enregistrer le paiement",
 "text": "Hɛn akwɛ́ ɖ'ayǐ"
+},
+{
+"key": "15ed71b5dcd2bc7ab834d64afdebdfa40df1a664fcefa3d71391681f1c19d16e",
+"lang": "fon",
+"source": "Attestation de scolarité signé",
+"text": "Wemaxɔmɛ wema e mɛ è ɖó alɔ dó é"
 },
 {
 "key": "15f6eaa12fd6cc852b1ccd5aa0a448e3983c92175cbefec4514c145b9541d803",
@@ -1506,6 +1536,12 @@
 "text": "È jì i ɖò"
 },
 {
+"key": "1f85f436dab4910744996f22f2d91195ba959a7c4b289ca83d102c61e835cdb4",
+"lang": "fon",
+"source": "Ouvrir : Nouveau message de 2",
+"text": "Hun: Wɛn yɔyɔ̌ 2"
+},
+{
 "key": "1f91e0e22dc030319219ee97395350b04f66f33af9ae3263885db2dcd6087f0b",
 "lang": "fon",
 "source": "Rétablir la séance",
@@ -1968,6 +2004,12 @@
 "text": "È mɔ gbeɖiɖó ǎ alǒ è ko xà ǎ."
 },
 {
+"key": "26f66558d3777cf904836755109b046c4f327ac86636234280796230fea16a96",
+"lang": "fon",
+"source": "Attestation de scolarité de 2 (3-4) est signé électroniquement.",
+"text": "È nɔ ɖó alɔ wema wemaxɔmɛ yiyi tɔn 2 (3-4) tɔn jí gbɔn alokan jí."
+},
+{
 "key": "26ff01472040cc3da56a4af8c66af676c929b1bdf23a9270c240781ac0b770c6",
 "lang": "fon",
 "source": "Choisissez une matière.",
@@ -2178,6 +2220,12 @@
 "text": "Ðò “Azɔwanú lɛ kpo Nǔ E È Na Zán lɛ É kpo” mɛ ɔ, gɔ́ kati ɖé na. Video alǒ xóɖiɖɔ ɖé ɖó na ɖó nǔ e è wlan dó wema jí é."
 },
 {
+"key": "29fc0c73d5082a031daf8c82d89cdd6a522c3aaa9236c55fed52efd11ec87c15",
+"lang": "fon",
+"source": "Un carillon discret quand une notification arrive pendant que 2 est ouvert.",
+"text": "Gbè e è nɔ xò ɖò ayijayǐ mɛ é ɖé hwenu e gbeɖiɖó ɖé wá hwenu e 2 ɖò hunhun wɛ é."
+},
+{
 "key": "2a0fe8de8ab9dd54fd70fb5efbdefbfd6a12fbee41e6794fa8a503e4feaf3a2f",
 "lang": "fon",
 "source": "Seule la tutelle (commune, département ou ministère) décide du statut d'un établissement.",
@@ -2242,6 +2290,12 @@
 "lang": "fon",
 "source": "Moyenne",
 "text": "Tɛntin"
+},
+{
+"key": "2af305c1d173730de06905b374ba1cb746f0503812e824b8e9eb056eccd7df22",
+"lang": "fon",
+"source": "Reste à payer : 2 3 FCFA.",
+"text": "E kpò bɔ è na sú: 2 3 FCFA."
 },
 {
 "key": "2b003f8ab34e94b7d151f4cafa2003fec4698374d3430dd3b6fdc054948ed704",
@@ -3090,6 +3144,12 @@
 "text": "“Klasi” lɛ nɔ sɔ́ mɛ̌si lɛ ɖó te."
 },
 {
+"key": "388d03b440a8b26d45cc816abb00744d33c3627bf7499547a9bdd6b485145f16",
+"lang": "fon",
+"source": "Puis-je utiliser 2 sans réseau ?",
+"text": "Un sixu zan 2 réseau mɛvo à ?"
+},
+{
 "key": "38b10f58e88f7914652261a9d51ee5df7523fc5e996efc86cd1a7485cc83ce74",
 "lang": "fon",
 "source": "Appuyez sur un bouton « Écouter »,",
@@ -3270,6 +3330,12 @@
 "text": "Akɔnta mɛ e nɔ zán lɛ é tɔn"
 },
 {
+"key": "3aead3357a5eedf47ebe6422614a71aa140a73e8eb49d9664eec6c45b43518ec",
+"lang": "fon",
+"source": "2) est confirmé.",
+"text": "2) è nɔ xlɛ́ ɖɔ nǔgbo wɛ."
+},
+{
 "key": "3b0468b4c7842cf455b88a06e830ca6eb2e30818bf12858fc6dfbed0748f181b",
 "lang": "fon",
 "source": "Moy. atteinte",
@@ -3394,6 +3460,12 @@
 "lang": "fon",
 "source": "Déjà payé autrement ?",
 "text": "Ko sú akwɛ ɖevo à?"
+},
+{
+"key": "3c449e91dd173521ae08224544a2ec4f93ef2527c5143114b6b02bee69674373",
+"lang": "fon",
+"source": "Quand 2 est fermé, les notifications du téléphone ou de l'ordinateur sonnent avec le son choisi dans les réglages de l'appareil : un site ne peut pas le changer.",
+"text": "Nú è sú 2 ɔ, nǔ e è nɔ sɛ́dó mɛ ɖò alokan alǒ ɔdinatɛ́ɛ jí lɛ é nɔ tɔ́n kpo gbè e è sɔ́ ɖò nǔ e è sɔ́ ɖó nǔ ɔ jí lɛ é mɛ é kpo: tɛn ɛntɛnɛti tɔn ɖé sixu ɖyɔ ǎ."
 },
 {
 "key": "3c48aa2bdf769fd342f85fb0367fc3d6a3c403b5e590c5893aa39ac93290e8bb",
@@ -3526,6 +3598,12 @@
 "lang": "fon",
 "source": "Depuis le",
 "text": "Sín hwenu e."
+},
+{
+"key": "3e8fee27f8595284fc70e0e1560a32a108c2fa115390a7febdb67c7c047beab3",
+"lang": "fon",
+"source": "Ouvrir : Attestation de scolarité signé",
+"text": "Hun: Wemaxɔmɛ wema e mɛ è ɖó alɔ dó é"
 },
 {
 "key": "3ea71ad32abc5301dc863daf77f242d3698ed4ee0793dfc4197d51679e330147",
@@ -4458,6 +4536,12 @@
 "text": "È bló tuto nú nǔkplɔnkplɔn ɖě ǎ ."
 },
 {
+"key": "4f477138f3c90bd0eb848bc7ac7be0aba58906411aaaa8eabec986cba3ccc720",
+"lang": "fon",
+"source": "Reçu 2.",
+"text": "È yí 2."
+},
+{
 "key": "4f53add0f3e8bc261c6c33f56e2cf81824e7e4c83d9187ce5604f7b9f39375d0",
 "lang": "fon",
 "source": "Avant le",
@@ -4582,6 +4666,12 @@
 "lang": "fon",
 "source": "Pas de réseau : l'appel est gardé sur cet appareil. Envoi automatique au retour du réseau.",
 "text": "Réseau ɖebu ɖemɛ a: ylɔylɔ ɔ ɖo azɔwanu elɔ ji. Sɔ́ sɛ́dó mɛɖesunɔ hwenu e è lɛkɔ sín réseau ɔ jí é."
+},
+{
+"key": "514550f17af2d73bcbdd8a02482b5c9e049cab3472d2f18ad8a18641308ff5ce",
+"lang": "fon",
+"source": "Généré sur 2 le",
+"text": "È bló ɖò azǎn 2gɔ́ ɔ gbè."
 },
 {
 "key": "514db0d41666fecc1da9b925e413830bf848c98a41f23eace25dd7586223f992",
@@ -5142,6 +5232,12 @@
 "text": "Huzuhuzu ɖě ɖò finɛ bo na hɛn ǎ."
 },
 {
+"key": "5a4be1629cb82dda7f6feb2bf220504cdd3d4e657788590b153a2f6dbeb076bf",
+"lang": "fon",
+"source": "2 3 FCFA. Déjà payé : 4 5 FCFA. Reste : 6 7 FCFA. Prochaine échéance : 8 7 FCFA avant le 9 janvier 10.",
+"text": "2 3 FCFA sín xó. E ko sú: 4 5 FCFA. Gbɔjɛ: 6 7 FCFA. Azǎn e bɔ d’ewu é: 8 7 FCFA jɛ nukɔn nú azǎn 9gɔ́ ɔ Kɔnyásun 10gɔ́ ɔ."
+},
+{
 "key": "5a8f98d7b827119169c513cd416aba00f0ce54634dc5041d23f99da05775e186",
 "lang": "fon",
 "source": "Moyennes par matière,",
@@ -5640,6 +5736,12 @@
 "text": "È ɖè síìn"
 },
 {
+"key": "61dd28a19746e22c9c221e8e84de12464182b2d1b7c275c23f609afd8544d363",
+"lang": "fon",
+"source": "Marquer comme lu : Attestation de scolarité signé",
+"text": "Mark lee è xà gbɔn é: Wemaxɔmɛ wema e jí è ɖó alɔ dó é"
+},
+{
 "key": "61e5933620f5a1fdb03a34e43c6478b02bb610eb8492dfd5595fde04effd7205",
 "lang": "fon",
 "source": "Aucune notification non lue.",
@@ -5980,6 +6082,12 @@
 "lang": "fon",
 "source": "Vous ne pouvez pas écrire à cette personne.",
 "text": "A sixu wlan nǔ sɛ́dó mɛ elɔ ǎ."
+},
+{
+"key": "68628bb71b4dd4e88bf9f98f56acd33b2c981f3b503a884578104fc4e6b5370d",
+"lang": "fon",
+"source": "2 n'est pas raccordé directement aux API des opérateurs Mobile Money ; c'est le prestataire de paiement qui s'en charge.",
+"text": "2 é cá kàn tlɔlɔ xá API e mɛ e nɔ zán Mobile Money lɛ é nɔ zán lɛ é ǎ; mɛ e nɔ sú akwɛ é wɛ nɔ kpé nukún dó nǔ enɛ wu."
 },
 {
 "key": "68759545a0a87ee31072dfb105e8aa78de4997e9086b8f6eb47ac1614618f8f4",
@@ -7584,6 +7692,12 @@
 "text": "Nǔwiwa"
 },
 {
+"key": "81ea038ebdd1e23467b607bf1ae1ac7075743b510b9be639e052e3e1bd88cc3e",
+"lang": "fon",
+"source": "Attestation de scolarité de 2 (3-4) est signé électroniquement. Vous pouvez le télécharger ; son authenticité se vérifie avec le code 5.",
+"text": "È nɔ ɖó alɔ wema wemaxɔmɛ yiyi tɔn 2 (3-4) tɔn jí gbɔn alokan jí. A sixu yí; è nɔ gbéjé nǔgbo tɔn kpɔ́n kpo kodɛ 5gɔ́ ɔ kpo."
+},
+{
 "key": "82040626ae1a1d9f732fcd9056545e22016c3628c06f6bcfe32f02efbbeb45e8",
 "lang": "fon",
 "source": "Elle était malade, elle va mieux et sera en classe demain.",
@@ -7740,6 +7854,12 @@
 "text": "Mɛsi lɛ"
 },
 {
+"key": "849ebe308572b63140d219179d0881b955f3b89ce0e1dee49b2095b00b00344f",
+"lang": "fon",
+"source": "Frais de scolarité de 2. Total : 3 4 FCFA. Déjà payé : 5 6 FCFA. Reste : 7 8 FCFA. Prochaine échéance : 9 8 FCFA avant le",
+"text": "Frais de scolarité de 2. Total : 3 4 FCFA. Déjà payé : 5 6 FCFA. Reste : 7 8 FCFA. Prochaine échéance : 9 8 FCFA avant le"
+},
+{
 "key": "84e35ee3064aa844786088d85f077c5f857f9c282a4dc48c11b48becae6d2dcc",
 "lang": "fon",
 "source": "Indiquez le nom et la classe de l'élève en motif du transfert.",
@@ -7834,6 +7954,12 @@
 "lang": "fon",
 "source": "Archiver",
 "text": "Blo"
+},
+{
+"key": "862744022d00ac5c66683e75a0befdea5957356a5d230c94d95a26381a031223",
+"lang": "fon",
+"source": "Notifications, 2 non lues",
+"text": "Akpáxwé lɛ, 2 è ma xà ǎ"
 },
 {
 "key": "86291bf871cbb92b78b03d3889d7015322986f60d4a2fd04b56361148b4db8fc",
@@ -8152,6 +8278,12 @@
 "lang": "fon",
 "source": "Notification envoyée. Elle arrive dans quelques secondes.",
 "text": "È sɛ́ gbeɖiɖó dó. É na wá ɖò cɛju yɔywɛ ɖé mɛ."
+},
+{
+"key": "8ad818a9662f03ddd5f3e5a1c8d016f435935371f5bb89234704348a288ae1e0",
+"lang": "fon",
+"source": "Vous pouvez le télécharger ; son authenticité se vérifie avec le code 2.",
+"text": "A sixu yí; è nɔ gbéjé nǔgbo tɔn kpɔ́n kpo kodɛ 2gɔ́ ɔ kpo."
 },
 {
 "key": "8b1a1df2b49371322790b965d7de7164bba8b140bf1009fb123003b99917b7d9",
@@ -9366,6 +9498,12 @@
 "text": "Mɛjitɔ́ yɔyɔ̌"
 },
 {
+"key": "9de391b1c7a940f38611b5affebda1b8e1a8b59af5f38cc74af3ff16e66c33b7",
+"lang": "fon",
+"source": "Nouveau message de 2",
+"text": "Wɛn yɔyɔ̌ ɖé gosin 2"
+},
+{
 "key": "9df2d8ccb28a9d4ada94585b7161ac54d7a31d82472ada48c1f882334fc00f84",
 "lang": "fon",
 "source": "Écouter la transcription",
@@ -9700,6 +9838,12 @@
 "lang": "fon",
 "source": "Chargement de l’aperçu",
 "text": "Nukúnnúmɔjɛnǔmɛ ɖiɖó"
+},
+{
+"key": "a4b56bdbb55708c0e94974bd2470c0642bd4256a6fcbe35c69cccf1abbc25b9b",
+"lang": "fon",
+"source": "Votre paiement de 1 FCFA pour 2 (réf. 3) est confirmé. Reçu 4. Reste à payer : 5 6 FCFA.",
+"text": "Akwɛ e a na sú FCFA 1 nú 2 (ref. 3) é wɛ è hɛn ɖ’ayi mɛ. E yi 4. E kpo bo na su: 5 6 FCFA."
 },
 {
 "key": "a4f021891f09399dd21a311fae5d54e9f5422bc9bd86ae45a72e7c8455993667",
@@ -10368,6 +10512,12 @@
 "text": "Mɛ e wlan nyikɔ dó wema mɛ lɛ é ɖě ɖò xwè elɔ mɛ ǎ."
 },
 {
+"key": "b131bf7cab481a068de69c8b3a6d13af71e86526406a6b319bfddba3ad2bf72a",
+"lang": "fon",
+"source": "Rang dans l'établissement : 2e · Rang général : 2e sur 3 candidats classés",
+"text": "Rank dans l'établissement : 2ème · Rang général : 2ème sur 3 des candidats classés"
+},
+{
 "key": "b1637e41a319d2995d140c647e0eebcd8d75856ea1543f59ce43996fcc723c93",
 "lang": "fon",
 "source": "Choisir une commune",
@@ -10638,6 +10788,18 @@
 "text": "Lun."
 },
 {
+"key": "b527a0d8d0cd16bbc6d99a18f7afbfb246481b4185ace75675f09b1c62bdd8aa",
+"lang": "fon",
+"source": "1 FCFA · Mobile Money",
+"text": "1 FCFA · Akwɛ e è nɔ zán ɖò alokan jí é"
+},
+{
+"key": "b55c7152828f9bfcc835c05be8235b10fa91403e52b1a90c629567ce818e7487",
+"lang": "fon",
+"source": "2 non lues",
+"text": "2 è ma xà ǎ"
+},
+{
 "key": "b56c2156e9b1b082ffac7320493972f5c35f6155843e93e0e4e5141def9ba8d0",
 "lang": "fon",
 "source": "Bulletins",
@@ -10648,6 +10810,12 @@
 "lang": "fon",
 "source": "Vos notes apparaîtront dès que vos enseignants les auront saisies.",
 "text": "Nǔ e a mɔ lɛ é na tɔ́n tlolo bɔ mɛ̌si towe lɛ na wlan ye dó wema mɛ."
+},
+{
+"key": "b5ff66b8f0a6788fca1664f4ca37a49df78e83c332570a315c3d7b3b1bdebb5a",
+"lang": "fon",
+"source": "Un carillon discret quand une notification arrive pendant que 2 est ouvert. La cloche s'anime aussi, avec ou sans son.",
+"text": "Gbè e è nɔ xò ɖò ayijayǐ mɛ é ɖé hwenu e gbeɖiɖó ɖé wá hwenu e 2 ɖò hunhun wɛ é. Gàn ɔ lɔ nɔ wá gbɛ̀, é na bo ɖó gbè alǒ é na bo ma ɖó gbè ǎ ɔ."
 },
 {
 "key": "b623fb6d54a0153b91fe4725cb91441f4e10750ef512660ffad24ab67fabd068",
@@ -11088,6 +11256,12 @@
 "text": "2 ɖò 3 jí."
 },
 {
+"key": "bdfffcfc78fddb6e811b02944268a257a5371e5916fd65ac05b6489f8c841f94",
+"lang": "fon",
+"source": "Marquer comme lu : Paiement confirmé",
+"text": "Mark ɖi lee è xà gbɔn é: È yí gbè nú akwɛ e è sú é"
+},
+{
 "key": "be1a7ff141bf0cf435daa5e287993dab8936f0e0756a3faa7b40ce8d933fb71d",
 "lang": "fon",
 "source": "Ven.",
@@ -11422,6 +11596,12 @@
 "lang": "fon",
 "source": "Paiement non abouti",
 "text": "Akwɛ súsú e ma kpa mɛ ǎ é"
+},
+{
+"key": "c41b8fd078f48647158f27c6d0ae16c6c9c677170fc26df2592f7f46dcd4ab5f",
+"lang": "fon",
+"source": "République du Bénin · 2",
+"text": "Tokpɔn Bɛnin tɔn · 2"
 },
 {
 "key": "c422b3245c216fa34c47edeb909b0b83d27610c40c590c9ae8b9529f756a1cd8",
@@ -11898,6 +12078,12 @@
 "text": "Un nyí tókúnɔ abǐ un nɔ se nǔ ganji ǎ. Un ka na gɔn nǔ ɖebǔ sè à?"
 },
 {
+"key": "cc0f823028892ffc2de5530c35a6707d78d33dc0703826f6f54c0454f877cf87",
+"lang": "fon",
+"source": "Direction départementale 2",
+"text": "Azɔ̌xɔsa 2gɔ́ ɔ"
+},
+{
 "key": "cc26c71ed8e580a0c9071733aa34ab302bc3c4c6370f5fdffb984acd30e72021",
 "lang": "fon",
 "source": "en cours de vérification",
@@ -12184,6 +12370,12 @@
 "lang": "fon",
 "source": "Montant à répartir :",
 "text": "Akwɛ nabi e è na má é:"
+},
+{
+"key": "d14e3b6c4b37b984f120a0c037f05cc7d91209e5339c79cec2a118e36ec1b8a5",
+"lang": "fon",
+"source": "Non lues (2)",
+"text": "È ma xà ǎ (2)"
 },
 {
 "key": "d14f6ab779c6e8d1533be088ec0fbbb311e9e40c59b429374bbcabeac19e4da8",
@@ -14238,6 +14430,12 @@
 "text": "Dŏ hwɛjijɔ"
 },
 {
+"key": "f530b6f71cebc15bc88016fa4e31f16eb1c39cae624ae37e6e69582b8a23482f",
+"lang": "fon",
+"source": "Frais de scolarité de 2. Total : 3 4 FCFA. Déjà payé : 5 6 FCFA. Reste : 7 8 FCFA. Prochaine échéance : 9 8 FCFA avant le 10 janvier 11.",
+"text": "Azɔmɛxwe 2. Bĭ: 3 4 FCFA. E ko sú: 5 6 FCFA. Gbɔjɛ: 7 8 FCFA. Azǎn e bɔ d’ewu é: 9 8 FCFA jɛ nukɔn nú azǎn 10gɔ́ ɔ, 11gɔ́ ɔ Kɔnyásun tɔn."
+},
+{
 "key": "f53da88a2942ae5b3ab14062ee9bbca506bbea35b7087cef036e18a6f2831e87",
 "lang": "fon",
 "source": "Les épreuves n'ont pas encore commencé.",
@@ -14272,6 +14470,12 @@
 "lang": "fon",
 "source": "Affichage et voix",
 "text": "Nǔxlɛ́mɛ kpo gbè kpo ."
+},
+{
+"key": "f6146c35dcd35f1ac586e0d9294ec133286daed5857f7295b64e59e52f04e88f",
+"lang": "fon",
+"source": "2e · Rang général : 2e sur 3 candidats classés",
+"text": "2ème · Rang général : 2ème sur 3 des candidats classés"
 },
 {
 "key": "f65ddff36b022ad63cae3e4a424a610ee65072c10081f765fb5afe15f2079787",
@@ -14320,6 +14524,12 @@
 "lang": "fon",
 "source": "Bulletins en PDF",
 "text": "Xójlawema lɛ ɖò PDF mɛ"
+},
+{
+"key": "f79502d02d92c79dfd41ab781f3163af94bb0ed73c79c56da31ee9838ed4331d",
+"lang": "fon",
+"source": "Votre paiement de 1 FCFA pour 2 (réf.",
+"text": "Akwɛ e a nɔ sú é 1 FCFA nú 2 (ref."
 },
 {
 "key": "f7a302a668a8fd542766aad5e1b4d55e912c6b2f275fe0fc6a7469377bfb6314",
@@ -14982,6 +15192,12 @@
 "text": "Hello Madam 2. O ti wa ni aisan"
 },
 {
+"key": "01db948fb43e909d22263aa0c2d54809d3992572969b1180a8064f24f58d8c7a",
+"lang": "yo",
+"source": "Non lues (2",
+"text": "Ti ko ka (2"
+},
+{
 "key": "01f1ab78f1cf82c93fe026d7c945ee1e936f87927ba020d1788648d7e9fff9f5",
 "lang": "yo",
 "source": "Résultats d'examen blanc",
@@ -15166,6 +15382,12 @@
 "lang": "yo",
 "source": "Moyenne générale au moins égale à 10",
 "text": "Apapọ gbogbogbo o kere ju dogba si 10"
+},
+{
+"key": "059e0348cf9f4cddcb468e7bc37523c92e2500a0c9e789a2749a3e351e757917",
+"lang": "yo",
+"source": "Ce navigateur ne peut pas recevoir les notifications de 2.",
+"text": "Ẹrọ aṣawakiri yii ko le gba awọn iwifunni lati 2."
 },
 {
 "key": "05cb092d618cd828a94acdde5f4e0be0eb71562d7a2b9560d5f53d3672da8532",
@@ -15480,6 +15702,12 @@
 "text": "Ṣe igbasilẹ ni PDF, iwe itẹjade mẹẹdogun 2 3-4"
 },
 {
+"key": "0b81a85d7bc0e4bb14d493c50a8978e39f8e1d6388358fd932da27bdadde57b1",
+"lang": "yo",
+"source": "2 notifications non lues.",
+"text": "2 awọn iwifunni ti a ko ka."
+},
+{
 "key": "0bb63de67f415e2fada614d27906e2af7bec1bab23728e2cead0eda243598345",
 "lang": "yo",
 "source": "Personne à appeler.",
@@ -15544,6 +15772,12 @@
 "lang": "yo",
 "source": "Administrateur national",
 "text": "Alakoso orile-ede"
+},
+{
+"key": "0e6df7dfe7489d6b2665533f549f79280c468648db5960a1f99d8fde1b1941df",
+"lang": "yo",
+"source": "Ouvrir : Paiement confirmé",
+"text": "Ṣii: Isanwo timo"
 },
 {
 "key": "0e6f54735989d45e68dfaced18b267bfe92854758c0e0d655954bec6cf1ad342",
@@ -15862,6 +16096,12 @@
 "lang": "yo",
 "source": "Enregistrer le paiement",
 "text": "Fi owo pamọ"
+},
+{
+"key": "15ed71b5dcd2bc7ab834d64afdebdfa40df1a664fcefa3d71391681f1c19d16e",
+"lang": "yo",
+"source": "Attestation de scolarité signé",
+"text": "Iwe-ẹri ile-iwe ti o fowo si"
 },
 {
 "key": "15f6eaa12fd6cc852b1ccd5aa0a448e3983c92175cbefec4514c145b9541d803",
@@ -16344,6 +16584,12 @@
 "text": "Bi lori"
 },
 {
+"key": "1f85f436dab4910744996f22f2d91195ba959a7c4b289ca83d102c61e835cdb4",
+"lang": "yo",
+"source": "Ouvrir : Nouveau message de 2",
+"text": "Ṣii: Ifiranṣẹ titun 2"
+},
+{
 "key": "1f91e0e22dc030319219ee97395350b04f66f33af9ae3263885db2dcd6087f0b",
 "lang": "yo",
 "source": "Rétablir la séance",
@@ -16800,6 +17046,12 @@
 "text": "A ko ri iwifunni tabi ti ka tẹlẹ."
 },
 {
+"key": "26f66558d3777cf904836755109b046c4f327ac86636234280796230fea16a96",
+"lang": "yo",
+"source": "Attestation de scolarité de 2 (3-4) est signé électroniquement.",
+"text": "Iwe-ẹri eto-ẹkọ ti 2 (3-4) ti fowo si ni itanna."
+},
+{
 "key": "26ff01472040cc3da56a4af8c66af676c929b1bdf23a9270c240781ac0b770c6",
 "lang": "yo",
 "source": "Choisissez une matière.",
@@ -17004,6 +17256,12 @@
 "text": "Ni \"Awọn ikede ati Awọn orisun\", ṣafikun kaadi kan. Fídíò tàbí ohun ohun gbọ́dọ̀ ní ìkọ̀wé rẹ̀."
 },
 {
+"key": "29fc0c73d5082a031daf8c82d89cdd6a522c3aaa9236c55fed52efd11ec87c15",
+"lang": "yo",
+"source": "Un carillon discret quand une notification arrive pendant que 2 est ouvert.",
+"text": "Chime oloye nigbati iwifunni ba de lakoko ti 2 wa ni sisi."
+},
+{
 "key": "2a0fe8de8ab9dd54fd70fb5efbdefbfd6a12fbee41e6794fa8a503e4feaf3a2f",
 "lang": "yo",
 "source": "Seule la tutelle (commune, département ou ministère) décide du statut d'un établissement.",
@@ -17062,6 +17320,12 @@
 "lang": "yo",
 "source": "Moyenne",
 "text": "Apapọ"
+},
+{
+"key": "2af305c1d173730de06905b374ba1cb746f0503812e824b8e9eb056eccd7df22",
+"lang": "yo",
+"source": "Reste à payer : 2 3 FCFA.",
+"text": "Ku lati san: 2 3 FCFA."
 },
 {
 "key": "2b003f8ab34e94b7d151f4cafa2003fec4698374d3430dd3b6fdc054948ed704",
@@ -17892,6 +18156,12 @@
 "text": "Awọn obi ti ko fẹ lati gba ọmọ wọn ni ajesara gbọdọ sọ fun olori idasile naa."
 },
 {
+"key": "388d03b440a8b26d45cc816abb00744d33c3627bf7499547a9bdd6b485145f16",
+"lang": "yo",
+"source": "Puis-je utiliser 2 sans réseau ?",
+"text": "Ṣe Mo le lo 2 laisi nẹtiwọki?"
+},
+{
 "key": "38c186a3847d355a906a88f3e654796c3c03a620b4fd1b1fd709a9a1d69a5c06",
 "lang": "yo",
 "source": "Aucun média",
@@ -18066,6 +18336,12 @@
 "text": "Awọn iroyin olumulo"
 },
 {
+"key": "3aead3357a5eedf47ebe6422614a71aa140a73e8eb49d9664eec6c45b43518ec",
+"lang": "yo",
+"source": "2) est confirmé.",
+"text": "2) ti jẹrisi."
+},
+{
 "key": "3b0468b4c7842cf455b88a06e830ca6eb2e30818bf12858fc6dfbed0748f181b",
 "lang": "yo",
 "source": "Moy. atteinte",
@@ -18190,6 +18466,12 @@
 "lang": "yo",
 "source": "Déjà payé autrement ?",
 "text": "Ti sanwo tẹlẹ bibẹẹkọ?"
+},
+{
+"key": "3c449e91dd173521ae08224544a2ec4f93ef2527c5143114b6b02bee69674373",
+"lang": "yo",
+"source": "Quand 2 est fermé, les notifications du téléphone ou de l'ordinateur sonnent avec le son choisi dans les réglages de l'appareil : un site ne peut pas le changer.",
+"text": "Nigbati 2 ba wa ni pipade, awọn iwifunni lati foonu tabi ohun kọmputa pẹlu ohun ti a yan ninu eto ẹrọ: aaye kan ko le yi pada."
 },
 {
 "key": "3c48aa2bdf769fd342f85fb0367fc3d6a3c403b5e590c5893aa39ac93290e8bb",
@@ -18322,6 +18604,12 @@
 "lang": "yo",
 "source": "Depuis le",
 "text": "Niwon awọn"
+},
+{
+"key": "3e8fee27f8595284fc70e0e1560a32a108c2fa115390a7febdb67c7c047beab3",
+"lang": "yo",
+"source": "Ouvrir : Attestation de scolarité signé",
+"text": "Ṣii: Iwe-ẹri ile-iwe ti o fowo si"
 },
 {
 "key": "3ea71ad32abc5301dc863daf77f242d3698ed4ee0793dfc4197d51679e330147",
@@ -19230,6 +19518,12 @@
 "text": "Ko si awọn ẹkọ ti a gbero"
 },
 {
+"key": "4f477138f3c90bd0eb848bc7ac7be0aba58906411aaaa8eabec986cba3ccc720",
+"lang": "yo",
+"source": "Reçu 2.",
+"text": "Ti gba 2."
+},
+{
 "key": "4f53add0f3e8bc261c6c33f56e2cf81824e7e4c83d9187ce5604f7b9f39375d0",
 "lang": "yo",
 "source": "Avant le",
@@ -19354,6 +19648,12 @@
 "lang": "yo",
 "source": "Pas de réseau : l'appel est gardé sur cet appareil. Envoi automatique au retour du réseau.",
 "text": "Ko si nẹtiwọọki: ipe naa wa lori ẹrọ yii. Fifiranṣẹ laifọwọyi nigbati o ba n pada lati nẹtiwọki."
+},
+{
+"key": "514550f17af2d73bcbdd8a02482b5c9e049cab3472d2f18ad8a18641308ff5ce",
+"lang": "yo",
+"source": "Généré sur 2 le",
+"text": "Ti ipilẹṣẹ lori 2"
 },
 {
 "key": "514db0d41666fecc1da9b925e413830bf848c98a41f23eace25dd7586223f992",
@@ -19902,6 +20202,12 @@
 "text": "Ko si ayipada lati fipamọ."
 },
 {
+"key": "5a4be1629cb82dda7f6feb2bf220504cdd3d4e657788590b153a2f6dbeb076bf",
+"lang": "yo",
+"source": "2 3 FCFA. Déjà payé : 4 5 FCFA. Reste : 6 7 FCFA. Prochaine échéance : 8 7 FCFA avant le 9 janvier 10.",
+"text": "2 3 FCFA. Déjà payé : 4 5 FCFA. Reste : 6 7 FCFA. Prochaine échéance : 8 7 FCFA avant le 9 janvier 10."
+},
+{
 "key": "5a8f98d7b827119169c513cd416aba00f0ce54634dc5041d23f99da05775e186",
 "lang": "yo",
 "source": "Moyennes par matière,",
@@ -20358,6 +20664,12 @@
 "text": "Yiyọ kuro"
 },
 {
+"key": "61dd28a19746e22c9c221e8e84de12464182b2d1b7c275c23f609afd8544d363",
+"lang": "yo",
+"source": "Marquer comme lu : Attestation de scolarité signé",
+"text": "Samisi bi o ti ka: Iwe-ẹri ile-iwe ti o fowo si"
+},
+{
 "key": "61e5933620f5a1fdb03a34e43c6478b02bb610eb8492dfd5595fde04effd7205",
 "lang": "yo",
 "source": "Aucune notification non lue.",
@@ -20686,6 +20998,12 @@
 "lang": "yo",
 "source": "Vous ne pouvez pas écrire à cette personne.",
 "text": "O ko le kọ si eniyan yii."
+},
+{
+"key": "68628bb71b4dd4e88bf9f98f56acd33b2c981f3b503a884578104fc4e6b5370d",
+"lang": "yo",
+"source": "2 n'est pas raccordé directement aux API des opérateurs Mobile Money ; c'est le prestataire de paiement qui s'en charge.",
+"text": "2 ko ni asopọ taara si awọn API ti awọn oniṣẹ Owo Alagbeka; Olupese owo sisan ni o tọju eyi."
 },
 {
 "key": "68759545a0a87ee31072dfb105e8aa78de4997e9086b8f6eb47ac1614618f8f4",
@@ -22248,6 +22566,12 @@
 "text": "Iṣẹlẹ"
 },
 {
+"key": "81ea038ebdd1e23467b607bf1ae1ac7075743b510b9be639e052e3e1bd88cc3e",
+"lang": "yo",
+"source": "Attestation de scolarité de 2 (3-4) est signé électroniquement. Vous pouvez le télécharger ; son authenticité se vérifie avec le code 5.",
+"text": "Iwe-ẹri eto-ẹkọ ti 2 (3-4) ti fowo si ni itanna. O le ṣe igbasilẹ rẹ; ododo rẹ jẹri pẹlu koodu 5."
+},
+{
 "key": "82040626ae1a1d9f732fcd9056545e22016c3628c06f6bcfe32f02efbbeb45e8",
 "lang": "yo",
 "source": "Elle était malade, elle va mieux et sera en classe demain.",
@@ -22404,6 +22728,12 @@
 "text": "Awọn olukọ"
 },
 {
+"key": "849ebe308572b63140d219179d0881b955f3b89ce0e1dee49b2095b00b00344f",
+"lang": "yo",
+"source": "Frais de scolarité de 2. Total : 3 4 FCFA. Déjà payé : 5 6 FCFA. Reste : 7 8 FCFA. Prochaine échéance : 9 8 FCFA avant le",
+"text": "Frais de scolarité de 2. Total : 3 4 FCFA. Déjà payé : 5 6 FCFA. Reste : 7 8 FCFA. Prochaine échéance : 9 8 FCFA avant le"
+},
+{
 "key": "84e35ee3064aa844786088d85f077c5f857f9c282a4dc48c11b48becae6d2dcc",
 "lang": "yo",
 "source": "Indiquez le nom et la classe de l'élève en motif du transfert.",
@@ -22498,6 +22828,12 @@
 "lang": "yo",
 "source": "Archiver",
 "text": "Ifipamọ"
+},
+{
+"key": "862744022d00ac5c66683e75a0befdea5957356a5d230c94d95a26381a031223",
+"lang": "yo",
+"source": "Notifications, 2 non lues",
+"text": "Awọn iwifunni, 2 ti ko ka"
 },
 {
 "key": "86291bf871cbb92b78b03d3889d7015322986f60d4a2fd04b56361148b4db8fc",
@@ -22798,6 +23134,12 @@
 "lang": "yo",
 "source": "Notification envoyée. Elle arrive dans quelques secondes.",
 "text": "Ifitonileti ti firanṣẹ. Yoo de ni iṣẹju diẹ."
+},
+{
+"key": "8ad818a9662f03ddd5f3e5a1c8d016f435935371f5bb89234704348a288ae1e0",
+"lang": "yo",
+"source": "Vous pouvez le télécharger ; son authenticité se vérifie avec le code 2.",
+"text": "O le ṣe igbasilẹ rẹ; ododo rẹ jẹri pẹlu koodu 2."
 },
 {
 "key": "8b1a1df2b49371322790b965d7de7164bba8b140bf1009fb123003b99917b7d9",
@@ -23994,6 +24336,12 @@
 "text": "Obi tuntun"
 },
 {
+"key": "9de391b1c7a940f38611b5affebda1b8e1a8b59af5f38cc74af3ff16e66c33b7",
+"lang": "yo",
+"source": "Nouveau message de 2",
+"text": "Ifiranṣẹ titun lati 2"
+},
+{
 "key": "9df2d8ccb28a9d4ada94585b7161ac54d7a31d82472ada48c1f882334fc00f84",
 "lang": "yo",
 "source": "Écouter la transcription",
@@ -24322,6 +24670,12 @@
 "lang": "yo",
 "source": "Chargement de l’aperçu",
 "text": "Ikojọpọ awotẹlẹ"
+},
+{
+"key": "a4b56bdbb55708c0e94974bd2470c0642bd4256a6fcbe35c69cccf1abbc25b9b",
+"lang": "yo",
+"source": "Votre paiement de 1 FCFA pour 2 (réf. 3) est confirmé. Reçu 4. Reste à payer : 5 6 FCFA.",
+"text": "Isanwo rẹ ti 1 FCFA fun 2 (ref. 3) ti jẹrisi. Ti gba 4. O ku lati sanwo: 5 6 FCFA."
 },
 {
 "key": "a4f021891f09399dd21a311fae5d54e9f5422bc9bd86ae45a72e7c8455993667",
@@ -24990,6 +25344,12 @@
 "text": "Ko si awọn iforukọsilẹ ti nṣiṣe lọwọ ni ọdun yii."
 },
 {
+"key": "b131bf7cab481a068de69c8b3a6d13af71e86526406a6b319bfddba3ad2bf72a",
+"lang": "yo",
+"source": "Rang dans l'établissement : 2e · Rang général : 2e sur 3 candidats classés",
+"text": "Ipo ni idasile: 2nd · Gbogbogbo ipo: 2nd ninu 3 awọn oludije ipo"
+},
+{
 "key": "b1637e41a319d2995d140c647e0eebcd8d75856ea1543f59ce43996fcc723c93",
 "lang": "yo",
 "source": "Choisir une commune",
@@ -25254,6 +25614,18 @@
 "text": "Mon."
 },
 {
+"key": "b527a0d8d0cd16bbc6d99a18f7afbfb246481b4185ace75675f09b1c62bdd8aa",
+"lang": "yo",
+"source": "1 FCFA · Mobile Money",
+"text": "1 FCFA · Mobile Owo"
+},
+{
+"key": "b55c7152828f9bfcc835c05be8235b10fa91403e52b1a90c629567ce818e7487",
+"lang": "yo",
+"source": "2 non lues",
+"text": "2 ai ka"
+},
+{
 "key": "b56c2156e9b1b082ffac7320493972f5c35f6155843e93e0e4e5141def9ba8d0",
 "lang": "yo",
 "source": "Bulletins",
@@ -25264,6 +25636,12 @@
 "lang": "yo",
 "source": "Vos notes apparaîtront dès que vos enseignants les auront saisies.",
 "text": "Awọn gilaasi rẹ yoo han ni kete ti awọn olukọ rẹ ba wọle wọn."
+},
+{
+"key": "b5ff66b8f0a6788fca1664f4ca37a49df78e83c332570a315c3d7b3b1bdebb5a",
+"lang": "yo",
+"source": "Un carillon discret quand une notification arrive pendant que 2 est ouvert. La cloche s'anime aussi, avec ou sans son.",
+"text": "Chime oloye nigbati iwifunni ba de lakoko ti 2 wa ni sisi. Agogo naa tun wa laaye, pẹlu tabi laisi ohun."
 },
 {
 "key": "b623fb6d54a0153b91fe4725cb91441f4e10750ef512660ffad24ab67fabd068",
@@ -25698,6 +26076,12 @@
 "text": "2 ninu 3."
 },
 {
+"key": "bdfffcfc78fddb6e811b02944268a257a5371e5916fd65ac05b6489f8c841f94",
+"lang": "yo",
+"source": "Marquer comme lu : Paiement confirmé",
+"text": "Samisi bi kika: Owo timo"
+},
+{
 "key": "be1a7ff141bf0cf435daa5e287993dab8936f0e0756a3faa7b40ce8d933fb71d",
 "lang": "yo",
 "source": "Ven.",
@@ -26020,6 +26404,12 @@
 "lang": "yo",
 "source": "Paiement non abouti",
 "text": "Owo sisan ti ko ni aṣeyọri"
+},
+{
+"key": "c41b8fd078f48647158f27c6d0ae16c6c9c677170fc26df2592f7f46dcd4ab5f",
+"lang": "yo",
+"source": "République du Bénin · 2",
+"text": "Orile-ede Benin · 2"
 },
 {
 "key": "c422b3245c216fa34c47edeb909b0b83d27610c40c590c9ae8b9529f756a1cd8",
@@ -26496,6 +26886,12 @@
 "text": "Aditi ni mi tabi alagidi gbo. Ṣe Emi yoo padanu alaye eyikeyi?"
 },
 {
+"key": "cc0f823028892ffc2de5530c35a6707d78d33dc0703826f6f54c0454f877cf87",
+"lang": "yo",
+"source": "Direction départementale 2",
+"text": "Itọsọna Ẹka 2"
+},
+{
 "key": "cc26c71ed8e580a0c9071733aa34ab302bc3c4c6370f5fdffb984acd30e72021",
 "lang": "yo",
 "source": "en cours de vérification",
@@ -26776,6 +27172,12 @@
 "lang": "yo",
 "source": "Montant à répartir :",
 "text": "Iye lati pin:"
+},
+{
+"key": "d14e3b6c4b37b984f120a0c037f05cc7d91209e5339c79cec2a118e36ec1b8a5",
+"lang": "yo",
+"source": "Non lues (2)",
+"text": "A ko ka (2)"
 },
 {
 "key": "d14f6ab779c6e8d1533be088ec0fbbb311e9e40c59b429374bbcabeac19e4da8",
@@ -28776,6 +29178,12 @@
 "text": "Otitọ"
 },
 {
+"key": "f530b6f71cebc15bc88016fa4e31f16eb1c39cae624ae37e6e69582b8a23482f",
+"lang": "yo",
+"source": "Frais de scolarité de 2. Total : 3 4 FCFA. Déjà payé : 5 6 FCFA. Reste : 7 8 FCFA. Prochaine échéance : 9 8 FCFA avant le 10 janvier 11.",
+"text": "Frais de scolarité de 2. Total : 3 4 FCFA. Déjà payé : 5 6 FCFA. Reste : 7 8 FCFA. Prochaine échéance : 9 8 FCFA avant le 10 janvier 11."
+},
+{
 "key": "f53da88a2942ae5b3ab14062ee9bbca506bbea35b7087cef036e18a6f2831e87",
 "lang": "yo",
 "source": "Les épreuves n'ont pas encore commencé.",
@@ -28810,6 +29218,12 @@
 "lang": "yo",
 "source": "Affichage et voix",
 "text": "Ifihan ati ohun"
+},
+{
+"key": "f6146c35dcd35f1ac586e0d9294ec133286daed5857f7295b64e59e52f04e88f",
+"lang": "yo",
+"source": "2e · Rang général : 2e sur 3 candidats classés",
+"text": "2nd · Gbogbogbo ipo: 2nd ninu 3 awọn oludije ipo"
 },
 {
 "key": "f65ddff36b022ad63cae3e4a424a610ee65072c10081f765fb5afe15f2079787",
@@ -28858,6 +29272,12 @@
 "lang": "yo",
 "source": "Bulletins en PDF",
 "text": "Awọn iwe itẹjade ni PDF"
+},
+{
+"key": "f79502d02d92c79dfd41ab781f3163af94bb0ed73c79c56da31ee9838ed4331d",
+"lang": "yo",
+"source": "Votre paiement de 1 FCFA pour 2 (réf.",
+"text": "Isanwo rẹ ti 1 FCFA fun 2 (ref."
 },
 {
 "key": "f7a302a668a8fd542766aad5e1b4d55e912c6b2f275fe0fc6a7469377bfb6314",
