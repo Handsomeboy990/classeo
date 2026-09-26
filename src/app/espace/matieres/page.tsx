@@ -108,7 +108,7 @@ export default async function SubjectsPage({ searchParams }: PageProps<"/espace/
     <div className="flex flex-col gap-4">
       <PageHeader
         title="Matières"
-        description={
+        info={
           ministry
             ? "Catalogue national des matières. Les établissements proposent de nouvelles matières, que vous acceptez ou refusez."
             : "Catalogue national fixé par le ministère. Seules les matières du catalogue peuvent être attribuées aux classes."

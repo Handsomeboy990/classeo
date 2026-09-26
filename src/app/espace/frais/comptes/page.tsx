@@ -23,7 +23,7 @@ export default async function PaymentAccountsPage() {
     <>
       <PageHeader
         title="Comptes de paiement"
-        description="Numéros Mobile Money et comptes bancaires où les parents envoient les frais. Sans compte actif, la page de paiement leur indique de régler à l'établissement."
+        info="Numéros Mobile Money et comptes bancaires où les parents envoient les frais. Sans compte actif, la page de paiement leur indique de régler à l'établissement."
         actions={canEdit ? <AddAccountButton /> : null}
       />
       <FeesNav items={feesTabs(user)} />

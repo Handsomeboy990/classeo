@@ -19,7 +19,7 @@ export default async function ChooseSchoolPage({ searchParams }: PageProps<"/esp
     <div className="mx-auto flex max-w-3xl flex-col gap-6">
       <PageHeader
         title="Choisir l'établissement"
-        description="Votre compte travaille dans plusieurs établissements. Choisissez celui où vous travaillez maintenant : classes, élèves et notes seront ceux de cet établissement. Vous pourrez changer à tout moment."
+        info="Votre compte travaille dans plusieurs établissements. Choisissez celui où vous travaillez maintenant : classes, élèves et notes seront ceux de cet établissement. Vous pourrez changer à tout moment."
       />
       {user.schools.length ? (
         <SchoolPicker

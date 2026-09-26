@@ -72,7 +72,7 @@ export default async function InvoicesPage({ searchParams }: PageProps<"/espace/
 
   return (
     <>
-      <PageHeader title="Factures" description="Factures de l'année en cours. Les paiements s'enregistrent depuis la facture." />
+      <PageHeader title="Factures" description="Année en cours" info="Les paiements s'enregistrent depuis la facture : ouvrez-la pour encaisser une tranche." />
       <FeesNav items={feesTabs(user)} />
       <DataTable
         caption="Liste des factures"

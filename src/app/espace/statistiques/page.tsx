@@ -65,7 +65,8 @@ export default async function StatisticsPage({ searchParams }: PageProps<"/espac
     <div className="flex flex-col gap-6">
       <PageHeader
         title="Statistiques"
-        description={`Indicateurs clés de votre périmètre, année ${stats.yearLabel ?? ""}. Les résultats portent sur ${stats.previousYearLabel ?? "l'année précédente"}.`}
+        description={`Année ${stats.yearLabel ?? ""}`}
+        info={`Indicateurs clés de votre périmètre. Les résultats d'examen portent sur ${stats.previousYearLabel ?? "l'année précédente"}, la dernière année terminée.`}
         actions={
           can(user, "statistics:export") ? (
             <>

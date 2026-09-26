@@ -38,7 +38,7 @@ export default async function DocumentsToSignPage({ searchParams }: PageProps<"/
 
   return (
     <>
-      <PageHeader title="Documents à signer" description={`Attestations, certificats de scolarité et bulletins · ${user.scope.label}`} />
+      <PageHeader title="Documents à signer" description={user.scope.label} info="Attestations, certificats de scolarité et bulletins en attente de votre signature." />
       <SignatureNav items={signatureTabs(user)} />
 
       {!ready && (

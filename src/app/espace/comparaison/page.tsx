@@ -78,7 +78,7 @@ export default async function ComparisonPage({ searchParams }: PageProps<"/espac
     <div className="flex flex-col gap-6">
       <PageHeader
         title="Comparaison des années"
-        description="Évolution des indicateurs clés d'une année scolaire à l'autre, pour votre périmètre et chacun de ses territoires. Les années closes restent comparables."
+        info="Évolution des indicateurs clés d'une année scolaire à l'autre, pour votre périmètre et chacun de ses territoires. Les années closes restent comparables."
       />
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <ScopeBreadcrumb scope={scope} basePath="/espace/comparaison" user={user} />

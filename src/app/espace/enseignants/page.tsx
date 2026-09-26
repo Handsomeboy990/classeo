@@ -79,7 +79,7 @@ async function SchoolTeachers({ user, sp }: { user: User; sp: SearchParams }) {
     <>
       <PageHeader
         title="Enseignants"
-        description="Équipe pédagogique de l'année active. Un enseignant qui travaille aussi dans une autre école garde une seule fiche au registre national."
+        info="Équipe pédagogique de l'année active. Un enseignant qui travaille aussi dans une autre école garde une seule fiche au registre national."
         actions={can(user, "teacher:create") && user.scope.schoolId && <AddTeacherDialog />}
       />
       <DataTable
@@ -195,7 +195,8 @@ async function Registry({ user, sp }: { user: User; sp: SearchParams }) {
     <div className="flex flex-col gap-4">
       <PageHeader
         title="Registre des enseignants"
-        description={`Une fiche par personne, avec ses établissements : ${user.scope.label}.`}
+        description={user.scope.label}
+        info="Une fiche par personne, avec tous ses établissements."
         actions={
           can(user, "teacher:export") && (
             <ButtonLink href={`/api/export/enseignants${exportQuery.size ? `?${exportQuery}` : ""}`} variant="secondary" prefetch={false}>

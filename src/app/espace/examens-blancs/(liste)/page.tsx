@@ -58,7 +58,7 @@ export default async function MockExamsPage({ searchParams }: PageProps<"/espace
     <div className="flex flex-col gap-4">
       <PageHeader
         title="Examens blancs"
-        description={
+        info={
           family
             ? "Les examens blancs de vos enfants et leurs résultats."
             : isSchool

@@ -104,7 +104,8 @@ export default async function UsersPage({ searchParams }: PageProps<"/espace/uti
     <div className="flex flex-col gap-4">
       <PageHeader
         title="Comptes utilisateurs"
-        description={`Comptes de votre périmètre : ${user.scope.label}. Un rôle ne peut être attribué que si vous détenez tous ses droits.`}
+        description={user.scope.label}
+        info="Comptes de votre périmètre. Un rôle ne peut être attribué que si vous détenez tous ses droits."
         actions={
           <>
             {can(user, "user:export") && (

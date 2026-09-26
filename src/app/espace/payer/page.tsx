@@ -20,7 +20,7 @@ export default async function PayHomePage() {
 
   return (
     <>
-      <PageHeader title="Payer les frais" description="Les factures de vos enfants pour cette année scolaire. Payez une tranche, plusieurs, ou tout le solde." />
+      <PageHeader title="Payer les frais" info="Les factures de vos enfants pour cette année scolaire. Payez une tranche, plusieurs, ou tout le solde." />
       {invoices.length === 0 ? (
         <Card>
           <EmptyState icon={<Wallet className="size-7" />} title="Aucune facture à payer" description="L'établissement n'a émis aucune facture pour vos enfants cette année." />

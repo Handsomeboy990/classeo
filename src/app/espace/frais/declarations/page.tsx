@@ -34,7 +34,7 @@ export default async function DeclarationsPage() {
 
   return (
     <>
-      <PageHeader title="Paiements des parents" description={`Déclarations Mobile Money et virements à vérifier, paiements en ligne · ${user.scope.label}`} />
+      <PageHeader title="Paiements des parents" description={user.scope.label} info="Déclarations Mobile Money et virements à vérifier, et paiements en ligne." />
       <FeesNav items={feesTabs(user)} />
 
       <div className="flex flex-col gap-6">

@@ -32,7 +32,7 @@ export default async function SchoolSettingsPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <PageHeader title="Paramètres de l'établissement" description={`Identité de ${school.name} (${school.code}) et comptes où les parents paient les frais.`} />
+      <PageHeader title="Paramètres de l'établissement" description={`${school.name} (${school.code})`} info="Identité de l'établissement, affichée sur les documents, et comptes où les parents paient les frais." />
       <SchoolStatusBanner user={user} />
 
       <Card aria-labelledby="identity-title">
