@@ -100,7 +100,7 @@ export function ContentForm({
             <FormField
               label="Résumé facile à lire"
               name="easyRead"
-              hint="Une ou deux phrases courtes, avec des mots simples. Il est lu à voix haute en premier. 280 caractères au plus."
+              info="Une ou deux phrases courtes, avec des mots simples. Il est lu à voix haute en premier. 280 caractères au plus."
             >
               <Textarea value={v.easyRead} onChange={set("easyRead")} maxLength={280} className="min-h-20" />
             </FormField>
@@ -142,10 +142,10 @@ export function ContentForm({
             <div className="sm:col-span-2">
               <input type="hidden" name="target" value="SEVERAL" />
               <input type="hidden" name="mode" value="several" />
-              <MultiPicker name="recipients" legend="Destinataires" hint="Limités à votre périmètre." options={recipients} selected={picked} onChange={setPicked} max={MAX_RECIPIENTS} />
+              <MultiPicker name="recipients" legend="Destinataires" info="Limités à votre périmètre." options={recipients} selected={picked} onChange={setPicked} max={MAX_RECIPIENTS} />
             </div>
           ) : (
-            <FormField label="Cible" name="target" required hint="Limitée à votre périmètre.">
+            <FormField label="Cible" name="target" required info="Limitée à votre périmètre.">
               <Select value={v.target} onChange={set("target")}>
                 <option value="">Choisir…</option>
                 {groups.map((g) => (
@@ -175,7 +175,7 @@ export function ContentForm({
             label="Afficher en bandeau défilant jusqu'au"
             name="tickerUntil"
             className="sm:col-span-2"
-            hint="Facultatif, pour une annonce importante : une fois publiée, elle défile en haut des écrans de son public jusqu'à ce jour inclus. Laissez vide pour ne pas l'afficher en bandeau."
+            info="Facultatif, pour une annonce importante : une fois publiée, elle défile en haut des écrans de son public jusqu'à ce jour inclus. Laissez vide pour ne pas l'afficher en bandeau."
           >
             <Input type="date" min={today} value={v.tickerUntil ?? ""} onChange={set("tickerUntil")} className="sm:max-w-60" />
           </FormField>

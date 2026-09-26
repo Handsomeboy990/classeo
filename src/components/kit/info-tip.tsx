@@ -33,16 +33,24 @@ const CLOSE_DELAY = 120;
 export function InfoTip({
   children,
   label = "Plus d'informations",
+  id: tipIdProp,
+  size = "md",
   className,
 }: {
   // The explanation. Plain phrasing content (text, strong, links).
   children: ReactNode;
   // Accessible name of the button, e.g. "À propos du taux de réussite".
   label?: string;
+  // Id of the bubble's text, for a field that also points at it with its
+  // own aria-describedby (FormField info).
+  id?: string;
+  // lg: a wider bubble for a short list (a method note); it scrolls when
+  // taller than the window allows.
+  size?: "md" | "lg";
   className?: string;
 }) {
   const id = useId();
-  const tipId = `${id}-tip`;
+  const tipId = tipIdProp ?? `${id}-tip`;
   const button = useRef<HTMLButtonElement>(null);
   const tip = useRef<HTMLSpanElement>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -169,8 +177,8 @@ export function InfoTip({
       >
         <Info aria-hidden />
       </button>
-      <span ref={tip} id={tipId} role="tooltip" popover="manual" className="ds-tip" onPointerEnter={enter} onPointerLeave={leave}>
-        {children}
+      <span ref={tip} id={tipId} role="tooltip" popover="manual" className="ds-tip" data-size={size === "lg" ? "lg" : undefined} onPointerEnter={enter} onPointerLeave={leave}>
+        <span className="ds-tip-body">{children}</span>
       </span>
     </span>
   );

@@ -78,10 +78,10 @@ export function RoleFormDialog({
           <FormField label="Nom du rôle" name="name" required hint="Par exemple : Analyste départemental, Surveillant général.">
             <Input maxLength={60} autoComplete="off" defaultValue={source ? `Copie de ${source.name}`.slice(0, 60) : ""} />
           </FormField>
-          <FormField label="Description" name="description" hint="Ce que fait la personne qui détient ce rôle. 300 caractères maximum.">
+          <FormField label="Description" name="description" info="Ce que fait la personne qui détient ce rôle. 300 caractères maximum.">
             <Textarea maxLength={300} rows={3} defaultValue={source?.description ?? ""} />
           </FormField>
-          <FormField label="Copier les droits de" name="sourceRoleId" hint="Facultatif. Les droits que vous ne détenez pas ne sont pas copiés.">
+          <FormField label="Copier les droits de" name="sourceRoleId" info="Facultatif. Les droits que vous ne détenez pas ne sont pas copiés.">
             <Select
               value={sourceId}
               onChange={(e) => {
@@ -98,7 +98,7 @@ export function RoleFormDialog({
               ))}
             </Select>
           </FormField>
-          <FormField label="Niveau d'action" name="scopeLevel" required hint="Le périmètre des comptes qui recevront ce rôle.">
+          <FormField label="Niveau d'action" name="scopeLevel" required info="Le périmètre des comptes qui recevront ce rôle.">
             <Select value={level} onChange={(e) => setLevel(e.target.value as Level)}>
               {levels.map((l) => (
                 <option key={l.value} value={l.value}>

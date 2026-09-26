@@ -102,7 +102,7 @@ export function ReportCardSheet({ card, student }: { card: ReportCardView; stude
       </Table>
 
       <footer className="border-t border-border p-5">
-        <p className="text-xs font-semibold text-muted uppercase">Appréciation du conseil de classe</p>
+        <p className="text-xs font-semibold text-muted uppercase">Appréciation générale</p>
         <p className="mt-1 text-lg">{card.appreciation ?? "Aucune appréciation."}</p>
       </footer>
     </article>

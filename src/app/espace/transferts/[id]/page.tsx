@@ -63,7 +63,7 @@ export default async function TransferPage(props: PageProps<"/espace/transferts/
         actions={
           <>
             {certificate && (
-              <PdfDownloadLink href={`/espace/transferts/${t.id}/certificat`} label="Certificat de scolarité (PDF)" description={`certificat de scolarité de ${name}`} />
+              <PdfDownloadLink href={`/espace/transferts/${t.id}/certificat`} label="Certificat de radiation, exeat (PDF)" description={`certificat de radiation de ${name}`} />
             )}
             <ButtonLink href={historyHref} variant="secondary">
               <History aria-hidden /> Parcours de l&apos;élève

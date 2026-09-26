@@ -74,7 +74,7 @@ export default async function AuditPage({ searchParams }: PageProps<"/espace/jou
     <div className="flex flex-col gap-4">
       <PageHeader
         title="Journal d'activité"
-        description={`Chaque action enregistrée : son auteur, sa date et son adresse IP. ${scopeText}`}
+        info={`Chaque action enregistrée, avec son auteur, sa date et son adresse IP. ${scopeText}`}
         actions={
           can(user, "audit:export") ? (
             <ButtonLink href={`/api/export/journal${exportQuery.size ? `?${exportQuery}` : ""}`} variant="secondary" prefetch={false}>

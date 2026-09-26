@@ -1,15 +1,12 @@
 "use client";
 
-import { Languages } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
-import { cn } from "@/lib/utils";
-
-import { initLanguages, setLanguage, setShowOriginal, useLanguageState } from "./client";
+import { initLanguages, setTranslationStatus, useLanguageState } from "./client";
 import { translateDated } from "./date-words";
 import { applyUnit, ATTRIBUTES, changedRoots, collect, keysOf, prune, restoreAll, sourceOf, type Unit } from "./dom";
-import { bcp47, inLanguage, LANGUAGES, languageLabel, type LanguageCode, type TargetLanguage } from "./languages";
+import { bcp47, inLanguage, type TargetLanguage } from "./languages";
 import { isQueueable, lookupText, namePattern } from "./text";
 
 type Status = "idle" | "loading" | "done" | "partial" | "unavailable";
@@ -42,9 +39,8 @@ async function fetchTranslations(lang: TargetLanguage, texts: string[]) {
   return { map, pending };
 }
 
-// Language switcher and interface translation for the users holding
-// translation:view. Mounted once by the private space layout, above the
-// main region; translates the whole document (the shell, the page, the
+// Interface translation for the users holding translation:view. Mounted
+// once by the private space layout; translates the whole document (the shell, the page, the
 // dialogs, sheets and toasts rendered in portals) and follows its changes:
 // client side navigation, a refreshed list, a dialog opening. French stays
 // the default; the choice is remembered on this device for this account.
@@ -52,7 +48,6 @@ export function TranslationLayer({ userId, languages, voices, names }: { userId:
   const s = useLanguageState();
   const pathname = usePathname();
   const [status, setStatus] = useState<Status>("idle");
-  const selectId = useId();
   const refresh = useRef<(() => void) | null>(null);
 
   // Keyed by value: a refreshed layout sends new arrays with the same
@@ -196,7 +191,6 @@ export function TranslationLayer({ userId, languages, voices, names }: { userId:
     refresh.current?.();
   }, [pathname]);
 
-  const label = languageLabel(s.lang);
   const message = !active
     ? s.lang !== "fr"
       ? "Texte original en français."
@@ -209,45 +203,15 @@ export function TranslationLayer({ userId, languages, voices, names }: { userId:
         unavailable: "Traduction indisponible pour le moment : la page reste en français.",
       }[status];
 
-  // Rendered from the first paint (the server only mounts this component
-  // for users allowed to translate): appearing after hydration would push
-  // the page down under the reader's finger.
+  useEffect(() => {
+    setTranslationStatus(message);
+  }, [message]);
+
+  // The switcher itself lives in the top bar (language-menu.tsx); this only
+  // announces where the translation stands, from outside any hidden bar.
   return (
-    <div data-no-translate data-read-skip className="mx-auto w-full max-w-7xl px-4 pt-3 sm:px-6 print:hidden max-lg:[body:has([data-chat])_&]:hidden">
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-2 rounded-card border border-border bg-surface px-3 py-2">
-        <label htmlFor={selectId} className="flex items-center gap-2 text-sm font-semibold">
-          <Languages className="size-5 text-primary" aria-hidden />
-          Langue
-        </label>
-        <select
-          id={selectId}
-          value={s.lang}
-          onChange={(e) => setLanguage(e.target.value as LanguageCode)}
-          className="min-h-11 rounded-control border border-field-border bg-surface px-3 text-base font-medium sm:min-h-10"
-        >
-          {LANGUAGES.filter((l) => l.code === "fr" || languages.includes(l.code)).map((l) => (
-            <option key={l.code} value={l.code} lang={l.bcp47}>
-              {l.label}
-            </option>
-          ))}
-        </select>
-        {s.lang !== "fr" && (
-          <button
-            type="button"
-            aria-pressed={s.showOriginal}
-            onClick={() => setShowOriginal(!s.showOriginal)}
-            className={cn(
-              "inline-flex min-h-11 items-center rounded-control border px-3 text-sm font-semibold sm:min-h-10",
-              s.showOriginal ? "border-primary bg-primary-soft text-primary" : "border-border-strong bg-surface hover:bg-surface-2",
-            )}
-          >
-            {s.showOriginal ? `Revenir au ${label.toLowerCase()}` : "Voir en français"}
-          </button>
-        )}
-        <p role="status" className="min-w-0 flex-1 basis-48 text-sm text-muted">
-          {message}
-        </p>
-      </div>
-    </div>
+    <p data-no-translate data-read-skip role="status" className="sr-only">
+      {message}
+    </p>
   );
 }

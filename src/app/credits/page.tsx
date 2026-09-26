@@ -1,9 +1,9 @@
-import { ArrowLeft, AudioLines, ExternalLink } from "lucide-react";
+import { ArrowLeft, AudioLines, ExternalLink, Languages } from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 
-import { LICENCES, OTHER_CREDITS, PHOTOS, type Licence } from "@/features/public-pages/photos";
+import { LANGUAGE_CREDITS, LICENCES, OTHER_CREDITS, PHOTOS, type Licence } from "@/features/public-pages/photos";
 import { PHOTO_IMAGES } from "@/features/public-pages/photo-images";
 import { PublicFooter, PublicHeader } from "@/features/public-pages/public-frame";
 import { publicTranslator } from "@/features/public-pages/server";
@@ -88,6 +88,38 @@ export default async function CreditsPage({ searchParams }: PageProps<"/credits"
                       {node(v.subject)}
                     </h3>
                     <CreditDetails credit={v} sourceLabel={c.voiceSource} tr={tr} />
+                  </article>
+                </li>
+              ))}
+            </ul>
+          </section>
+
+          <section aria-labelledby="languages-title" className="mt-12">
+            <h2 id="languages-title" className="text-xl font-extrabold">
+              {node(c.languages)}
+            </h2>
+            <p className="mt-2 text-muted">{node(c.languagesThanks)}</p>
+            <ul className="mt-4 flex flex-col gap-5">
+              {LANGUAGE_CREDITS.map((l) => (
+                <li key={l.id} className="rounded-card border border-border bg-surface p-4 shadow-xs sm:p-5">
+                  <article aria-labelledby={`credit-${l.id}`}>
+                    <h3 id={`credit-${l.id}`} className="flex items-start gap-2.5 text-lg leading-snug font-bold text-balance">
+                      <Languages className="mt-1 size-5 shrink-0 text-primary" aria-hidden />
+                      {node(l.subject)}
+                    </h3>
+                    <dl className="mt-3 grid gap-x-4 gap-y-2 text-sm sm:grid-cols-[8.5rem_1fr]">
+                      <dt className="font-semibold text-muted">{node(c.author)}</dt>
+                      <dd translate="no" lang="fr" className="min-w-0">
+                        {l.author}
+                      </dd>
+                      <dt className="font-semibold text-muted">{node(c.source)}</dt>
+                      <dd className="min-w-0">
+                        <a href={l.sourceUrl} rel="noopener noreferrer" className={LINK}>
+                          {node(c.voiceSource)}
+                          <ExternalLink className="size-3.5 shrink-0" aria-hidden />
+                        </a>
+                      </dd>
+                    </dl>
                   </article>
                 </li>
               ))}

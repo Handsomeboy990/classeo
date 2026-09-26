@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 
 import { checkbox, id, isUniqueViolation, optionalPhone, optionalText, requiredText } from "@/features/classes/academic";
-import type { Prisma } from "@/generated/prisma/client";
+import type { Prisma, SchoolSector } from "@/generated/prisma/client";
 import { createAction } from "@/lib/action";
 import { audit } from "@/lib/audit";
 import { hashPassword } from "@/lib/auth/password";
@@ -14,6 +14,7 @@ import { allocateUsername } from "@/lib/auth/username";
 import { invalidate, tags } from "@/lib/cache";
 import { isIsoDate, isoToDate, todayIso } from "@/lib/domain/attendance";
 import { canAssignRoleOn, generateTemporaryPassword } from "@/lib/domain/rights";
+import { appointmentStatus, STATE_MATRICULE_PATTERN, STATE_STATUSES, TEACHER_STATUSES, type TeacherStatus } from "@/lib/domain/teacher-status";
 import { db } from "@/lib/db";
 import { DomainError } from "@/lib/errors";
 import { assertWritable } from "@/lib/guards";
@@ -51,7 +52,19 @@ const fields = {
   specialty: optionalText(80),
   hiredAt,
   npi,
+  // Given by the school: vacataire, or private teacher in a private school.
+  // Agents of the State take the status of the ministry registry.
+  status: z
+    .enum(["", ...TEACHER_STATUSES])
+    .optional()
+    .transform((v) => (v ? v : null)),
 };
+
+function resolveStatus(input: { chosen: TeacherStatus | null; stateStatus: TeacherStatus | null; sector: SchoolSector }) {
+  const r = appointmentStatus(input);
+  if (!r.ok) throw new DomainError(r.reason);
+  return r.status;
+}
 
 const label = (gender: string | null) => (gender === "F" ? "l'enseignante" : "l'enseignant");
 
@@ -60,7 +73,7 @@ const label = (gender: string | null) => (gender === "F" ? "l'enseignante" : "l'
 async function ownSchool(user: User) {
   const schoolId = user.scope.schoolId;
   if (user.scope.level !== "SCHOOL" || !schoolId) throw new DomainError("L'ajout d'un enseignant se fait depuis un compte d'établissement.");
-  const school = await db.school.findFirst({ where: { AND: [{ id: schoolId }, schoolWhere(user)] }, select: { id: true, name: true } });
+  const school = await db.school.findFirst({ where: { AND: [{ id: schoolId }, schoolWhere(user)] }, select: { id: true, name: true, sector: true } });
   if (!school) throw new DomainError("Établissement hors de votre périmètre.");
   await assertWritable({ schoolId: school.id });
   return school;
@@ -103,9 +116,10 @@ export const appointTeacher = createAction({
     const school = await ownSchool(user);
     const profile = await db.teacherProfile.findUnique({
       where: { id: input.profileId },
-      select: { id: true, userId: true, firstName: true, lastName: true, gender: true, phone: true, teachers: { select: { schoolId: true, isActive: true, specialty: true } } },
+      select: { id: true, userId: true, firstName: true, lastName: true, gender: true, phone: true, stateStatus: true, teachers: { select: { schoolId: true, isActive: true, specialty: true } } },
     });
     if (!profile) throw new DomainError("Enseignant introuvable au registre.");
+    const status = resolveStatus({ chosen: null, stateStatus: profile.stateStatus, sector: school.sector });
     const here = profile.teachers.find((t) => t.schoolId === school.id);
     if (here) throw new DomainError(here.isActive ? "Cet enseignant fait déjà partie de votre équipe." : "Cet enseignant figure déjà dans votre établissement, inactif : réactivez-le depuis sa fiche.");
 
@@ -118,6 +132,7 @@ export const appointTeacher = createAction({
             userId: profile.userId,
             schoolId: school.id,
             matricule,
+            status,
             firstName: profile.firstName,
             lastName: profile.lastName,
             gender: profile.gender,
@@ -167,6 +182,8 @@ export const createTeacher = createAction({
   }),
   handler: async (input, user) => {
     const school = await ownSchool(user);
+    // A school never creates an agent of the State.
+    const status = resolveStatus({ chosen: input.status, stateStatus: null, sector: school.sector });
 
     // The registry is checked again on the server: the search step is only
     // a convenience.
@@ -232,6 +249,7 @@ export const createTeacher = createAction({
               userId: account?.id ?? null,
               schoolId: school.id,
               matricule,
+              status,
               firstName: input.firstName,
               lastName: input.lastName,
               gender: input.gender,
@@ -274,10 +292,14 @@ export const updateTeacher = createAction({
   permission: "teacher:update",
   schema: z.object({ id, ...fields, isActive: checkbox }),
   handler: async (input, user) => {
-    const teacher = await db.teacher.findFirst({ where: { AND: [{ id: input.id }, teacherWhere(user)] }, select: { id: true, schoolId: true, isActive: true, profileId: true, profile: { select: { npi: true } } } });
+    const teacher = await db.teacher.findFirst({
+      where: { AND: [{ id: input.id }, teacherWhere(user)] },
+      select: { id: true, schoolId: true, isActive: true, profileId: true, school: { select: { sector: true } }, profile: { select: { npi: true, stateStatus: true } } },
+    });
     if (!teacher) throw new DomainError("Enseignant introuvable ou hors de votre périmètre.");
     await assertWritable({ schoolId: teacher.schoolId });
-    const { id: teacherId, hiredAt: hired, npi: newNpi, ...data } = input;
+    const { id: teacherId, hiredAt: hired, npi: newNpi, status: chosen, ...rest } = input;
+    const data = { ...rest, status: resolveStatus({ chosen, stateStatus: teacher.profile?.stateStatus ?? null, sector: teacher.school.sector }) };
     try {
       await db.$transaction([
         db.teacher.update({ where: { id: teacherId }, data: { ...data, hiredAt: hired ? isoToDate(hired) : null } }),
@@ -287,7 +309,7 @@ export const updateTeacher = createAction({
           ? [
               db.teacherProfile.update({
                 where: { id: teacher.profileId },
-                data: { firstName: data.firstName, lastName: data.lastName, gender: data.gender, phone: data.phone, ...(newNpi ? { npi: newNpi } : {}) },
+                data: { firstName: rest.firstName, lastName: rest.lastName, gender: rest.gender, phone: rest.phone, ...(newNpi ? { npi: newNpi } : {}) },
               }),
             ]
           : []),
@@ -305,5 +327,69 @@ export const updateTeacher = createAction({
     });
     if (teacher.isActive !== input.isActive) invalidate(tags.stats);
     return "Enseignant enregistré.";
+  },
+});
+
+// The ministry's registry of State teachers: an agent is recorded (or an
+// existing registry entry completed) with the status and the State
+// matricule. Only the national level writes it; a school appoints the
+// agents it finds there. Appointments in public schools take the status.
+export const recordStateTeacher = createAction({
+  permission: "teacher:update",
+  schema: z.object({
+    profileId: z
+      .string()
+      .trim()
+      .max(64)
+      .optional()
+      .transform((v) => v || null),
+    lastName: requiredText(60),
+    firstName: requiredText(60),
+    gender: fields.gender,
+    phone: optionalPhone,
+    npi,
+    stateStatus: z.enum(STATE_STATUSES, "Choisissez le statut : APE, ACE ou AME."),
+    stateMatricule: z
+      .string()
+      .trim()
+      .toUpperCase()
+      .transform((v) => v.replace(/\s+/g, ""))
+      .pipe(z.string().regex(STATE_MATRICULE_PATTERN, "Le matricule de l'État compte 4 à 20 chiffres ou lettres.")),
+  }),
+  handler: async (input, user) => {
+    if (user.scope.level !== "NATIONAL") throw new DomainError("Le registre des agents de l'État est tenu par le ministère.");
+    const { profileId, ...data } = input;
+    let id: string;
+    try {
+      if (profileId) {
+        const existing = await db.teacherProfile.findUnique({ where: { id: profileId }, select: { id: true, npi: true } });
+        if (!existing) throw new DomainError("Enseignant introuvable au registre.");
+        await db.$transaction([
+          db.teacherProfile.update({
+            where: { id: existing.id },
+            data: { ...data, npi: existing.npi ?? data.npi },
+          }),
+          db.teacher.updateMany({ where: { profileId: existing.id, school: { sector: "PUBLIC" } }, data: { status: data.stateStatus } }),
+        ]);
+        id = existing.id;
+      } else {
+        const created = await db.teacherProfile.create({ data, select: { id: true } });
+        id = created.id;
+      }
+    } catch (error) {
+      if (isUniqueViolation(error)) {
+        const target = String((error as { meta?: { target?: unknown } }).meta?.target ?? "");
+        throw new DomainError(target.includes("npi") ? "Ce NPI figure déjà au registre." : "Ce matricule de l'État est déjà attribué à une autre personne.");
+      }
+      throw error;
+    }
+    await audit(user, {
+      action: profileId ? "update" : "create",
+      resource: "teacher",
+      resourceId: id,
+      summary: `${profileId ? "Mise à jour" : "Inscription"} au registre des agents de l'État : ${input.firstName} ${input.lastName}, ${input.stateStatus}, matricule ${input.stateMatricule}`,
+    });
+    invalidate(tags.stats);
+    return profileId ? "Fiche du registre mise à jour." : "Agent inscrit au registre. Les établissements peuvent désormais le nommer.";
   },
 });

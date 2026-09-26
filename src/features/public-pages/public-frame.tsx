@@ -7,26 +7,22 @@ import { PUBLIC } from "./texts";
 import { withChoice, type PublicLang, type PublicTranslator } from "./translate";
 
 // Header and footer of the public pages (home, photo credits). The header
-// carries the two language controls, discreet beside the way in; on a phone
-// they take a second row of their own.
+// holds the logo, the language control of the top bars and the way in, on
+// one line down to 320 px (the logo keeps its mark only on the narrowest
+// phones).
 export function PublicHeader({ tr, voice, signIn = true }: { tr: PublicTranslator; voice: PublicLang; signIn?: boolean }) {
   const { t, lang } = tr;
   return (
-    <header lang={lang} className="border-b border-border bg-surface">
-      <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-x-4 gap-y-3 px-4 py-3 sm:px-8">
-        <Link href={withChoice("/", lang, voice)} aria-label={t(PUBLIC.common.home)} className="min-w-0 rounded-lg">
-          <Logo />
+    <header lang={lang} className="sticky top-0 z-30 border-b border-border bg-surface/95 backdrop-blur">
+      <div className="mx-auto flex h-16 max-w-7xl items-center gap-2 px-4 sm:gap-3 sm:px-8">
+        <Link href={withChoice("/", lang, voice)} aria-label={t(PUBLIC.common.home)} className="mr-auto min-w-0 rounded-lg">
+          <Logo className="max-[379px]:[&>span:last-child]:hidden" />
         </Link>
-        <LanguageControls
-          lang={lang}
-          voice={voice}
-          labels={{ language: t(PUBLIC.common.language), voice: t(PUBLIC.common.voice), apply: t(PUBLIC.common.apply) }}
-          className="order-last w-full border-t border-border pt-3 sm:order-none sm:ml-auto sm:w-auto sm:border-0 sm:pt-0"
-        />
+        <LanguageControls lang={lang} voice={voice} labels={{ language: t(PUBLIC.common.language), voice: t(PUBLIC.common.voice) }} />
         {signIn && (
           <Link
             href={withChoice("/connexion", lang, voice)}
-            className="ml-auto inline-flex min-h-11 items-center gap-2 rounded-control bg-primary px-4 text-sm font-bold whitespace-nowrap text-on-primary hover:bg-primary-hover sm:ml-0"
+            className="inline-flex min-h-11 items-center gap-2 rounded-control bg-primary px-4 text-sm font-bold whitespace-nowrap text-on-primary hover:bg-primary-hover max-[359px]:px-3"
           >
             {t(PUBLIC.common.signIn)}
           </Link>

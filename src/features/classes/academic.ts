@@ -6,13 +6,14 @@ import { z } from "zod";
 import { Prisma } from "@/generated/prisma/client";
 import { isoToDate, todayIso } from "@/lib/domain/attendance";
 import { db } from "@/lib/db";
+import { periodsOf, type Periodicity } from "@/lib/domain/periodicity";
 import { DomainError } from "@/lib/errors";
 
 // Academic calendar helpers shared by every pedagogy module (classes,
 // students, grades, report cards, attendance).
 
 export const getActiveYear = cache(async () =>
-  db.academicYear.findFirst({ where: { isActive: true }, include: { periods: { orderBy: { order: "asc" } } } }),
+  db.academicYear.findFirst({ where: { isActive: true }, include: { periods: { orderBy: [{ periodicity: "asc" }, { order: "asc" }] } } }),
 );
 
 export async function requireActiveYear() {
@@ -21,17 +22,33 @@ export async function requireActiveYear() {
   return year;
 }
 
+// The evaluation periodicity of the school a session works in. A school
+// session always has one; other accounts fall back to terms, the national
+// calendar's own division.
+export function userPeriodicity(user: { scope: { periodicity?: Periodicity | null } }): Periodicity {
+  return user.scope.periodicity ?? "TRIMESTER";
+}
+
+// Periods of the active year in the given periodicity, in order.
+export const getYearPeriods = cache(async (periodicity: Periodicity) => {
+  const year = await getActiveYear();
+  return year ? periodsOf(year.periods, periodicity) : [];
+});
+
 // The period containing today, otherwise the first one still open, otherwise
 // the last one.
-export const getCurrentPeriod = cache(async () => {
-  const year = await getActiveYear();
-  if (!year || !year.periods.length) return null;
-  const today = isoToDate(todayIso());
-  return (
-    year.periods.find((p) => p.startDate <= today && today <= p.endDate) ??
-    year.periods.find((p) => !p.isClosed) ??
-    year.periods[year.periods.length - 1]!
-  );
+export function pickCurrentPeriod<P extends { startDate: Date; endDate: Date; isClosed: boolean }>(periods: P[], today = isoToDate(todayIso())): P | null {
+  if (!periods.length) return null;
+  return periods.find((p) => p.startDate <= today && today <= p.endDate) ?? periods.find((p) => !p.isClosed) ?? periods[periods.length - 1]!;
+}
+
+export const getCurrentPeriod = cache(async (periodicity: Periodicity) => pickCurrentPeriod(await getYearPeriods(periodicity)));
+
+// A school's periodicity, for pages reached from outside the school (a
+// student record, a family view).
+export const schoolPeriodicity = cache(async (schoolId: string): Promise<Periodicity> => {
+  const school = await db.school.findUnique({ where: { id: schoolId }, select: { periodicity: true } });
+  return school?.periodicity ?? "TRIMESTER";
 });
 
 export function isUniqueViolation(error: unknown) {

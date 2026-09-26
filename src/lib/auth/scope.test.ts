@@ -6,16 +6,16 @@ import { describe, expect, it, vi } from "vitest";
 vi.mock("server-only", () => ({}));
 vi.mock("@/lib/db", () => ({ db: {} }));
 
-const { assignmentWriteWhere, classroomWhere, enrollmentWhere, rosterClassroomWhere } = await import("./scope");
+const { assignmentWriteWhere, classroomWhere, enrollmentWhere, rosterClassroomWhere, schoolWhere } = await import("./scope");
 
 type Fake = Parameters<typeof classroomWhere>[0];
 
-function account(role: string, over: Partial<Record<"teacherId" | "guardianId" | "studentId", string | null>> & { level?: string } = {}): Fake {
+function account(role: string, over: Partial<Record<"teacherId" | "guardianId" | "studentId", string | null>> & { level?: string; cycles?: string[] | null } = {}): Fake {
   return {
     id: "u",
     role: { id: "r", code: role, name: role },
     permissions: new Set(),
-    scope: { level: over.level ?? "SCHOOL", departmentId: "d1", communeId: "c1", schoolId: "s1", label: "" },
+    scope: { level: over.level ?? "SCHOOL", departmentId: "d1", communeId: "c1", schoolId: "s1", label: "", cycles: over.cycles ?? null },
     teacherId: over.teacherId ?? null,
     guardianId: over.guardianId ?? null,
     studentId: over.studentId ?? null,
@@ -65,5 +65,32 @@ describe("class rosters", () => {
     const teacher = account("TEACHER", { teacherId: "t1" });
     expect(rosterClassroomWhere(director)).toEqual(classroomWhere(director));
     expect(rosterClassroomWhere(teacher)).toEqual(classroomWhere(teacher));
+  });
+});
+
+describe("administrative chains", () => {
+  it("keeps a department without a chain on every school of the department", () => {
+    expect(schoolWhere(account("DEPARTMENT_DIRECTOR", { level: "DEPARTMENT" }))).toEqual({ commune: { departmentId: "d1" } });
+  });
+
+  it("limits a DDEMP to nursery and primary schools, a DDESTFP to secondary ones", () => {
+    const ddemp = account("DEPARTMENT_DIRECTOR", { level: "DEPARTMENT", cycles: ["PRESCHOOL", "PRIMARY"] });
+    const ddestfp = account("DEPARTMENT_DIRECTOR", { level: "DEPARTMENT", cycles: ["SECONDARY", "TECHNICAL"] });
+    expect(schoolWhere(ddemp)).toEqual({ commune: { departmentId: "d1" }, cycle: { in: ["PRESCHOOL", "PRIMARY"] } });
+    expect(schoolWhere(ddestfp)).toEqual({ commune: { departmentId: "d1" }, cycle: { in: ["SECONDARY", "TECHNICAL"] } });
+    // Classes and enrollments follow, since they compose the school filter.
+    expect(classroomWhere(ddestfp)).toEqual({ school: schoolWhere(ddestfp) });
+    expect(enrollmentWhere(ddemp)).toEqual({ school: schoolWhere(ddemp) });
+  });
+
+  it("limits a circonscription to the nursery and primary schools of its commune", () => {
+    const district = account("COMMUNE_INSPECTOR", { level: "COMMUNE", cycles: ["PRESCHOOL", "PRIMARY"] });
+    expect(schoolWhere(district)).toEqual({ communeId: "c1", cycle: { in: ["PRESCHOOL", "PRIMARY"] } });
+  });
+
+  it("still fails closed on an incomplete territory", () => {
+    const lost = { ...account("DEPARTMENT_DIRECTOR", { level: "DEPARTMENT", cycles: ["SECONDARY"] }) };
+    (lost.scope as { departmentId: string | null }).departmentId = null;
+    expect(schoolWhere(lost)).toEqual({ id: "__none__" });
   });
 });

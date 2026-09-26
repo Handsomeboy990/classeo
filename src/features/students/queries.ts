@@ -1,13 +1,13 @@
 import "server-only";
 
 import type { EnrollmentStatus, Prisma } from "@/generated/prisma/client";
-import { getActiveYear, getCurrentPeriod } from "@/features/classes/academic";
+import { getActiveYear, getCurrentPeriod, schoolPeriodicity } from "@/features/classes/academic";
 import { computeClassCards } from "@/features/report-cards/compute";
 import { can } from "@/lib/auth/authorize";
 import { enrollmentWhere } from "@/lib/auth/scope";
 import type { CurrentUser } from "@/lib/auth/session";
 import { attendanceRate } from "@/lib/domain/attendance";
-import { subjectAverage, type GradeInput } from "@/lib/domain/grades";
+import { DEFAULT_FORMULA, subjectAverage, type GradeInput } from "@/lib/domain/grades";
 import { db } from "@/lib/db";
 import { sortByName } from "@/lib/utils";
 
@@ -105,7 +105,7 @@ export async function getStudentProfile(user: User, studentId: string) {
 
   const year = await getActiveYear();
   const current = student.enrollments.find((e) => e.academicYearId === year?.id) ?? null;
-  const period = await getCurrentPeriod();
+  const period = current ? await getCurrentPeriod(await schoolPeriodicity(current.schoolId)) : null;
   // Seeing a student is not reading their results: each block is loaded only
   // with the right of what it shows (an accountant sees the identity only).
   const rights = { grades: can(user, "grade:view"), attendance: can(user, "attendance:view"), reportCards: can(user, "report_card:view") };
@@ -165,7 +165,7 @@ async function subjectGrades(enrollmentId: string, classroomId: string, periodId
   return assignments.map((a) => {
     const sheet = a.gradeSheets[0];
     const list: GradeInput[] = (sheet?.grades ?? []).map((g) => ({ type: g.type, value: Number(g.value), maxValue: Number(g.maxValue) }));
-    const breakdown = subjectAverage(sheet?.formula ?? "WEIGHTED_STANDARD", list);
+    const breakdown = subjectAverage(sheet?.formula ?? DEFAULT_FORMULA, list);
     return {
       id: a.id,
       subject: a.subject.name,

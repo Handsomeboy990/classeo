@@ -51,7 +51,7 @@
   --on-danger: #ffffff;
   --overlay: rgb(9 22 15 / 0.52);
   --radius-sm: 0.375rem;
-  --control-radius: 0.625rem;
+  --control-radius: 0.75rem;
   --sheet-radius: 1.25rem;
   --control-h: 2.75rem;
   --elevation-xs: 0 1px 2px rgb(20 32 24 / 0.06);
@@ -288,7 +288,7 @@ button:disabled {
     color: var(--text);
     font-size: 1rem;
     line-height: 1.5;
-    box-shadow: var(--elevation-xs);
+    box-shadow: none;
     transition:
       border-color var(--duration-fast) ease,
       box-shadow var(--duration-fast) ease,
@@ -309,6 +309,7 @@ button:disabled {
   }
   .ds-field[aria-invalid="true"] {
     border-color: var(--danger);
+    background-color: color-mix(in srgb, var(--danger) 4%, var(--field-bg));
   }
   .ds-field[aria-invalid="true"]:focus {
     box-shadow:
@@ -542,6 +543,132 @@ button:disabled {
   .ds-choice:has(input:disabled) {
     cursor: not-allowed;
   }
+
+  /*
+   * File field (ui/file-input.tsx): a dashed drop zone with an icon tile.
+   * The transparent native input covers it, so the focus ring, the hover
+   * and a file dragged over it are all drawn from its state.
+   */
+  .ds-file {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    min-width: 0;
+    min-height: 3.5rem;
+    padding: 0.5rem 0.875rem 0.5rem 0.5rem;
+    border: 1.5px dashed var(--field-border);
+    border-radius: var(--control-radius);
+    background-color: var(--field-bg);
+    font-size: 0.9375rem;
+    line-height: 1.3;
+    transition:
+      border-color var(--duration-fast) ease,
+      background-color var(--duration-fast) ease,
+      box-shadow var(--duration-fast) ease;
+  }
+  .ds-file:hover:not([data-disabled]),
+  .ds-file:has(.ds-file-input:focus-visible) {
+    border-color: var(--primary);
+    background-color: color-mix(in srgb, var(--primary) 4%, var(--field-bg));
+  }
+  .ds-file:has(.ds-file-input:focus-visible) {
+    border-style: solid;
+    box-shadow: 0 0 0 4px var(--field-ring);
+  }
+  .ds-file[data-filled] {
+    border-style: solid;
+  }
+  .ds-file:has(.ds-file-input[aria-invalid="true"]) {
+    border-color: var(--danger);
+  }
+  .ds-file[data-disabled] {
+    background-color: var(--field-disabled);
+    opacity: 0.7;
+  }
+  .ds-file-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: calc(var(--control-radius) - 0.25rem);
+    background: var(--primary-soft);
+    color: var(--primary);
+  }
+  .ds-file-icon svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+  .ds-file-input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+  }
+  .ds-file-input:disabled {
+    cursor: not-allowed;
+  }
+  [data-contrast="high"] .ds-file:has(.ds-file-input:focus-visible) {
+    outline: 3px solid var(--focus);
+    outline-offset: 2px;
+  }
+
+  /*
+   * Grid cell field (grade sheets, mock exam results, card grids): the look
+   * of .ds-field at the size of a mark, centred, tabular figures. States:
+   * data-state="changed" (not saved yet) and aria-invalid.
+   */
+  .ds-cell {
+    height: 2.5rem;
+    width: 4rem;
+    min-width: 0;
+    border: 1px solid var(--field-border);
+    border-radius: var(--radius-sm);
+    background-color: var(--field-bg);
+    color: var(--text);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+    transition:
+      border-color var(--duration-fast) ease,
+      box-shadow var(--duration-fast) ease,
+      background-color var(--duration-fast) ease;
+  }
+  .ds-cell:hover:not(:disabled) {
+    border-color: var(--field-border-hover);
+  }
+  .ds-cell:focus {
+    border-color: var(--primary);
+    box-shadow:
+      0 0 0 1px var(--primary),
+      0 0 0 3px var(--field-ring);
+  }
+  .ds-cell[data-state="changed"] {
+    border-color: var(--primary);
+    background-color: var(--primary-soft);
+  }
+  .ds-cell[aria-invalid="true"] {
+    border-color: var(--danger);
+    background-color: var(--danger-soft);
+  }
+  .ds-cell[data-size="lg"] {
+    width: 100%;
+    height: 3rem;
+    border-radius: var(--control-radius);
+    font-size: 1rem;
+  }
+}
+.ds-cell:focus-visible {
+  outline: none;
+}
+[data-contrast="high"] .ds-cell:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 1px;
 }
 
 /*
@@ -1941,12 +2068,45 @@ a.ds-bars-row:hover .ds-bars-label {
   height: 1.375rem;
   margin-right: 3.5rem;
 }
+/* The quiet track the bar fills. */
+.ds-bars-track::before {
+  content: "";
+  position: absolute;
+  inset: 0.3125rem 0;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--text-muted) 9%, transparent);
+}
 .ds-bars-bar {
   position: absolute;
-  inset-block: 0.1875rem;
+  inset-block: 0.3125rem;
   left: 0;
-  min-width: 3px;
-  border-radius: 0 0.375rem 0.375rem 0;
+  min-width: 4px;
+  border-radius: 999px;
+  transform-origin: left center;
+  animation: ds-bar-grow 520ms var(--ease-emphasis) both;
+  transition: filter var(--duration-fast) ease;
+}
+.ds-bars-row:hover .ds-bars-bar {
+  filter: brightness(1.08) saturate(1.1);
+}
+@keyframes ds-bar-grow {
+  from {
+    transform: scaleX(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ds-bars-bar {
+    animation: none;
+  }
+}
+.ds-bars-detail {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 400;
+  line-height: 1.2;
 }
 .ds-bars-value {
   position: absolute;
@@ -2009,8 +2169,9 @@ a.ds-bars-row:hover .ds-bars-label {
 .ds-bars-ticks > span[data-edge="end"] {
   transform: translateX(-100%);
 }
-@media (max-width: 22rem) {
-  .ds-bars-ticks > span:nth-child(even) {
+/* Phones: the two ends of the scale, and its middle when it has one. */
+@media (max-width: 39.999rem) {
+  .ds-bars-ticks > span:not([data-edge], [data-mid]) {
     display: none;
   }
 }
@@ -2033,6 +2194,57 @@ html:is([data-text="xl"], [data-text="xxl"]) .ds-bars-grid {
 .ds-line-grid {
   stroke: var(--chart-grid);
   stroke-width: 1;
+  stroke-dasharray: 3 4;
+}
+.ds-line-cursor {
+  stroke: var(--text-muted);
+  stroke-width: 1;
+  opacity: 0.6;
+}
+.ds-line-tick[data-active] {
+  fill: var(--text);
+  font-weight: 700;
+}
+.ds-line-plot {
+  touch-action: pan-y;
+  border-radius: var(--radius-sm);
+}
+.ds-line-point circle {
+  transition: r var(--duration-fast) ease;
+}
+.ds-line-point[data-active] circle {
+  fill: currentColor;
+  stroke: var(--surface);
+  stroke-width: 3;
+}
+/* Tooltip of a chart: a small dark card above the pointed value. */
+.ds-chart-tip {
+  position: absolute;
+  z-index: 5;
+  min-width: 8rem;
+  max-width: 14rem;
+  padding: 0.5rem 0.625rem;
+  border-radius: var(--control-radius);
+  background: #1f2621;
+  color: #f3f6f3;
+  box-shadow: var(--elevation-lg);
+  font-size: 0.8125rem;
+  line-height: 1.35;
+  pointer-events: none;
+  transform: translate(-50%, -100%);
+}
+.ds-chart-tip > p + p {
+  margin-top: 0.125rem;
+}
+[data-theme="dark"] .ds-chart-tip {
+  border: 1px solid var(--border-strong);
+  background: var(--surface-2);
+  color: var(--text);
+}
+[data-contrast="high"] .ds-chart-tip {
+  border: 2px solid var(--text);
+  background: var(--surface);
+  color: var(--text);
 }
 .ds-line-ref {
   stroke: var(--text-muted);
@@ -2061,6 +2273,10 @@ html:is([data-text="xl"], [data-text="xxl"]) .ds-bars-grid {
   stroke-width: 2.5;
 }
 .ds-line-value {
+  paint-order: stroke;
+  stroke: var(--surface);
+  stroke-width: 4px;
+  stroke-linejoin: round;
   fill: var(--text);
   font-size: 12.5px;
   font-weight: 700;
@@ -2075,6 +2291,16 @@ html:is([data-text="xl"], [data-text="xxl"]) .ds-bars-grid {
 .ds-donut-seg {
   fill: none;
   stroke-width: 13;
+  stroke-linecap: butt;
+  transition:
+    opacity var(--duration-fast) ease,
+    stroke-width var(--duration-fast) ease;
+}
+.ds-donut-seg[data-active] {
+  stroke-width: 16;
+}
+.ds-donut-seg[data-dim] {
+  opacity: 0.35;
 }
 .ds-donut-key {
   width: 0.75rem;
@@ -2156,6 +2382,15 @@ html:is([data-text="xl"], [data-text="xxl"]) .ds-bars-grid {
   overflow: visible;
   overflow-wrap: break-word;
 }
+.ds-tip[data-size="lg"] {
+  max-width: min(28rem, calc(100vw - 1rem));
+}
+.ds-tip-body {
+  display: block;
+  max-height: min(60vh, 26rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
 .ds-tip:not([data-open]) {
   display: none;
 }
@@ -2218,4 +2453,115 @@ html:is([data-text="xl"], [data-text="xxl"]) .ds-bars-grid {
   .ds-tip-wrap {
     display: none !important;
   }
+}
+
+/*
+ * Speaker button (kit/read-aloud.tsx): round, the speaker icon only. While
+ * the voice speaks it fills with the primary colour and a soft ring pulses
+ * around it (transform and opacity, 1.6 s); reduced motion keeps it still.
+ */
+.ds-speak {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--primary);
+  box-shadow: var(--elevation-xs);
+  transition:
+    background-color var(--duration-fast) ease,
+    border-color var(--duration-fast) ease,
+    color var(--duration-fast) ease,
+    transform var(--duration-fast) ease;
+}
+.ds-speak svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+.ds-speak:hover {
+  border-color: var(--primary);
+  background: var(--primary-soft);
+}
+.ds-speak:active {
+  transform: scale(0.94);
+}
+.ds-speak[data-size="sm"] {
+  width: 2.5rem;
+  height: 2.5rem;
+}
+.ds-speak[data-size="sm"] svg {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+.ds-speak[data-speaking] {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: var(--on-primary);
+}
+.ds-speak[data-speaking] svg {
+  width: 1rem;
+  height: 1rem;
+  fill: currentColor;
+}
+.ds-speak[data-speaking]::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  border: 2px solid var(--primary);
+  animation: ds-speak-pulse 1.6s ease-out infinite;
+  pointer-events: none;
+}
+@keyframes ds-speak-pulse {
+  from {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  to {
+    transform: scale(1.45);
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ds-speak[data-speaking]::after {
+    animation: none;
+    opacity: 0;
+  }
+}
+[data-contrast="high"] .ds-speak {
+  border: 2px solid var(--text);
+}
+
+/*
+ * Status pages (kit/status-page.tsx): the code in a soft green to surface
+ * gradient, decorative (the title carries the meaning), and a short stripe
+ * in the flag colours under it.
+ */
+.ds-status-code {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--primary) 34%, var(--surface)) 0%, color-mix(in srgb, var(--primary) 8%, var(--bg)) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  user-select: none;
+}
+.ds-flag-stripe {
+  background: linear-gradient(90deg, #008751 0 40%, #fcd116 40% 80%, #e8112d 80% 100%);
+}
+[data-contrast="high"] .ds-status-code {
+  background: none;
+  color: var(--text);
+}
+
+/*
+ * A page header inside a column that already spaces its children (flex or
+ * grid with a gap) drops its own bottom margin: the gap alone separates it
+ * from the content, never the gap plus the margin.
+ */
+:is(.flex-col, .grid)[class*="gap-"] > .ds-page-header {
+  margin-bottom: 0;
 }

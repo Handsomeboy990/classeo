@@ -23,8 +23,9 @@ export function PhotoFrame({ photo, width = 64 }: { photo: PdfPhoto | null | und
 }
 
 // ---------------------------------------------------------------------------
-// Certificat de scolarité (exeat): delivered by the school a pupil leaves,
-// once the new school has accepted the transfer.
+// Certificat de radiation (exeat): delivered by the school a pupil leaves,
+// once the new school has accepted the transfer. The certificat de
+// scolarité is the other document, which attests a current enrollment.
 // ---------------------------------------------------------------------------
 
 export type TransferCertificateData = {
@@ -109,7 +110,8 @@ function TransferCertificate({ data, meta }: { data: TransferCertificateData; me
       </View>
       <View style={{ position: "absolute", bottom: 78, left: 58, right: 58 }}>
         <T style={[styles.small, styles.muted, { textAlign: "center" }]}>
-          Certificat de scolarité (exeat) délivré à la suite d&apos;un transfert accepté dans Classéo. Toute rature ou surcharge le rend nul. Référence {meta.reference}.
+          Certificat de radiation (exeat) délivré à la suite d&apos;un transfert accepté dans Classéo. Aucun frais ne peut être exigé pour un transfert. Toute rature
+          ou surcharge le rend nul. Référence {meta.reference}.
         </T>
       </View>
     </DocumentPage>
@@ -117,7 +119,7 @@ function TransferCertificate({ data, meta }: { data: TransferCertificateData; me
 }
 
 export const transferCertificatePdf = (data: TransferCertificateData, meta: DocumentMeta) => (
-  <PdfDocument title={`Certificat de scolarité, ${data.student.lastName} ${data.student.firstName}`} author={meta.issuer.name}>
+  <PdfDocument title={`Certificat de radiation, ${data.student.lastName} ${data.student.firstName}`} author={meta.issuer.name}>
     <TransferCertificate data={data} meta={meta} />
   </PdfDocument>
 );

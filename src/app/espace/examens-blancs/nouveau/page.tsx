@@ -43,7 +43,7 @@ export default async function NewMockExamPage() {
     <>
       <PageHeader
         title={level === "SCHOOL" ? "Organiser un examen blanc" : "Décider un examen blanc"}
-        description={
+        info={
           level === "SCHOOL"
             ? "Choisissez la classe d'examen, les dates, les matières et les établissements partenaires. La hiérarchie valide l'examen avant qu'il se tienne."
             : "Choisissez la classe d'examen, les dates, les matières et les établissements concernés : leur participation est obligatoire."

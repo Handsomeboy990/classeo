@@ -18,9 +18,11 @@ import { statScopeKey, type StatScope } from "../territory/scope";
 // - enrollments, girls, disabilities: active enrollments of the current year;
 // - absence rate: half days recorded ABSENT or EXCUSED over half days recorded
 //   in the current year (LATE counts as present);
-// - results: previous year. Each student's yearly average is the mean of the
-//   published general averages of the three terms; the pass rate is the share
-//   of yearly averages >= 10, the mean average is the mean of yearly averages.
+// - results: previous year. Each student's yearly average follows article 59
+//   of order n° 029 of 2024 (lib/domain/periodicity.ts yearlyAverage): the
+//   mean of the terms, or (S1 + 2 x S2) / 3 for semesters, from the published
+//   report cards; the pass rate is the share of yearly averages >= 10, the
+//   mean average is the mean of yearly averages.
 
 export type ChildLevel = "DEPARTMENT" | "COMMUNE" | "SCHOOL" | "CLASS";
 
@@ -81,13 +83,14 @@ type SchoolCountsRow = {
 };
 
 function schoolFilter(scope: StatScope): Prisma.Sql {
+  const chain = scope.level !== "SCHOOL" && scope.cycles ? Prisma.sql` AND s.cycle::text IN (${Prisma.join([...scope.cycles])})` : Prisma.empty;
   switch (scope.level) {
     case "NATIONAL":
-      return Prisma.sql`TRUE`;
+      return Prisma.sql`TRUE${chain}`;
     case "DEPARTMENT":
-      return Prisma.sql`c."departmentId" = ${scope.id}`;
+      return Prisma.sql`c."departmentId" = ${scope.id}${chain}`;
     case "COMMUNE":
-      return Prisma.sql`s."communeId" = ${scope.id}`;
+      return Prisma.sql`s."communeId" = ${scope.id}${chain}`;
     case "SCHOOL":
       return Prisma.sql`s.id = ${scope.id}`;
   }
@@ -127,8 +130,8 @@ async function schoolCounts(scope: StatScope, years: Years): Promise<SchoolCount
       GROUP BY 1
     ),
     yr AS (
-      SELECT e."schoolId" AS sid, avg(rc."generalAverage")::float8 AS m
-      FROM "ReportCard" rc JOIN "Enrollment" e ON e.id = rc."enrollmentId"
+      SELECT e."schoolId" AS sid, round((sum(rc."generalAverage" * CASE WHEN p."periodicity" = 'SEMESTER' AND p."order" >= 2 THEN 2 ELSE 1 END) / sum(CASE WHEN p."periodicity" = 'SEMESTER' AND p."order" >= 2 THEN 2 ELSE 1 END))::numeric, 2)::float8 AS m
+      FROM "ReportCard" rc JOIN "Enrollment" e ON e.id = rc."enrollmentId" JOIN "SchoolPeriod" p ON p.id = rc."periodId"
       WHERE e."academicYearId" = ${prevId} AND rc."generalAverage" IS NOT NULL AND e."schoolId" IN (SELECT id FROM sc)
       GROUP BY e.id, e."schoolId"
     ),
@@ -200,10 +203,11 @@ async function classCounts(schoolId: string, years: Years): Promise<ClassCountsR
       GROUP BY 1
     ),
     yr AS (
-      SELECT cur."classroomId" AS cid, avg(rc."generalAverage")::float8 AS m
+      SELECT cur."classroomId" AS cid, round((sum(rc."generalAverage" * CASE WHEN p."periodicity" = 'SEMESTER' AND p."order" >= 2 THEN 2 ELSE 1 END) / sum(CASE WHEN p."periodicity" = 'SEMESTER' AND p."order" >= 2 THEN 2 ELSE 1 END))::numeric, 2)::float8 AS m
       FROM "Enrollment" cur
       JOIN "Enrollment" prev ON prev."studentId" = cur."studentId" AND prev."academicYearId" = ${prevId}
       JOIN "ReportCard" rc ON rc."enrollmentId" = prev.id
+      JOIN "SchoolPeriod" p ON p.id = rc."periodId"
       WHERE cur.status = 'ACTIVE' AND cur."classroomId" IN (SELECT id FROM cl) AND rc."generalAverage" IS NOT NULL
       GROUP BY cur.id, cur."classroomId"
     ),

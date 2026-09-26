@@ -89,7 +89,7 @@ export function CreateExamForm({
             <Input type="date" min={year.start} max={year.end} />
           </FormField>
           <div className="sm:col-span-2">
-            <ChoiceGroup legend="Matières" hint={levelId ? "Matières du catalogue approuvé enseignées à ce niveau." : "Choisissez d'abord la classe d'examen."} orientation="horizontal">
+            <ChoiceGroup legend="Matières" info={levelId ? "Matières du catalogue approuvé enseignées à ce niveau." : "Choisissez d'abord la classe d'examen."} orientation="horizontal">
               {offered.map((s) => (
                 <Checkbox
                   key={s.code}

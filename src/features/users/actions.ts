@@ -9,6 +9,7 @@ import { hashPassword } from "@/lib/auth/password";
 import type { CurrentUser } from "@/lib/auth/session";
 import { allocateUsername } from "@/lib/auth/username";
 import { db } from "@/lib/db";
+import type { Chain } from "@/lib/domain/chains";
 import { canAssignRole, canAssignRoleOn, generateTemporaryPassword, SCOPE_LABELS, type ScopeLevel, type ScopeRef } from "@/lib/domain/rights";
 import { DomainError } from "@/lib/errors";
 import { platformUrl, sendMail, type MailStatus } from "@/lib/mail";
@@ -25,6 +26,12 @@ type User = NonNullable<CurrentUser>;
 const id = z.string().trim().min(1).max(64);
 
 const createSchema = z.object({
+  // National and departmental accounts: MEMP chain (DDEMP) or MESTFP chain
+  // (DDESTFP). Empty: both, for the ministry only.
+  chain: z
+    .enum(["", "PRIMARY", "SECONDARY"])
+    .optional()
+    .transform((v) => (v ? v : null)),
   firstName: z.string().trim().min(2, "Prénom trop court.").max(80, "80 caractères maximum."),
   lastName: z.string().trim().min(2, "Nom trop court.").max(80, "80 caractères maximum."),
   // Optional: accounts sign in with the identifier generated from their names.
@@ -158,6 +165,18 @@ function checkAssignment(user: User, role: Prisma.RoleGetPayload<{ select: typeo
   return roleFitsTarget(role, target);
 }
 
+// The chain of a new account. A departmental account belongs to one chain
+// (a DDEMP or a DDESTFP); an agent limited to a chain only creates accounts
+// of that chain, never one reaching both.
+function accountChain(user: User, level: ScopeLevel, chosen: Chain | null): Chain | null {
+  if (level !== "NATIONAL" && level !== "DEPARTMENT") return null;
+  const own = user.scope.chain;
+  if (own && chosen && chosen !== own) throw new DomainError("Vous ne pouvez créer que des comptes de votre ordre d'enseignement.");
+  const chain = own ?? chosen;
+  if (level === "DEPARTMENT" && !chain) throw new DomainError("Choisissez la direction : DDEMP (maternel et primaire) ou DDESTFP (secondaire).");
+  return chain;
+}
+
 export type IssuedCredentials = { username: string; email: string | null; password: string; mail: MailStatus };
 
 export const createUser = createAction({
@@ -170,6 +189,7 @@ export const createUser = createAction({
 
     const target = await resolveTarget(role.scopeLevel, input.entityId);
     const rule = checkAssignment(user, role, target.ref);
+    const chain = accountChain(user, role.scopeLevel, input.chain);
     if (!rule.ok) {
       await audit(user, { action: "denied", resource: "user", summary: `Création refusée : rôle ${role.name} sur ${target.label}`, metadata: { reason: rule.reason } });
       throw new DomainError(rule.reason);
@@ -195,6 +215,7 @@ export const createUser = createAction({
               mustChangePassword: true,
               roleId: role.id,
               scopeLevel: role.scopeLevel,
+              chain,
               departmentId: role.scopeLevel === "DEPARTMENT" ? target.ref.departmentId : null,
               communeId: role.scopeLevel === "COMMUNE" ? target.ref.communeId : null,
               schoolId: role.scopeLevel === "SCHOOL" ? target.ref.schoolId : null,

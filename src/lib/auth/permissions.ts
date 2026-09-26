@@ -41,6 +41,8 @@ export const RESOURCES = {
   mock_exam: "Examens blancs",
   family_document: "Pièces et justificatifs des familles",
   health_document: "Certificats médicaux et pièces de santé",
+  payroll: "Paie du personnel payé par l'établissement",
+  payslip: "Ma paie (bulletins de paie personnels)",
 } as const;
 export type Resource = keyof typeof RESOURCES;
 
@@ -102,6 +104,12 @@ const APPLICABLE: Record<Resource, Action[]> = {
   // data: only the staff holding this right open and decide them. Families
   // send them through family_document:create.
   health_document: ["view", "approve"],
+  // Payslips of the vacataires and private teachers a school pays: prepare
+  // (create, update, delete), validate and mark as paid (approve), print
+  // (export). Agents of the State are paid by the Ministry of Finance.
+  payroll: ["view", "create", "update", "delete", "export", "approve"],
+  // A teacher's own payslips, in "Ma paie".
+  payslip: ["view"],
 };
 
 export const PERMISSIONS: { code: PermissionCode; resource: Resource; action: Action; description: string }[] =
@@ -150,14 +158,14 @@ export const DEFAULT_ROLES: {
   {
     code: "NATIONAL_ADMIN",
     name: "Administrateur national",
-    description: "Ministère, administration centrale. Tous les droits sur tout le territoire.",
+    description: "Ministères en charge de l'éducation (MEMP, MESTFP), administration centrale. Tous les droits sur tout le territoire.",
     scopeLevel: "NATIONAL",
     permissions: PERMISSIONS.map((p) => p.code),
   },
   {
     code: "NATIONAL_ANALYST",
     name: "Analyste national",
-    description: "Ministère, cellule des statistiques. Consultation et export, sans modification.",
+    description: "Ministères en charge de l'éducation, cellule des statistiques. Consultation et export, sans modification.",
     scopeLevel: "NATIONAL",
     permissions: [
       ...only("territory", "view", "export"),
@@ -174,7 +182,7 @@ export const DEFAULT_ROLES: {
   {
     code: "DEPARTMENT_DIRECTOR",
     name: "Directeur départemental",
-    description: "Direction départementale. Pilote les communes et établissements de son département.",
+    description: "DDEMP pour la maternelle et le primaire, DDESTFP pour le secondaire. Pilote les établissements de son ordre d'enseignement dans le département.",
     scopeLevel: "DEPARTMENT",
     permissions: [
       ...only("territory", "view", "export"),
@@ -201,8 +209,8 @@ export const DEFAULT_ROLES: {
   },
   {
     code: "COMMUNE_INSPECTOR",
-    name: "Chef de circonscription",
-    description: "Circonscription scolaire. Suit et appuie les établissements de sa commune.",
+    name: "Chef de circonscription scolaire",
+    description: "Circonscription scolaire, maternelle et primaire. Suit et appuie les écoles de sa circonscription ; le secondaire relève directement de la DDESTFP.",
     scopeLevel: "COMMUNE",
     permissions: [
       ...only("territory", "view"),
@@ -220,8 +228,9 @@ export const DEFAULT_ROLES: {
       ...all("message"),
       ...only("request", "view", "approve"),
       ...all("statistics"),
-      // Handles the password help requests of the school heads of its
-      // commune, and creates roles for its own staff.
+      // Handles the password help requests of the heads of the nursery and
+      // primary schools of its circonscription, and creates roles for its
+      // own staff.
       ...only("user", "view", "update"),
       ...only("role", "view", "update"),
       ...only("audit", "view"),
@@ -231,7 +240,7 @@ export const DEFAULT_ROLES: {
   {
     code: "SCHOOL_DIRECTOR",
     name: "Chef d'établissement",
-    description: "Directeur ou proviseur. Tous les droits sur son établissement.",
+    description: "Directeur d'école, directeur de CEG ou proviseur. Tous les droits sur son établissement.",
     scopeLevel: "SCHOOL",
     permissions: [
       ...only("school", "view", "update"),
@@ -260,6 +269,10 @@ export const DEFAULT_ROLES: {
       ...all("mock_exam"),
       ...only("family_document", "view", "approve"),
       ...all("health_document"),
+      ...all("payroll"),
+      // Held so the head keeps every right of the teacher role, which it
+      // assigns; "Ma paie" shows only for accounts that teach.
+      ...only("payslip", "view"),
     ],
   },
   {
@@ -304,6 +317,7 @@ export const DEFAULT_ROLES: {
       ...all("payment"),
       ...only("statistics", "view"),
       ...all("message"),
+      ...only("payroll", "view", "create", "update", "export"),
     ],
   },
   {
@@ -322,6 +336,7 @@ export const DEFAULT_ROLES: {
       ...only("content", "view", "create", "update", "publish"),
       ...all("message"),
       ...only("mock_exam", "view", "update"),
+      ...only("payslip", "view"),
     ],
   },
   {

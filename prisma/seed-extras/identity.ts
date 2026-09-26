@@ -70,6 +70,30 @@ export async function seedIdentity(db: PrismaClient, ctx: SeedContext) {
     if (course) await db.courseAssignment.update({ where: { id: course.id }, data: { teacherId: appointment.id } });
   }
 
+  // Teacher statuses. In public schools most teachers are agents of the
+  // State recorded in the ministry registry (six in ten APE, two ACE, one
+  // AME, derived from the matricule), the others vacataires; private and
+  // confessional schools employ their own teachers, community schools
+  // vacataires. The State matricule follows the teacher's matricule.
+  await db.$executeRaw`
+    UPDATE "Teacher" t SET "status" = (CASE
+      WHEN s."sector" IN ('PRIVATE', 'CONFESSIONAL') THEN 'PRIVATE'
+      WHEN s."sector" = 'COMMUNITY' THEN 'VACATAIRE'
+      WHEN right(t."matricule", 1)::int < 6 THEN 'APE'
+      WHEN right(t."matricule", 1)::int < 8 THEN 'ACE'
+      WHEN right(t."matricule", 1)::int = 8 THEN 'AME'
+      ELSE 'VACATAIRE' END)::"TeacherStatus"
+    FROM "School" s WHERE s.id = t."schoolId"`;
+  await db.$executeRaw`
+    UPDATE "TeacherProfile" p SET "stateStatus" = t."status", "stateMatricule" = '1' || lpad(substring(t."matricule" from 5), 5, '0')
+    FROM "Teacher" t WHERE t."profileId" = p.id AND t."status" IN ('APE', 'ACE', 'AME') AND t."matricule" = (SELECT min(x."matricule") FROM "Teacher" x WHERE x."profileId" = p.id)`;
+  // An agent of the State keeps that status in every public school where
+  // they teach (the demonstration teacher's second appointment).
+  await db.$executeRaw`
+    UPDATE "Teacher" t SET "status" = p."stateStatus"
+    FROM "TeacherProfile" p, "School" s
+    WHERE p.id = t."profileId" AND s.id = t."schoolId" AND s."sector" = 'PUBLIC' AND p."stateStatus" IS NOT NULL`;
+
   // A role of CEG Godomey, for its own staff only.
   const codes = ["school:view", "class:view", "student:view", "attendance:view", "attendance:create", "attendance:update", "timetable:view", "message:view", "message:create"];
   const permissions = await db.permission.findMany({ where: { code: { in: codes } }, select: { id: true } });

@@ -91,7 +91,7 @@ export function TranslateContent({ text, compact = false, className }: { text: s
         title={label}
         className={cn(
           "inline-flex shrink-0 items-center justify-center gap-2 rounded-control border border-border-strong bg-surface font-semibold text-text shadow-xs transition-colors hover:border-field-border hover:bg-surface-2",
-          compact === true ? "size-10" : compact === "mobile" ? "size-11 sm:h-11 sm:w-auto sm:px-3.5 sm:text-sm" : "h-10 px-3 text-sm",
+          compact === true ? "size-11 rounded-full" : compact === "mobile" ? "size-11 sm:h-11 sm:w-auto sm:px-3.5 sm:text-sm" : "h-10 px-3 text-sm",
           className,
         )}
       >

@@ -22,7 +22,7 @@ export default async function LoginPage({ searchParams }: PageProps<"/connexion"
   const showDemo = process.env.DEMO_MODE !== "off";
 
   return (
-    <AuthShell tr={tr} voice={voice} aside="signin" title={PUBLIC.signIn.title} description={PUBLIC.signIn.intro} listen={PUBLIC_SPEECH.signIn} extra={{ next }}>
+    <AuthShell tr={tr} voice={voice} aside="signin" title={PUBLIC.signIn.title} description={PUBLIC.signIn.intro} descriptionAs="info" listen={PUBLIC_SPEECH.signIn} extra={{ next }}>
       <LoginForm next={next} showDemo={showDemo} forgotHref={withChoice("/mot-de-passe-oublie", lang, voice)} />
     </AuthShell>
   );

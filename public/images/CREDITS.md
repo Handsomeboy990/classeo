@@ -23,5 +23,11 @@ Generated from src/features/public-pages/photos.ts by
 |---|---|---|---|---|---|
 | `voix-siwis` | La voix française qui lit les pages à voix haute. | Piper (Rhasspy), voix siwis entraînée sur la base SIWIS de Pierre-Edouard Honnet, Alexandros Lazaridis, Philip N. Garner et Junichi Yamagishi | https://huggingface.co/rhasspy/piper-voices/tree/main/fr/fr_FR/siwis | CC BY 4.0 | Aucune : la voix est utilisée telle quelle, sur le serveur de Classéo. |
 
+## Local languages
+
+| Service | Use | Author | Source |
+|---|---|---|---|
+| `api229langues` | La traduction des pages en fongbe et en yoruba, et les voix en fongbe, yoruba et haoussa. | Finanfa Ronaldo (api229langues) | https://api229langues.vercel.app |
+
 Licences: CC BY 4.0 https://creativecommons.org/licenses/by/4.0/ and
 CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0/.

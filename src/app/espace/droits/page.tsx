@@ -66,7 +66,7 @@ export default async function RightsPage({ searchParams }: PageProps<"/espace/dr
     <div className="flex flex-col gap-6">
       <PageHeader
         title="Rôles et droits"
-        description="Un rôle regroupe des droits. Chaque modification est inscrite au journal et s'applique aux titulaires dès leur page suivante."
+        info="Un rôle regroupe des droits. Chaque modification est inscrite au journal et s'applique aux titulaires dès leur page suivante."
         actions={levels.length ? <RoleFormDialog mode="create" roles={roleOptions} levels={levels} note={ownerNote} /> : undefined}
       />
       {!canUpdate && (

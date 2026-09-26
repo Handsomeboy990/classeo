@@ -81,7 +81,7 @@ export function exportSchools(user: User, f: SchoolFilters) {
 export async function getSchoolDetail(user: User, id: string, yearId: string | null) {
   const school = await db.school.findFirst({
     where: { AND: [{ id }, schoolWhere(user)] },
-    select: { ...listSelect, latitude: true, longitude: true, createdAt: true, updatedAt: true, motto: true, website: true, postalBox: true, logoFileId: true },
+    select: { ...listSelect, latitude: true, longitude: true, createdAt: true, updatedAt: true, motto: true, website: true, postalBox: true, logoFileId: true, periodicity: true, allowsComposition: true, denomination: true, isBilingual: true, authorizationRef: true, authorizationDate: true, promoter: true },
   });
   if (!school) return null;
   const [classes, staffUsers, teachers, director] = await Promise.all([

@@ -13,27 +13,26 @@ export const PUBLIC = {
   common: {
     language: "Langue",
     voice: "Voix",
-    apply: "Afficher",
     signIn: "Se connecter",
     home: "Classéo, accueil",
     backHome: "Retour à l'accueil",
     listen: "Écouter",
+    moreInfo: "Plus d'informations",
     listenFon: "Écouter en fongbe",
     listenYo: "Écouter en yoruba",
     photo: "Photo",
     footerNav: "Liens du pied de page",
-    footerNote: "Plateforme nationale de l'éducation, prototype présenté au défi EduTech Bénin, 2026.",
+    footerNote: "Classéo, la plateforme de gestion scolaire pour le Bénin.",
     offline: "Utiliser Classéo hors ligne",
     credits: "Crédits photos",
     machine: "Traduction automatique : en cas de doute, le texte français fait foi.",
   },
   landing: {
-    title: "L'école béninoise, du ministère à la maison.",
+    title: "Toute l'école, au même endroit.",
     purpose:
-      "Classéo réunit le ministère, les directions départementales, les écoles et les familles autour des mêmes informations sur chaque élève, pour que chacun voie ce qui le concerne, au bon moment.",
+      "Inscriptions, notes, bulletins, présences, frais et messages : Classéo rassemble la vie de l'établissement, pour que l'équipe, les enseignants et les familles voient ce qui les concerne, au bon moment.",
     enter: "Accéder à mon espace",
-    audience: "Pour le ministère, les directions départementales, les circonscriptions scolaires, les écoles, les enseignants et les familles.",
-    prototype: "Prototype présenté au défi EduTech Bénin 2026.",
+    audience: "Pour les écoles, collèges et lycées du Bénin, leurs enseignants, les familles et les services de l'éducation.",
     bandTitle: "L'école au Bénin, en images",
     a11yTitle: "Accessible à tous",
     a11yVoice: "Chaque écran peut être lu à voix haute.",
@@ -43,7 +42,7 @@ export const PUBLIC = {
   },
   signIn: {
     title: "Connexion",
-    intro: "Entrez l'identifiant et le mot de passe que votre établissement ou votre administration vous a remis.",
+    intro: "Entrez l'identifiant et le mot de passe remis par votre établissement ou votre service.",
     identifier: "Identifiant",
     identifierHint: "Votre prénom et votre nom, séparés par un point. Par exemple : afiavi.hounkpatin",
     identifierHelp: "Où trouver mon identifiant ?",
@@ -60,8 +59,8 @@ export const PUBLIC = {
   },
   help: {
     title: "Mot de passe oublié",
-    description: "Saisissez votre identifiant. Votre établissement ou votre administration recevra la demande et vous remettra un mot de passe temporaire.",
-    asideTitle: "Mot de passe oublié : votre administration vous aide.",
+    description: "Saisissez votre identifiant : la personne qui gère votre compte recevra la demande et vous remettra un mot de passe temporaire.",
+    asideTitle: "Mot de passe oublié : la personne qui gère votre compte vous aide.",
     asideBody:
       "Pas besoin d'adresse e-mail. Votre demande arrive chez la personne qui gère votre compte : elle vous remet un mot de passe temporaire, que vous remplacez à la connexion.",
     phone: "Téléphone pour vous rappeler",
@@ -70,7 +69,7 @@ export const PUBLIC = {
     pending: "Envoi…",
     sentTitle: "Demande transmise",
     sentBody:
-      "Si cet identifiant correspond à un compte actif, votre demande est arrivée chez la personne qui gère votre compte : le chef d'établissement pour les élèves, les parents et le personnel ; la circonscription pour un chef d'établissement ; puis la direction départementale et le ministère. Elle vous remettra un mot de passe temporaire, en personne ou au numéro indiqué.",
+      "Si cet identifiant correspond à un compte actif, votre demande est arrivée chez la personne qui gère votre compte : le chef d'établissement pour les élèves, les parents et le personnel, le service qui a créé le compte pour les autres. Elle vous remettra un mot de passe temporaire, en personne ou au numéro indiqué.",
     backToSignIn: "Retour à la connexion",
     byEmail: "Mon compte a une adresse e-mail : recevoir un code",
   },
@@ -101,6 +100,8 @@ export const PUBLIC = {
     photos: "Photographies",
     voices: "Voix de lecture",
     voiceSource: "Voir la source",
+    languages: "Langues locales",
+    languagesThanks: "Merci à Finanfa Ronaldo, grâce à qui Classéo se lit et s'écoute en langues locales.",
   },
   // Answers of the sign in and forgotten password actions, written in French
   // on the server (features/auth/actions.ts, features/password-help/actions.ts)
@@ -133,7 +134,6 @@ export const PUBLIC_SPEECH = {
 export const PROTECTED_NAMES = [
   "Classéo",
   "Bénin",
-  "EduTech",
   "Wikimedia Commons",
   "CC BY-SA",
   "CC BY",
@@ -141,6 +141,7 @@ export const PROTECTED_NAMES = [
   "Savi",
   "Godomey",
   "Grand-Popo",
+  "Finanfa Ronaldo",
 ] as const;
 
 function values(node: unknown): string[] {

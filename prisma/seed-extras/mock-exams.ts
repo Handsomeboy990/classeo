@@ -2,15 +2,16 @@ import type { PrismaClient } from "../../src/generated/prisma/client";
 
 import type { SeedContext } from "./index";
 
-// Mock exams (examens blancs), deterministic:
-// - a 3e exam decided by the Abomey-Calavi district, imposed on the schools
-//   of the commune teaching 3e, already sat, with the results of CEG Godomey;
-// - a CM2 exam proposed by CEG Godomey to two primary schools of its
-//   commune, one accepted and one not answered yet, awaiting the district's
-//   approval. CEG Godomey has no CM2 class: it coordinates without
-//   candidates.
-
-const DAY = 86_400_000;
+// Mock exams (examens blancs), deterministic, organised where they are in
+// Benin: the BEPC mock by the DDESTFP of the department, the CEP mock by the
+// circonscription scolaire, both in the months before the June exams.
+// - 2025-2026: the departmental BEPC mock of the Atlantique, sat in May 2026
+//   and closed, with the results of the 3e classes of CEG Godomey;
+// - 2026-2027: the first departmental BEPC mock of the Atlantique, planned
+//   in February 2027, imposed on every college of the department teaching
+//   3e;
+// - 2026-2027: the CEP mock of the circonscription of Abomey-Calavi,
+//   planned in May 2027, imposed on its schools teaching CM2.
 
 function generator(seed: number) {
   let state = seed;
@@ -22,54 +23,55 @@ function generator(seed: number) {
 
 export async function seedMockExams(db: PrismaClient, ctx: SeedContext) {
   const year = await db.academicYear.findUniqueOrThrow({ where: { id: ctx.yearId }, select: { id: true, startDate: true } });
-  const [district, levels, ceg] = await Promise.all([
+  const prevYear = await db.academicYear.findFirst({ where: { startDate: { lt: year.startDate } }, orderBy: { startDate: "desc" }, select: { id: true } });
+  const [ddestfp, district, levels, ceg] = await Promise.all([
+    db.user.findUnique({ where: { username: "aristide.gbaguidi" }, select: { id: true, departmentId: true } }),
     db.user.findUnique({ where: { username: "benedicta.zannou" }, select: { id: true, communeId: true, commune: { select: { departmentId: true } } } }),
     db.academicLevel.findMany({ where: { code: { in: ["CM2", "3E"] } }, select: { id: true, code: true } }),
     db.school.findUniqueOrThrow({ where: { id: ctx.schools.ceg }, select: { id: true, name: true, communeId: true, commune: { select: { departmentId: true } } } }),
   ]);
-  if (!district?.communeId) throw new Error("mock exams seed: the Abomey-Calavi district account is missing");
+  if (!ddestfp?.departmentId || !district?.communeId || !prevYear) throw new Error("mock exams seed: the Atlantique DDESTFP, the Abomey-Calavi circonscription or last year is missing");
   const level = Object.fromEntries(levels.map((l) => [l.code, l.id]));
-  const at = (days: number, hours = 9) => new Date(year.startDate.getTime() + days * DAY + hours * 3_600_000);
-  const day = (days: number) => new Date(year.startDate.getTime() + days * DAY);
-
-  // 1. District exam, imposed, sat in the second week of the year.
+  const at = (iso: string) => new Date(iso);
   const subjects3e = ["FR", "MATH", "ANG", "HG", "SVT", "PCT"];
-  const schools3e = await db.school.findMany({
-    where: { communeId: district.communeId, isActive: true, classrooms: { some: { academicYearId: year.id, levelId: level["3E"] } } },
-    select: { id: true, name: true },
-    orderBy: { name: "asc" },
-  });
-  const imposed = await db.mockExam.create({
+  const collegesWith3e = (academicYearId: string) =>
+    db.school.findMany({
+      where: { commune: { departmentId: ddestfp.departmentId! }, cycle: "SECONDARY", isActive: true, classrooms: { some: { academicYearId, levelId: level["3E"] } } },
+      select: { id: true },
+      orderBy: { code: "asc" },
+    });
+
+  // 1. Last year's departmental BEPC mock, sat and closed.
+  const lastSchools = await collegesWith3e(prevYear.id);
+  const last = await db.mockExam.create({
     data: {
-      title: "Examen blanc du BEPC, circonscription d'Abomey-Calavi",
+      title: "Examen blanc départemental du BEPC 2026, Atlantique",
       levelId: level["3E"]!,
-      academicYearId: year.id,
-      organizerLevel: "COMMUNE",
-      organizerCommuneId: district.communeId,
-      organizerDepartmentId: district.commune?.departmentId ?? null,
-      createdById: district.id,
-      startDate: day(7),
-      endDate: day(9),
+      academicYearId: prevYear.id,
+      organizerLevel: "DEPARTMENT",
+      organizerDepartmentId: ddestfp.departmentId,
+      createdById: ddestfp.id,
+      startDate: at("2026-05-12T00:00:00Z"),
+      endDate: at("2026-05-14T00:00:00Z"),
       subjects: subjects3e,
-      status: "APPROVED",
-      decidedById: district.id,
-      decidedAt: at(1),
-      createdAt: at(1),
-      participants: { createMany: { data: schools3e.map((s) => ({ schoolId: s.id, status: "IMPOSED" as const })) } },
+      status: "CLOSED",
+      decidedById: ddestfp.id,
+      decidedAt: at("2026-03-10T09:00:00Z"),
+      createdAt: at("2026-03-10T09:00:00Z"),
+      participants: { createMany: { data: lastSchools.map((s) => ({ schoolId: s.id, status: "IMPOSED" as const })) } },
     },
     select: { id: true, title: true },
   });
-
   const candidates = await db.enrollment.findMany({
-    where: { schoolId: ceg.id, academicYearId: year.id, status: "ACTIVE", classroom: { levelId: level["3E"] } },
+    where: { schoolId: ceg.id, academicYearId: prevYear.id, classroom: { levelId: level["3E"] } },
     select: { id: true },
     orderBy: { id: "asc" },
   });
-  const rand = generator(20261003);
+  const rand = generator(20260512);
   const results = candidates.flatMap((c) => {
     const ability = 6 + rand() * 10;
     return subjects3e.map((code) => ({
-      examId: imposed.id,
+      examId: last.id,
       enrollmentId: c.id,
       subjectCode: code,
       score: Math.max(0, Math.min(20, Math.round((ability + (rand() - 0.5) * 7) * 4) / 4)),
@@ -78,39 +80,51 @@ export async function seedMockExams(db: PrismaClient, ctx: SeedContext) {
   });
   await db.mockExamResult.createMany({ data: results });
 
-  // 2. CM2 exam proposed by CEG Godomey, awaiting the district.
-  const primaries = await db.school.findMany({
-    where: { communeId: ceg.communeId, isActive: true, classrooms: { some: { academicYearId: year.id, levelId: level.CM2 } } },
-    select: { id: true, name: true },
-    orderBy: { name: "desc" },
-    take: 2,
-  });
-  if (primaries.length < 2) throw new Error("mock exams seed: two primary schools with CM2 are expected in Abomey-Calavi");
-  const [accepted, pending] = primaries as [(typeof primaries)[number], (typeof primaries)[number]];
-  const acceptedHead = await db.user.findFirst({ where: { schoolId: accepted.id, scopeLevel: "SCHOOL", role: { code: "SCHOOL_DIRECTOR" } }, select: { id: true } });
-  const proposed = await db.mockExam.create({
+  // 2. This year's first departmental BEPC mock, before the February pause.
+  const schools3e = await collegesWith3e(year.id);
+  const bepc = await db.mockExam.create({
     data: {
-      title: "Examen blanc du CEP, réseau des écoles de Godomey",
+      title: "Premier examen blanc départemental du BEPC, Atlantique",
+      levelId: level["3E"]!,
+      academicYearId: year.id,
+      organizerLevel: "DEPARTMENT",
+      organizerDepartmentId: ddestfp.departmentId,
+      createdById: ddestfp.id,
+      startDate: at("2027-02-09T00:00:00Z"),
+      endDate: at("2027-02-11T00:00:00Z"),
+      subjects: subjects3e,
+      status: "APPROVED",
+      decidedById: ddestfp.id,
+      decidedAt: at("2026-09-18T10:00:00Z"),
+      createdAt: at("2026-09-18T10:00:00Z"),
+      participants: { createMany: { data: schools3e.map((s) => ({ schoolId: s.id, status: "IMPOSED" as const })) } },
+    },
+    select: { id: true, title: true },
+  });
+
+  // 3. The CEP mock of the circonscription, three weeks before the CEP.
+  const primaries = await db.school.findMany({
+    where: { communeId: district.communeId, cycle: { in: ["PRESCHOOL", "PRIMARY"] }, isActive: true, classrooms: { some: { academicYearId: year.id, levelId: level.CM2 } } },
+    select: { id: true },
+    orderBy: { code: "asc" },
+  });
+  const cep = await db.mockExam.create({
+    data: {
+      title: "Examen blanc du CEP, circonscription d'Abomey-Calavi",
       levelId: level.CM2!,
       academicYearId: year.id,
-      organizerLevel: "SCHOOL",
-      organizerSchoolId: ceg.id,
-      organizerCommuneId: ceg.communeId,
-      organizerDepartmentId: ceg.commune.departmentId,
-      createdById: ctx.ids.director,
-      startDate: day(64),
-      endDate: day(65),
+      organizerLevel: "COMMUNE",
+      organizerCommuneId: district.communeId,
+      organizerDepartmentId: district.commune?.departmentId ?? null,
+      createdById: district.id,
+      startDate: at("2027-05-18T00:00:00Z"),
+      endDate: at("2027-05-20T00:00:00Z"),
       subjects: ["P-FR", "P-MATH", "P-EST", "P-ES"],
-      status: "PENDING_APPROVAL",
-      createdAt: at(8),
-      participants: {
-        createMany: {
-          data: [
-            { schoolId: accepted.id, status: "ACCEPTED", respondedAt: at(9, 11), respondedById: acceptedHead?.id ?? null },
-            { schoolId: pending.id, status: "INVITED" },
-          ],
-        },
-      },
+      status: "APPROVED",
+      decidedById: district.id,
+      decidedAt: at("2026-09-21T09:00:00Z"),
+      createdAt: at("2026-09-21T09:00:00Z"),
+      participants: { createMany: { data: primaries.map((s) => ({ schoolId: s.id, status: "IMPOSED" as const })) } },
     },
     select: { id: true, title: true },
   });
@@ -119,68 +133,53 @@ export async function seedMockExams(db: PrismaClient, ctx: SeedContext) {
   await db.auditLog.createMany({
     data: [
       {
-        userId: district.id,
+        userId: ddestfp.id,
         action: "create",
         resource: "mock_exam",
-        resourceId: imposed.id,
-        summary: `Examen blanc « ${imposed.title} » (3e) décidé, participation imposée à ${schools3e.length} établissements`,
-        metadata: { step: "create", level: "3E", schools: schools3e.length, imposed: true },
-        createdAt: at(1),
+        resourceId: last.id,
+        summary: `Examen blanc « ${last.title} » (3e) décidé, participation imposée à ${lastSchools.length} établissements`,
+        metadata: { step: "create", level: "3E", schools: lastSchools.length, imposed: true },
+        createdAt: at("2026-03-10T09:00:00Z"),
       },
       {
         userId: ctx.ids.teacher,
         action: "update",
         resource: "mock_exam",
-        resourceId: imposed.id,
+        resourceId: last.id,
         schoolId: ceg.id,
-        summary: `Examen blanc « ${imposed.title} » : ${results.length} notes enregistrées pour ${ceg.name}`,
+        summary: `Examen blanc « ${last.title} » : ${results.length} notes enregistrées pour ${ceg.name}`,
         metadata: { step: "results" },
-        createdAt: at(10, 16),
+        createdAt: at("2026-05-20T15:00:00Z"),
       },
       {
-        userId: ctx.ids.director,
+        userId: ddestfp.id,
         action: "create",
         resource: "mock_exam",
-        resourceId: proposed.id,
-        schoolId: ceg.id,
-        summary: `Examen blanc « ${proposed.title} » (CM2) créé, 2 établissements invités`,
-        metadata: { step: "create", level: "CM2", schools: 2, imposed: false },
-        createdAt: at(8),
+        resourceId: bepc.id,
+        summary: `Examen blanc « ${bepc.title} » (3e) décidé, participation imposée à ${schools3e.length} établissements`,
+        metadata: { step: "create", level: "3E", schools: schools3e.length, imposed: true },
+        createdAt: at("2026-09-18T10:00:00Z"),
       },
       {
-        userId: acceptedHead?.id ?? null,
-        action: "approve",
+        userId: district.id,
+        action: "create",
         resource: "mock_exam",
-        resourceId: proposed.id,
-        schoolId: accepted.id,
-        summary: `Examen blanc « ${proposed.title} » : invitation acceptée par ${accepted.name}`,
-        metadata: { step: "accept", schoolId: accepted.id },
-        createdAt: at(9, 11),
-      },
-      {
-        userId: ctx.ids.director,
-        action: "update",
-        resource: "mock_exam",
-        resourceId: proposed.id,
-        schoolId: ceg.id,
-        summary: `Examen blanc « ${proposed.title} » soumis à la validation de la circonscription scolaire`,
-        metadata: { step: "submit", approvalLevel: "COMMUNE" },
-        createdAt: at(10, 8),
+        resourceId: cep.id,
+        summary: `Examen blanc « ${cep.title} » (CM2) décidé, participation imposée à ${primaries.length} écoles`,
+        metadata: { step: "create", level: "CM2", schools: primaries.length, imposed: true },
+        createdAt: at("2026-09-21T09:00:00Z"),
       },
     ],
   });
   await db.notification.createMany({
-    data: [
-      { userId: district.id, kind: "mock_exam", title: "Examen blanc à valider", body: `${ceg.name} propose « ${proposed.title} » (CM2) avec 2 établissements partenaires.`, link: `/espace/examens-blancs/${proposed.id}`, createdAt: at(10, 8) },
-      ...(await db.user.findMany({ where: { schoolId: pending.id, scopeLevel: "SCHOOL", role: { code: "SCHOOL_DIRECTOR" } }, select: { id: true } })).map((u) => ({
-        userId: u.id,
-        kind: "mock_exam",
-        title: "Invitation à un examen blanc",
-        body: `${proposed.title} (CM2) : acceptez ou déclinez l'invitation.`,
-        link: `/espace/examens-blancs/${proposed.id}`,
-        createdAt: at(8),
-      })),
-    ],
+    data: (await db.user.findMany({ where: { schoolId: { in: schools3e.map((s) => s.id) }, scopeLevel: "SCHOOL", role: { code: "SCHOOL_DIRECTOR" } }, select: { id: true } })).map((u) => ({
+      userId: u.id,
+      kind: "mock_exam",
+      title: "Examen blanc imposé",
+      body: `${bepc.title} (3e), du 9 au 11 février 2027 : vos classes de 3e y participent.`,
+      link: `/espace/examens-blancs/${bepc.id}`,
+      createdAt: at("2026-09-18T10:00:00Z"),
+    })),
   });
-  console.log(`mock exams: 2 exams, ${results.length} results for ${ceg.name}`);
+  console.log(`mock exams: 3 exams, ${results.length} results for ${ceg.name} in 2025-2026`);
 }

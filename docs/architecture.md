@@ -66,12 +66,21 @@ about 30 minutes of cost:
 ## 5. Territorial model and scoped statistics
 
 ```
-Nation (Ministry, central)
-  Department (12, Directions departementales)
-    Commune (77, Circonscriptions scolaires)
-      School
-        Class, students, teachers, parents
+Nation (MEMP and MESTFP)
+  Department (12)
+    DDEMP: nursery and primary schools
+      Commune (77, holding the circonscription scolaire of the primary chain)
+        School (nursery, primary)
+    DDESTFP: secondary schools, no circonscription
+      School (secondary general, technical)
 ```
+
+Two administrative chains share the territory (`src/lib/domain/chains.ts`): a
+departmental account belongs to the DDEMP or to the DDESTFP and reaches only
+the schools of its cycles; a circonscription reaches nursery and primary
+schools only. An account without a chain (created before the chains) keeps
+both. Real circonscriptions (118, distinct from the 77 communes) and
+pedagogical zones are on the roadmap.
 
 Each school belongs to one commune, each commune to one department. Every
 user who is not a ministry agent holds a scope: an entity at one level. A

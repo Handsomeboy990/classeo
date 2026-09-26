@@ -49,7 +49,7 @@ export function SlotForm({
           ))}
         </Select>
       </FormField>
-      <FormField label="Jour" name="dayOfWeek" required hint="Le samedi, les cours ont lieu le matin seulement.">
+      <FormField label="Jour" name="dayOfWeek" required info="Le samedi, les cours ont lieu le matin seulement.">
         <Select value={dayOfWeek} onChange={(e) => setDayOfWeek(e.target.value)}>
           {DAYS.map((d) => (
             <option key={d.value} value={d.value}>

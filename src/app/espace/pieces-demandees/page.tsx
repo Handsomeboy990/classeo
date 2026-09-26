@@ -67,7 +67,7 @@ export default async function DocRequestsPage({ searchParams }: PageProps<"/espa
     <div className="flex flex-col gap-4">
       <PageHeader
         title="Pièces demandées"
-        description={
+        info={
           isSchool
             ? "Documents que la tutelle demande à votre établissement. Ajoutez les fichiers puis transmettez."
             : "Documents demandés aux établissements de votre périmètre : suivez les réponses et les échéances."

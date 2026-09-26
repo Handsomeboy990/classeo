@@ -101,6 +101,7 @@ async function handledRequest(user: Parameters<typeof helpRequestWhere>[0], requ
           isActive: true,
           scopeLevel: true,
           schoolId: true,
+          school: { select: { cycle: true } },
           role: { select: { permissions: { select: { permission: { select: { code: true } } } } } },
         },
       },
@@ -109,7 +110,7 @@ async function handledRequest(user: Parameters<typeof helpRequestWhere>[0], requ
   if (!request) throw new DomainError("Demande introuvable ou déjà traitée.");
   const rule = canHandleHelp(
     { scopeLevel: user.scope.level, permissions: user.permissions },
-    { scopeLevel: request.user.scopeLevel, permissions: request.user.role.permissions.map((p) => p.permission.code) },
+    { scopeLevel: request.user.scopeLevel, permissions: request.user.role.permissions.map((p) => p.permission.code), schoolCycle: request.user.school?.cycle },
   );
   if (!rule.ok) {
     await audit(user, { action: "denied", resource: "user", resourceId: request.user.id, summary: `Réinitialisation refusée pour ${request.user.username}`, metadata: { reason: rule.reason } });

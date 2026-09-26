@@ -117,7 +117,7 @@ export default async function NewTransferPage(props: PageProps<"/espace/transfer
                 {classes.length ? (
                   <ActionForm action={changeClass} onReset={(ev) => ev.preventDefault()} className="flex flex-col gap-4">
                     <input type="hidden" name="studentId" value={s.id} />
-                    <FormField label="Classe de destination" name="toClassroomId" required hint="Même niveau ou autre niveau. Les notes déjà saisies restent dans le parcours.">
+                    <FormField label="Classe de destination" name="toClassroomId" required info="Même niveau ou autre niveau. Les notes déjà saisies restent dans le parcours.">
                       <Select defaultValue="">
                         <option value="" disabled>
                           Choisir une classe
@@ -194,7 +194,7 @@ export default async function NewTransferPage(props: PageProps<"/espace/transfer
                     <Textarea rows={3} maxLength={300} placeholder="Par exemple : la famille déménage à Abomey-Calavi" />
                   </FormField>
                   <div>
-                    <ChoiceGroup legend="Transmettre le dossier scolaire (bulletins, présences) ?" hint="Le parent le voit au moment de donner son accord." orientation="horizontal">
+                    <ChoiceGroup legend="Transmettre le dossier scolaire (bulletins, présences) ?" info="Le parent le voit au moment de donner son accord." orientation="horizontal">
                       <Radio name="shareHistory" value="yes" defaultChecked label="Oui" />
                       <Radio name="shareHistory" value="no" label="Non" />
                     </ChoiceGroup>

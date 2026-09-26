@@ -95,7 +95,7 @@ export default async function PasswordHelpPage({ searchParams }: PageProps<"/esp
     <div className="flex flex-col gap-4">
       <PageHeader
         title="Demandes de réinitialisation"
-        description="Mots de passe oubliés des comptes que vous gérez : élèves, parents et personnel pour un établissement, chefs d'établissement pour une circonscription, et ainsi de suite. Vérifiez l'identité de la personne avant de lui remettre un mot de passe temporaire."
+        info="Mots de passe oubliés des comptes que vous gérez : élèves, parents et personnel pour un établissement, chefs d'établissement pour une circonscription, et ainsi de suite. Vérifiez l'identité de la personne avant de lui remettre un mot de passe temporaire."
       />
       <HelpIssuedProvider>
       <DataTable

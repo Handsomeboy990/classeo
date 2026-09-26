@@ -49,7 +49,7 @@ export default async function StudentHistoryPage(props: PageProps<"/espace/eleve
         </Link>{" "}
         / Parcours
       </nav>
-      <PageHeader title={`Parcours de ${name}`} description={`Matricule ${s.matricule}. Toutes les années, tous les établissements${history.full ? "" : " de votre périmètre"}.`} />
+      <PageHeader title={`Parcours de ${name}`} description={`Matricule ${s.matricule}`} info={`Toutes les années, tous les établissements${history.full ? "" : " de votre périmètre"}.`} />
       <div className="mb-6 flex items-center gap-3">
         <StudentAvatar name={name} photoFileId={s.photoFileId} className="size-14 text-lg" />
         {history.full ? <Badge tone="success">Dossier complet</Badge> : <Badge>Dossier limité à votre périmètre</Badge>}

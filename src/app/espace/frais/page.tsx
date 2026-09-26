@@ -2,6 +2,7 @@ import { AlertTriangle, CheckCircle2, Coins, Percent, Wallet } from "lucide-reac
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { InfoTip } from "@/components/kit/info-tip";
 import { BarChart } from "@/components/kit/bar-chart";
 import { PageHeader } from "@/components/kit/page-header";
 import { StatCard, StatGrid } from "@/components/kit/stat-card";
@@ -29,7 +30,8 @@ export default async function FeesOverviewPage() {
     <>
       <PageHeader
         title="Frais et paiements"
-        description={`Recouvrement des frais scolaires${year ? `, année ${year.label}` : ""} · ${user.scope.label}`}
+        description={`${year ? `Année ${year.label} · ` : ""}${user.scope.label}`}
+        info="Recouvrement des frais scolaires : ce qui est attendu, encaissé et reste à recouvrer, par classe."
         actions={
           can(user, "fee:view") ? (
             <ButtonLink href="/espace/frais/factures" variant="secondary">
@@ -72,9 +74,9 @@ export default async function FeesOverviewPage() {
           <div className="grid grid-cols-1 gap-6 *:min-w-0 lg:grid-cols-[3fr_2fr]">
             <Card>
               <CardHeader>
-                <div>
+                <div className="flex items-center gap-1.5">
                   <CardTitle>Recouvrement par classe</CardTitle>
-                  <p className="mt-0.5 text-sm text-muted">Part du montant attendu déjà encaissée. En rouge, moins de la moitié.</p>
+                  <InfoTip>Part du montant attendu déjà encaissée. En rouge, moins de la moitié.</InfoTip>
                 </div>
               </CardHeader>
               <CardBody>
@@ -83,7 +85,8 @@ export default async function FeesOverviewPage() {
                   max={100}
                   format={(n) => `${n} %`}
                   data={overview.byClass.map((c) => ({
-                    label: `${c.name} · ${formatFcfa(c.collected)} sur ${formatFcfa(c.expected)}`,
+                    label: c.name,
+                    detail: `${formatFcfa(c.collected)} sur ${formatFcfa(c.expected)}`,
                     value: Math.round(c.rate * 100),
                     tone: c.rate < 0.5 ? ("danger" as const) : ("primary" as const),
                     href: can(user, "fee:view") ? `/espace/frais/factures?classe=${c.id}` : undefined,

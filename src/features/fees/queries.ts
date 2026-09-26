@@ -5,6 +5,7 @@ import { classroomWhere, scopeKey } from "@/lib/auth/scope";
 import type { CurrentUser } from "@/lib/auth/session";
 import { cached, tags } from "@/lib/cache";
 import { db } from "@/lib/db";
+import { feeCreationError } from "@/lib/domain/free-schooling";
 import { invoiceStatus, splitByPlan, type InvoiceStatusCode } from "@/lib/domain/payments";
 
 import { activeYear, feeTypeWhere, invoiceWhere, paymentWhere, startOfToday } from "./access";
@@ -132,6 +133,14 @@ export async function getFeeTypes(user: User) {
 }
 
 export type FeeTypeRow = Awaited<ReturnType<typeof getFeeTypes>>["feeTypes"][number];
+
+// Whether the user's school may bill at all: public nursery and primary
+// schools are free. Null without a school.
+export async function billingRestriction(user: User): Promise<string | null> {
+  if (!user.scope.schoolId) return null;
+  const school = await db.school.findUnique({ where: { id: user.scope.schoolId }, select: { sector: true, cycle: true } });
+  return school ? feeCreationError(school) : null;
+}
 
 // Dry run of the invoice generation: who would be billed, who already is.
 export async function getGenerationPreview(user: User, feeTypeId: string) {

@@ -3,10 +3,13 @@ import { describe, expect, it } from "vitest";
 import {
   actingInstitution,
   canCorrespond,
+  departmentInstitution,
+  departmentInstitutionId,
   institutionKey,
   institutionName,
   mailboxUsername,
   MINISTRY,
+  parseDepartmentInstitutionId,
   parseInstitutionKey,
   parseMailboxUsername,
   partyOfAuthor,
@@ -14,35 +17,44 @@ import {
   type Institution,
 } from "./institutions";
 
-// Department AQ > districts CAL and OUI > schools CEG, EPP (CAL) and OUID (OUI);
-// department LT > district COT > school LYC.
+// Department AQ: a direction without a chain (created before the chains),
+// its DDEMP (AQ_P) and its DDESTFP (AQ_S); circonscriptions CAL and OUI;
+// schools CEG (college) and EPP (primary) in CAL, OUID (primary) in OUI.
+// Department LT: a direction without a chain, circonscription COT, LYC
+// (secondary) in COT.
 const I = {
   ministry: MINISTRY,
-  AQ: { kind: "DEPARTMENT", id: "AQ", departmentId: "AQ", communeId: null },
-  LT: { kind: "DEPARTMENT", id: "LT", departmentId: "LT", communeId: null },
-  CAL: { kind: "COMMUNE", id: "CAL", departmentId: "AQ", communeId: "CAL" },
-  OUI: { kind: "COMMUNE", id: "OUI", departmentId: "AQ", communeId: "OUI" },
-  COT: { kind: "COMMUNE", id: "COT", departmentId: "LT", communeId: "COT" },
-  CEG: { kind: "SCHOOL", id: "CEG", departmentId: "AQ", communeId: "CAL" },
-  EPP: { kind: "SCHOOL", id: "EPP", departmentId: "AQ", communeId: "CAL" },
-  OUID: { kind: "SCHOOL", id: "OUID", departmentId: "AQ", communeId: "OUI" },
-  LYC: { kind: "SCHOOL", id: "LYC", departmentId: "LT", communeId: "COT" },
+  AQ: { kind: "DEPARTMENT", id: "AQ", departmentId: "AQ", communeId: null, chain: null },
+  AQ_P: departmentInstitution("AQ", "PRIMARY"),
+  AQ_S: departmentInstitution("AQ", "SECONDARY"),
+  LT: { kind: "DEPARTMENT", id: "LT", departmentId: "LT", communeId: null, chain: null },
+  CAL: { kind: "COMMUNE", id: "CAL", departmentId: "AQ", communeId: "CAL", chain: "PRIMARY" },
+  OUI: { kind: "COMMUNE", id: "OUI", departmentId: "AQ", communeId: "OUI", chain: "PRIMARY" },
+  COT: { kind: "COMMUNE", id: "COT", departmentId: "LT", communeId: "COT", chain: "PRIMARY" },
+  CEG: { kind: "SCHOOL", id: "CEG", departmentId: "AQ", communeId: "CAL", chain: "SECONDARY" },
+  EPP: { kind: "SCHOOL", id: "EPP", departmentId: "AQ", communeId: "CAL", chain: "PRIMARY" },
+  OUID: { kind: "SCHOOL", id: "OUID", departmentId: "AQ", communeId: "OUI", chain: "PRIMARY" },
+  LYC: { kind: "SCHOOL", id: "LYC", departmentId: "LT", communeId: "COT", chain: "SECONDARY" },
 } satisfies Record<string, Institution>;
 type Name = keyof typeof I;
 const NAMES = Object.keys(I) as Name[];
 
-// Who may write to whom, by hand from the owner's routes.
+// Who may write to whom, by hand from the owner's routes and the two chains:
+// the DDESTFP and the circonscriptions never meet, a circonscription never
+// writes to a college.
 const ROUTES: Record<Name, Name[]> = {
-  ministry: ["AQ", "LT", "CAL", "OUI", "COT", "CEG", "EPP", "OUID", "LYC"],
+  ministry: ["AQ", "AQ_P", "AQ_S", "LT", "CAL", "OUI", "COT", "CEG", "EPP", "OUID", "LYC"],
   AQ: ["ministry", "CAL", "OUI", "CEG", "EPP", "OUID"],
+  AQ_P: ["ministry", "CAL", "OUI", "EPP", "OUID"],
+  AQ_S: ["ministry", "CEG"],
   LT: ["ministry", "COT", "LYC"],
-  CAL: ["ministry", "AQ", "CEG", "EPP"],
-  OUI: ["ministry", "AQ", "OUID"],
-  COT: ["ministry", "LT", "LYC"],
-  CEG: ["ministry", "AQ", "CAL", "EPP", "OUID", "LYC"],
-  EPP: ["ministry", "AQ", "CAL", "CEG", "OUID", "LYC"],
-  OUID: ["ministry", "AQ", "OUI", "CEG", "EPP", "LYC"],
-  LYC: ["ministry", "LT", "COT", "CEG", "EPP", "OUID"],
+  CAL: ["ministry", "AQ", "AQ_P", "EPP"],
+  OUI: ["ministry", "AQ", "AQ_P", "OUID"],
+  COT: ["ministry", "LT"],
+  CEG: ["ministry", "AQ", "AQ_S", "EPP", "OUID", "LYC"],
+  EPP: ["ministry", "AQ", "AQ_P", "CAL", "CEG", "OUID", "LYC"],
+  OUID: ["ministry", "AQ", "AQ_P", "OUI", "CEG", "EPP", "LYC"],
+  LYC: ["ministry", "LT", "CEG", "EPP", "OUID"],
 };
 
 describe("canCorrespond", () => {
@@ -56,10 +68,12 @@ describe("canCorrespond", () => {
 });
 
 describe("actingInstitution", () => {
-  const staff = { departmentId: "AQ", communeId: "CAL", schoolId: "CEG", isTeacher: false, canViewMessages: true };
+  const staff = { departmentId: "AQ", communeId: "CAL", schoolId: "CEG", schoolCycle: "SECONDARY", isTeacher: false, canViewMessages: true } as const;
   it.each([
     ["NATIONAL", staff, MINISTRY],
     ["DEPARTMENT", staff, I.AQ],
+    ["DEPARTMENT", { ...staff, chain: "PRIMARY" }, I.AQ_P],
+    ["DEPARTMENT", { ...staff, chain: "SECONDARY" }, I.AQ_S],
     ["COMMUNE", staff, I.CAL],
     ["SCHOOL", staff, I.CEG],
     ["SCHOOL", { ...staff, isTeacher: true }, null],
@@ -77,6 +91,15 @@ describe("identifiers", () => {
     expect(parseMailboxUsername(mailboxUsername(I.CEG))).toEqual({ kind: "SCHOOL", id: "CEG" });
     expect(parseMailboxUsername(mailboxUsername(MINISTRY))).toEqual({ kind: "MINISTRY", id: "nation" });
     expect(parseInstitutionKey(institutionKey(I.AQ))).toEqual({ kind: "DEPARTMENT", id: "AQ" });
+    expect(parseInstitutionKey(institutionKey(I.AQ_S))).toEqual({ kind: "DEPARTMENT", id: "AQ_ESTFP" });
+  });
+  it("encodes the chain of a direction in its identifier", () => {
+    const id = "0b9f3c2e-4a1d-4a57-9d0e-6f1b2c3d4e5f";
+    expect(departmentInstitutionId(id, "PRIMARY")).toBe(`${id}_EMP`);
+    expect(parseDepartmentInstitutionId(`${id}_ESTFP`)).toEqual({ departmentId: id, chain: "SECONDARY" });
+    expect(parseDepartmentInstitutionId(id)).toEqual({ departmentId: id, chain: null });
+    // A uuid department with its chain still makes a valid mailbox.
+    expect(parseMailboxUsername(mailboxUsername(departmentInstitution(id, "SECONDARY")))).toEqual({ kind: "DEPARTMENT", id: `${id}_ESTFP` });
   });
   it("never mistakes a person for a mailbox", () => {
     expect(parseMailboxUsername("florentin.agossou")).toBeNull();
@@ -93,7 +116,7 @@ describe("identifiers", () => {
 
 describe("institutionName", () => {
   it.each([
-    ["MINISTRY", null, "Ministère des Enseignements"],
+    ["MINISTRY", null, "Ministères en charge de l'éducation"],
     ["DEPARTMENT", "Atlantique", "Direction départementale de l'Atlantique"],
     ["DEPARTMENT", "Borgou", "Direction départementale du Borgou"],
     ["DEPARTMENT", "Collines", "Direction départementale des Collines"],
@@ -105,6 +128,10 @@ describe("institutionName", () => {
   ] as const)("%s %s", (kind, name, expected) => {
     expect(institutionName(kind, name)).toBe(expected);
   });
+  it("names a direction by its chain", () => {
+    expect(institutionName("DEPARTMENT", "Atlantique", "PRIMARY")).toBe("DDEMP de l'Atlantique");
+    expect(institutionName("DEPARTMENT", "Borgou", "SECONDARY")).toBe("DDESTFP du Borgou");
+  });
 });
 
 describe("partyOfAuthor", () => {
@@ -112,6 +139,8 @@ describe("partyOfAuthor", () => {
   it("finds the side an author writes for", () => {
     expect(partyOfAuthor({ level: "SCHOOL", departmentId: "AQ", communeId: "CAL", schoolId: "CEG" }, parties)).toEqual(I.CEG);
     expect(partyOfAuthor({ level: "COMMUNE", departmentId: "AQ", communeId: "CAL", schoolId: null }, parties)).toEqual(I.CAL);
+    expect(partyOfAuthor({ level: "DEPARTMENT", departmentId: "AQ", communeId: null, schoolId: null, chain: "SECONDARY" }, [I.AQ_S, I.CEG])).toEqual(I.AQ_S);
+    expect(partyOfAuthor({ level: "DEPARTMENT", departmentId: "AQ", communeId: null, schoolId: null, chain: "PRIMARY" }, [I.AQ_S, I.CEG])).toBeNull();
   });
   it("finds nothing for an outsider", () => {
     expect(partyOfAuthor({ level: "SCHOOL", departmentId: "AQ", communeId: "CAL", schoolId: "EPP" }, parties)).toBeNull();

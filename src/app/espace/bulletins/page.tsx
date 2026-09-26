@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TD, TH, THead, TR } from "@/components/ui/table";
-import { getActiveYear, getCurrentPeriod } from "@/features/classes/academic";
+import { getActiveYear, getCurrentPeriod, getYearPeriods, userPeriodicity } from "@/features/classes/academic";
 import { ConfirmButton } from "@/components/kit/confirm-button";
 import { UrlSelect } from "@/components/kit/url-select";
 import { publishReportCards } from "@/features/report-cards/actions";
@@ -27,11 +27,12 @@ export const metadata: Metadata = { title: "Bulletins" };
 export default async function ReportCardsPage(props: PageProps<"/espace/bulletins">) {
   const user = await requirePermission(["report_card:publish", "report_card:export"]);
   const sp = await props.searchParams;
-  const [year, current] = await Promise.all([getActiveYear(), getCurrentPeriod()]);
+  const periodicity = userPeriodicity(user);
+  const [year, current, periods] = await Promise.all([getActiveYear(), getCurrentPeriod(periodicity), getYearPeriods(periodicity)]);
   if (!year || !current) return <EmptyState title="Aucune année scolaire active" />;
 
-  const periodId = year.periods.find((p) => p.id === param(sp, "periode"))?.id ?? current.id;
-  const period = year.periods.find((p) => p.id === periodId)!;
+  const periodId = periods.find((p) => p.id === param(sp, "periode"))?.id ?? current.id;
+  const period = periods.find((p) => p.id === periodId)!;
   const overview = await publicationOverview(user, year.id, periodId);
   const classroomId = overview.find((c) => c.id === param(sp, "classe"))?.id;
   const preview = classroomId ? await classPreview(user, classroomId, periodId) : null;
@@ -40,7 +41,7 @@ export default async function ReportCardsPage(props: PageProps<"/espace/bulletin
 
   const filters = (
     <div className="mb-6 grid grid-cols-2 gap-3 sm:flex sm:items-end">
-      <UrlSelect param="periode" label="Période" value={periodId} options={year.periods.map((p) => ({ value: p.id, label: p.name }))} className="sm:w-52" />
+      <UrlSelect param="periode" label="Période" value={periodId} options={periods.map((p) => ({ value: p.id, label: p.name }))} className="sm:w-52" />
       <UrlSelect param="classe" label="Classe" value={classroomId ?? ""} allLabel="Vue d'ensemble" options={overview.map((c) => ({ value: c.id, label: c.name }))} className="sm:w-52" />
     </div>
   );
@@ -119,7 +120,8 @@ export default async function ReportCardsPage(props: PageProps<"/espace/bulletin
     <>
       <PageHeader
         title={`Bulletins · ${classroom.name}`}
-        description={`${period.name}, ${year.label} · calculé à partir des notes saisies`}
+        description={`${period.name}, ${year.label}`}
+        info="Calculé à partir des notes saisies : un bulletin se met à jour tant qu'il n'est pas publié."
         actions={
           <>
             {can(user, "report_card:export") && (

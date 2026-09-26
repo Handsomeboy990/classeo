@@ -11,7 +11,10 @@ import { invalidate, tags } from "@/lib/cache";
 import { db } from "@/lib/db";
 import { DomainError } from "@/lib/errors";
 
-import { CYCLES, SECTORS } from "./labels";
+import { defaultPeriodicity, type Periodicity } from "@/lib/domain/periodicity";
+import { DENOMINATIONS, schoolTypeError, type Denomination } from "@/lib/domain/school-types";
+
+import { CYCLES, SECTORS, type Cycle, type Sector } from "./labels";
 
 const optionalText = (max: number) =>
   z
@@ -40,7 +43,44 @@ const schoolFields = z.object({
     .optional()
     .transform((v) => v || null)
     .refine((v) => v === null || z.email().safeParse(v).success, "Adresse e-mail invalide."),
+  // Private schools: faith (confessional only), bilingual programme,
+  // opening authorisation and promoter.
+  denomination: z
+    .enum(["", ...DENOMINATIONS])
+    .optional()
+    .transform((v) => (v ? v : null)),
+  isBilingual: z
+    .string()
+    .optional()
+    .transform((v) => v === "on" || v === "true"),
+  authorizationRef: optionalText(120),
+  authorizationDate: z
+    .string()
+    .trim()
+    .optional()
+    .transform((v) => v || null)
+    .refine((v) => v === null || /^\d{4}-\d{2}-\d{2}$/.test(v), "Date invalide.")
+    .transform((v) => (v ? new Date(`${v}T00:00:00Z`) : null)),
+  promoter: optionalText(150),
+  // Empty: the national rule for the sector and cycle. Only the ministry
+  // may choose another periodicity for a school.
+  periodicity: z
+    .enum(["", "TRIMESTER", "SEMESTER"])
+    .optional()
+    .transform((v) => (v ? v : null)),
 });
+
+// The evaluation periodicity a write sets: the ministry's choice when it
+// makes one, otherwise the national rule for the sector and cycle.
+function assertSchoolType(input: { sector: Sector; denomination: Denomination | null; authorizationRef: string | null; promoter: string | null }) {
+  const error = schoolTypeError(input);
+  if (error) throw new DomainError(error);
+}
+
+function periodicityFor(user: NonNullable<CurrentUser>, input: { periodicity: Periodicity | null; sector: Sector; cycle: Cycle }): Periodicity {
+  if (input.periodicity && user.scope.level !== "NATIONAL") throw new DomainError("Seul le ministère fixe la périodicité d'évaluation d'un établissement.");
+  return input.periodicity ?? defaultPeriodicity(input);
+}
 
 async function communeInScope(user: NonNullable<CurrentUser>, communeId: string) {
   const commune = await db.commune.findFirst({ where: { AND: [{ id: communeId }, communeWhere(user)] }, select: { id: true, name: true } });
@@ -63,12 +103,13 @@ export const createSchool = createAction({
   schema: schoolFields,
   handler: async (input, user) => {
     const commune = await communeInScope(user, input.communeId);
+    assertSchoolType(input);
     // Two creations at the same instant may compute the same code: the unique
     // constraint refuses the second, which is retried once.
     for (let attempt = 0; attempt < 2; attempt++) {
       try {
         const school = await db.school.create({
-          data: { ...input, communeId: commune.id, code: await nextSchoolCode() },
+          data: { ...input, periodicity: periodicityFor(user, input), communeId: commune.id, code: await nextSchoolCode() },
           select: { id: true, code: true, name: true },
         });
         await audit(user, {
@@ -93,10 +134,15 @@ export const updateSchool = createAction({
   permission: "school:update",
   schema: schoolFields.extend({ id: z.string().min(1).max(64) }),
   handler: async ({ id, ...input }, user) => {
-    const school = await db.school.findFirst({ where: { AND: [{ id }, schoolWhere(user)] }, select: { id: true, name: true, communeId: true } });
+    const school = await db.school.findFirst({ where: { AND: [{ id }, schoolWhere(user)] }, select: { id: true, name: true, communeId: true, sector: true, cycle: true, periodicity: true } });
     if (!school) throw new DomainError("Établissement introuvable dans votre périmètre.");
     const commune = await communeInScope(user, input.communeId);
-    await db.school.update({ where: { id: school.id }, data: { ...input, communeId: commune.id } });
+    assertSchoolType(input);
+    // Kept as is unless the ministry chooses, or the sector or the cycle
+    // changes (the national rule then applies again).
+    const changed = school.sector !== input.sector || school.cycle !== input.cycle;
+    const periodicity = input.periodicity || changed ? periodicityFor(user, input) : school.periodicity;
+    await db.school.update({ where: { id: school.id }, data: { ...input, periodicity, communeId: commune.id } });
     await audit(user, {
       action: "update",
       resource: "school",

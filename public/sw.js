@@ -170,10 +170,14 @@ function pageInfo(html) {
   const title = html.match(/<title>([^<]{1,200})<\/title>/);
   const main = html.match(/<main[\s\S]*$/);
   const heading = main && main[0].match(/<h1[^>]*>([\s\S]{1,400}?)<\/h1>\s*(?:<p[^>]*>([\s\S]{1,400}?)<\/p>)?/);
+  // The page header marks its line (kit/page-header.tsx): the heading sits
+  // in a row with its info bubble, so the line no longer follows it.
+  const marked = main && main[0].match(/<p[^>]*data-page-detail[^>]*>([\s\S]{1,400}?)<\/p>/);
+  const detail = marked ? marked[1] : heading && heading[2];
   return {
     title: title ? plain(title[1]).replace(/ · Classéo$/, "") : null,
     heading: heading ? plain(heading[1]) : null,
-    detail: heading && heading[2] ? plain(heading[2]) : null,
+    detail: detail ? plain(detail) : null,
   };
 }
 
