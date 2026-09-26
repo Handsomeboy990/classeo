@@ -17,11 +17,13 @@ const Body = z.object({
 // Interface strings of the page being shown. Answers from the cache only,
 // at once; strings not cached yet are queued and translated in the
 // background, 100 per request, within the quota. The page stays in French
-// for them until a later visit.
+// for them until a later visit. A page asks a few times as it renders (the
+// shell, then each streamed section, then a dialog): the per user limit
+// only bounds a runaway client, the service quota is guarded by the queue.
 export async function POST(request: Request) {
   const parsed = Body.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return json({ error: "Demande invalide." }, 400);
-  const check = await guard(parsed.data.lang, "interface", 60);
+  const check = await guard(parsed.data.lang, "interface", 240);
   if (!check.ok) return check.response;
 
   const texts = [...new Set(parsed.data.texts.map(normalise).filter(isCandidate))];
