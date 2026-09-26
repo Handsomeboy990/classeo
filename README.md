@@ -343,6 +343,10 @@ src/lib/          auth, domain rules, pdf, voice, mail, payments, cache, audit
 
 ## Credits and licences
 
+The code of Classéo is proprietary, all rights reserved: see
+[LICENSE](LICENSE). The repository is visible for reference only, and viewing
+it grants no licence. Third party works keep their own licences:
+
 - **Photos**: Wikimedia Commons, credited on the `/credits` page and in
   [public/images/CREDITS.md](public/images/CREDITS.md) (CC BY 4.0, CC BY-SA 4.0
   and public domain).
