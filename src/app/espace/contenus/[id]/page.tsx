@@ -46,7 +46,7 @@ export default async function ContentPage({ params }: PageProps<"/espace/contenu
       </h1>
 
       <div className="mt-4 flex flex-wrap items-center gap-3">
-        <ReadAloud text={listenText(c)} label="Écouter ce contenu" className="h-12 px-4 text-base" />
+        <ReadAloud text={listenText(c)} label="Écouter ce contenu" />
         {manage && (
           <ContentActions
             id={c.id}

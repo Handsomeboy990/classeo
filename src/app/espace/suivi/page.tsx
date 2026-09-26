@@ -6,7 +6,6 @@ import { forbidden, redirect } from "next/navigation";
 import { AverageLevel } from "@/components/kit/level";
 import { PageHeader } from "@/components/kit/page-header";
 import { EmptyState } from "@/components/kit/states";
-import { SpokenSummary } from "@/features/family/components/blocks";
 import { beninToday, countWord } from "@/features/family/logic";
 import { childOverview } from "@/features/family/overview";
 import { followedEnrollments } from "@/features/family/queries";
@@ -35,9 +34,8 @@ export default async function FollowUpPage() {
 
   return (
     <>
-      <PageHeader title="Mes enfants" description="Choisissez un enfant pour ouvrir son suivi complet." readable={false} />
+      <PageHeader title="Mes enfants" info="Choisissez un enfant pour ouvrir son suivi complet : bulletins, notes, présences et emploi du temps." listen={{ text: intro, label: "Écouter" }} />
       <GuardianTransferRequests user={user} />
-      <SpokenSummary text={intro} label="Écouter" className="mb-6" />
       {overviews.length === 0 ? (
         <EmptyState
           className="rounded-card border border-border bg-surface"

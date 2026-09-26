@@ -67,7 +67,7 @@ export default async function LandingPage({ searchParams }: PageProps<"/">) {
                   lang={voice}
                   label={t(listenText(voice))}
                   translatable={false}
-                  className="min-h-12 justify-center px-5 text-base"
+                  className="size-12"
                 />
               </div>
             </div>

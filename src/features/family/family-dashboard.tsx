@@ -63,13 +63,13 @@ export async function FamilyDashboard({ user }: { user: User }) {
     <>
       <PageHeader
         title={`Bonjour, ${user.firstName}`}
-        description={isParent ? "Bulletins, présences et cours de vos enfants. « Écouter » lit ce résumé à voix haute." : "Vos cours, vos notes et vos présences. « Écouter » lit ce résumé à voix haute."}
-        readable={false}
+        description={isParent ? "Bulletins, présences et cours de vos enfants" : "Vos cours, vos notes et vos présences"}
+        info="Le bouton haut-parleur lit à voix haute le résumé de la journée : messages, événements et, pour chaque enfant, ses derniers résultats."
+        listen={{ text: household, label: "Écouter" }}
       />
       <GuardianTransferRequests user={user} />
 
-      <div className="grid grid-cols-1 gap-3 sm:gap-4 lg:grid-cols-[1fr_20rem]">
-        <SpokenSummary text={household} label="Écouter" />
+      <div className="lg:max-w-sm">
         <PictoTile icon={MessageCircle} tone={unread ? "danger" : "primary"} title="Messages" href="/espace/messages" layout="row">
           <p className="font-display text-lg font-bold lg:text-2xl">{unread ? `${unread} non lu${unread > 1 ? "s" : ""}` : "À jour"}</p>
         </PictoTile>
@@ -168,15 +168,15 @@ function ChildPanel({ overview: o, isParent }: { overview: ChildOverview; isPare
             {e.classroom.name} · {e.school.name}
           </p>
         </div>
+        <SpokenSummary text={o.summary} />
         <ButtonLink href={base} variant="secondary" className="max-sm:w-full">
           {isParent ? "Suivi complet" : "Ma scolarité"}
         </ButtonLink>
       </div>
-      <div className="p-4 sm:p-5">
-        <SpokenSummary text={o.summary} />
+      <div className="p-3 sm:p-5">
         {/* Two by two from the smallest phone: results first, then the week
             and the day. */}
-        <div className="mt-4 grid grid-cols-2 gap-2.5 sm:gap-3 2xl:grid-cols-4">
+        <div className="grid grid-cols-2 gap-2.5 sm:gap-3 2xl:grid-cols-4">
           <PictoTile icon={FileText} title="Dernier bulletin" href={base} footer={o.lastReport?.periodLabel}>
             {o.lastReport ? <AverageLevel average={o.lastReport.average} /> : <p className="text-sm text-muted">Pas encore de bulletin publié.</p>}
           </PictoTile>
