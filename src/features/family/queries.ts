@@ -9,6 +9,7 @@ import { enrollmentWhere } from "@/lib/auth/scope";
 import { requireUser, type CurrentUser } from "@/lib/auth/session";
 import { db } from "@/lib/db";
 import { DEFAULT_FORMULA, generalAverage, subjectAverage } from "@/lib/domain/grades";
+import { feeExemption, isFreeSchooling } from "@/lib/domain/free-schooling";
 import { periodsOf } from "@/lib/domain/periodicity";
 
 import { beninToday, parseReportLines, sortSlots, weekRange, type SchoolDay } from "./logic";
@@ -38,8 +39,8 @@ export function currentPeriod<P extends Period>(periods: P[], today: SchoolDay):
 const enrollmentInclude = {
   student: { select: { id: true, firstName: true, lastName: true, gender: true, matricule: true, birthDate: true, photoFileId: true } },
   classroom: { select: { id: true, name: true, level: { select: { name: true } } } },
-  school: { select: { id: true, name: true, communeId: true, periodicity: true, commune: { select: { name: true, departmentId: true } } } },
-  academicYear: { select: { id: true, label: true } },
+  school: { select: { id: true, name: true, communeId: true, periodicity: true, sector: true, cycle: true, commune: { select: { name: true, departmentId: true } } } },
+  academicYear: { select: { id: true, label: true, startDate: true } },
 } satisfies Prisma.EnrollmentInclude;
 
 export type FamilyEnrollment = Prisma.EnrollmentGetPayload<{ include: typeof enrollmentInclude }>;
@@ -205,6 +206,22 @@ export async function timetableOf(enrollment: FamilyEnrollment) {
 }
 
 export type SlotView = Awaited<ReturnType<typeof timetableOf>>[number];
+
+// What the family should know beside the invoices: a free school, or the
+// fees the pupil is exempt from (the contribution scolaire of the girls of
+// a public college), with the text that grants it.
+export async function feeNotices(enrollment: FamilyEnrollment) {
+  if (isFreeSchooling(enrollment.school)) return { free: true, exemptions: [] as { name: string; label: string }[] };
+  const feeTypes = await db.feeType.findMany({
+    where: { schoolId: enrollment.schoolId, academicYearId: enrollment.academicYearId, isActive: true, kind: "SCHOOL_CONTRIBUTION" },
+    select: { name: true, kind: true },
+  });
+  const exemptions = feeTypes.flatMap((f) => {
+    const label = feeExemption({ kind: f.kind, school: enrollment.school, gender: enrollment.student.gender, yearStart: enrollment.academicYear.startDate });
+    return label ? [{ name: f.name, label }] : [];
+  });
+  return { free: false, exemptions };
+}
 
 export async function invoicesOf(enrollment: FamilyEnrollment) {
   return db.invoice.findMany({

@@ -869,8 +869,17 @@ model SchoolRequest {
 // W2: fees and payments
 // ---------------------------------------------------------------------------
 
+// What a fee is for: the rules of free schooling depend on it (the girls
+// of public secondary schools are exempt from the contribution scolaire).
+enum FeeKind {
+  SCHOOL_CONTRIBUTION
+  APE_DUES
+  OTHER
+}
+
 model FeeType {
   id             String         @id @default(cuid())
+  kind           FeeKind        @default(OTHER)
   schoolId       String
   school         School         @relation(fields: [schoolId], references: [id])
   academicYearId String

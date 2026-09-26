@@ -22,6 +22,7 @@ const isoDate = z
 
 export const feeTypeSchema = z.object({
   name: z.string().trim().min(2, "Donnez un nom au type de frais.").max(120),
+  kind: z.enum(["SCHOOL_CONTRIBUTION", "APE_DUES", "OTHER"], "Choisissez la nature des frais.").default("OTHER"),
   amount,
   levelId: optionalId,
   isActive: z

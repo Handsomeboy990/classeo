@@ -8,12 +8,20 @@ import { audit } from "@/lib/audit";
 import { invalidate, tags } from "@/lib/cache";
 import { db } from "@/lib/db";
 import { assertWritable } from "@/lib/guards";
+import { feeCreationError, feeExemption } from "@/lib/domain/free-schooling";
 import { formatReference, installmentStatus, invoiceStatus, planPercentError, splitByPlan } from "@/lib/domain/payments";
 import { DomainError } from "@/lib/errors";
 import { compareNames, formatFcfa } from "@/lib/utils";
 
 import { activeYear, feeTypeWhere, requireSchoolId, startOfToday } from "./access";
 import { feeTypeSchema, generateSchema, idSchema, planSchema, updateFeeTypeSchema } from "./schema";
+
+// Public nursery and primary schools are free: they bill nothing.
+async function assertMayBill(schoolId: string) {
+  const school = await db.school.findUnique({ where: { id: schoolId }, select: { sector: true, cycle: true } });
+  const error = school ? feeCreationError(school) : "Établissement introuvable.";
+  if (error) throw new DomainError(error);
+}
 
 async function assertLevel(levelId: string | undefined) {
   if (!levelId) return;
@@ -33,9 +41,10 @@ export const createFeeType = createAction({
     const year = await activeYear();
     if (!year) throw new DomainError("Aucune année scolaire active.");
     await assertWritable({ schoolId, academicYearId: year.id });
+    await assertMayBill(schoolId);
     await assertLevel(input.levelId);
     const feeType = await db.feeType.create({
-      data: { schoolId, academicYearId: year.id, name: input.name, amount: input.amount, levelId: input.levelId ?? null, isActive: true },
+      data: { schoolId, academicYearId: year.id, name: input.name, kind: input.kind, amount: input.amount, levelId: input.levelId ?? null, isActive: true },
     });
     await audit(user, {
       action: "create",
@@ -55,10 +64,11 @@ export const updateFeeType = createAction({
     const current = await db.feeType.findFirst({ where: { AND: [{ id: input.id }, feeTypeWhere(user)] } });
     if (!current) throw new DomainError("Type de frais introuvable.");
     await assertWritable({ schoolId: current.schoolId, academicYearId: current.academicYearId });
+    if (input.isActive) await assertMayBill(current.schoolId);
     await assertLevel(input.levelId);
     const feeType = await db.feeType.update({
       where: { id: current.id },
-      data: { name: input.name, amount: input.amount, levelId: input.levelId ?? null, isActive: input.isActive },
+      data: { name: input.name, kind: input.kind, amount: input.amount, levelId: input.levelId ?? null, isActive: input.isActive },
     });
     await audit(user, {
       action: "update",
@@ -169,11 +179,17 @@ export const generateInvoices = createAction({
   handler: async (input, user) => {
     const feeType = await db.feeType.findFirst({
       where: { AND: [{ id: input.feeTypeId }, feeTypeWhere(user)] },
-      include: { plans: { where: { isActive: true }, include: { installments: { orderBy: { order: "asc" } } }, take: 1 } },
+      include: {
+        plans: { where: { isActive: true }, include: { installments: { orderBy: { order: "asc" } } }, take: 1 },
+        school: { select: { sector: true, cycle: true } },
+        academicYear: { select: { startDate: true } },
+      },
     });
     if (!feeType) throw new DomainError("Type de frais introuvable.");
     await assertWritable({ schoolId: feeType.schoolId, academicYearId: feeType.academicYearId });
     if (!feeType.isActive) throw new DomainError("Ce type de frais est désactivé.");
+    const free = feeCreationError(feeType.school);
+    if (free) throw new DomainError(free);
 
     const today = startOfToday();
     const plan = feeType.plans[0];
@@ -191,12 +207,13 @@ export const generateInvoices = createAction({
     const year = today.getUTCFullYear();
     const prefix = `FAC-${year}-`;
 
+    let exempted = 0;
     const created = await db.$transaction(
       async (tx) => {
         // Serialises numbering across concurrent generations and payments.
         await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${INVOICE_LOCK}))`;
 
-        const enrollments = await tx.enrollment.findMany({
+        let enrollments = await tx.enrollment.findMany({
           where: {
             schoolId: feeType.schoolId,
             academicYearId: feeType.academicYearId,
@@ -204,8 +221,13 @@ export const generateInvoices = createAction({
             ...(feeType.levelId ? { classroom: { levelId: feeType.levelId } } : {}),
             invoices: { none: { status: { not: "CANCELLED" }, items: { some: { feeTypeId: feeType.id } } } },
           },
-          select: { id: true, classroom: { select: { name: true } }, student: { select: { lastName: true, firstName: true } } },
+          select: { id: true, classroom: { select: { name: true } }, student: { select: { lastName: true, firstName: true, gender: true } } },
         });
+        // Exempt pupils (the girls of a public college for the contribution
+        // scolaire) get no invoice at all.
+        const exempt = enrollments.filter((e) => feeExemption({ kind: feeType.kind, school: feeType.school, gender: e.student.gender, yearStart: feeType.academicYear.startDate }));
+        exempted = exempt.length;
+        enrollments = enrollments.filter((e) => !exempt.includes(e));
         // Invoice numbers follow the class, then the French alphabetical
         // order of the pupils, whatever the database collation.
         enrollments.sort((a, b) => a.classroom.name.localeCompare(b.classroom.name, "fr", { numeric: true }) || compareNames(a.student, b.student));
@@ -243,7 +265,8 @@ export const generateInvoices = createAction({
       { timeout: 60_000, maxWait: 10_000 },
     );
 
-    if (created === 0) throw new DomainError("Aucune facture à créer : tous les élèves concernés sont déjà facturés.");
+    const exemptNote = exempted ? ` ${exempted} élève${exempted > 1 ? "s exonérées" : " exonérée"} (arrêté du 30 juillet 2026) : aucune facture.` : "";
+    if (created === 0) throw new DomainError(`Aucune facture à créer : tous les élèves concernés sont déjà facturés ou exonérés.${exemptNote}`);
     await audit(user, {
       action: "create",
       resource: "fee",
@@ -252,6 +275,6 @@ export const generateInvoices = createAction({
       schoolId: feeType.schoolId,
     });
     invalidate(tags.stats);
-    return { message: `${created} facture${created > 1 ? "s créées" : " créée"} pour « ${feeType.name} ».`, data: { created } };
+    return { message: `${created} facture${created > 1 ? "s créées" : " créée"} pour « ${feeType.name} ».${exemptNote}`, data: { created, exempted } };
   },
 });
