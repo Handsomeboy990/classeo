@@ -35,8 +35,10 @@ the [README](../README.md#environment-variables).
 - Production: also `APP_URL` and `NEXT_PUBLIC_APP_URL` (the public address,
   used in e-mails and QR codes), the SMTP variables, the VAPID keys, the
   FedaPay variables with `FEDAPAY_ENV=live`, the api229langues variables
-  (`LANGUES229_API_URL`, `LANGUES229_API_KEY`, `LANGUES229_HF_TOKEN`), and
-  `DEMO_MODE=off` once real data is loaded.
+  (`LANGUES229_API_URL`, `LANGUES229_API_KEY`, `LANGUES229_HF_TOKEN`), and,
+  while production holds demo data, `DEMO_ACCESS_TOKEN` and `DEMO_PASSWORD`
+  (see [Demo access](#demo-access)). `DEMO_MODE` stays unset: the public sign
+  in page of the production deployment never shows the demo panel.
 - Preview behind Vercel Authentication: `VERCEL_AUTOMATION_BYPASS_SECRET`,
   so that `/api/voix` can reach the voice function of the preview.
 - The voice needs nothing else on Vercel: the Python function runs in the
@@ -67,10 +69,12 @@ redeploy after editing one.
    ```
 
 4. Only for a demo environment, load the demo data (the seed refuses a
-   database that already has users):
+   database that already has users). With `NODE_ENV=production` the seed
+   refuses to run without `DEMO_PASSWORD`, so the demo accounts never get
+   the development fallback password:
 
    ```bash
-   DATABASE_URL="<connection string>" npm run db:seed
+   NODE_ENV=production DEMO_PASSWORD="<demo password>" DATABASE_URL="<connection string>" npm run db:seed
    ```
 
    For real data, create the first national administrator account instead;
@@ -124,12 +128,64 @@ then do nothing.
    then reloads the demo data. Never on a database holding real data.
 
    ```bash
-   DATABASE_URL="<demo connection string>" SEED_RESET=true npx tsx prisma/seed.ts
+   NODE_ENV=production DEMO_PASSWORD="<demo password>" DATABASE_URL="<demo connection string>" SEED_RESET=true npx tsx prisma/seed.ts
    ```
 
    After a reseed, run step 4 again only if translations were changed since
    the file the seed loads.
 6. Run the [post deployment checklist](#post-deployment-checklist).
+
+## Demo access
+
+The demo accounts of `src/lib/demo/accounts.ts` are public in the
+repository, and so is the password the development machines use. Production
+therefore never shows the demo panel on `/connexion`: invited reviewers use a
+secret sign in page, `https://<domain>/acces/<DEMO_ACCESS_TOKEN>`, which shows
+the same sign in page with the demo panel. A wrong token, or an empty
+variable, answers the regular 404 page; after ten wrong tokens in fifteen
+minutes an address gets 404 even for the right one. The page is dynamic,
+`noindex, nofollow`, sends no referrer, and nothing links to it.
+
+1. Generate the two values on your machine, and keep them in a password
+   manager, never in the repository, an issue or a chat log:
+
+   ```bash
+   openssl rand -hex 32   # DEMO_ACCESS_TOKEN: 64 characters
+   openssl rand -base64 18   # a DEMO_PASSWORD candidate: 24 characters
+   ```
+
+   The token needs at least 32 characters among letters, digits, `-` and
+   `_`; a shorter or malformed one keeps the page closed (the server logs
+   why). The password needs 12 to 200 characters.
+2. In Vercel, Project Settings, Environment Variables, add
+   `DEMO_ACCESS_TOKEN` and `DEMO_PASSWORD` for **Production** only, with
+   **Sensitive** checked, then redeploy production.
+3. Set the password of the demo accounts already in the production
+   database, without reseeding. The script only touches the accounts listed
+   in `src/lib/demo/accounts.ts`, by identifier, and skips those already up
+   to date:
+
+   ```bash
+   DEMO_PASSWORD="<demo password>" DATABASE_URL="<production connection string>" npx tsx scripts/set-demo-password.ts --dry-run
+   DEMO_PASSWORD="<demo password>" DATABASE_URL="<production connection string>" npx tsx scripts/set-demo-password.ts --revoke-sessions
+   ```
+
+   The dry run prints how many accounts would be updated, are already up to
+   date or were not found. `--revoke-sessions` signs out the sessions opened
+   with the former public password; later runs need it no more. To keep the
+   password out of the shell history, type it at a prompt first
+   (`read -rs DEMO_PASSWORD && export DEMO_PASSWORD`) and drop the
+   `DEMO_PASSWORD=...` prefix from the commands.
+4. Check: `$APP/connexion` shows no "Comptes de démonstration" panel,
+   `$APP/acces/<token>` shows it, a wrong token answers 404, and a demo
+   account signs in with the new password.
+5. Share `https://<domain>/acces/<token>` with the reviewers. The secret
+   page prefills the password from `DEMO_PASSWORD`; without that variable it
+   lists the identifiers only and the password is sent separately.
+
+To close the access, remove `DEMO_ACCESS_TOKEN` and redeploy; to change it,
+set a new value and redeploy (the former address then answers 404). To
+change the password, update `DEMO_PASSWORD`, redeploy, and run step 3 again.
 
 ## The Python voice function
 
@@ -182,8 +238,9 @@ Replace `$APP` with the public address, for example
    done
    ```
 
-2. Sign in works with a real account (or a demo account on a demo
-   environment), and `/espace` shows the dashboard of its role. A 500 on
+2. Sign in works with a real account (or a demo account from the secret
+   page on a demo environment), and `/espace` shows the dashboard of its
+   role; `/connexion` shows no demo panel. A 500 on
    sign in usually means a migration is missing: run step 1.
 3. The French voice is on:
 

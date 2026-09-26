@@ -165,7 +165,9 @@ off when its variables are empty, and the platform still works.
 | `FEDAPAY_ENV`, `FEDAPAY_SECRET_KEY`, `FEDAPAY_PUBLIC_KEY`, `FEDAPAY_WEBHOOK_SECRET` | online payment; without the secret key only declarations are offered. Webhook: `<APP_URL>/api/paiements/fedapay/webhook` |
 | `KORA_TTS_URL`, `KORA_TTS_SECRET` | the French voice function outside Vercel, and an optional key overriding the one derived from `SESSION_SECRET` |
 | `LANGUES229_API_URL`, `LANGUES229_HF_TOKEN`, `LANGUES229_API_KEY` | api229langues credentials, for live translation, local language voices and `scripts/pretranslate.ts`; all three are needed |
-| `DEMO_MODE` | `off` hides the demo account panel on the sign in page |
+| `DEMO_MODE` | demo account panel on the public sign in page: shown in development unless `off`, shown in a production build only with `on`, never on the Vercel production deployment |
+| `DEMO_ACCESS_TOKEN` | opens the secret demo sign in page `/acces/<token>`; at least 32 letters, digits, `-` or `_`; empty keeps it closed (404) |
+| `DEMO_PASSWORD` | shared password of the demo accounts, for the seed, `scripts/set-demo-password.ts` and the secret page; required for a production seed |
 | `TRUST_PROXY` | `true` behind a reverse proxy other than Vercel, to enable the per address sign in limit |
 | `FORCE_HTTPS` | `true` behind an HTTPS proxy outside Vercel: secure cookies and HSTS |
 | `VERCEL_AUTOMATION_BYPASS_SECRET` | lets `/api/voix` reach the voice function on a protected preview deployment |
@@ -183,8 +185,21 @@ in `.env`. Messages are read at http://localhost:8025.
 ### Demo accounts
 
 The seed creates one account per role, defined in `src/lib/demo/accounts.ts`.
-They share one password, shown on the sign in page, where one click fills the
-form. Sign in with the identifier or the e-mail.
+They share one password, `DEMO_PASSWORD`. Sign in with the identifier or the
+e-mail.
+
+- **Local development**: `/connexion` shows a "Comptes de démonstration"
+  panel where one click fills the form. Without `DEMO_PASSWORD`, the seed
+  and the panel use the development fallback of `src/lib/demo/password.ts`.
+- **Production**: `/connexion` never shows the panel. It lives on a secret
+  sign in page, `https://<domain>/acces/<DEMO_ACCESS_TOKEN>`, which is not
+  linked anywhere, not indexed and answers 404 to a wrong token. The owner
+  sends that address to the people invited to try the platform. The
+  password comes from `DEMO_PASSWORD` on the server; see
+  [the deployment runbook](docs/deployment.md#demo-access).
+
+Never publish the token or the production password, in the repository or
+anywhere else.
 
 | Identifier | E-mail | Role |
 |---|---|---|
@@ -201,7 +216,8 @@ form. Sign in with the identifier or the e-mail.
 | senami.hounkpatin | eleve@classeo.bj | Student, 3e A |
 | estelle.amoussou | partenaire@classeo.bj | Partner organisation, read only |
 
-Set `DEMO_MODE=off` on any deployment holding real data.
+On a deployment holding real data, leave `DEMO_ACCESS_TOKEN` empty and do not
+seed the demo accounts.
 
 ### Local voice function
 
@@ -272,6 +288,7 @@ export SMTP_HOST= SMTP_USER= SMTP_PASSWORD=
 export FEDAPAY_SECRET_KEY= FEDAPAY_PUBLIC_KEY= FEDAPAY_WEBHOOK_SECRET=
 export LANGUES229_API_URL= LANGUES229_API_KEY= LANGUES229_HF_TOKEN=
 export DATABASE_URL="postgresql://classeo:classeo@localhost:55432/classeo"
+export DEMO_ACCESS_TOKEN="$(openssl rand -hex 32)"   # the secret demo page journey
 npm run db:reset      # wipes and reseeds this database
 npm run build
 npm run test:e2e      # starts scripts/start-e2e.sh on E2E_PORT (3000)
@@ -282,7 +299,10 @@ with or without the voice function (`KORA_TTS_URL`). `E2E_BASE_URL` targets
 a server that is already running instead; `E2E_HOSTNAME` sets the address
 the test server listens on (127.0.0.1), `E2E_PASSWORD` the demo password if
 it was changed, and `E2E_SCREENSHOTS` or `E2E_SHOTS_DIR` a folder for the
-screenshots some journeys take.
+screenshots some journeys take. The server runs without `DEMO_MODE`, as
+production does: the public sign in page then shows no demo panel, and the
+secret page journey reads the same `DEMO_ACCESS_TOKEN` as the server (it is
+skipped when the variable is empty).
 
 - **CI** (`.github/workflows/ci.yml`, on pushes to `main` and on pull
   requests): typecheck, lint, unit tests, migrations, build and
