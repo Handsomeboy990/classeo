@@ -18,6 +18,7 @@ import { nextFreeUsername, usernameBase } from "../src/lib/auth/username";
 import { DEMO_ACCOUNTS, DEMO_PASSWORD } from "../src/lib/demo/accounts";
 import { seedExtras } from "./seed-extras";
 import { generalAverage, rankEntries, round2 } from "../src/lib/domain/grades";
+import { defaultPeriodicity } from "../src/lib/domain/periodicity";
 import { describeConflict, findConflicts, slotTimeError, type PlannedSlot } from "../src/lib/domain/timetable";
 
 const db = new PrismaClient({ adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL! }) });
@@ -123,6 +124,25 @@ const SECONDARY_SUBJECTS = [
   { code: "PCT", name: "Physique, chimie et technologie", coef: 2 },
   { code: "EPS", name: "Éducation physique et sportive", coef: 1 },
 ];
+// Official coefficients (MESTFP order n° 029 of 2024, annex 2): every
+// subject at 1 in 6e and 5e; the national grid in 4e and 3e (Mathématiques
+// 3, PCT 2, SVT 2, Français 2 for reading and 2 for writing, Anglais 2,
+// Histoire-Géographie 2, EPS 1); a grid per series in the second cycle. The
+// seed has a single Français subject, given the reading coefficient. The
+// second cycle values other than Mathématiques 6 and PCT 5 in série C come
+// from common practice and are to be checked against the annex.
+const SERIES_COEFFICIENTS: Record<string, Record<string, number>> = {
+  C: { FR: 2, MATH: 6, ANG: 2, HG: 2, SVT: 2, PCT: 5, EPS: 1 },
+  D: { FR: 2, MATH: 4, ANG: 2, HG: 2, SVT: 5, PCT: 4, EPS: 1 },
+};
+const FIRST_CYCLE_UPPER: Record<string, number> = { FR: 2, MATH: 3, ANG: 2, HG: 2, SVT: 2, PCT: 2, EPS: 1 };
+function coefficientOf(levelCode: string, stream: string, subject: { code: string; coef: number }) {
+  if (levelCode === "6E" || levelCode === "5E") return 1;
+  if (levelCode === "4E" || levelCode === "3E") return FIRST_CYCLE_UPPER[subject.code] ?? 1;
+  if (levelCode === "2NDE" || levelCode === "1ERE" || levelCode === "TLE") return SERIES_COEFFICIENTS[stream]?.[subject.code] ?? 1;
+  return subject.coef;
+}
+
 const PRIMARY_SUBJECTS = [
   { code: "P-FR", name: "Français", coef: 3 },
   { code: "P-MATH", name: "Mathématiques", coef: 3 },
@@ -201,29 +221,59 @@ async function main() {
   const communeByName = new Map(communes.map((c) => [c.name, c]));
 
   // Calendar -----------------------------------------------------------------
+  // The national calendars of the interministerial orders of 19 June 2025
+  // and 28 July 2026: three terms for the holidays, no break before
+  // Christmas, a pause in February. Schools graded by semester use the two
+  // semesters, split at that February pause.
   const prevYear = await db.academicYear.create({
-    data: { label: "2025-2026", startDate: new Date("2025-09-22"), endDate: new Date("2026-07-03"), isActive: false },
+    data: { label: "2025-2026", startDate: new Date("2025-09-15"), endDate: new Date("2026-06-26"), isActive: false },
   });
   const year = await db.academicYear.create({
-    data: { label: "2026-2027", startDate: new Date("2026-09-14"), endDate: new Date("2027-07-02"), isActive: true },
+    data: { label: "2026-2027", startDate: new Date("2026-09-14"), endDate: new Date("2027-06-25"), isActive: true },
   });
-  const prevPeriods = await Promise.all(
+  const createPeriods = (yearId: string, closed: boolean, list: [string, string, string][], periodicity: "TRIMESTER" | "SEMESTER") =>
+    Promise.all(
+      list.map(([name, s, e], i) =>
+        db.schoolPeriod.create({ data: { academicYearId: yearId, name, periodicity, order: i + 1, startDate: new Date(s), endDate: new Date(e), isClosed: closed } }),
+      ),
+    );
+  const prevPeriods = await createPeriods(
+    prevYear.id,
+    true,
     [
-      ["Trimestre 1", "2025-09-22", "2025-12-19"],
-      ["Trimestre 2", "2026-01-05", "2026-03-27"],
-      ["Trimestre 3", "2026-04-13", "2026-07-03"],
-    ].map(([name, s, e], i) =>
-      db.schoolPeriod.create({ data: { academicYearId: prevYear.id, name: name!, order: i + 1, startDate: new Date(s!), endDate: new Date(e!), isClosed: true } }),
-    ),
+      ["Trimestre 1", "2025-09-15", "2025-12-19"],
+      ["Trimestre 2", "2026-01-05", "2026-04-01"],
+      ["Trimestre 3", "2026-04-16", "2026-06-26"],
+    ],
+    "TRIMESTER",
   );
-  const periods = await Promise.all(
+  const prevSemesters = await createPeriods(
+    prevYear.id,
+    true,
+    [
+      ["Semestre 1", "2025-09-15", "2026-02-19"],
+      ["Semestre 2", "2026-03-02", "2026-06-26"],
+    ],
+    "SEMESTER",
+  );
+  const periods = await createPeriods(
+    year.id,
+    false,
     [
       ["Trimestre 1", "2026-09-14", "2026-12-18"],
-      ["Trimestre 2", "2027-01-04", "2027-03-26"],
-      ["Trimestre 3", "2027-04-12", "2027-07-02"],
-    ].map(([name, s, e], i) =>
-      db.schoolPeriod.create({ data: { academicYearId: year.id, name: name!, order: i + 1, startDate: new Date(s!), endDate: new Date(e!) } }),
-    ),
+      ["Trimestre 2", "2027-01-04", "2027-03-24"],
+      ["Trimestre 3", "2027-04-08", "2027-06-25"],
+    ],
+    "TRIMESTER",
+  );
+  const semesters = await createPeriods(
+    year.id,
+    false,
+    [
+      ["Semestre 1", "2026-09-14", "2027-02-18"],
+      ["Semestre 2", "2027-03-01", "2027-06-25"],
+    ],
+    "SEMESTER",
   );
 
   await db.academicLevel.createMany({ data: LEVELS.map((l) => ({ ...l, id: id() })) });
@@ -314,18 +364,55 @@ async function main() {
     secSchools.forEach((streams, i) => pushSchool(commune, "SECONDARY", named("CEG", secSchools.length, i), specsFor(SEC_LEVELS, streams)));
     primSchools.forEach((streams, i) => pushSchool(commune, "PRIMARY", named("EPP", primSchools.length, i), specsFor(PRIM_LEVELS, streams)));
   }
+  // Sectors are drawn in the same order as always, so every later draw (and
+  // the names the journeys rely on) stays the same. CEG and EPP are public
+  // names: a private, confessional or community school gets a name of its
+  // kind, chosen without drawing.
+  // Each school draws its sector then its phone number, in that order.
+  const drawn = schools.map((s) => ({ sector: s.detailed ? ("PUBLIC" as const) : pick(["PUBLIC", "PUBLIC", "PUBLIC", "PRIVATE", "CONFESSIONAL", "COMMUNITY"] as const), phone: phone() }));
+  const sectors = drawn.map((d) => d.sector);
+  const denominations = new Map<string, "CATHOLIC" | "PROTESTANT" | "ISLAMIC" | "FRANCO_ARABIC">();
+  let privateSeq = 0;
+  let bilingualDone = false;
+  const bilingual = new Set<string>();
+  schools.forEach((sc, i) => {
+    const sector = sectors[i]!;
+    if (sector === "PUBLIC") return;
+    const n = privateSeq++;
+    const place = sc.name.replace(/^(CEG|EPP) /, "");
+    const of = /^[AEIOUYÀÂÉÈÊÎÏÔÛ]/i.test(place) ? `d'${place}` : `de ${place}`;
+    const sec = sc.cycle === "SECONDARY";
+    if (sector === "PRIVATE") {
+      if (sec && !bilingualDone && sc.communeName === "Cotonou") {
+        bilingualDone = true;
+        bilingual.add(sc.id);
+        sc.name = `Complexe scolaire bilingue Les Lauriers ${of}`;
+      } else sc.name = `${(sec ? ["Collège privé La Réussite", "Complexe scolaire Les Lauriers", "Collège privé L'Excellence", "Complexe scolaire La Source"] : ["École primaire privée Les Bambins", "École privée La Colombe", "École primaire privée Les Petits Génies", "École privée Le Savoir"])[n % 4]} ${of}`;
+    } else if (sector === "CONFESSIONAL") {
+      const faith = (["CATHOLIC", "PROTESTANT", "ISLAMIC", "FRANCO_ARABIC"] as const)[n % 4];
+      denominations.set(sc.id, faith);
+      const names = sec
+        ? { CATHOLIC: "Collège catholique Notre-Dame", PROTESTANT: "Collège protestant La Grâce", ISLAMIC: "Complexe scolaire islamique Al-Hidaya", FRANCO_ARABIC: "Collège franco-arabe An-Nour" }
+        : { CATHOLIC: "École catholique Sainte-Thérèse", PROTESTANT: "École protestante Béthel", ISLAMIC: "École islamique Al-Falah", FRANCO_ARABIC: "École franco-arabe Al-Amine" };
+      sc.name = `${names[faith]} ${of}`;
+    } else sc.name = `${sec ? "Collège communautaire" : "École communautaire"} ${of}`;
+  });
   await db.school.createMany({
-    data: schools.map((s) => ({
+    data: schools.map((s, i) => ({
       id: s.id,
       code: s.code,
       name: s.name,
-      sector: s.detailed ? "PUBLIC" : pick(["PUBLIC", "PUBLIC", "PUBLIC", "PRIVATE", "CONFESSIONAL", "COMMUNITY"] as const),
+      sector: sectors[i]!,
       cycle: s.cycle,
+      periodicity: defaultPeriodicity({ sector: sectors[i]!, cycle: s.cycle }),
+      denomination: denominations.get(s.id) ?? null,
+      isBilingual: bilingual.has(s.id),
       communeId: s.communeId,
-      phone: phone(),
+      phone: drawn[i]!.phone,
       email: `${slug(s.name)}@ecoles.classeo.bj`,
     })),
   });
+  const periodicityOf = new Map(schools.map((s, i) => [s.id, defaultPeriodicity({ sector: sectors[i]!, cycle: s.cycle })]));
   const ceg = schools[0]!;
   const epp = schools[1]!;
 
@@ -345,21 +432,42 @@ async function main() {
   const ministerId = addUser({ username: "adjoa.houngbedji", email: "ministre@classeo.bj", firstName: "Adjoa", lastName: "Houngbédji", gender: "F", roleId: roleIds.NATIONAL_ADMIN!, scopeLevel: "NATIONAL" });
   addUser({ username: "rodrigue.kpadonou", email: "analyste@classeo.bj", firstName: "Rodrigue", lastName: "Kpadonou", gender: "M", roleId: roleIds.NATIONAL_ANALYST!, scopeLevel: "NATIONAL" });
   addUser({ username: "estelle.amoussou", email: "partenaire@classeo.bj", firstName: "Estelle", lastName: "Amoussou", gender: "F", roleId: roleIds.PARTNER!, scopeLevel: "NATIONAL" });
+  // Two directions per department: the DDEMP (nursery and primary schools)
+  // and the DDESTFP (secondary schools). The Atlantique directors are
+  // demonstration accounts: Aristide Gbaguidi at the DDESTFP, which
+  // supervises CEG Godomey, and Clarisse Akpovi at the DDEMP. Elsewhere the
+  // DDEMP director is drawn here and the DDESTFP one at the end, so the
+  // draws of the other people do not move.
   const ddempIds: Record<string, string> = {};
+  const ddestfpIds: Record<string, string> = {};
   for (const dep of TERRITORY) {
-    // The Atlantique director is a demonstration account, named once for all.
-    const p = dep.name === "Atlantique" ? ({ firstName: "Aristide", lastName: "Gbaguidi", gender: "M" } as const) : person();
-    ddempIds[dep.name] = addUser({
-      username: dep.name === "Atlantique" ? "aristide.gbaguidi" : undefined,
-      email: `ddemp.${slug(dep.name)}@classeo.bj`,
+    const atlantique = dep.name === "Atlantique";
+    const p = atlantique ? ({ firstName: "Aristide", lastName: "Gbaguidi", gender: "M" } as const) : person();
+    const uid = addUser({
+      username: atlantique ? "aristide.gbaguidi" : undefined,
+      email: `${atlantique ? "ddestfp" : "ddemp"}.${slug(dep.name)}@classeo.bj`,
       firstName: p.firstName,
       lastName: p.lastName,
       gender: p.gender,
       roleId: roleIds.DEPARTMENT_DIRECTOR!,
       scopeLevel: "DEPARTMENT",
+      chain: atlantique ? "SECONDARY" : "PRIMARY",
       departmentId: departments[dep.name],
     });
+    if (atlantique) ddestfpIds[dep.name] = uid;
+    else ddempIds[dep.name] = uid;
   }
+  ddempIds["Atlantique"] = addUser({
+    username: "clarisse.akpovi",
+    email: "ddemp.atlantique@classeo.bj",
+    firstName: "Clarisse",
+    lastName: "Akpovi",
+    gender: "F",
+    roleId: roleIds.DEPARTMENT_DIRECTOR!,
+    scopeLevel: "DEPARTMENT",
+    chain: "PRIMARY",
+    departmentId: departments["Atlantique"],
+  });
   for (const name of ["Abomey-Calavi", "Cotonou", "Parakou"]) {
     const p = name === "Abomey-Calavi" ? ({ firstName: "Bénédicta", lastName: "Zannou", gender: "F" } as const) : person();
     addUser({
@@ -483,7 +591,7 @@ async function main() {
           classroomId,
           subjectId: subjects.get(s.code)!,
           teacherId: teacherOf.get(`${c}:${s.code}`)!,
-          coefficient: s.coef,
+          coefficient: coefficientOf(levelCode, letter, s),
           weeklyHours: isSec ? SECONDARY_HOURS[s.code]! : PRIMARY_HOURS[s.code]!,
           schoolId: school.id,
           subjectCode: s.code,
@@ -610,7 +718,10 @@ async function main() {
   await chunked(guardians, 2000, (b) => db.guardian.createMany({ data: b }));
   await chunked(links, 2000, (b) => db.studentGuardian.createMany({ data: b }));
 
-  // Last year's published report cards, three terms, every school -----------
+  // Last year's published report cards, every school: three terms, or two
+  // semesters where the school is graded by semester. The subject averages
+  // are drawn per term in every case (the same draws as always); a first
+  // semester takes the mean of the first two terms, the second the third.
   const reportCards: Prisma.ReportCardCreateManyInput[] = [];
   const teacherNameOf = (teacherId: string | undefined) => {
     const t = teacherId ? teacherById.get(teacherId) : undefined;
@@ -618,18 +729,35 @@ async function main() {
   };
   const byPrevClass = new Map<string, string[]>();
   for (const [sid, m] of studentMeta) if (m.prevClassroomId) byPrevClass.set(m.prevClassroomId, [...(byPrevClass.get(m.prevClassroomId) ?? []), sid]);
-  const classSchool = new Map(classrooms.map((c) => [c.id!, c.schoolId]));
+  const classById = new Map(classrooms.map((c) => [c.id!, c]));
+  const levelCodeById = new Map([...levels.values()].map((l) => [l.id, l.code]));
   const schoolCycle = new Map(schools.map((s) => [s.id, s.cycle]));
   for (const [prevClassId, sids] of byPrevClass) {
-    const subjectList = schoolCycle.get(classSchool.get(prevClassId)!) === "SECONDARY" ? SECONDARY_SUBJECTS : PRIMARY_SUBJECTS;
+    const klass = classById.get(prevClassId)!;
+    const subjectList = schoolCycle.get(klass.schoolId) === "SECONDARY" ? SECONDARY_SUBJECTS : PRIMARY_SUBJECTS;
+    const levelCode = levelCodeById.get(klass.levelId)!;
+    const stream = klass.name.slice(-1);
     const taught = prevClassTeachers.get(prevClassId);
-    prevPeriods.forEach((period, pIndex) => {
-      const rows = sids.map((sid) => {
+    const drawnTerms = prevPeriods.map((_, pIndex) =>
+      sids.map((sid) => {
         const m = studentMeta.get(sid)!;
-        const lines = subjectList.map((s) => ({
+        return subjectList.map(() => round2(clamp(normal(m.ability + pIndex * 0.25, 2.2), 1, 19.5)));
+      }),
+    );
+    const semesterSchool = periodicityOf.get(klass.schoolId) === "SEMESTER";
+    const published = semesterSchool
+      ? [
+          { period: prevSemesters[0]!, averages: drawnTerms[0]!.map((row, k) => row.map((v, j) => round2((v + drawnTerms[1]![k]![j]!) / 2))) },
+          { period: prevSemesters[1]!, averages: drawnTerms[2]! },
+        ]
+      : prevPeriods.map((period, pIndex) => ({ period, averages: drawnTerms[pIndex]! }));
+    for (const { period, averages } of published) {
+      const rows = sids.map((sid, k) => {
+        const m = studentMeta.get(sid)!;
+        const lines = subjectList.map((s, j) => ({
           subject: s.name,
-          coefficient: s.coef,
-          average: round2(clamp(normal(m.ability + pIndex * 0.25, 2.2), 1, 19.5)),
+          coefficient: coefficientOf(levelCode, stream, s),
+          average: averages[k]![j]!,
           rank: null as number | null,
           teacher: teacherNameOf(taught?.get(s.code)),
         }));
@@ -654,23 +782,25 @@ async function main() {
           publishedById: ministerId,
         });
       }
-    });
+    }
   }
   await chunked(reportCards, 2500, (b) => db.reportCard.createMany({ data: b }));
   console.timeLog("seed", `report cards ${reportCards.length}`);
 
-  // Current term grade sheets for the two detailed schools -------------------
-  // Interrogation 1 and the devoir are entered, the rest is left for the
-  // live demonstration.
+  // Current period grade sheets for the two detailed schools ----------------
+  // National formula: two interrogations écrites and two devoirs surveillés.
+  // The first interrogation and the first devoir are entered, the rest is
+  // left for the live demonstration. CEG Godomey is graded by semester, EPP
+  // Godomey Centre by term.
   const detailedAssignments = assignments.filter((a) => a.schoolId === ceg.id || a.schoolId === epp.id);
-  const t1 = periods[0]!;
+  const currentPeriodOf = (schoolId: string) => (periodicityOf.get(schoolId) === "SEMESTER" ? semesters[0]! : periods[0]!);
   const sheets: Prisma.GradeSheetCreateManyInput[] = [];
   const grades: Prisma.GradeCreateManyInput[] = [];
   const studentsByClass = new Map<string, string[]>();
   for (const [sid, m] of studentMeta) studentsByClass.set(m.classroomId, [...(studentsByClass.get(m.classroomId) ?? []), sid]);
   for (const a of detailedAssignments) {
     const sheetId = id();
-    sheets.push({ id: sheetId, assignmentId: a.id!, periodId: t1.id, formula: "WEIGHTED_STANDARD", interrogationCount: 2, devoirCount: 1, compositionCount: 1 });
+    sheets.push({ id: sheetId, assignmentId: a.id!, periodId: currentPeriodOf(a.schoolId).id, formula: "OFFICIAL_2024", interrogationCount: 2, devoirCount: 2, compositionCount: 0 });
     const graderId = teacherUserIds.get(a.teacherId!) ?? directorId;
     for (const sid of studentsByClass.get(a.classroomId) ?? []) {
       const m = studentMeta.get(sid)!;
@@ -743,13 +873,13 @@ async function main() {
       {
         type: "ANNOUNCEMENT",
         title: "Conférence pédagogique départementale",
-        easyRead: "Les enseignants de l'Atlantique se réunissent le samedi 3 octobre à Allada.",
-        body: `La direction départementale de l'Atlantique convie tous les enseignants du premier cycle à la conférence pédagogique de rentrée, le samedi 3 octobre 2026 à 9 h, ${alladaVenue}.`,
+        easyRead: "Les professeurs des collèges de l'Atlantique se réunissent le samedi 3 octobre à Allada.",
+        body: `La direction départementale des enseignements secondaire, technique et de la formation professionnelle de l'Atlantique convie les professeurs du premier cycle des collèges publics et privés à la conférence pédagogique de rentrée, le samedi 3 octobre 2026 à 9 h, ${alladaVenue}.`,
         audience: "TEACHERS",
         status: "PUBLISHED",
         publishedAt: new Date("2026-09-20T08:00:00Z"),
         departmentId: departments["Atlantique"],
-        authorId: ddempIds["Atlantique"]!,
+        authorId: ddestfpIds["Atlantique"]!,
       },
       {
         type: "EVENT",
@@ -780,7 +910,7 @@ async function main() {
       },
       {
         type: "ANNOUNCEMENT",
-        title: "Projet de calendrier des compositions du premier trimestre",
+        title: "Projet de calendrier des devoirs surveillés du premier semestre",
         body: "Brouillon en cours de validation par le conseil des professeurs.",
         audience: "STAFF",
         status: "DRAFT",
@@ -835,22 +965,24 @@ async function main() {
   );
 
   // Figures quoted in the messages come from the seeded data itself.
+  // The DDESTFP answers for the secondary schools of the department.
   const atlanticSchoolIds = new Set(schools.filter((s) => communeByName.get(s.communeName)!.departmentName === "Atlantique").map((s) => s.id));
-  const atlanticPupils = enrollments.filter((e) => e.academicYearId === year.id && atlanticSchoolIds.has(e.schoolId)).length;
+  const atlanticColleges = new Set(schools.filter((s) => atlanticSchoolIds.has(s.id) && s.cycle === "SECONDARY").map((s) => s.id));
+  const atlanticPupils = enrollments.filter((e) => e.academicYearId === year.id && atlanticColleges.has(e.schoolId)).length;
   const genderOf = new Map(students.map((s) => [s.id!, s.gender]));
-  const atlanticGirls = enrollments.filter((e) => e.academicYearId === year.id && atlanticSchoolIds.has(e.schoolId) && genderOf.get(e.studentId) === "F").length;
+  const atlanticGirls = enrollments.filter((e) => e.academicYearId === year.id && atlanticColleges.has(e.schoolId) && genderOf.get(e.studentId) === "F").length;
   const fr = (n: number) => new Intl.NumberFormat("fr-FR").format(n);
   await conversation(
     "Statistiques de rentrée de l'Atlantique",
     [
       {
         from: ministerId,
-        body: "Bonjour Monsieur le Directeur départemental. Pouvez-vous me confirmer les effectifs de rentrée de l'Atlantique avant la réunion de cabinet de lundi ? Je souhaite aussi savoir si toutes les écoles ont fait l'appel cette semaine.",
+        body: "Bonjour Monsieur le Directeur départemental. Pouvez-vous me confirmer les effectifs de rentrée des collèges et lycées de l'Atlantique avant la réunion de cabinet de lundi ? Je souhaite aussi savoir si tous les établissements ont fait l'appel cette semaine.",
         at: at("2026-09-22T09:30:00Z"),
       },
       {
-        from: ddempIds["Atlantique"]!,
-        body: `Bonjour Madame la Ministre. À ce jour, ${fr(atlanticSchoolIds.size)} établissements du département ont saisi leurs inscriptions, soit ${fr(atlanticPupils)} élèves, dont ${fr(atlanticGirls)} filles. L'appel est fait tous les jours dans les établissements suivis ; je vous transmets le détail par commune dans Classéo.`,
+        from: ddestfpIds["Atlantique"]!,
+        body: `Bonjour Madame la Ministre. À ce jour, ${fr(atlanticColleges.size)} établissements secondaires du département ont saisi leurs inscriptions, soit ${fr(atlanticPupils)} élèves, dont ${fr(atlanticGirls)} filles. L'appel est fait tous les jours dans les établissements suivis ; je vous transmets le détail par commune dans Classéo.`,
         at: at("2026-09-22T14:05:00Z"),
       },
       {
@@ -859,13 +991,13 @@ async function main() {
         at: at("2026-09-23T08:15:00Z"),
       },
     ],
-    [ministerId, ddempIds["Atlantique"]!],
+    [ministerId, ddestfpIds["Atlantique"]!],
   );
   await conversation(
     "Demande d'enseignants de SVT au CEG Godomey",
     [
       {
-        from: ddempIds["Atlantique"]!,
+        from: ddestfpIds["Atlantique"]!,
         body: "Bonjour Monsieur le Directeur. J'ai bien reçu votre demande de deux enseignants de SVT. Pouvez-vous me préciser le nombre d'heures de SVT non assurées chaque semaine ?",
         at: at("2026-09-21T10:20:00Z"),
       },
@@ -875,12 +1007,12 @@ async function main() {
         at: at("2026-09-21T15:45:00Z"),
       },
       {
-        from: ddempIds["Atlantique"]!,
+        from: ddestfpIds["Atlantique"]!,
         body: "Merci pour ces précisions. La demande est à l'étude avec le service des affectations ; je vous tiens informé d'ici la fin du mois.",
         at: at("2026-09-23T11:00:00Z"),
       },
     ],
-    [ddempIds["Atlantique"]!, directorId],
+    [ddestfpIds["Atlantique"]!, directorId],
     [directorId],
   );
 
@@ -888,8 +1020,8 @@ async function main() {
     data: [
       ...absences.map((a) => ({ userId: parentUserId, kind: "absence", title: "Absence signalée", body: `Sènami était absente le ${longDay(a.date)} au matin.`, link: "/espace/suivi", createdAt: new Date(a.date.getTime() + 11 * 3600000) })),
       { userId: parentUserId, kind: "message", title: "Nouveau message", body: "Madame Issifou, professeure de mathématiques, vous a écrit.", link: `/espace/messages/${conv.id}`, createdAt: new Date(absenceDay.getTime() + 15 * 3600000 + 10 * 60000) },
-      { userId: parentUserId, kind: "report_card", title: "Bulletin disponible", body: "Le bulletin du 3e trimestre 2025-2026 de Sènami est disponible.", link: "/espace/suivi", readAt: now, createdAt: new Date("2026-07-10T09:00:00Z") },
-      { userId: directorId, kind: "request", title: "Demande en cours d'examen", body: "Votre demande d'enseignants de SVT est en cours d'examen par la direction départementale de l'Atlantique.", link: "/espace/demandes", createdAt: at("2026-09-21T10:25:00Z") },
+      { userId: parentUserId, kind: "report_card", title: "Bulletin disponible", body: "Le bulletin du second semestre 2025-2026 de Sènami est disponible.", link: "/espace/suivi", readAt: now, createdAt: new Date("2026-07-10T09:00:00Z") },
+      { userId: directorId, kind: "request", title: "Demande en cours d'examen", body: "Votre demande d'enseignants de SVT est en cours d'examen par la DDESTFP de l'Atlantique.", link: "/espace/demandes", createdAt: at("2026-09-21T10:25:00Z") },
     ],
   });
 
@@ -906,7 +1038,7 @@ async function main() {
       subject: "Réfection de la toiture de deux salles de classe",
       body: "La toiture des salles de 5e et de 4e a été arrachée par l'orage du 8 septembre. Les deux classes sont installées sous le préau en attendant les travaux. Devis joint.",
       createdAt: "2026-09-10T08:30:00Z",
-      decision: { status: "APPROVED", at: "2026-09-21T10:00:00Z", note: "Accordé. Les travaux sont programmés pendant les congés de Toussaint ; les classes restent sous le préau d'ici là." },
+      decision: { status: "APPROVED", at: "2026-09-21T10:00:00Z", note: "Accordé. Les travaux sont programmés pendant les congés de fin de premier trimestre, du 19 décembre au 3 janvier ; les classes restent sous le préau d'ici là." },
     },
     {
       school: primaries[0]!,
@@ -934,7 +1066,7 @@ async function main() {
       school: primaries[1] ?? primaries[0]!,
       type: "STAFFING",
       subject: "Remplacement d'un enseignant admis à la retraite",
-      body: "Le maître de la classe de CM2 part à la retraite le 31 octobre 2026. Nous demandons l'affectation d'un enseignant pour le remplacer dès la rentrée de Toussaint.",
+      body: "Le maître de la classe de CM2 part à la retraite le 31 octobre 2026. Nous demandons l'affectation d'un enseignant pour le remplacer dès le lundi 2 novembre.",
       createdAt: "2026-09-17T08:00:00Z",
     },
     {
@@ -957,6 +1089,39 @@ async function main() {
     headRows.push({ id: uid, passwordHash, username, email: `direction.${slug(r.school.name)}@ecoles.classeo.bj`, firstName: p.firstName, lastName: p.lastName, gender: p.gender, roleId: roleIds.SCHOOL_DIRECTOR!, scopeLevel: "SCHOOL", schoolId: r.school.id });
   }
   await db.user.createMany({ data: headRows });
+
+  // The DDESTFP directors of the other departments, named with their own
+  // generator after everyone else, so no earlier name or identifier moves.
+  let alt = 20260728;
+  const altPick = <T,>(list: readonly T[]) => {
+    alt = (Math.imul(alt, 1103515245) + 12345) >>> 0;
+    return list[alt % list.length]!;
+  };
+  const directionRows: Prisma.UserCreateManyInput[] = [];
+  for (const dep of TERRITORY) {
+    if (dep.name === "Atlantique") continue;
+    const gender = altPick(["F", "M"] as const);
+    const firstName = altPick(gender === "F" ? FIRST_F : FIRST_M);
+    const lastName = altPick(LAST);
+    const username = nextFreeUsername(usernameBase(firstName, lastName), [...takenUsernames]);
+    takenUsernames.add(username);
+    const uid = id();
+    ddestfpIds[dep.name] = uid;
+    directionRows.push({
+      id: uid,
+      passwordHash,
+      username,
+      email: `ddestfp.${slug(dep.name)}@classeo.bj`,
+      firstName,
+      lastName,
+      gender,
+      roleId: roleIds.DEPARTMENT_DIRECTOR!,
+      scopeLevel: "DEPARTMENT",
+      chain: "SECONDARY",
+      departmentId: departments[dep.name],
+    });
+  }
+  await db.user.createMany({ data: directionRows });
   await db.schoolRequest.createMany({
     data: [
       {
@@ -975,7 +1140,8 @@ async function main() {
         authorId: heads.get(r.school.id)!,
         createdAt: at(r.createdAt),
         status: r.decision?.status ?? ("PENDING" as const),
-        deciderId: r.decision ? ddempIds["Atlantique"] : null,
+        // Each request goes up its own chain.
+        deciderId: r.decision ? (r.school.cycle === "SECONDARY" ? ddestfpIds["Atlantique"] : ddempIds["Atlantique"]) : null,
         decidedAt: r.decision ? at(r.decision.at) : null,
         decisionNote: r.decision?.note ?? null,
       })),
@@ -984,8 +1150,12 @@ async function main() {
 
   // W2: fees, invoices and payments for CEG Godomey --------------------------
   const cegClassLevels = classrooms.filter((c) => c.schoolId === ceg.id && c.academicYearId === year.id);
-  const contribution = await db.feeType.create({ data: { schoolId: ceg.id, academicYearId: year.id, name: "Contribution scolaire", amount: 15000 } });
-  const ape = await db.feeType.create({ data: { schoolId: ceg.id, academicYearId: year.id, name: "Cotisation APE", amount: 5000 } });
+  // Contribution scolaire of 15 000 FCFA for the boys (the 2026 amount is to
+  // be confirmed); the girls of a public college are exempt from 2026-2027
+  // (order of 30 July 2026) and are billed the parents' association dues
+  // only. EPP Godomey Centre, a public primary school, bills nothing.
+  const contribution = await db.feeType.create({ data: { schoolId: ceg.id, academicYearId: year.id, name: "Contribution scolaire", kind: "SCHOOL_CONTRIBUTION", amount: 15000 } });
+  const ape = await db.feeType.create({ data: { schoolId: ceg.id, academicYearId: year.id, name: "Cotisation APE", kind: "APE_DUES", amount: 5000 } });
   await db.paymentPlan.create({
     data: {
       schoolId: ceg.id,
@@ -1018,9 +1188,11 @@ async function main() {
   for (const c of cegClassLevels) {
     for (const sid of studentsByClass.get(c.id!) ?? []) {
       const m = studentMeta.get(sid)!;
-      const total = contribution.amount + ape.amount;
+      const exempt = genderOf.get(sid) === "F";
+      const total = exempt ? ape.amount : contribution.amount + ape.amount;
+      // One draw per pupil either way, so the rest of the data stays the same.
       const r = rand();
-      const paid = r < 0.35 ? total : r < 0.7 ? 7500 + ape.amount : r < 0.85 ? ape.amount : 0;
+      const paid = exempt ? (r < 0.85 ? ape.amount : 0) : r < 0.35 ? total : r < 0.7 ? 7500 + ape.amount : r < 0.85 ? ape.amount : 0;
       const invoiceId = id();
       invoiceSeq++;
       invoices.push({
@@ -1032,19 +1204,24 @@ async function main() {
         paidAmount: paid,
         status: paid === 0 ? "PENDING" : paid >= total ? "PAID" : "PARTIALLY_PAID",
         issueDate: new Date("2026-09-14"),
-        dueDate: new Date("2027-04-16"),
+        dueDate: new Date(exempt ? "2026-10-09" : "2027-04-16"),
         // Generated in one batch on the first day, in number order.
         createdAt: new Date(Date.parse("2026-09-14T06:00:00Z") + invoiceSeq * 1000),
       });
-      invoiceItems.push(
-        { id: id(), invoiceId, feeTypeId: contribution.id, description: contribution.name, unitPrice: contribution.amount },
-        { id: id(), invoiceId, feeTypeId: ape.id, description: ape.name, unitPrice: ape.amount },
-      );
-      invoiceInstallments.push(
-        { id: id(), invoiceId, label: "Tranche 1 et APE", order: 1, amount: 7500 + ape.amount, paidAmount: Math.min(paid, 7500 + ape.amount), dueDate: new Date("2026-10-09"), status: paid >= 7500 + ape.amount ? "PAID" : paid > 0 ? "PARTIALLY_PAID" : "PENDING" },
-        { id: id(), invoiceId, label: "Tranche 2", order: 2, amount: 4500, paidAmount: Math.max(0, Math.min(4500, paid - 12500)), dueDate: new Date("2027-01-15"), status: paid >= 17000 ? "PAID" : "PENDING" },
-        { id: id(), invoiceId, label: "Tranche 3", order: 3, amount: 3000, paidAmount: Math.max(0, paid - 17000), dueDate: new Date("2027-04-16"), status: paid >= total ? "PAID" : "PENDING" },
-      );
+      if (exempt) {
+        invoiceItems.push({ id: id(), invoiceId, feeTypeId: ape.id, description: ape.name, unitPrice: ape.amount });
+        invoiceInstallments.push({ id: id(), invoiceId, label: "Cotisation APE", order: 1, amount: ape.amount, paidAmount: paid, dueDate: new Date("2026-10-09"), status: paid >= ape.amount ? "PAID" : "PENDING" });
+      } else {
+        invoiceItems.push(
+          { id: id(), invoiceId, feeTypeId: contribution.id, description: contribution.name, unitPrice: contribution.amount },
+          { id: id(), invoiceId, feeTypeId: ape.id, description: ape.name, unitPrice: ape.amount },
+        );
+        invoiceInstallments.push(
+          { id: id(), invoiceId, label: "Tranche 1 et APE", order: 1, amount: 7500 + ape.amount, paidAmount: Math.min(paid, 7500 + ape.amount), dueDate: new Date("2026-10-09"), status: paid >= 7500 + ape.amount ? "PAID" : paid > 0 ? "PARTIALLY_PAID" : "PENDING" },
+          { id: id(), invoiceId, label: "Tranche 2", order: 2, amount: 4500, paidAmount: Math.max(0, Math.min(4500, paid - 12500)), dueDate: new Date("2027-01-15"), status: paid >= 17000 ? "PAID" : "PENDING" },
+          { id: id(), invoiceId, label: "Tranche 3", order: 3, amount: 3000, paidAmount: Math.max(0, paid - 17000), dueDate: new Date("2027-04-16"), status: paid >= total ? "PAID" : "PENDING" },
+        );
+      }
       if (paid > 0) {
         const paidAt = paymentTime();
         payments.push({ id: id(), reference: "", invoiceId, amount: paid, method: pick(["CASH", "MOBILE_MONEY", "MOBILE_MONEY"] as const), paidAt, createdAt: paidAt, recordedById: accountantId });

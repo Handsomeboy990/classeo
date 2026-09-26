@@ -11,10 +11,12 @@ import type { SeedContext } from "./index";
 //
 // - CEG Godomey publishes two Mobile Money numbers and a bank account; the
 //   primary school EPP has none, so its parents are told to pay at school.
-// - Sènami's invoice: 7 500 FCFA paid at the counter, a Mobile Money
-//   transfer of 5 000 FCFA declared and confirmed (a real Payment through the
-//   waterfall), one declaration rejected (reference not found), two awaiting
-//   the accountant.
+// - Sènami's invoice: exempt from the contribution scolaire like every girl
+//   of a public college, she owes the 5 000 FCFA of the parents'
+//   association: 2 000 FCFA paid at the counter, a Mobile Money transfer of
+//   1 500 FCFA declared and confirmed (a real Payment through the waterfall),
+//   one declaration rejected (reference not found), two awaiting the
+//   accountant.
 // - The head of CEG Godomey, Florentin Agossou, has a drawn looking
 //   signature and a round stamp, generated here as transparent PNG images and
 //   marked as a demonstration.
@@ -261,26 +263,26 @@ export async function seedPaymentsAndSignatures(db: PrismaClient, ctx: SeedConte
     : null;
   if (!invoice) return;
 
-  // 7 500 FCFA paid at the counter on 16 September, whatever the general
+  // 2 000 FCFA paid at the counter on 16 September, whatever the general
   // seed drew for this invoice.
   const counterAt = DAY("2026-09-16T08:20:00Z");
   const [first, ...others] = invoice.payments;
   if (others.length) await db.payment.deleteMany({ where: { id: { in: others.map((p) => p.id) } } });
-  if (first) await db.payment.update({ where: { id: first.id }, data: { amount: 7500, method: "CASH", transactionId: null, paidAt: counterAt, createdAt: counterAt, recordedById: ctx.ids.accountant } });
+  if (first) await db.payment.update({ where: { id: first.id }, data: { amount: 2000, method: "CASH", transactionId: null, paidAt: counterAt, createdAt: counterAt, recordedById: ctx.ids.accountant } });
 
   // The confirmed transfer becomes a Payment with the next receipt number.
   const last = await db.payment.findFirst({ where: { reference: { startsWith: "PAY-2026-" } }, orderBy: { reference: "desc" }, select: { reference: true } });
   let next = (Number.parseInt(last?.reference.slice(9) ?? "0", 10) || 0) + 1;
   if (!first)
-    await db.payment.create({ data: { reference: `PAY-2026-${String(next++).padStart(5, "0")}`, invoiceId: invoice.id, amount: 7500, method: "CASH", paidAt: counterAt, createdAt: counterAt, recordedById: ctx.ids.accountant } });
+    await db.payment.create({ data: { reference: `PAY-2026-${String(next++).padStart(5, "0")}`, invoiceId: invoice.id, amount: 2000, method: "CASH", paidAt: counterAt, createdAt: counterAt, recordedById: ctx.ids.accountant } });
   const confirmedAt = DAY("2026-09-24T09:40:00Z");
   const confirmedPayment = await db.payment.create({
-    data: { reference: `PAY-2026-${String(next).padStart(5, "0")}`, invoiceId: invoice.id, amount: 5000, method: "MOBILE_MONEY", transactionId: "MP2609231402C41852", paidAt: DAY("2026-09-23T13:02:00Z"), createdAt: confirmedAt, recordedById: ctx.ids.accountant },
+    data: { reference: `PAY-2026-${String(next).padStart(5, "0")}`, invoiceId: invoice.id, amount: 1500, method: "MOBILE_MONEY", transactionId: "MP2609231402C41852", paidAt: DAY("2026-09-23T13:02:00Z"), createdAt: confirmedAt, recordedById: ctx.ids.accountant },
   });
 
   // Installments and invoice recomputed with the waterfall rule of the app.
   const today = DAY("2026-09-25T00:00:00Z");
-  const paid = 12_500;
+  const paid = 3_500;
   const allocation = distributePaid(invoice.installments, paid, today);
   for (const a of allocation) await db.invoiceInstallment.update({ where: { id: a.id }, data: { paidAmount: a.paidAmount, status: a.status } });
   const byId = new Map(allocation.map((a) => [a.id, a.paidAmount]));
@@ -300,7 +302,7 @@ export async function seedPaymentsAndSignatures(db: PrismaClient, ctx: SeedConte
       {
         invoiceId: invoice.id,
         accountId: mtn.id,
-        amount: 5000,
+        amount: 1500,
         method: "MOBILE_MONEY",
         payerPhone: "0196123456",
         transactionRef: "MP2609231402C41852",
@@ -314,7 +316,7 @@ export async function seedPaymentsAndSignatures(db: PrismaClient, ctx: SeedConte
       {
         invoiceId: invoice.id,
         accountId: moov.id,
-        amount: 3000,
+        amount: 1000,
         method: "MOBILE_MONEY",
         payerPhone: "0196123456",
         transactionRef: "MV2609211877",
@@ -328,7 +330,7 @@ export async function seedPaymentsAndSignatures(db: PrismaClient, ctx: SeedConte
       {
         invoiceId: invoice.id,
         accountId: mtn.id,
-        amount: 4500,
+        amount: 1000,
         method: "MOBILE_MONEY",
         payerPhone: "0196123456",
         transactionRef: "MP2609250815D77310",
@@ -339,7 +341,7 @@ export async function seedPaymentsAndSignatures(db: PrismaClient, ctx: SeedConte
       {
         invoiceId: invoice.id,
         accountId: moov.id,
-        amount: 1500,
+        amount: 500,
         method: "MOBILE_MONEY",
         payerPhone: "0196123456",
         transactionRef: "MV2609250902",

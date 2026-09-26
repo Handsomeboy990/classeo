@@ -9,6 +9,7 @@ export const PASSWORD = process.env.E2E_PASSWORD ?? DEMO_PASSWORD;
 export const ACCOUNTS = {
   ministre: "ministre@classeo.bj",
   analyste: "analyste@classeo.bj",
+  ddestfp: "ddestfp.atlantique@classeo.bj",
   ddemp: "ddemp.atlantique@classeo.bj",
   directeur: "directeur@classeo.bj",
   secretaire: "secretaire@classeo.bj",
