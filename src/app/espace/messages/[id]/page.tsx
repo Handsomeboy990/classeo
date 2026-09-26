@@ -9,6 +9,7 @@ import { AutoRefresh } from "@/features/messages/auto-refresh";
 import { Composer } from "@/features/messages/composer";
 import { getThread, markThreadRead } from "@/features/messages/queries";
 import { ThreadScroller } from "@/features/messages/thread-scroller";
+import { VoicePlayer } from "@/features/messages/voice-player";
 import { can, requirePermission } from "@/lib/auth/authorize";
 import { receipt } from "@/lib/domain/institutions";
 import { cn, formatDateTime } from "@/lib/utils";
@@ -81,9 +82,13 @@ export default async function ThreadPage({ params }: PageProps<"/espace/messages
                         <time dateTime={m.createdAt.toISOString()} className="text-xs text-muted">
                           {formatDateTime(m.createdAt)}
                         </time>
-                        <ReadAloud text={`${m.mine ? "Vous avez écrit" : `${signature} a écrit`} : ${m.body}`} compact label={`Écouter le message de ${sender}`} className="ml-auto size-10 shrink-0" />
+                        {!m.audio && <ReadAloud text={`${m.mine ? "Vous avez écrit" : `${signature} a écrit`} : ${m.body}`} compact label={`Écouter le message de ${sender}`} className="ml-auto size-10 shrink-0" />}
                       </header>
-                      <p className="mt-1 text-base whitespace-pre-line">{m.body}</p>
+                      {m.audio ? (
+                        <VoicePlayer src={m.audio.url} durationMs={m.audio.durationMs} label={`message vocal de ${sender}`} className="mt-2 w-64 max-w-full" />
+                      ) : (
+                        <p className="mt-1 text-base whitespace-pre-line">{m.body}</p>
+                      )}
                     </article>
                   </li>
                 );

@@ -11,11 +11,12 @@ import { Textarea } from "@/components/ui/input";
 import { discardEntry, newClientId, queueEntry, useOfflineEntries } from "@/features/offline/client";
 import { draftsOf } from "@/features/offline/queue";
 import type { ActionState } from "@/lib/action";
-import { formatDateTime } from "@/lib/utils";
+import { cn, formatDateTime } from "@/lib/utils";
 
 import { FormRecovery } from "../contents/form-recovery";
 import { sendMessage } from "./actions";
 import { QUICK_MESSAGES } from "./templates";
+import { VoiceRecorder } from "./voice-recorder";
 
 const QUEUED = "Pas de réseau : message gardé sur cet appareil. Il part automatiquement au retour du réseau.";
 
@@ -46,6 +47,8 @@ async function sendOrKeep(prev: ActionState, formData: FormData): Promise<Action
 // keeps most of the screen. From lg the chips wrap.
 export function Composer({ conversationId, showQuick }: { conversationId: string; showQuick: boolean }) {
   const [text, setText] = useState("");
+  const [voice, setVoice] = useState(false);
+  const [voiceError, setVoiceError] = useState<string | null>(null);
   const entries = useOfflineEntries();
   const drafts = useMemo(() => draftsOf(entries, "message", conversationId), [entries, conversationId]);
 
@@ -133,11 +136,17 @@ export function Composer({ conversationId, showQuick }: { conversationId: string
       <ActionForm action={sendOrKeep} successToast={false} onSuccess={() => setText("")} className="flex flex-col gap-2 lg:gap-3">
         <FormRecovery />
         <input type="hidden" name="conversationId" value={conversationId} />
-        {/* Phone: the field and a round send button on one row, the label
-            kept for screen readers only. From lg: labelled field, then the
-            send button with its shortcut. */}
-        <div className="flex items-end gap-2 lg:block">
-          <FormField label="Votre message" name="body" className="min-w-0 flex-1 max-lg:[&>label]:sr-only">
+        {/* Phone: the field, the microphone and a round send button on one
+            row, the label kept for screen readers only. From lg: labelled
+            field and microphone, then the send button with its shortcut.
+            While a voice note is recorded or previewed it takes the row. */}
+        {voiceError && (
+          <p role="alert" className="rounded-control border border-danger/30 bg-danger-soft px-3 py-2 text-sm">
+            {voiceError}
+          </p>
+        )}
+        <div className="flex items-end gap-2">
+          <FormField label="Votre message" name="body" className={cn("min-w-0 flex-1 max-lg:[&>label]:sr-only", voice && "hidden")}>
             <Textarea
               value={text}
               onChange={(e) => setText(e.target.value)}
@@ -150,11 +159,12 @@ export function Composer({ conversationId, showQuick }: { conversationId: string
               }}
             />
           </FormField>
-          <SubmitButton pendingLabel="" size="icon" aria-label="Envoyer" title="Envoyer" className="size-12 shrink-0 rounded-full lg:hidden [&_svg]:size-5">
+          <VoiceRecorder conversationId={conversationId} onActiveChange={setVoice} onError={setVoiceError} />
+          <SubmitButton pendingLabel="" size="icon" aria-label="Envoyer" title="Envoyer" className={cn("size-12 shrink-0 rounded-full lg:hidden [&_svg]:size-5", voice && "hidden")}>
             <SendHorizonal aria-hidden />
           </SubmitButton>
         </div>
-        <div className="flex items-center justify-between gap-3 max-lg:hidden">
+        <div className={cn("flex items-center justify-between gap-3 max-lg:hidden", voice && "lg:hidden")}>
           <p className="text-xs text-muted">Ctrl + Entrée pour envoyer</p>
           <SubmitButton pendingLabel="Envoi…" size="lg">
             <SendHorizonal aria-hidden /> Envoyer
