@@ -10,6 +10,8 @@ import { QuotaError, synthesise, translateMany, UnavailableError, type ApiConfig
 import { normaliseWav } from "./audio";
 import { cacheKey } from "./cache-key";
 import { isTargetLanguage, VOICES, type TargetLanguage, type VoiceName } from "./languages";
+import { knownNameIndex, messageFragments } from "./personal-data";
+import { fillTemplate, freeTextPlan, interfaceDecision } from "./privacy";
 import { batches, normalise, segments, speechChunks } from "./text";
 import { realClock, TokenBucket } from "./token-bucket";
 
@@ -25,7 +27,10 @@ import { realClock, TokenBucket } from "./token-bucket";
 // - interface strings missing from the cache are queued and translated in
 //   the background, 100 per request; the page shows French meanwhile;
 // - a refusal or an outage blocks new calls for a while and the pages
-//   simply stay in French.
+//   simply stay in French;
+// - only interface text leaves the platform (privacy.ts): names and figures
+//   are replaced by slots before sending, contact details, identifiers and
+//   the messages between people are never sent, whatever the browser asks.
 
 const PER_MINUTE = 5;
 export const API_RATE_KEY = "langues229:api";
@@ -108,9 +113,10 @@ async function store(lang: TargetLanguage, done: Map<string, string>, sent: stri
   });
 }
 
-// Translates now, waiting up to maxWaitMs for the quota. Used when a person
-// asked for it (an announcement, a message, a text to listen to).
-export async function translateNow(lang: TargetLanguage, texts: string[], maxWaitMs = 20_000) {
+// Translates the given strings now, cache first, waiting up to maxWaitMs
+// for the quota. The strings are sent as they are: callers decide what may
+// leave the platform (translateNow, drain).
+async function translateKeys(lang: TargetLanguage, texts: string[], maxWaitMs: number) {
   const found = await lookup(lang, texts);
   const missing = [...new Set(texts.map(normalise).filter((t) => t && !found.has(t)))];
   const config = apiConfig();
@@ -126,8 +132,56 @@ export async function translateNow(lang: TargetLanguage, texts: string[], maxWai
   }
 }
 
-// Background queue for interface strings.
-export function enqueue(lang: TargetLanguage, texts: string[]) {
+// What a text to translate on request is:
+// - "published": an announcement read from the database (published content,
+//   translated as written);
+// - "fixed": a text of the source code (the public pages, lib/voice);
+// - free: any other text sent by the browser (a spoken summary, a page read
+//   aloud). Names and figures are sent as slots, a segment with contact
+//   details or an identifier stays French, and nothing of a message the
+//   user can read is sent.
+export type TextPolicy = { kind: "published" } | { kind: "fixed" } | { kind: "free"; userId: string | null; names?: readonly string[] };
+
+// Translates now, waiting up to maxWaitMs for the quota. Used when a person
+// asked for it (an announcement, a text to listen to). The map is keyed by
+// the normalised source; `personal` tells whether a free text held names,
+// contact details or identifiers, `refused` counts the segments kept French.
+export async function translateNow(lang: TargetLanguage, texts: string[], maxWaitMs = 20_000, policy: TextPolicy = { kind: "free", userId: null }) {
+  const sources = [...new Set(texts.map(normalise).filter(Boolean))];
+  if (policy.kind !== "free") return { ...(await translateKeys(lang, sources, maxWaitMs)), personal: false, refused: 0 };
+
+  const plan = freeTextPlan(sources, await knownNameIndex(), policy.names ?? []);
+  const fromMessages = policy.userId ? await messageFragments(policy.userId, sources) : new Set<string>();
+  const sendable = plan.segments.filter((s): s is Extract<typeof s, { key: string }> => "key" in s && !fromMessages.has(s.source));
+  const { translations: byKey, complete } = await translateKeys(lang, sendable.map((s) => s.key), maxWaitMs);
+  const translations = new Map<string, string>();
+  for (const s of sendable) {
+    const t = byKey.get(normalise(s.key));
+    if (t) translations.set(s.source, t === s.key ? s.source : fillTemplate(t, s.values));
+  }
+  const refused = sources.length - sendable.length;
+  return { translations, complete: complete && refused === 0, personal: plan.personal || fromMessages.size > 0, refused };
+}
+
+// Interface strings missing from the cache, queued for the background
+// translation once checked here (privacy.ts): each is queued as itself or
+// as its template, or not at all. Returns the number queued.
+export async function queueInterface(lang: TargetLanguage, texts: string[], context: { userId: string; names?: readonly string[] }) {
+  if (!texts.length) return 0;
+  const index = await knownNameIndex();
+  const decided = texts.map((t) => ({ text: t, decision: interfaceDecision(t, index, context.names ?? []) }));
+  const candidates = decided.flatMap((d) => (d.decision.ok ? [d.text, d.decision.send] : []));
+  const fromMessages = await messageFragments(context.userId, candidates);
+  const keys = decided.flatMap((d) => (d.decision.ok && !fromMessages.has(d.text) && !fromMessages.has(d.decision.send) ? [d.decision.send] : []));
+  const known = await lookup(lang, keys);
+  const todo = [...new Set(keys.filter((k) => !known.has(k)))];
+  enqueue(lang, todo);
+  return todo.length;
+}
+
+// Background queue for interface strings. Strings reach it through
+// queueInterface only; drain checks them again before sending.
+function enqueue(lang: TargetLanguage, texts: string[]) {
   const set = state.pending.get(lang) ?? new Set<string>();
   for (const t of texts) if (set.size < 2000) set.add(normalise(t));
   state.pending.set(lang, set);
@@ -149,9 +203,15 @@ export async function drain(maxBatches = 6) {
       const [lang, set] = [...state.pending.entries()].sort((a, b) => b[1].size - a[1].size)[0] ?? [];
       if (!lang || !set || set.size === 0) break;
       const batch = [...set].slice(0, 100);
-      // Strings cached meanwhile (by another instance) are not sent again.
+      // Strings cached meanwhile (by another instance) are not sent again,
+      // and every string is checked once more at the point it would leave.
       const known = await lookup(lang, batch);
-      const todo = batch.filter((t) => !known.has(t));
+      const index = await knownNameIndex();
+      const todo = batch.filter((t) => {
+        if (known.has(t)) return false;
+        const decision = interfaceDecision(t, index);
+        return decision.ok && decision.send === t;
+      });
       for (const t of batch) set.delete(t);
       if (!todo.length) continue;
       if (!(await takeToken(65_000))) {
@@ -174,10 +234,20 @@ export async function drain(maxBatches = 6) {
 
 // Speech in a local language for a French text: translated (cache first),
 // cut into pieces of 1000 characters, each piece synthesised once and kept
-// as a FileBlob. At most `maxParts` pieces per request.
-export async function speech(lang: TargetLanguage, voice: VoiceName, french: string, maxParts = 3) {
+// as a FileBlob. At most `maxParts` pieces per request. A free text that
+// holds names, contact details, identifiers or a message is refused
+// ("private"): the voice could not read it without sending it, and the
+// browser reads it in French on the device instead.
+export async function speech(lang: TargetLanguage, voice: VoiceName, french: string, maxParts = 3, policy: TextPolicy = { kind: "free", userId: null }) {
   const parts = segments(french);
-  const { translations, complete } = await translateNow(lang, parts, 25_000);
+  if (policy.kind === "free") {
+    // Decided before any call, so a refused text costs no quota.
+    const plan = freeTextPlan(parts, await knownNameIndex(), policy.names ?? []);
+    const fromMessages = policy.userId ? await messageFragments(policy.userId, parts) : new Set<string>();
+    if (plan.personal || fromMessages.size) return { ok: false as const, reason: "private" as const };
+  }
+  const { translations, complete, personal } = await translateNow(lang, parts, 25_000, policy);
+  if (personal) return { ok: false as const, reason: "private" as const };
   if (!complete) return { ok: false as const, reason: "translation" as const };
   const text = parts.map((p) => translations.get(p) ?? p).join(" ");
   const chunks = speechChunks(text).slice(0, maxParts);
