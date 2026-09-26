@@ -51,6 +51,20 @@ describe("names, fragments and sentences", () => {
     expect(lookupKeys("· publié le")).toContain("publié le");
   });
 
+  it("translates a list separated by middle dots part by part, values kept", () => {
+    const map = new Map([
+      ["épreuves du", "tɛnkpɔn"],
+      ["Direction départementale 2", "Azɔ̌xɔsa 2"],
+    ]);
+    const places = namePattern(["Atlantique"]);
+    const other = (t: string) => (t === "épreuves du 26 octobre 2026 au 27 octobre 2026" ? "tɛnkpɔn 26 zŏsùn 2026 – 27 zŏsùn 2026" : undefined);
+    expect(lookupText("3e · épreuves du 26 octobre 2026 au 27 octobre 2026 · Direction départementale Atlantique", map, other, places)).toBe(
+      "3e · tɛnkpɔn 26 zŏsùn 2026 – 27 zŏsùn 2026 · Azɔ̌xɔsa Atlantique",
+    );
+    expect(lookupText("3e · Une phrase inconnue", map, other, places)).toBeUndefined();
+    expect(lookupKeys("3e · Direction départementale Atlantique", () => null, places)).toContain("Direction départementale 2");
+  });
+
   it("translates a text sentence by sentence when every sentence is known", () => {
     const map = new Map([
       ["Aucune absence cette semaine.", "Afɔ ɖě ǎ."],

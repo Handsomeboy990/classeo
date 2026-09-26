@@ -132,6 +132,7 @@ export function lookupKeys(text: string, dateLabel: (text: string) => { label: s
   const dated = dateLabel(a?.core ?? text);
   if (dated) add(dated.label);
   for (const s of sentencesOf(text) ?? []) for (const k of lookupKeys(s, dateLabel, names)) keys.add(k);
+  for (const s of listOf(text) ?? []) for (const k of lookupKeys(s, dateLabel, names)) keys.add(k);
   return [...keys].filter((k) => isCandidate(k));
 }
 
@@ -162,7 +163,27 @@ export function lookupText(text: string, map: Map<string, string>, other: Lookup
     const done = sentences.map((s) => lookupText(s, map, other, names));
     if (done.every(Boolean)) return done.join(" ");
   }
+  // "3e · épreuves du 26 octobre au 27 octobre · Direction départementale
+  // Atlantique": each part on its own; a part that is a value (a class, a
+  // name, a figure) stays as it is.
+  const items = listOf(text);
+  if (items) {
+    const done = items.map((p) => lookupText(p, map, other, names) ?? (isValue(p, names) ? p : undefined));
+    if (done.every(Boolean)) return done.join(" · ");
+  }
   return undefined;
+}
+
+function listOf(text: string) {
+  const parts = text.split(" · ");
+  return parts.length > 1 && parts.every(Boolean) ? parts : null;
+}
+
+// A part made of values only: nothing left once figures, identifiers and
+// names are taken out.
+function isValue(text: string, names: RegExp | null) {
+  const template = numberTemplate(text, names);
+  return !isCandidate(text) || (!!template && !/\p{L}{2,}/u.test(template.key.replace(/\b\d+(?:e|er)?\b/g, "")));
 }
 
 // Whether a string missing from the cache may be sent to the translation
