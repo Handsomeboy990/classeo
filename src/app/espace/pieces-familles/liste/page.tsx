@@ -3,15 +3,14 @@ import type { Metadata } from "next";
 
 import { ConfirmButton } from "@/components/kit/confirm-button";
 import { FormDialog } from "@/components/kit/form-dialog";
-import { FormField } from "@/components/kit/form-field";
 import { InfoTip } from "@/components/kit/info-tip";
 import { PageHeader } from "@/components/kit/page-header";
 import { EmptyState } from "@/components/kit/states";
 import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Checkbox, Input, Select } from "@/components/ui/input";
 import { addRequiredPiece, archiveRequiredPiece } from "@/features/family-documents/actions";
+import { RequiredPieceFields } from "@/features/family-documents/components/forms";
 import { schoolPieces } from "@/features/family-documents/queries";
 import { requirePermission } from "@/lib/auth/authorize";
 
@@ -42,28 +41,7 @@ export default async function RequiredPiecesPage() {
               description="Les parents concernés la voient aussitôt dans leur liste."
               submitLabel="Ajouter"
             >
-              <FormField label="Nom de la pièce" name="label" required hint="Par exemple : Copie de l'acte de naissance, Deux photos d'identité.">
-                <Input maxLength={120} autoComplete="off" />
-              </FormField>
-              <FormField label="Précision" name="description" hint="Facultative. Par exemple : copie légalisée ou sécurisée.">
-                <Input maxLength={300} autoComplete="off" />
-              </FormField>
-              <FormField label="Pour quelles classes" name="levelId">
-                <Select defaultValue="">
-                  <option value="">Toutes les classes</option>
-                  {levels.map((l) => (
-                    <option key={l.id} value={l.id}>
-                      {l.name} seulement
-                    </option>
-                  ))}
-                </Select>
-              </FormField>
-              <Checkbox
-                name="isHealth"
-                value="on"
-                label="Pièce de santé"
-                description="Carnet de vaccination, livret de santé : seul le chef d'établissement l'ouvre, et le fichier est supprimé après vérification."
-              />
+              <RequiredPieceFields levels={levels} />
             </FormDialog>
           </>
         }

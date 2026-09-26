@@ -3,16 +3,14 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { FormDialog } from "@/components/kit/form-dialog";
-import { FormField } from "@/components/kit/form-field";
 import { InfoTip } from "@/components/kit/info-tip";
 import { PageHeader } from "@/components/kit/page-header";
 import { EmptyState } from "@/components/kit/states";
 import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input, Textarea } from "@/components/ui/input";
 import { submitFamilyDocument } from "@/features/family-documents/actions";
-import { PieceFileField } from "@/features/family-documents/components/forms";
+import { AbsenceFields, EnrollmentFields, MedicalFields } from "@/features/family-documents/components/forms";
 import { familyEnrollments, familyFile, markSeen, type FamilyDocRow } from "@/features/family-documents/queries";
 import { canSendAgain, STATUS_LABELS, STATUS_TONES } from "@/features/family-documents/rules";
 import { requirePermission } from "@/lib/auth/authorize";
@@ -149,10 +147,7 @@ export default async function FamilyPiecesPage({ searchParams }: PageProps<"/esp
                           <input type="hidden" name="kind" value="ENROLLMENT" />
                           <input type="hidden" name="studentId" value={current.student.id} />
                           <input type="hidden" name="requiredPieceId" value={p.id} />
-                          <PieceFileField />
-                          <FormField label="Un mot pour l'école" name="note" hint="Facultatif.">
-                            <Textarea rows={2} maxLength={500} />
-                          </FormField>
+                          <EnrollmentFields />
                         </FormDialog>
                       )}
                     </div>
@@ -202,10 +197,7 @@ export default async function FamilyPiecesPage({ searchParams }: PageProps<"/esp
                           <input type="hidden" name="kind" value="ABSENCE" />
                           <input type="hidden" name="studentId" value={current.student.id} />
                           <input type="hidden" name="attendanceId" value={a.id} />
-                          <FormField label="Motif de l'absence" name="note" hint="Par exemple : malade, rendez-vous à l'hôpital, décès dans la famille.">
-                            <Textarea rows={3} maxLength={500} />
-                          </FormField>
-                          <PieceFileField label="Justificatif" required={false} hint="Facultatif : un mot signé, une ordonnance, une convocation. PDF ou photo, 3 Mo au plus." />
+                          <AbsenceFields />
                         </FormDialog>
                       )}
                     </div>
@@ -238,16 +230,7 @@ export default async function FamilyPiecesPage({ searchParams }: PageProps<"/esp
             >
               <input type="hidden" name="kind" value="MEDICAL" />
               <input type="hidden" name="studentId" value={current.student.id} />
-              <div className="grid gap-4 sm:grid-cols-2">
-                <FormField label="Dispensé à partir du" name="startsOn" required>
-                  <Input type="date" defaultValue={today} />
-                </FormField>
-                <FormField label="Jusqu'au" name="endsOn" required hint="Jour compris.">
-                  <Input type="date" />
-                </FormField>
-              </div>
-              <PieceFileField label="Certificat médical" hint="PDF ou photo du certificat signé par le médecin, 3 Mo au plus." />
-              <p className="text-sm text-muted">N&apos;écrivez pas la maladie : le certificat suffit.</p>
+              <MedicalFields today={today} />
             </FormDialog>
           </CardHeader>
           <CardBody>

@@ -4,7 +4,7 @@ import { useState, type ChangeEvent } from "react";
 
 import { ActionForm, SubmitButton } from "@/components/kit/action-form";
 import { FormField } from "@/components/kit/form-field";
-import { Input, Textarea } from "@/components/ui/input";
+import { Checkbox, Input, Select, Textarea } from "@/components/ui/input";
 
 import { reviewFamilyDocument } from "../actions";
 
@@ -79,6 +79,79 @@ export function PieceFileField({ label = "Fichier", hint, required = true }: { l
         </p>
       )}
     </div>
+  );
+}
+
+// The fields of each dialog of the parent page, rendered on the client: a
+// field passed from a server page reaches FormField as a lazy reference
+// once React outlines it, and FormField clones its child.
+
+export function EnrollmentFields() {
+  return (
+    <>
+      <PieceFileField />
+      <FormField label="Un mot pour l'école" name="note" hint="Facultatif.">
+        <Textarea rows={2} maxLength={500} />
+      </FormField>
+    </>
+  );
+}
+
+export function AbsenceFields() {
+  return (
+    <>
+      <FormField label="Motif de l'absence" name="note" hint="Par exemple : malade, rendez-vous à l'hôpital, décès dans la famille.">
+        <Textarea rows={3} maxLength={500} />
+      </FormField>
+      <PieceFileField label="Justificatif" required={false} hint="Facultatif : un mot signé, une ordonnance, une convocation. PDF ou photo, 3 Mo au plus." />
+    </>
+  );
+}
+
+export function MedicalFields({ today }: { today: string }) {
+  return (
+    <>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <FormField label="Dispensé à partir du" name="startsOn" required>
+          <Input type="date" defaultValue={today} />
+        </FormField>
+        <FormField label="Jusqu'au" name="endsOn" required hint="Jour compris.">
+          <Input type="date" />
+        </FormField>
+      </div>
+      <PieceFileField label="Certificat médical" hint="PDF ou photo du certificat signé par le médecin, 3 Mo au plus." />
+      <p className="text-sm text-muted">N&apos;écrivez pas la maladie : le certificat suffit.</p>
+    </>
+  );
+}
+
+// A piece added to the list the school asks for.
+export function RequiredPieceFields({ levels }: { levels: { id: string; name: string }[] }) {
+  return (
+    <>
+      <FormField label="Nom de la pièce" name="label" required hint="Par exemple : Copie de l'acte de naissance, Deux photos d'identité.">
+        <Input maxLength={120} autoComplete="off" />
+      </FormField>
+      <FormField label="Précision" name="description" hint="Facultative. Par exemple : copie légalisée ou sécurisée.">
+        <Input maxLength={300} autoComplete="off" />
+      </FormField>
+      <FormField label="Pour quelles classes" name="levelId">
+        <Select defaultValue="">
+          <option value="">Toutes les classes</option>
+          {levels.map((l) => (
+            <option key={l.id} value={l.id}>
+              {l.name} seulement
+            </option>
+          ))}
+        </Select>
+      </FormField>
+      <Checkbox
+        name="isHealth"
+        value="on"
+        label="Pièce de santé"
+        description="Carnet de vaccination, livret de santé : seul le chef d'établissement l'ouvre, et le fichier est supprimé après vérification."
+      />
+    </>
   );
 }
 
