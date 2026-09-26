@@ -1,7 +1,6 @@
 # Classéo, architecture
 
-Status: approved on 2026-09-25. Challenge: EduTech Benin (Ministry of Digital
-Transformation). Deadline: Saturday evening, presented Monday.
+Status: approved on 2026-09-25.
 Functional reference: the scolarite project (Laravel 12, 604 commits), whose
 business rules are transposed, not reinvented.
 
@@ -17,7 +16,7 @@ Name: Classéo, from "classe": understood at once by every reader, including par
 
 ## 2. Requirements mapping
 
-| Challenge requirement | Answer in Classéo |
+| Requirement | Answer in Classéo |
 |---|---|
 | Functional and inclusive solution | Every journey works end to end on real seeded data. Inclusion is a layer on every page, section 8 |
 | Clear interface for limited connectivity | Server rendered pages, light payloads, installable PWA with offline reading, no heavy client libraries |
@@ -36,7 +35,7 @@ migration.
 |---|---|---|
 | W0 Foundations | Next.js app, design system, component library, schema, auth, RBAC engine, territorial model, seed, Docker, CI, preview deploy | today, first |
 | W1 Core | Territory and schools admin, classes, students and enrollments, teachers, parents; grades (grade sheets, formulas, lock, report cards, ranks); attendance; content management; messaging and notifications; ministry dashboards at every level; rights management UI; inclusion layer | today |
-| W2 | School fees, invoices, payment plans, payments with cascade distribution; full timetable (weekly slots, exceptions, events) | today if time allows, otherwise Monday roadmap slide |
+| W2 | School fees, invoices, payment plans, payments with cascade distribution; full timetable (weekly slots, exceptions, events) | today if time allows, otherwise roadmap |
 | W3 | Payroll, salary grids, budgets, expenses, financial reports | roadmap |
 | W4 | Mobile Money payments, SMS and USSD channel, voice interface in local languages (Fon, Yoruba, Dendi), national student identifier and interoperability | roadmap |
 
@@ -57,7 +56,7 @@ migration.
 On Docker, yes, but used for what it is good for. Vercel does not run our
 container, so Docker is not the production path. It gives three things at
 about 30 minutes of cost:
-- the jury can run the whole platform with one command without a Neon
+- anyone can run the whole platform with one command without a Neon
   account;
 - local development runs against a real PostgreSQL;
 - the application stays portable to a government data center, which matters
