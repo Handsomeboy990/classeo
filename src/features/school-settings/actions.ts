@@ -172,3 +172,31 @@ export const deletePaymentAccount = createAction({
     return "Compte de paiement supprimé.";
   },
 });
+
+// Compositions are a school practice, outside the national formula (order
+// n° 029 of 2024): the head decides whether the grade sheets offer them.
+// Sheets already created keep their formula.
+export const updateEvaluationOptions = createAction({
+  permission: "school:update",
+  schema: z.object({
+    allowsComposition: z
+      .string()
+      .optional()
+      .transform((v) => v === "on" || v === "true"),
+  }),
+  handler: async ({ allowsComposition }, user) => {
+    const school = await ownSchool(user);
+    await db.school.update({ where: { id: school.id }, data: { allowsComposition } });
+    await audit(user, {
+      action: "update",
+      resource: "school",
+      resourceId: school.id,
+      schoolId: school.id,
+      summary: allowsComposition ? `Compositions activées pour ${school.name}` : `Compositions désactivées pour ${school.name}`,
+    });
+    invalidateSchool(school.id);
+    return allowsComposition
+      ? "Les nouvelles fiches de notes pourront compter des compositions."
+      : "Les nouvelles fiches de notes suivront la formule officielle, sans composition.";
+  },
+});

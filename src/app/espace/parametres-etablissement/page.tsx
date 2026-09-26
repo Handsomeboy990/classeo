@@ -13,11 +13,12 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardBody, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox, Input } from "@/components/ui/input";
 import { SchoolStatusBanner } from "@/features/school-status/components/status-banner";
-import { deletePaymentAccount, savePaymentAccount, updateSchoolProfile } from "@/features/school-settings/actions";
+import { deletePaymentAccount, savePaymentAccount, updateEvaluationOptions, updateSchoolProfile } from "@/features/school-settings/actions";
 import { AccountFields } from "@/features/school-settings/components/account-fields";
 import { getOwnSchoolSettings } from "@/features/school-settings/queries";
 import { CHANNEL_LABELS, groupByFour, MAX_PAYMENT_ACCOUNTS } from "@/features/school-settings/rules";
 import { requirePermission } from "@/lib/auth/authorize";
+import { PERIODICITY_LABELS } from "@/lib/domain/periodicity";
 import { fileUrl } from "@/lib/files";
 
 export const metadata: Metadata = { title: "Paramètres de l'établissement" };
@@ -71,6 +72,32 @@ export default async function SchoolSettingsPage() {
             </div>
             <div className="flex justify-end">
               <SubmitButton disabled={locked}>Enregistrer l&apos;identité</SubmitButton>
+            </div>
+          </ActionForm>
+        </CardBody>
+      </Card>
+
+      <Card aria-labelledby="evaluation-title">
+        <CardHeader>
+          <div>
+            <CardTitle id="evaluation-title">Évaluation</CardTitle>
+            <CardDescription>
+              {PERIODICITY_LABELS[school.periodicity]}, fixés par le ministère. Moyenne par matière selon l&apos;arrêté n° 029 du 6 mai 2024 : moyenne des interrogations écrites et
+              devoirs surveillés, sans coefficient double.
+            </CardDescription>
+          </div>
+        </CardHeader>
+        <CardBody>
+          <ActionForm action={updateEvaluationOptions} className="flex flex-col gap-4">
+            <label className="flex items-start gap-3 text-sm">
+              <Checkbox name="allowsComposition" defaultChecked={school.allowsComposition} disabled={locked} />
+              <span>
+                <span className="font-semibold">Proposer les compositions dans les fiches de notes</span>
+                <span className="block text-muted">Usage d&apos;établissement, surtout dans le privé. Les fiches déjà créées gardent leur formule.</span>
+              </span>
+            </label>
+            <div className="flex justify-end">
+              <SubmitButton disabled={locked}>Enregistrer</SubmitButton>
             </div>
           </ActionForm>
         </CardBody>

@@ -20,6 +20,8 @@ import { getStatistics } from "@/features/statistics/queries";
 import { ScopeBreadcrumb } from "@/features/territory/components/scope-breadcrumb";
 import { requireSchoolInScope } from "@/features/territory/scope";
 import { can, requirePermission } from "@/lib/auth/authorize";
+import { supervisionOf } from "@/lib/domain/chains";
+import { defaultPeriodicity, PERIODICITY_LABELS } from "@/lib/domain/periodicity";
 import { fileUrl } from "@/lib/files";
 import { formatDate, formatNumber } from "@/lib/utils";
 
@@ -37,6 +39,7 @@ export default async function SchoolDetailPage({ params, searchParams }: PagePro
   const detail = await getSchoolDetail(user, id, year?.id ?? null);
   if (!detail) notFound();
   const { school, classes, staffUsers, teachers, director } = detail;
+  const supervision = supervisionOf({ cycle: school.cycle, departmentName: school.commune.department.name, communeName: school.commune.name });
   const yearLabel = year?.label ?? "";
   const { sort, direction } = sortParams(sp);
 
@@ -81,7 +84,9 @@ export default async function SchoolDetailPage({ params, searchParams }: PagePro
                   address: school.address,
                   phone: school.phone,
                   email: school.email,
+                  periodicity: school.periodicity === defaultPeriodicity(school) ? "" : school.periodicity,
                 }}
+                canSetPeriodicity={user.scope.level === "NATIONAL"}
               />
             )}
             {can(user, "school:lock") && ["NATIONAL", "DEPARTMENT", "COMMUNE"].includes(user.scope.level) && <SchoolStatusDialog id={school.id} name={school.name} status={school.status} />}
@@ -116,6 +121,15 @@ export default async function SchoolDetailPage({ params, searchParams }: PagePro
               <dd>{SECTOR_LABELS[school.sector]}</dd>
               <dt className="text-muted">Cycle</dt>
               <dd>{CYCLE_LABELS[school.cycle]}</dd>
+              <dt className="text-muted">Tutelle</dt>
+              <dd>
+                {[supervision.ministry.short, supervision.direction, supervision.circonscription].filter(Boolean).join(", ")}
+              </dd>
+              <dt className="text-muted">Évaluation</dt>
+              <dd>
+                {PERIODICITY_LABELS[school.periodicity]}
+                {school.periodicity !== defaultPeriodicity(school) && " (choix du ministère)"}
+              </dd>
               <dt className="text-muted">Adresse</dt>
               <dd>{school.address ?? "Non renseignée"}</dd>
               <dt className="text-muted">Téléphone</dt>

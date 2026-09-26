@@ -23,6 +23,8 @@ export async function getOwnSchoolSettings(user: User) {
       website: true,
       logoFileId: true,
       status: true,
+      periodicity: true,
+      allowsComposition: true,
       paymentAccounts: {
         orderBy: [{ isActive: "desc" }, { createdAt: "asc" }],
         select: { id: true, channel: true, provider: true, accountName: true, accountNumber: true, instructions: true, isActive: true },

@@ -10,6 +10,8 @@ import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 import { Input, Select } from "@/components/ui/input";
 
+import { PERIODICITY_LABELS } from "@/lib/domain/periodicity";
+
 import { createSchool, updateSchool } from "../actions";
 import { CYCLE_LABELS, CYCLES, SECTOR_LABELS, SECTORS } from "../labels";
 
@@ -24,11 +26,14 @@ export type SchoolFormValues = {
   address: string | null;
   phone: string | null;
   email: string | null;
+  periodicity: string;
 };
 
 // Create or edit a school. The communes offered are those of the user's
 // scope; the server checks the commune again.
-export function SchoolFormDialog({ communes, school }: { communes: CommuneOption[]; school?: SchoolFormValues }) {
+// canSetPeriodicity: the ministry, which alone may depart from the national
+// rule (semesters in public secondary schools, trimesters elsewhere).
+export function SchoolFormDialog({ communes, school, canSetPeriodicity = false }: { communes: CommuneOption[]; school?: SchoolFormValues; canSetPeriodicity?: boolean }) {
   const [open, setOpen] = useState(false);
   const router = useRouter();
   const editing = !!school;
@@ -79,6 +84,15 @@ export function SchoolFormDialog({ communes, school }: { communes: CommuneOption
               </Select>
             </FormField>
           </div>
+          {canSetPeriodicity && (
+            <FormField label="Périodicité d'évaluation" name="periodicity" hint="Par défaut : semestres pour le secondaire public, trimestres ailleurs. Les congés restent ceux du calendrier national.">
+              <Select defaultValue={school?.periodicity ?? ""}>
+                <option value="">Règle nationale selon le secteur et le cycle</option>
+                <option value="TRIMESTER">{PERIODICITY_LABELS.TRIMESTER}</option>
+                <option value="SEMESTER">{PERIODICITY_LABELS.SEMESTER}</option>
+              </Select>
+            </FormField>
+          )}
           <FormField label="Commune" name="communeId" required hint={communes.length === 1 ? "Votre périmètre compte une seule commune." : undefined}>
             <Select defaultValue={school?.communeId ?? (communes.length === 1 ? communes[0]!.id : "")}>
               {communes.length > 1 && <option value="">Choisir une commune</option>}
