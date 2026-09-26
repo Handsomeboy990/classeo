@@ -1,7 +1,7 @@
 import type { Page } from "@playwright/test";
 
 import { authFile } from "./support/accounts";
-import { expect, test } from "./support/fixtures";
+import { chooseLanguage, expect, languageMenu, test } from "./support/fixtures";
 import { leftInFrench, visibleTexts, type Seen } from "./support/untranslated";
 
 // Local languages: parents hold translation:view by default and see the
@@ -15,33 +15,33 @@ test("a parent switches the family dashboard to Fongbe and back to French @mobil
   await page.goto("/espace");
   const heading = page.getByRole("heading", { level: 1 });
   await expect(heading).toContainText("Bonjour");
-  const select = page.getByLabel("Langue", { exact: true });
-  await expect(select).toHaveValue("fr");
+  // The switcher sits in the top bar, never in the page body.
+  const menu = languageMenu(page);
+  await expect(menu).toHaveText(/FR/);
+  await expect(page.locator("#page-content button[data-language-menu]")).toHaveCount(0);
 
-  // A choice made before hydration is reset to the controlled value: pick
-  // again until the switcher answers.
   const translated = page.getByRole("status").filter({ hasText: /Page traduite en fongbe/ });
-  await expect(async () => {
-    await select.selectOption("fon");
-    await expect(translated).toBeVisible({ timeout: 3_000 });
-  }).toPass({ timeout: 20_000 });
+  await chooseLanguage(page, "Fongbe");
+  await expect(translated).toBeAttached();
+  await expect(menu).toHaveText(/FON/);
   await expect(page.locator("#page-content")).toHaveAttribute("lang", "fon");
   // Names are never translated.
   await expect(heading).toContainText("Afiavi");
   await expect(heading).not.toContainText("Bonjour");
 
-  // The French original, then the translation again.
+  // The French original, then the translation again, from the same panel.
   await page.getByRole("button", { name: "Voir en français" }).click();
   await expect(heading).toContainText("Bonjour");
   await page.getByRole("button", { name: "Revenir au fongbe" }).click();
   await expect(heading).not.toContainText("Bonjour");
+  await page.keyboard.press("Escape");
 
   // Remembered on this device.
   await page.reload();
-  await expect(page.getByLabel("Langue", { exact: true })).toHaveValue("fon");
+  await expect(languageMenu(page)).toHaveText(/FON/);
   await expect(heading).not.toContainText("Bonjour");
 
-  await page.getByLabel("Langue", { exact: true }).selectOption("fr");
+  await chooseLanguage(page, "Français");
   await expect(heading).toContainText("Bonjour");
   await expect(page.locator("#page-content")).not.toHaveAttribute("lang", /.+/);
 });
@@ -65,7 +65,7 @@ test("staff without translation:view see no switcher and are refused by the serv
   const director = await pageAs("directeur");
   await director.goto("/espace");
   await expect(director.getByRole("heading", { level: 1 })).toBeVisible();
-  await expect(director.getByLabel("Langue", { exact: true })).toHaveCount(0);
+  await expect(director.locator("button[data-language-menu]")).toHaveCount(0);
   await expect(director.getByRole("button", { name: /^Traduire en / })).toHaveCount(0);
   const res = await director.request.post("/api/langues/interface", { data: { lang: "fon", texts: ["Bonjour"] } });
   expect(res.status()).toBe(403);
@@ -205,11 +205,8 @@ async function expectTranslated(page: Page, checks: Check[]) {
 // Picks the language once, so the choice is stored for this account.
 async function start(page: Page) {
   await page.goto("/espace");
-  const select = page.getByLabel("Langue", { exact: true });
-  await expect(async () => {
-    await select.selectOption("fon");
-    await expect(page.getByRole("status").filter({ hasText: /Page traduite en fongbe/ })).toBeVisible({ timeout: 3_000 });
-  }).toPass({ timeout: 20_000 });
+  await chooseLanguage(page, "Fongbe");
+  await expect(page.getByRole("status").filter({ hasText: /Page traduite en fongbe/ })).toBeAttached({ timeout: 15_000 });
 }
 
 async function hrefs(page: Page, path: string, selector: string) {

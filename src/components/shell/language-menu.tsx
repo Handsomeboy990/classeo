@@ -2,7 +2,7 @@
 
 import { Check, ChevronDown, Languages } from "lucide-react";
 import Link from "next/link";
-import type { ComponentProps, ReactNode } from "react";
+import { useId, type ComponentProps, type ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -45,6 +45,7 @@ export function LanguageMenu({
         <button
           type="button"
           {...props}
+          data-language-menu
           data-no-translate
           aria-label={`${title} : ${current}`}
           title={`${title} : ${current}`}
@@ -72,9 +73,12 @@ export function LanguageMenu({
 
 // A titled group of choices inside the panel.
 export function LanguageGroup({ title, children }: { title: string; children: ReactNode }) {
+  const id = useId();
   return (
-    <div className="flex flex-col gap-0.5 py-1 not-first:border-t not-first:border-border">
-      <p className="px-2.5 pt-1.5 pb-1 text-xs font-semibold text-muted">{title}</p>
+    <div role="group" aria-labelledby={id} className="flex flex-col gap-0.5 py-1 not-first:border-t not-first:border-border">
+      <p id={id} className="px-2.5 pt-1.5 pb-1 text-xs font-semibold text-muted">
+        {title}
+      </p>
       <ul className="flex flex-col gap-0.5">{children}</ul>
     </div>
   );
