@@ -2,6 +2,7 @@ import { AlertTriangle, CheckCircle2, Coins, Percent, Wallet } from "lucide-reac
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { InfoTip } from "@/components/kit/info-tip";
 import { BarChart } from "@/components/kit/bar-chart";
 import { PageHeader } from "@/components/kit/page-header";
 import { StatCard, StatGrid } from "@/components/kit/stat-card";
@@ -72,9 +73,9 @@ export default async function FeesOverviewPage() {
           <div className="grid grid-cols-1 gap-6 *:min-w-0 lg:grid-cols-[3fr_2fr]">
             <Card>
               <CardHeader>
-                <div>
+                <div className="flex items-center gap-1.5">
                   <CardTitle>Recouvrement par classe</CardTitle>
-                  <p className="mt-0.5 text-sm text-muted">Part du montant attendu déjà encaissée. En rouge, moins de la moitié.</p>
+                  <InfoTip>Part du montant attendu déjà encaissée. En rouge, moins de la moitié.</InfoTip>
                 </div>
               </CardHeader>
               <CardBody>
