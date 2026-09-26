@@ -112,7 +112,7 @@ export default async function UsersPage({ searchParams }: PageProps<"/espace/uti
                 <Download aria-hidden /> Exporter en CSV
               </ButtonLink>
             )}
-            {canCreate && <CreateUserDialog roles={assignable} entities={entities} />}
+            {canCreate && <CreateUserDialog roles={assignable} entities={entities} ownChain={user.scope.chain} />}
           </>
         }
       />
