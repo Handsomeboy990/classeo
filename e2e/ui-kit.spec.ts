@@ -41,7 +41,8 @@ test.describe("info bubble", () => {
     expect(box.x).toBeGreaterThanOrEqual(0);
     expect(box.x + box.width).toBeLessThanOrEqual(page.viewportSize()!.width);
 
-    await page.getByRole("heading", { level: 1, name: "Connexion" }).tap();
+    // Anywhere outside the bubble: the password label, away from it.
+    await page.locator("label", { hasText: /^Mot de passe/ }).tap();
     await expect(tip).toBeHidden();
     await expect(info).toHaveAttribute("aria-expanded", "false");
   });
