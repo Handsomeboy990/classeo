@@ -13,7 +13,7 @@ import { roleLabel } from "@/features/messages/role-label";
 import { NotificationWatcher } from "@/features/notifications/notification-watcher";
 import { OfflineSession } from "@/features/offline/offline-session";
 import { offlinePages } from "@/features/offline/pages";
-import { LanguageBar } from "@/features/languages/language-bar";
+import { LanguageBar, translationAccess } from "@/features/languages/language-bar";
 import { InstallCard } from "@/features/pwa/install-ui";
 import { requireUser, type CurrentUser } from "@/lib/auth/session";
 import { pushPublicKey } from "@/lib/channels/push";
@@ -45,10 +45,11 @@ export default async function SpaceLayout({ children }: LayoutProps<"/espace">) 
   const user = await requireUser();
   if (user.mustChangePassword) redirect("/changer-mot-de-passe");
 
-  const [unreadRows, ticker, pages] = await Promise.all([
+  const [unreadRows, ticker, pages, translation] = await Promise.all([
     db.notification.findMany({ where: { userId: user.id, readAt: null }, select: { link: true, createdAt: true }, orderBy: { createdAt: "desc" }, take: 200 }),
     isEnabled("contents.ticker").then((on) => (on ? tickerContents(user).catch(() => []) : [])),
     offlinePages(user),
+    translationAccess(user),
   ]);
   const unread = unreadRows.length;
   const visible = visibleNavigation(user);
@@ -83,14 +84,14 @@ export default async function SpaceLayout({ children }: LayoutProps<"/espace">) 
             containing block of any fixed descendant. Popovers and sheets
             open in the top layer. */}
         <header className="sticky top-0 z-40 border-b border-border bg-surface/95 pt-[env(safe-area-inset-top)] backdrop-blur">
-          <AppBar sections={sections} unread={unread} user={shellUser} pushKey={pushKey} scope={scope} />
-          <TopBar scope={scope} unread={unread} user={shellUser} pushKey={pushKey} />
+          <AppBar sections={sections} unread={unread} user={shellUser} pushKey={pushKey} scope={scope} languages={translation?.languages ?? null} />
+          <TopBar scope={scope} unread={unread} user={shellUser} pushKey={pushKey} languages={translation?.languages ?? null} />
           <NewsTicker items={ticker} />
           <OfflineSession userId={user.id} pages={pages} />
         </header>
 
         <InstallCard />
-        <LanguageBar />
+        {translation && <LanguageBar user={user} access={translation} />}
         <main id="page-content" tabIndex={-1} className="app-main mx-auto w-full max-w-7xl flex-1 px-4 pt-5 outline-none sm:px-6 lg:pt-8">
           <SchoolStatusBanner user={user} />
           {children}
