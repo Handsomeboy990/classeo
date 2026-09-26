@@ -7,7 +7,7 @@ export type Cycle = (typeof CYCLES)[number];
 export const SECTOR_LABELS: Record<Sector, string> = {
   PUBLIC: "Public",
   PRIVATE: "Privé laïc",
-  CONFESSIONAL: "Confessionnel",
+  CONFESSIONAL: "Privé confessionnel",
   COMMUNITY: "Communautaire",
 };
 

@@ -8,7 +8,8 @@ import { ActionForm, SubmitButton } from "@/components/kit/action-form";
 import { FormField } from "@/components/kit/form-field";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
-import { Input, Select } from "@/components/ui/input";
+import { Input, Select, Switch } from "@/components/ui/input";
+import { DENOMINATION_LABELS, DENOMINATIONS } from "@/lib/domain/school-types";
 
 import { PERIODICITY_LABELS } from "@/lib/domain/periodicity";
 
@@ -27,6 +28,11 @@ export type SchoolFormValues = {
   phone: string | null;
   email: string | null;
   periodicity: string;
+  denomination: string | null;
+  isBilingual: boolean;
+  authorizationRef: string | null;
+  authorizationDate: string | null;
+  promoter: string | null;
 };
 
 // Create or edit a school. The communes offered are those of the user's
@@ -84,6 +90,31 @@ export function SchoolFormDialog({ communes, school, canSetPeriodicity = false }
               </Select>
             </FormField>
           </div>
+          <fieldset className="flex flex-col gap-4 rounded-control border border-border p-3">
+            <legend className="px-1 text-sm font-semibold">Établissement non public</legend>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <FormField label="Confession" name="denomination" hint="Pour un établissement privé confessionnel.">
+                <Select defaultValue={school?.denomination ?? ""}>
+                  <option value="">Aucune</option>
+                  {DENOMINATIONS.map((d) => (
+                    <option key={d} value={d}>
+                      {DENOMINATION_LABELS[d]}
+                    </option>
+                  ))}
+                </Select>
+              </FormField>
+              <FormField label="Promoteur" name="promoter" hint="Personne ou organisme qui crée et finance l'établissement.">
+                <Input defaultValue={school?.promoter ?? ""} maxLength={150} />
+              </FormField>
+              <FormField label="Arrêté d'autorisation" name="authorizationRef" hint="Référence de l'arrêté d'ouverture.">
+                <Input defaultValue={school?.authorizationRef ?? ""} maxLength={120} />
+              </FormField>
+              <FormField label="Date de l'arrêté" name="authorizationDate">
+                <Input type="date" defaultValue={school?.authorizationDate ?? ""} />
+              </FormField>
+            </div>
+            <Switch name="isBilingual" defaultChecked={school?.isBilingual ?? false} label="Programme bilingue" description="Enseignement en français et dans une autre langue, sous régime spécial." />
+          </fieldset>
           {canSetPeriodicity && (
             <FormField label="Périodicité d'évaluation" name="periodicity" hint="Par défaut : semestres pour le secondaire public, trimestres ailleurs. Les congés restent ceux du calendrier national.">
               <Select defaultValue={school?.periodicity ?? ""}>

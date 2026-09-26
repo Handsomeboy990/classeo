@@ -53,6 +53,17 @@ enum SchoolCycle {
   TECHNICAL
 }
 
+// Faith of a private confessional school (decree n° 2007-279: private
+// schools are secular or confessional). Franco-Arabic schools are
+// recognised confessional schools.
+enum SchoolDenomination {
+  CATHOLIC
+  PROTESTANT
+  ISLAMIC
+  FRANCO_ARABIC
+  OTHER
+}
+
 // Marks and report cards by trimester or by semester (MESTFP order n° 029
 // of 2024, articles 53 and 59). The holidays stay the same for everyone.
 enum Periodicity {
@@ -68,13 +79,20 @@ enum EducationChain {
 }
 
 model School {
-  id                String       @id @default(cuid())
-  code              String       @unique
+  id                String              @id @default(cuid())
+  code              String              @unique
   name              String
   sector            SchoolSector
   cycle             SchoolCycle
+  // Private schools: faith of a confessional school, bilingual programme,
+  // opening authorisation (ministerial order) and promoter.
+  denomination      SchoolDenomination?
+  isBilingual       Boolean             @default(false)
+  authorizationRef  String?
+  authorizationDate DateTime?
+  promoter          String?
   communeId         String
-  commune           Commune      @relation(fields: [communeId], references: [id])
+  commune           Commune             @relation(fields: [communeId], references: [id])
   address           String?
   phone             String?
   email             String?
@@ -84,21 +102,21 @@ model School {
   website           String?
   motto             String?
   logoFileId        String?
-  logo              FileBlob?    @relation("schoolLogo", fields: [logoFileId], references: [id], onDelete: SetNull)
-  isActive          Boolean      @default(true)
+  logo              FileBlob?           @relation("schoolLogo", fields: [logoFileId], references: [id], onDelete: SetNull)
+  isActive          Boolean             @default(true)
   // Set by the ministry: semesters for public secondary schools, trimesters
   // elsewhere by default (lib/domain/periodicity.ts), overridable per school.
-  periodicity       Periodicity  @default(TRIMESTER)
+  periodicity       Periodicity         @default(TRIMESTER)
   // Compositions are a school practice, not the national rule: the grade
   // sheets offer them only when the school enables them.
-  allowsComposition Boolean      @default(false)
+  allowsComposition Boolean             @default(false)
   // Decided by the ministry chain: a suspended or closed school keeps its
   // history readable but accepts no new writes.
-  status            SchoolStatus @default(ACTIVE)
+  status            SchoolStatus        @default(ACTIVE)
   statusReason      String?
   statusChangedAt   DateTime?
-  createdAt         DateTime     @default(now())
-  updatedAt         DateTime     @updatedAt
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
 
   users                  User[]
   teachers               Teacher[]
