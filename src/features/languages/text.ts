@@ -181,13 +181,15 @@ export function isQueueable(text: string) {
   return text.split(" ").length >= 2 || /^[\p{Ll}]/u.test(text);
 }
 
+// The figures of a text, in any order: a language may say "octobre 10".
 function digitsOf(text: string) {
-  return (text.match(/\p{N}+/gu) ?? []).join(" ");
+  return (text.match(/\p{N}+/gu) ?? []).sort().join(" ");
 }
 
 // A translation is kept only when it is usable: not empty, not absurdly
-// long, and with the same figures as the source (a grade or a date must
-// never change in translation). Its first letter follows the source's case.
+// long, and with the same figures as the source, in any order (a grade or a
+// date must never change in translation). Its first letter follows the
+// source's case.
 export function polish(source: string, translated: unknown): string | null {
   if (typeof translated !== "string") return null;
   // The model sometimes leaves a space before a full stop or a comma.
