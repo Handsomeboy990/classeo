@@ -105,6 +105,8 @@ model School {
   subjectsRequested      Subject[]
   roles                  Role[]
   activeSessions         Session[]
+  requiredPieces         RequiredPiece[]
+  familyDocuments        FamilyDocument[]
 
   @@index([communeId])
 }
@@ -246,6 +248,8 @@ model User {
   requestsFiled       SchoolRequest[]           @relation("requestAuthor")
   requestsDecided     SchoolRequest[]           @relation("requestDecider")
   paymentsRecorded    Payment[]
+  familyDocsSubmitted FamilyDocument[]          @relation("familyDocSubmitter")
+  familyDocsReviewed  FamilyDocument[]          @relation("familyDocReviewer")
 
   @@index([roleId])
   @@index([schoolId])
@@ -349,13 +353,14 @@ model SchoolPeriod {
 }
 
 model AcademicLevel {
-  id         String      @id @default(cuid())
-  code       String      @unique // "CI", "6E", "TLE"
+  id         String          @id @default(cuid())
+  code       String          @unique // "CI", "6E", "TLE"
   name       String
   cycle      SchoolCycle
   order      Int
   classrooms Classroom[]
   feeTypes   FeeType[]
+  pieces     RequiredPiece[]
 }
 
 enum SubjectStatus {
@@ -491,6 +496,7 @@ model Student {
   recordAccess StudentRecordAccess[]
   guardians    StudentGuardian[]
   enrollments  Enrollment[]
+  documents    FamilyDocument[]
 }
 
 enum ContactChannel {
@@ -547,6 +553,7 @@ model Enrollment {
   reportCards    ReportCard[]
   attendances    StudentAttendance[]
   invoices       Invoice[]
+  documents      FamilyDocument[]
 
   @@unique([studentId, academicYearId])
   @@index([classroomId])
@@ -646,16 +653,18 @@ enum DayHalf {
 }
 
 model StudentAttendance {
-  id           String           @id @default(cuid())
-  enrollmentId String
-  enrollment   Enrollment       @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
-  date         DateTime         @db.Date
-  half         DayHalf
-  status       AttendanceStatus
-  reason       String?
-  recordedById String
-  recordedBy   User             @relation(fields: [recordedById], references: [id])
-  createdAt    DateTime         @default(now())
+  id             String           @id @default(cuid())
+  enrollmentId   String
+  enrollment     Enrollment       @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  date           DateTime         @db.Date
+  half           DayHalf
+  status         AttendanceStatus
+  reason         String?
+  recordedById   String
+  recordedBy     User             @relation(fields: [recordedById], references: [id])
+  createdAt      DateTime         @default(now())
+  // Justifications a family sent for this absence.
+  justifications FamilyDocument[]
 
   @@unique([enrollmentId, date, half])
   @@index([date])
@@ -762,13 +771,19 @@ model ConversationParticipant {
 }
 
 model Message {
-  id             String       @id @default(cuid())
-  conversationId String
-  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
-  senderId       String
-  sender         User         @relation(fields: [senderId], references: [id])
-  body           String
-  createdAt      DateTime     @default(now())
+  id              String       @id @default(cuid())
+  conversationId  String
+  conversation    Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  senderId        String
+  sender          User         @relation(fields: [senderId], references: [id])
+  // Empty for a voice note.
+  body            String
+  // A voice note: the recording (FileBlob purpose "voice_note") and its
+  // length as measured by the recorder, which WebM files do not carry.
+  audioFileId     String?      @unique
+  audio           FileBlob?    @relation("voiceNote", fields: [audioFileId], references: [id], onDelete: SetNull)
+  audioDurationMs Int?
+  createdAt       DateTime     @default(now())
 
   @@index([conversationId, createdAt])
 }
@@ -1054,7 +1069,7 @@ model FileBlob {
   id          String   @id @default(cuid())
   ownerUserId String?
   owner       User?    @relation("fileOwner", fields: [ownerUserId], references: [id], onDelete: SetNull)
-  purpose     String // "student_photo", "school_logo", "signature", "stamp", "document", "payment_proof"
+  purpose     String // see FilePurpose in src/lib/files.ts
   fileName    String
   mimeType    String
   size        Int
@@ -1068,6 +1083,8 @@ model FileBlob {
   stamps        UserSignature[]       @relation("stampImage")
   documentFiles DocumentRequestFile[]
   paymentProofs PaymentDeclaration[]
+  voiceNotes    Message[]             @relation("voiceNote")
+  familyDocs    FamilyDocument[]
 
   @@index([ownerUserId])
 }
@@ -1447,4 +1464,87 @@ model FeatureFlag {
   description String
   updatedById String?
   updatedAt   DateTime @updatedAt
+}
+
+// ---------------------------------------------------------------------------
+// Pieces and justifications sent by families
+// ---------------------------------------------------------------------------
+
+// A piece a school asks families for at enrollment (acte de naissance,
+// photos, bulletins...), for every level or for one level. A health piece
+// (livret de santé, carnet de vaccination) is checked, then its file is
+// deleted: only the decision is kept.
+model RequiredPiece {
+  id          String           @id @default(cuid())
+  schoolId    String
+  school      School           @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  levelId     String?
+  level       AcademicLevel?   @relation(fields: [levelId], references: [id], onDelete: SetNull)
+  label       String
+  description String?
+  isHealth    Boolean          @default(false)
+  sortOrder   Int              @default(0)
+  // Withdrawn from the list: kept for the pieces already sent.
+  archivedAt  DateTime?
+  createdAt   DateTime         @default(now())
+  documents   FamilyDocument[]
+
+  @@index([schoolId])
+}
+
+enum FamilyDocumentKind {
+  ENROLLMENT
+  ABSENCE
+  MEDICAL
+}
+
+enum FamilyDocumentStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+// One piece sent by a parent (or a student of 16 or more) and the school's
+// decision on it:
+// - ENROLLMENT: answers a RequiredPiece;
+// - ABSENCE: justifies one absence; accepted, the absence becomes excused;
+// - MEDICAL: a medical certificate for an EPS dispensation over a period.
+//   The file is deleted once decided; the row stays as the dispensation.
+// A refused piece stays as history; the family sends a new one.
+model FamilyDocument {
+  id              String               @id @default(cuid())
+  kind            FamilyDocumentKind
+  status          FamilyDocumentStatus @default(PENDING)
+  studentId       String
+  student         Student              @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  enrollmentId    String
+  enrollment      Enrollment           @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  schoolId        String
+  school          School               @relation(fields: [schoolId], references: [id])
+  requiredPieceId String?
+  requiredPiece   RequiredPiece?       @relation(fields: [requiredPieceId], references: [id], onDelete: SetNull)
+  attendanceId    String?
+  attendance      StudentAttendance?   @relation(fields: [attendanceId], references: [id], onDelete: SetNull)
+  // EPS dispensation period, both days included.
+  startsOn        DateTime?            @db.Date
+  endsOn          DateTime?            @db.Date
+  // What the family wrote (reason of the absence, a word for the school).
+  note            String?
+  fileId          String?              @unique
+  file            FileBlob?            @relation(fields: [fileId], references: [id], onDelete: SetNull)
+  // Set when the file was deleted after the decision (health pieces).
+  fileRemovedAt   DateTime?
+  submittedById   String
+  submittedBy     User                 @relation("familyDocSubmitter", fields: [submittedById], references: [id])
+  reviewedById    String?
+  reviewedBy      User?                @relation("familyDocReviewer", fields: [reviewedById], references: [id])
+  reviewedAt      DateTime?
+  reviewNote      String?
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+
+  @@index([schoolId, kind, status])
+  @@index([enrollmentId])
+  @@index([attendanceId])
+  @@index([requiredPieceId])
 }
