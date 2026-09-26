@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, useTransition, type ChangeEvent, type FocusEvent, type KeyboardEvent } from "react";
 
+import { InfoTip } from "@/components/kit/info-tip";
 import { AverageLevel } from "@/components/kit/level";
 import { toast } from "@/components/kit/toaster";
 import { Alert } from "@/components/ui/alert";
@@ -359,19 +360,22 @@ export function GradeGrid({
           <span className="whitespace-nowrap text-muted">Moyenne de la classe :</span>
           <AverageLevel average={computed.classAverage} />
         </p>
+        {/* How to type, in a bubble; every mark field is described by it. */}
+        {editable && (
+          <span className="inline-flex items-center gap-1.5 text-muted">
+            Aide à la saisie
+            <InfoTip label="Aide à la saisie des notes">
+              <span id="grid-help-table" className="max-sm:hidden">
+                Notes sur 20, virgule ou point pour les décimales, case vide si pas de note. Entrée ou flèches pour passer d&apos;une case à l&apos;autre, Échap pour
+                annuler une case, Ctrl+S pour enregistrer.
+              </span>
+              <span id="grid-help-cards" className="sm:hidden">
+                Notes sur 20, virgule ou point pour les décimales, case vide si pas de note. La touche Suivant passe à l&apos;élève suivant.
+              </span>
+            </InfoTip>
+          </span>
+        )}
       </div>
-
-      {editable && (
-        <div className="border-b border-border bg-surface-2/60 px-4 py-2 text-xs text-muted lg:col-span-2">
-          <p id="grid-help-table" className="max-sm:hidden">
-            Notes sur 20, virgule ou point pour les décimales, case vide si pas de note. Entrée ou flèches pour passer d&apos;une case à l&apos;autre, Échap pour
-            annuler une case, Ctrl+S pour enregistrer.
-          </p>
-          <p id="grid-help-cards" className="sm:hidden">
-            Notes sur 20, virgule ou point pour les décimales, case vide si pas de note. La touche Suivant passe à l&apos;élève suivant.
-          </p>
-        </div>
-      )}
 
       {rows.length === 0 ? (
         <p className="p-8 text-center text-muted lg:col-span-2">Aucun élève inscrit dans cette classe.</p>
