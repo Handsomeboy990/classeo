@@ -39,6 +39,8 @@ export const RESOURCES = {
   subject: "Catalogue des matières",
   document_request: "Pièces demandées aux établissements",
   mock_exam: "Examens blancs",
+  family_document: "Pièces et justificatifs des familles",
+  health_document: "Certificats médicaux et pièces de santé",
 } as const;
 export type Resource = keyof typeof RESOURCES;
 
@@ -93,6 +95,13 @@ const APPLICABLE: Record<Resource, Action[]> = {
   // close); update: enter results; approve: decide on an exam (hierarchy)
   // or on an invitation (invited school); export: results sheet.
   mock_exam: ["view", "create", "update", "export", "approve"],
+  // A family sends pieces (create) and follows them (view); the school
+  // examines them and keeps the list of pieces it asks for (approve).
+  family_document: ["view", "create", "approve"],
+  // Health pieces (medical certificates, vaccination records) are sensitive
+  // data: only the staff holding this right open and decide them. Families
+  // send them through family_document:create.
+  health_document: ["view", "approve"],
 };
 
 export const PERMISSIONS: { code: PermissionCode; resource: Resource; action: Action; description: string }[] =
@@ -249,6 +258,8 @@ export const DEFAULT_ROLES: {
       ...only("role", "view", "update"),
       ...only("audit", "view"),
       ...all("mock_exam"),
+      ...only("family_document", "view", "approve"),
+      ...all("health_document"),
     ],
   },
   {
@@ -273,6 +284,9 @@ export const DEFAULT_ROLES: {
       ...only("request", "view"),
       ...only("statistics", "view"),
       ...only("mock_exam", "view"),
+      // Enrollment pieces and absence justifications; health pieces stay
+      // with the head of school unless a role grants them.
+      ...only("family_document", "view", "approve"),
     ],
   },
   {
@@ -327,6 +341,7 @@ export const DEFAULT_ROLES: {
       ...only("fee", "view"),
       ...only("payment", "view"),
       ...only("mock_exam", "view"),
+      ...only("family_document", "view", "create"),
     ],
   },
   {
@@ -342,6 +357,9 @@ export const DEFAULT_ROLES: {
       ...only("content", "view"),
       ...all("message"),
       ...only("mock_exam", "view"),
+      // Sending is allowed from 16 years of age, never for health pieces
+      // (see src/features/family-documents/rules.ts).
+      ...only("family_document", "view", "create"),
     ],
   },
   {
