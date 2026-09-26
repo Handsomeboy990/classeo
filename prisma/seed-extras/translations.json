@@ -2904,6 +2904,12 @@
 "text": "Un nyɔ nuxixa ganji ǎ. Nε mi ka sixu tuun ɖɔ nu bi ɖo ganji gbɔn?"
 },
 {
+"key": "2c725bccf8ad90dc30621f09c2a9db84419289ae72ea87a3bd946c5c8082e65f",
+"lang": "fon",
+"source": "2 peut-elle venir ?",
+"text": "2 é sixú wá à ?"
+},
+{
 "key": "2c9145d4cfe407569b63f435dc358a7d6854c4ba70aa2c6aead921ab9ef104fa",
 "lang": "fon",
 "source": "Départements",
@@ -20478,6 +20484,12 @@
 "text": "Emi ko mọ bi a ṣe le ka daradara. Bawo ni o ṣe mọ boya ohun gbogbo dara?"
 },
 {
+"key": "2c725bccf8ad90dc30621f09c2a9db84419289ae72ea87a3bd946c5c8082e65f",
+"lang": "yo",
+"source": "2 peut-elle venir ?",
+"text": "2 o le wa?"
+},
+{
 "key": "2c9145d4cfe407569b63f435dc358a7d6854c4ba70aa2c6aead921ab9ef104fa",
 "lang": "yo",
 "source": "Départements",
@@ -22474,6 +22486,12 @@
 "lang": "yo",
 "source": "Carnet de vaccination",
 "text": "Igbasilẹ ajesara"
+},
+{
+"key": "481d99710db9c550dac36bef69108fddfbd3c72567849ed1936cb48228993272",
+"lang": "yo",
+"source": "2 peut-il venir ?",
+"text": "le 2 wa?"
 },
 {
 "key": "482b70b82385b281eb9762230717054b05f6957984f32df25068d13777e27ee7",
