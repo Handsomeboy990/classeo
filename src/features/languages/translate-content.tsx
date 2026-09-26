@@ -115,7 +115,7 @@ export function TranslateContent({ text, compact = false, className }: { text: s
           </div>
         }
       >
-        <div data-no-translate className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4">
           {phase.kind === "loading" && (
             <p role="status" className="text-muted">
               Traduction en cours…
@@ -131,7 +131,7 @@ export function TranslateContent({ text, compact = false, className }: { text: s
           )}
           {phase.kind === "done" && (
             <>
-              <div lang={bcp47(lang)} className="flex flex-col gap-2 text-lg leading-relaxed">
+              <div lang={bcp47(lang)} data-no-translate className="flex flex-col gap-2 text-lg leading-relaxed">
                 {phase.result.paragraphs.map((p, i) => (
                   <p key={i}>{p.text}</p>
                 ))}
@@ -141,7 +141,7 @@ export function TranslateContent({ text, compact = false, className }: { text: s
           )}
           <details className="rounded-card border border-border px-4 py-3">
             <summary className="cursor-pointer font-semibold">Texte original en français</summary>
-            <p lang="fr" className="mt-2 whitespace-pre-line text-muted">
+            <p lang="fr" data-no-translate className="mt-2 whitespace-pre-line text-muted">
               {text}
             </p>
           </details>

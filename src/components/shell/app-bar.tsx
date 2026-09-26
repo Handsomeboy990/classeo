@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { Avatar } from "@/components/ui/avatar";
+import { frenchTextContent } from "@/features/languages/client";
 
 import { AccountSheet, type ShellUser } from "./account-sheet";
 import { BellLink } from "./bell-link";
@@ -39,7 +40,7 @@ function useScrolledHeading(pathname: string) {
       io?.disconnect();
       target = h1;
       io = new IntersectionObserver(
-        ([entry]) => setHeading(entry && !entry.isIntersecting && entry.boundingClientRect.top < 0 ? { path: pathname, text: h1.textContent?.trim() ?? "" } : null),
+        ([entry]) => setHeading(entry && !entry.isIntersecting && entry.boundingClientRect.top < 0 ? { path: pathname, text: frenchTextContent(h1).trim() } : null),
         { rootMargin: "-56px 0px 0px 0px" },
       );
       io.observe(h1);

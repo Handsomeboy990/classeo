@@ -104,3 +104,13 @@ export const originals = new WeakMap<Text, string>();
 export function frenchTextOf(node: Text) {
   return originals.get(node) ?? node.textContent ?? "";
 }
+
+// The French text of an element, for code that copies a text of the page
+// elsewhere (the heading shown in the phone's top bar): the copy is then
+// translated like any other text, never taken for French.
+export function frenchTextContent(el: Element) {
+  let out = "";
+  const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+  for (let n = walker.nextNode(); n; n = walker.nextNode()) out += frenchTextOf(n as Text);
+  return out;
+}

@@ -27,7 +27,7 @@ export function VoiceInfo() {
   const local = s.allowed && s.lang !== "fr" ? voiceOf(s.lang, s.voices) : null;
 
   return (
-    <section aria-labelledby="voice-info-title" className="mt-5 rounded-card border border-border bg-surface-2 px-4 py-3 text-sm" data-no-translate>
+    <section aria-labelledby="voice-info-title" className="mt-5 rounded-card border border-border bg-surface-2 px-4 py-3 text-sm">
       <h3 id="voice-info-title" className="font-semibold">
         Voix utilisée
       </h3>
