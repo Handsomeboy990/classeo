@@ -81,7 +81,7 @@ Detailed security notes are kept outside the repository.
   messages typed without network, replayed when the network returns.
 - Local languages: the interface translated into Fongbe and Yoruba (Bariba,
   Adja, Ewe and Hausa are also offered by the translation layer), and voices in
-  Fongbe, Yoruba and Hausa, through the api229langues service by Finanfa
+  Fongbe, Yoruba and Hausa, through the api229langues service by AWADEME Finanfa
   Ronaldo.
 - Kora, the read aloud button: French is spoken by the Siwis voice (Piper),
   synthesised by a self hosted Python function, the same on every device.
@@ -373,7 +373,7 @@ it grants no licence. Third party works keep their own licences:
 - **French voice**: Piper voice `fr_FR-siwis-medium`, trained on the SIWIS
   database, CC BY 4.0.
 - **Local languages**: translation and voices by the api229langues service of
-  Finanfa Ronaldo (https://api229langues.vercel.app), credited on `/credits`.
+  AWADEME Finanfa Ronaldo (https://api229langues.vercel.app), credited on `/credits`.
 - **Dependencies**: Next.js, React, zod, jose, pg, `@node-rs/argon2`,
   `@react-pdf/renderer` (MIT); Prisma (Apache-2.0); lucide-react (ISC);
   nodemailer (MIT-0); web-push (MPL-2.0); Atkinson Hyperlegible Next and
