@@ -262,7 +262,9 @@ test.describe("nothing stays in French on the parent pages in Fongbe", () => {
 
   test("mock exams, announcements, messages, notifications, preferences, guide @mobile", async ({ page }) => {
     await start(page);
-    const [exam] = await hrefs(page, "/espace/examens-blancs", "#page-content a[href^='/espace/examens-blancs/']");
+    // The seeded exam, listed last: the exams other journeys create start
+    // later and carry texts they wrote.
+    const exam = (await hrefs(page, "/espace/examens-blancs", "#page-content a[href^='/espace/examens-blancs/']")).at(-1);
     const [content] = await hrefs(page, "/espace/contenus", "#page-content a[href^='/espace/contenus/c']");
     const [thread] = await hrefs(page, "/espace/messages", "#page-content a[href^='/espace/messages/']");
     const checks: Check[] = [
