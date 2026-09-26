@@ -1314,6 +1314,12 @@
 "text": "Hun :"
 },
 {
+"key": "12f150fc4c5cb547a22cc82930c0a718ae37b4edcbe93064226029fe5218d2b3",
+"lang": "fon",
+"source": "1 conversation avec un nouveau message",
+"text": "Xóɖɔɖókpɔ́ 1 kpo wɛn yɔyɔ̌ ɖé kpo"
+},
+{
 "key": "1316622345e8b8d453bbe5e2dc7cdfc2d033dd11608af44461357d893b6139d2",
 "lang": "fon",
 "source": "Partager",
@@ -14748,6 +14754,12 @@
 "text": "Alixlɛ́mɛ lɛ"
 },
 {
+"key": "c953b4e4a6314de88fbc18d9d6c472a7c8287e256d0d43189fd09c37bcd9339a",
+"lang": "fon",
+"source": "2 conversations avec un nouveau message",
+"text": "Xóɖɔɖókpɔ́ 2 kpo wɛn yɔyɔ̌ ɖé kpo"
+},
+{
 "key": "c955c0aea76559d3b893f50cd9409066958f6de82a43dbea7e534789ac74bef8",
 "lang": "fon",
 "source": "Voir le statut sur la page source.",
@@ -19924,6 +19936,12 @@
 "lang": "yo",
 "source": "Ouvrir :",
 "text": "Ṣii:"
+},
+{
+"key": "12f150fc4c5cb547a22cc82930c0a718ae37b4edcbe93064226029fe5218d2b3",
+"lang": "yo",
+"source": "1 conversation avec un nouveau message",
+"text": "1 ibaraẹnisọrọ pẹlu ifiranṣẹ titun kan"
 },
 {
 "key": "1316622345e8b8d453bbe5e2dc7cdfc2d033dd11608af44461357d893b6139d2",
@@ -32866,6 +32884,12 @@
 "lang": "yo",
 "source": "Directions",
 "text": "Awọn itọnisọna"
+},
+{
+"key": "c953b4e4a6314de88fbc18d9d6c472a7c8287e256d0d43189fd09c37bcd9339a",
+"lang": "yo",
+"source": "2 conversations avec un nouveau message",
+"text": "2 ibaraẹnisọrọ pẹlu ifiranṣẹ titun kan"
 },
 {
 "key": "c955c0aea76559d3b893f50cd9409066958f6de82a43dbea7e534789ac74bef8",
