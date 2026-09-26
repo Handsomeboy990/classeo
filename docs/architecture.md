@@ -132,7 +132,7 @@ src/
   components/ui/            primitives (buttons, inputs, dialogs, cards)
   components/kit/           composites: DataTable, PageHeader, StatCard,
                             FormField, FormDialog, ConfirmButton, ReadAloud,
-                            PermissionGate, charts, skeletons, states
+                            charts, skeletons, states
   components/shell/         layout, navigation, accessibility controls
   features/<module>/        per module: queries.ts, actions.ts, rules.ts
                             (pure, tested), components/

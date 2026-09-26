@@ -2,7 +2,6 @@ export { ActionForm, FormMessage, SubmitButton, useFormState } from "./action-fo
 export { BarChart } from "./bar-chart";
 export { DonutChart } from "./donut-chart";
 export { LineChart } from "./line-chart";
-export { Combobox } from "./combobox";
 export { ConfirmAction } from "./confirm-action";
 export { ConfirmButton } from "./confirm-button";
 export { DataTable, type Column } from "./data-table";
