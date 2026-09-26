@@ -34,7 +34,7 @@ export default async function MessagesPage({ searchParams }: PageProps<"/espace/
     <>
       <PageHeader
         title="Messagerie"
-        description={unreadCount ? `${unreadCount} conversation${unreadCount > 1 ? "s" : ""} avec un nouveau message` : undefined}
+        description={unreadCount ? `${unreadCount} conversation${unreadCount > 1 ? "s" : ""} avec un nouveau message.` : undefined}
         info={acting ? "Vos conversations et celles de votre établissement ou service avec les autres structures." : "Conversations avec l'école, les enseignants et les familles."}
         actions={canWrite && <NewConversation contacts={contacts} institutions={institutions} sender={acting ? institutionName(acting.kind, user.scope.label, acting.chain) : null} showQuick={!!user.guardianId} family={user.scope.level === "SELF"} />}
       />
