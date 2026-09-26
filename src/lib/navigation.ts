@@ -33,6 +33,7 @@ import {
   Wallet,
   Baby,
   ArrowLeftRight,
+  Banknote,
 } from "lucide-react";
 
 import type { PermissionCode } from "@/lib/auth/permissions";
@@ -112,6 +113,7 @@ export const NAVIGATION: NavSection[] = [
     title: "Finances",
     items: [
       { label: "Frais et paiements", href: "/espace/frais", icon: Wallet, permission: ["fee:view", "payment:view"], scopes: ["SCHOOL"], short: "Frais", tab: { school: 3 } },
+      { label: "Paie du personnel", href: "/espace/paie", icon: Banknote, permission: ["payroll:view"], scopes: ["SCHOOL"], short: "Paie" },
     ],
   },
   {
@@ -137,6 +139,8 @@ export const NAVIGATION: NavSection[] = [
     title: "Mon compte",
     items: [
       { label: "Signature électronique", href: "/espace/signature", icon: PenLine, permission: ["report_card:publish", "request:approve"], scopes: STAFF, short: "Signature" },
+      // Teachers only: who pays them, and their payslips.
+      { label: "Ma paie", href: "/espace/ma-paie", icon: Banknote, permission: ["payslip:view"], scopes: ["SCHOOL"] },
       { label: "Préférences", href: "/espace/preferences", icon: Settings2 },
       { label: "Guide d'utilisation", href: "/espace/aide", icon: BookOpen, short: "Aide" },
     ],
@@ -161,6 +165,7 @@ export function visibleNavigation(user: NavUser): NavSection[] {
       // Family entries: "Mes enfants" for parents, "Ma scolarité" for students.
       if (item.label === "Mes enfants" && !user.guardianId) return false;
       if (item.label === "Ma scolarité" && !user.studentId) return false;
+      if (item.href === "/espace/ma-paie" && !user.teacherId) return false;
       if (seen.has(item.href)) return false;
       seen.add(item.href);
       return true;

@@ -39,6 +39,8 @@ export const RESOURCES = {
   subject: "Catalogue des matières",
   document_request: "Pièces demandées aux établissements",
   mock_exam: "Examens blancs",
+  payroll: "Paie du personnel payé par l'établissement",
+  payslip: "Ma paie (bulletins de paie personnels)",
 } as const;
 export type Resource = keyof typeof RESOURCES;
 
@@ -93,6 +95,12 @@ const APPLICABLE: Record<Resource, Action[]> = {
   // close); update: enter results; approve: decide on an exam (hierarchy)
   // or on an invitation (invited school); export: results sheet.
   mock_exam: ["view", "create", "update", "export", "approve"],
+  // Payslips of the vacataires and private teachers a school pays: prepare
+  // (create, update, delete), validate and mark as paid (approve), print
+  // (export). Agents of the State are paid by the Ministry of Finance.
+  payroll: ["view", "create", "update", "delete", "export", "approve"],
+  // A teacher's own payslips, in "Ma paie".
+  payslip: ["view"],
 };
 
 export const PERMISSIONS: { code: PermissionCode; resource: Resource; action: Action; description: string }[] =
@@ -250,6 +258,7 @@ export const DEFAULT_ROLES: {
       ...only("role", "view", "update"),
       ...only("audit", "view"),
       ...all("mock_exam"),
+      ...all("payroll"),
     ],
   },
   {
@@ -291,6 +300,7 @@ export const DEFAULT_ROLES: {
       ...all("payment"),
       ...only("statistics", "view"),
       ...all("message"),
+      ...only("payroll", "view", "create", "update", "export"),
     ],
   },
   {
@@ -309,6 +319,7 @@ export const DEFAULT_ROLES: {
       ...only("content", "view", "create", "update", "publish"),
       ...all("message"),
       ...only("mock_exam", "view", "update"),
+      ...only("payslip", "view"),
     ],
   },
   {

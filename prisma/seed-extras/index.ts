@@ -6,6 +6,7 @@ import { seedGovernance } from "./governance";
 import { seedIdentity } from "./identity";
 import { seedLanguages } from "./languages";
 import { seedLifecycle } from "./lifecycle";
+import { seedPay } from "./pay";
 import { seedPaymentsAndSignatures } from "./payments-signatures";
 import { seedWave2 } from "./wave2";
 
@@ -18,6 +19,7 @@ export type SeedContext = {
 
 export async function seedExtras(db: PrismaClient, ctx: SeedContext) {
   await seedIdentity(db, ctx);
+  await seedPay(db, ctx);
   await seedGovernance(db, ctx);
   await seedLifecycle(db, ctx);
   await seedPaymentsAndSignatures(db, ctx);
