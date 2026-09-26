@@ -15,7 +15,7 @@ import { db } from "@/lib/db";
 import { isDemoAccessToken } from "@/lib/demo/access";
 import { platformUrl, sendMail } from "@/lib/mail";
 import { passwordChangedEmail } from "@/lib/mail/templates";
-import { hitRateLimit, resetRateLimit } from "@/lib/rate-limit";
+import { hitRateLimit, isRateLimited, resetRateLimit } from "@/lib/rate-limit";
 import { de } from "@/lib/utils";
 
 const MAX_FAILED = 5;
@@ -138,8 +138,13 @@ export async function changePassword(_prev: ActionState, formData: FormData): Pr
   if (!parsed.success) {
     return { ok: false, message: "Vérifiez les champs du formulaire.", fieldErrors: z.flattenError(parsed.error).fieldErrors };
   }
+  // A stolen session must not become a way to guess the password: five
+  // wrong current passwords per account and 15 minutes.
+  const key = `password-change:${current.id}`;
+  if (await isRateLimited(key, MAX_FAILED, LOCK_MS)) return { ok: false, message: "Trop de tentatives. Réessayez dans 15 minutes." };
   const user = await db.user.findUniqueOrThrow({ where: { id: current.id } });
   if (!(await verifyPassword(user.passwordHash, parsed.data.current))) {
+    await hitRateLimit(key, MAX_FAILED, LOCK_MS);
     return { ok: false, message: "Mot de passe actuel incorrect.", fieldErrors: { current: ["Mot de passe actuel incorrect."] } };
   }
   await db.$transaction([
