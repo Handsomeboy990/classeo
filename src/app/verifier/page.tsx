@@ -4,8 +4,14 @@ import { redirect } from "next/navigation";
 import { CodeSearch, PublicShell } from "@/features/verification/components/public-shell";
 import { normalizeCode } from "@/features/verification/reference";
 import { param } from "@/lib/list";
+import { publicMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = { title: "Vérifier un document", robots: { index: false } };
+export const metadata: Metadata = publicMetadata({
+  path: "/verifier",
+  languages: false,
+  title: "Vérifier un document",
+  description: "Vérifiez l'authenticité d'un bulletin, d'une attestation, d'un certificat, d'un reçu ou d'une facture délivrés sur Classéo, avec son code de vérification ou son QR code.",
+});
 
 // Entry of the public check: a code typed from paper.
 export default async function VerifyHomePage({ searchParams }: PageProps<"/verifier">) {

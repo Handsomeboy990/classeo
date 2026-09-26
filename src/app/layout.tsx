@@ -4,8 +4,10 @@ import { Atkinson_Hyperlegible_Next, Bricolage_Grotesque } from "next/font/googl
 import { Toaster } from "@/components/kit/toaster";
 import { AccessibilityFab } from "@/components/shell/accessibility-fab";
 import { ThemeColor } from "@/components/shell/theme-color";
+import { VisitBeacon } from "@/features/connections/visit-beacon";
 import { OfflineBanner } from "@/features/pwa/offline-banner";
 import { ServiceWorkerRegistration } from "@/features/pwa/service-worker";
+import { siteUrl } from "@/lib/seo";
 
 import "./globals.css";
 
@@ -15,7 +17,9 @@ const body = Atkinson_Hyperlegible_Next({ subsets: ["latin"], variable: "--font-
 const display = Bricolage_Grotesque({ subsets: ["latin"], variable: "--font-display", display: "swap", weight: ["600", "700", "800"] });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"),
+  // APP_URL, NEXT_PUBLIC_APP_URL or the Vercel production address
+  // (lib/seo.ts): canonical and share addresses are absolute.
+  metadataBase: new URL(siteUrl()),
   title: { default: "Classéo · Le système éducatif, à portée de main", template: "%s · Classéo" },
   description:
     "Classéo, la plateforme de gestion scolaire pour le Bénin : inscriptions, notes, bulletins, présences, frais et messages, accessibles à tous, même hors ligne.",
@@ -63,6 +67,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <Toaster />
         <ServiceWorkerRegistration />
         <ThemeColor />
+        <VisitBeacon />
       </body>
     </html>
   );

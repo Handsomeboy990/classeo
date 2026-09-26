@@ -10,8 +10,9 @@ import { PUBLIC } from "@/features/public-pages/texts";
 import { publicChoice } from "@/features/public-pages/translate";
 import { getCurrentUser } from "@/lib/auth/session";
 import { mailEnabled } from "@/lib/mail";
+import { NO_INDEX } from "@/lib/seo";
 
-export const metadata: Metadata = { title: "Nouveau mot de passe" };
+export const metadata: Metadata = { title: "Nouveau mot de passe", robots: NO_INDEX };
 
 // The frame follows the language of the page; the form is in French only.
 export default async function ResetCodePage({ searchParams }: PageProps<"/mot-de-passe-oublie/code">) {

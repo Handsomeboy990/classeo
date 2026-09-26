@@ -12,12 +12,18 @@ import { PublicFooter, PublicHeader } from "@/features/public-pages/public-frame
 import { publicTranslator } from "@/features/public-pages/server";
 import { listenText, PUBLIC, PUBLIC_SPEECH } from "@/features/public-pages/texts";
 import { publicChoice, withChoice } from "@/features/public-pages/translate";
+import { homeJsonLd, jsonLdString, publicMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: { absolute: "Classéo · Le système éducatif, à portée de main" },
-  description:
-    "Classéo, la plateforme de gestion scolaire pour le Bénin : inscriptions, notes, bulletins, présences, frais et messages, pour l'équipe de l'établissement, les enseignants et les familles.",
-};
+export async function generateMetadata({ searchParams }: PageProps<"/">): Promise<Metadata> {
+  return publicMetadata({
+    path: "/",
+    lang: (await searchParams).lang,
+    absoluteTitle: true,
+    title: "Classéo · Le système éducatif, à portée de main",
+    description:
+      "Classéo, la plateforme de gestion scolaire pour le Bénin : inscriptions, notes, bulletins, présences, frais et messages, pour l'équipe de l'établissement, les enseignants et les familles.",
+  });
+}
 
 // Captions are fragments: a full stop added by the translation is dropped.
 const fragment = (text: string) => text.replace(/[.\s]+$/u, "");
@@ -38,6 +44,8 @@ export default async function LandingPage({ searchParams }: PageProps<"/">) {
 
   return (
     <>
+      {/* Structured data for search engines: the organisation and the site. */}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(homeJsonLd()) }} />
       <PublicHeader tr={tr} voice={voice} />
 
       <main id="page-content" tabIndex={-1} lang={lang} className="outline-none">

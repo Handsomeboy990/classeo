@@ -6,8 +6,9 @@ import { Logo } from "@/components/brand/logo";
 import { ReadAloud } from "@/components/kit/read-aloud";
 import { StatusPage } from "@/components/kit/status-page";
 import { CachedPages } from "@/features/pwa/cached-pages";
+import { NO_INDEX } from "@/lib/seo";
 
-export const metadata: Metadata = { title: "Hors ligne" };
+export const metadata: Metadata = { title: "Hors ligne", robots: NO_INDEX };
 export const dynamic = "force-static";
 
 const MESSAGE = "Pas de réseau pour le moment. Les pages déjà ouvertes sur cet appareil restent lisibles ; pour enregistrer une modification, il faut le réseau.";

@@ -7,8 +7,9 @@ import { Alert } from "@/components/ui/alert";
 import { Input } from "@/components/ui/input";
 import { changePassword } from "@/features/auth/actions";
 import { requireUser } from "@/lib/auth/session";
+import { NO_INDEX } from "@/lib/seo";
 
-export const metadata: Metadata = { title: "Changer le mot de passe" };
+export const metadata: Metadata = { title: "Changer le mot de passe", robots: NO_INDEX };
 
 export default async function ChangePasswordPage() {
   const user = await requireUser();

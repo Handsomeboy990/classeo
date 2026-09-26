@@ -9,11 +9,16 @@ import { PublicFooter, PublicHeader } from "@/features/public-pages/public-frame
 import { publicTranslator } from "@/features/public-pages/server";
 import { PUBLIC } from "@/features/public-pages/texts";
 import { publicChoice, withChoice, type PublicTranslator } from "@/features/public-pages/translate";
+import { publicMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Crédits photos",
-  description: "Les photographies et la voix de lecture de Classéo, leurs auteurs, leurs sources et leurs licences.",
-};
+export async function generateMetadata({ searchParams }: PageProps<"/credits">): Promise<Metadata> {
+  return publicMetadata({
+    path: "/credits",
+    lang: (await searchParams).lang,
+    title: "Crédits photos",
+    description: "Les photographies et la voix de lecture de Classéo, leurs auteurs, leurs sources et leurs licences.",
+  });
+}
 
 // Photo credits: every photograph of the public pages with its author, its
 // source on Wikimedia Commons, its licence and what was changed, then the
