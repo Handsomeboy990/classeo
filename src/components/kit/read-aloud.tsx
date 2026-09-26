@@ -1,6 +1,6 @@
 "use client";
 
-import { Square, Volume2 } from "lucide-react";
+import { Loader2, Square, Volume2 } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { frenchTextOf, speechLanguage } from "@/features/languages/client";
@@ -53,9 +53,11 @@ export function ReadAloud({
   // Language to read in. Absent: the language chosen by the user, French
   // for everyone else.
   lang?: "fr" | "fon" | "yo" | "ha";
+  // Accessible name of the button, also its tooltip.
   label?: string;
   className?: string;
-  // true: icon only. "mobile": icon only below 40rem, labelled above.
+  // true: the smaller round button, for lists and cards. The translate
+  // button beside it follows the same setting.
   compact?: boolean | "mobile";
   // false: no "Traduire" button next to this one.
   translatable?: boolean;
@@ -120,29 +122,35 @@ export function ReadAloud({
     setSpeaking(false);
   }
 
+  // A speaker button only: the text it reads is never shown next to it.
+  // The name stays the same ("Écouter le bulletin"), pressed while it
+  // speaks; a polite status tells screen reader users what happens.
+  const status = preparing ? "Préparation de la voix" : speaking ? "Lecture en cours" : "";
   const button = (
-    <button
-      type="button"
-      onClick={speaking ? stop : start}
-      aria-pressed={speaking}
-      aria-busy={preparing || undefined}
-      title={preparing ? "Préparation de la voix" : speaking ? "Arrêter la lecture" : label}
-      className={cn(
-        "inline-flex shrink-0 items-center justify-center gap-2 rounded-control border border-border-strong bg-surface font-semibold text-text shadow-xs transition-colors hover:border-field-border hover:bg-surface-2",
-        compact === true ? "size-9" : compact === "mobile" ? "size-11 sm:h-11 sm:w-auto sm:px-3.5 sm:text-sm" : "h-10 px-3 text-sm",
-        speaking && "border-primary bg-primary-soft text-primary",
-        className,
-      )}
-    >
-      {speaking ? <Square className="size-4" aria-hidden /> : <Volume2 className="size-4" aria-hidden />}
-      <span className={compact === true ? "sr-only" : compact === "mobile" ? "max-sm:sr-only" : undefined}>{preparing ? "Préparation…" : speaking ? "Arrêter" : label}</span>
-    </button>
+    <>
+      <button
+        type="button"
+        onClick={speaking ? stop : start}
+        aria-label={label}
+        aria-pressed={speaking}
+        aria-busy={preparing || undefined}
+        title={preparing ? "Préparation de la voix" : speaking ? "Arrêter la lecture" : label}
+        data-speaking={speaking || undefined}
+        data-size={compact === true ? "sm" : undefined}
+        className={cn("ds-speak", className)}
+      >
+        {preparing ? <Loader2 className="animate-spin" aria-hidden /> : speaking ? <Square aria-hidden /> : <Volume2 aria-hidden />}
+      </button>
+      <span role="status" className="sr-only">
+        {status}
+      </span>
+    </>
   );
   if (!text || !translatable) return button;
   return (
     <>
       {button}
-      <TranslateContent text={text} compact={compact} />
+      <TranslateContent text={text} compact />
     </>
   );
 }

@@ -55,7 +55,7 @@ export default async function ContentsPage({ searchParams }: PageProps<"/espace/
     <>
       <PageHeader
         title="Annonces et ressources"
-        description={
+        info={
           managed
             ? "Les contenus que vous publiez ou que vous suivez dans votre périmètre, quel que soit leur public."
             : "Les informations qui vous sont destinées, et seulement celles-là. Chaque contenu peut être écouté."

@@ -98,7 +98,7 @@ export default async function ThreadPage({ params }: PageProps<"/espace/messages
           </CardBody>
         )}
       </Card>
-      <p className="mt-3 text-xs text-muted max-lg:sr-only">Les nouveaux messages s&apos;affichent automatiquement toutes les 15 secondes.</p>
+      <p className="sr-only">Les nouveaux messages s&apos;affichent automatiquement toutes les 15 secondes.</p>
       <AutoRefresh seconds={15} />
     </div>
   );

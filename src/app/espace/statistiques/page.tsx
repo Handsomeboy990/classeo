@@ -65,7 +65,9 @@ export default async function StatisticsPage({ searchParams }: PageProps<"/espac
     <div className="flex flex-col gap-6">
       <PageHeader
         title="Statistiques"
-        description={`Indicateurs clés de votre périmètre, année ${stats.yearLabel ?? ""}. Les résultats portent sur ${stats.previousYearLabel ?? "l'année précédente"}.`}
+        description={`Année ${stats.yearLabel ?? ""}`}
+        info={<MethodNote stats={stats} />}
+        infoSize="lg"
         actions={
           can(user, "statistics:export") ? (
             <>
@@ -94,7 +96,6 @@ export default async function StatisticsPage({ searchParams }: PageProps<"/espac
       </div>
       <IndicatorCards stats={stats} requestsHref={can(user, "request:view") ? "/espace/demandes?statut=PENDING" : undefined} />
       <Breakdown stats={stats} sort={sort} direction={direction} basePath="/espace/statistiques" searchParams={sp} hrefFor={hrefFor} />
-      <MethodNote stats={stats} />
     </div>
   );
 }

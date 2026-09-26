@@ -2,8 +2,13 @@ import type { ComponentProps, CSSProperties, ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
 
+import { InfoTip } from "@/components/kit/info-tip";
+
 import { DateField } from "./date-field";
+import { FileInput } from "./file-input";
 import { SelectField } from "./select";
+
+export { FileInput };
 
 // Form controls. The look lives in globals.css (.ds-field, .ds-check,
 // .ds-switch): tokens drive light, dark and high contrast alike, and a
@@ -58,6 +63,12 @@ export function Input({
   // Dates get the calendar of the design system (ui/date-field.tsx), which
   // keeps the native field as its value and as the fallback.
   if (props.type === "date" && leading == null && trailing == null) return <DateField className={className} fieldSize={fieldSize} {...props} />;
+  // Files get the drop zone of the design system (ui/file-input.tsx).
+  if (props.type === "file") {
+    const { type: _type, ...rest } = props;
+    void _type;
+    return <FileInput className={className} {...rest} />;
+  }
   return (
     <Adorned leading={leading} trailing={trailing} wrapperClassName={wrapperClassName}>
       <input className={cn("ds-field", className)} data-size={fieldSize === "md" ? undefined : fieldSize} {...props} />
@@ -119,21 +130,26 @@ export function Switch(props: ChoiceProps) {
 export function ChoiceGroup({
   legend,
   hint,
+  info,
   children,
   orientation = "vertical",
   className,
 }: {
   legend: ReactNode;
   hint?: ReactNode;
+  // Background text, in an info bubble after the legend (kept out of it, so
+  // the group's name stays the legend alone).
+  info?: string;
   children: ReactNode;
   orientation?: "vertical" | "horizontal";
   className?: string;
 }) {
   return (
     <fieldset className={cn("min-w-0", className)}>
-      <legend className="text-sm font-semibold text-text">{legend}</legend>
-      {hint && <p className="mt-0.5 text-sm text-muted">{hint}</p>}
-      <div className={cn("mt-1.5 flex", orientation === "horizontal" ? "flex-wrap gap-x-6" : "flex-col")}>{children}</div>
+      <legend className={cn("text-sm font-semibold text-text", info && "float-left mr-1.5")}>{legend}</legend>
+      {info && <InfoTip label="Plus d'informations sur ce choix">{info}</InfoTip>}
+      {hint && <p className="clear-left mt-0.5 text-sm text-muted">{hint}</p>}
+      <div className={cn("clear-left mt-1.5 flex", orientation === "horizontal" ? "flex-wrap gap-x-6" : "flex-col")}>{children}</div>
     </fieldset>
   );
 }

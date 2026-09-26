@@ -2,10 +2,11 @@ import { CheckCircle2, Clock, Globe, Inbox, Paperclip, XCircle } from "lucide-re
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { InfoTip } from "@/components/kit/info-tip";
 import { PageHeader } from "@/components/kit/page-header";
 import { EmptyState } from "@/components/kit/states";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { requireFeeStaff } from "@/features/fees/access";
 import { FeesNav } from "@/features/fees/components/fees-nav";
 import { feesTabs } from "@/features/fees/nav";
@@ -34,15 +35,17 @@ export default async function DeclarationsPage() {
 
   return (
     <>
-      <PageHeader title="Paiements des parents" description={`Déclarations Mobile Money et virements à vérifier, paiements en ligne · ${user.scope.label}`} />
+      <PageHeader title="Paiements des parents" description={user.scope.label} info="Déclarations Mobile Money et virements à vérifier, et paiements en ligne." />
       <FeesNav items={feesTabs(user)} />
 
       <div className="flex flex-col gap-6">
         <Card>
           <CardHeader>
             <div>
-              <CardTitle>À vérifier ({pending.length})</CardTitle>
-              <CardDescription>Retrouvez chaque transaction sur le relevé du compte avant de la confirmer. La plus ancienne en premier.</CardDescription>
+              <div className="flex items-center gap-1.5">
+                <CardTitle>À vérifier ({pending.length})</CardTitle>
+                <InfoTip>Retrouvez chaque transaction sur le relevé du compte avant de la confirmer. La plus ancienne en premier.</InfoTip>
+              </div>
             </div>
           </CardHeader>
           {pending.length === 0 ? (
@@ -126,8 +129,10 @@ export default async function DeclarationsPage() {
           <Card>
             <CardHeader>
               <div>
-                <CardTitle>Paiements en ligne</CardTitle>
-                <CardDescription>Confirmés par le prestataire et enregistrés automatiquement.</CardDescription>
+                <div className="flex items-center gap-1.5">
+                  <CardTitle>Paiements en ligne</CardTitle>
+                  <InfoTip>Confirmés par le prestataire et enregistrés automatiquement.</InfoTip>
+                </div>
               </div>
             </CardHeader>
             {online.length === 0 ? (

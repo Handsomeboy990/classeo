@@ -21,7 +21,7 @@ export default async function NewStudentPage() {
         </Link>{" "}
         / Inscription
       </nav>
-      <PageHeader title="Inscrire un élève" description="Inscription pour l'année active. Le matricule est attribué à l'enregistrement." />
+      <PageHeader title="Inscrire un élève" info="Inscription pour l'année active. Le matricule est attribué à l'enregistrement." />
       {classes.length ? (
         <StudentForm classes={classes} guardians={guardians} cancelHref="/espace/eleves" />
       ) : (

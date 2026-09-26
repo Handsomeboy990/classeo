@@ -48,7 +48,8 @@ export default async function PayrollPage(props: PageProps<"/espace/paie">) {
     <>
       <PageHeader
         title="Paie du personnel"
-        description={`Bulletins de ${monthLabel(month)} des enseignants payés par ${data.school.name}. Les agents de l'État sont payés par le ministère de l'Économie et des Finances.`}
+        description={`Bulletins de ${monthLabel(month)}`}
+        info={`Enseignants payés par ${data.school.name}. Les agents de l'État sont payés par le ministère de l'Économie et des Finances.`}
       />
       <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
         <UrlSelect param="mois" label="Mois" value={month} options={months.map((m) => ({ value: m, label: monthLabel(m) }))} className="sm:w-56" />

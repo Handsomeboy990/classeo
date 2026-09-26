@@ -1,6 +1,7 @@
 import { NotebookPen } from "lucide-react";
 import type { Metadata } from "next";
 
+import { InfoTip } from "@/components/kit/info-tip";
 import { AverageLevel } from "@/components/kit/level";
 import { EmptyState } from "@/components/kit/states";
 import { SpokenSummary } from "@/features/family/components/blocks";
@@ -47,9 +48,9 @@ export default async function TermGradesPage({ params }: PageProps<"/espace/suiv
     <div className="flex flex-col gap-5">
       <SpokenSummary text={text} label="Écouter les notes" />
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-card border border-border bg-surface p-4 [&_.rounded-full]:flex-wrap">
-        <div>
+        <div className="flex items-center gap-1.5">
           <h2 className="text-lg font-bold">{term.period.name} · moyenne provisoire</h2>
-          <p className="text-sm text-muted">Calculée avec les notes déjà saisies, coefficients compris.</p>
+          <InfoTip>Calculée avec les notes déjà saisies, coefficients compris.</InfoTip>
         </div>
         <AverageLevel average={term.average} size="lg" />
       </div>

@@ -4,12 +4,13 @@ import { Lock, RotateCcw, Save } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState, useTransition, type KeyboardEvent } from "react";
 
+import { InfoTip } from "@/components/kit/info-tip";
 import { AverageLevel } from "@/components/kit/level";
 import { toast } from "@/components/kit/toaster";
 import { Button } from "@/components/ui/button";
 import { parseGradeValue } from "@/lib/domain/grade-entry";
 import { round2 } from "@/lib/domain/grades";
-import { cn, formatAverage } from "@/lib/utils";
+import { formatAverage } from "@/lib/utils";
 
 import { saveResults } from "../actions";
 
@@ -121,7 +122,12 @@ export function ResultsGrid({
   return (
     <div className="flex flex-col rounded-card border border-border bg-surface">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border p-4">
-        <p className="text-sm text-muted" aria-live="polite">
+        {editable.length > 0 && (
+          <InfoTip id="mock-grid-help" label="Aide à la saisie des notes" className="order-first">
+            Notes sur 20, virgule ou point pour les décimales, case vide si pas de note. Entrée ou flèches pour changer d&apos;élève, Ctrl+S pour enregistrer.
+          </InfoTip>
+        )}
+        <p className="mr-auto text-sm text-muted" aria-live="polite">
           {editable.length === 0 ? (
             <span className="inline-flex items-center gap-2 font-semibold">
               <Lock className="size-4" aria-hidden /> {readOnlyReason ?? "Consultation seule"}
@@ -145,11 +151,6 @@ export function ResultsGrid({
           </div>
         )}
       </div>
-      {editable.length > 0 && (
-        <p id="mock-grid-help" className="border-b border-border bg-surface-2/60 px-4 py-2 text-xs text-muted">
-          Notes sur 20, virgule ou point pour les décimales, case vide si pas de note. Entrée ou flèches pour changer d&apos;élève, Ctrl+S pour enregistrer.
-        </p>
-      )}
       {rows.length === 0 ? (
         <p className="p-8 text-center text-muted">Aucun élève inscrit dans cette classe.</p>
       ) : (
@@ -205,10 +206,8 @@ export function ResultsGrid({
                               onChange={(e) => setValues((v) => ({ ...v, [r.enrollmentId]: { ...v[r.enrollmentId], [s.code]: e.target.value } }))}
                               onFocus={(e) => e.currentTarget.select()}
                               onKeyDown={(e) => onKeyDown(e, ri, ci)}
-                              className={cn(
-                                "h-10 w-16 rounded-md border bg-surface text-center font-semibold text-text tabular-nums focus:border-primary",
-                                error ? "border-danger bg-danger-soft" : changed ? "border-primary bg-primary-soft" : "border-border-strong",
-                              )}
+                              data-state={changed && !error ? "changed" : undefined}
+                              className="ds-cell"
                             />
                           ) : (
                             <span className="inline-block w-16 font-semibold tabular-nums">{value || <span className="text-muted">–</span>}</span>

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, useTransition, type ChangeEvent, type FocusEvent, type KeyboardEvent } from "react";
 
+import { InfoTip } from "@/components/kit/info-tip";
 import { AverageLevel } from "@/components/kit/level";
 import { toast } from "@/components/kit/toaster";
 import { Alert } from "@/components/ui/alert";
@@ -304,7 +305,8 @@ export function GradeGrid({
         onChange: (e: ChangeEvent<HTMLInputElement>) => setValues((v) => ({ ...v, [r.enrollmentId]: { ...v[r.enrollmentId], [c.key]: e.target.value } })),
         onFocus: (e: FocusEvent<HTMLInputElement>) => e.currentTarget.select(),
       },
-      tone: error ? "border-danger bg-danger-soft" : changed ? "border-primary bg-primary-soft" : waiting ? "border-warning border-dashed bg-warning-soft" : "border-border-strong",
+      tone: !error && waiting ? "border-warning border-dashed bg-warning-soft" : "",
+      state: error ? undefined : changed ? "changed" : undefined,
     };
   }
 
@@ -358,19 +360,22 @@ export function GradeGrid({
           <span className="whitespace-nowrap text-muted">Moyenne de la classe :</span>
           <AverageLevel average={computed.classAverage} />
         </p>
+        {/* How to type, in a bubble; every mark field is described by it. */}
+        {editable && (
+          <span className="inline-flex items-center gap-1.5 text-muted">
+            Aide à la saisie
+            <InfoTip label="Aide à la saisie des notes">
+              <span id="grid-help-table" className="max-sm:hidden">
+                Notes sur 20, virgule ou point pour les décimales, case vide si pas de note. Entrée ou flèches pour passer d&apos;une case à l&apos;autre, Échap pour
+                annuler une case, Ctrl+S pour enregistrer.
+              </span>
+              <span id="grid-help-cards" className="sm:hidden">
+                Notes sur 20, virgule ou point pour les décimales, case vide si pas de note. La touche Suivant passe à l&apos;élève suivant.
+              </span>
+            </InfoTip>
+          </span>
+        )}
       </div>
-
-      {editable && (
-        <div className="border-b border-border bg-surface-2/60 px-4 py-2 text-xs text-muted lg:col-span-2">
-          <p id="grid-help-table" className="max-sm:hidden">
-            Notes sur 20, virgule ou point pour les décimales, case vide si pas de note. Entrée ou flèches pour passer d&apos;une case à l&apos;autre, Échap pour
-            annuler une case, Ctrl+S pour enregistrer.
-          </p>
-          <p id="grid-help-cards" className="sm:hidden">
-            Notes sur 20, virgule ou point pour les décimales, case vide si pas de note. La touche Suivant passe à l&apos;élève suivant.
-          </p>
-        </div>
-      )}
 
       {rows.length === 0 ? (
         <p className="p-8 text-center text-muted lg:col-span-2">Aucun élève inscrit dans cette classe.</p>
@@ -408,7 +413,9 @@ export function GradeGrid({
                               id={id}
                               {...f.props}
                               onKeyDown={(e) => onKeyDown(e, ri, ci)}
-                              className={cn("h-12 w-full min-w-0 rounded-control border bg-surface text-center text-base font-semibold text-text tabular-nums focus:border-primary", f.tone)}
+                              data-size="lg"
+                              data-state={f.state}
+                              className={cn("ds-cell", f.tone)}
                             />
                           ) : (
                             <span id={id} className="flex h-12 items-center justify-center rounded-control bg-surface-2 text-base font-semibold tabular-nums">
@@ -487,7 +494,8 @@ export function GradeGrid({
                               <input
                                 {...f.props}
                                 onKeyDown={(e) => onKeyDown(e, ri, ci)}
-                                className={cn("h-10 w-16 rounded-md border bg-surface text-center font-semibold text-text tabular-nums focus:border-primary", f.tone)}
+                                data-state={f.state}
+                                className={cn("ds-cell", f.tone)}
                               />
                             ) : (
                               <span className="inline-block w-16 font-semibold tabular-nums">{f.value || <span className="text-muted">–</span>}</span>

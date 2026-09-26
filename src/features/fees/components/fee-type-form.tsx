@@ -27,7 +27,7 @@ export function FeeTypeFields({ levels, initial }: { levels: { id: string; name:
       <FormField label="Montant par élève" name="amount" required>
         <Input type="number" inputMode="numeric" min={1} step={1} defaultValue={initial?.amount} trailing="FCFA" />
       </FormField>
-      <FormField label="Niveau concerné" name="levelId" hint="« Tous les niveaux » facture chaque élève de l'établissement.">
+      <FormField label="Niveau concerné" name="levelId" info="« Tous les niveaux » facture chaque élève de l'établissement.">
         <Select defaultValue={initial?.levelId ?? ""}>
           <option value="">Tous les niveaux</option>
           {levels.map((l) => (

@@ -1,6 +1,7 @@
 import { CalendarCheck, CalendarDays, Download, School, UserSquare2, UserX } from "lucide-react";
 import type { Metadata } from "next";
 
+import { InfoTip } from "@/components/kit/info-tip";
 import { BarChart } from "@/components/kit/bar-chart";
 import { PageHeader } from "@/components/kit/page-header";
 import { StatCard, StatGrid } from "@/components/kit/stat-card";
@@ -105,7 +106,10 @@ export default async function AttendancePage(props: PageProps<"/espace/presences
         />
         <Card className="self-start">
           <CardHeader>
-            <CardTitle>Élèves les plus absents</CardTitle>
+            <div className="flex items-center gap-1.5">
+              <CardTitle>Élèves les plus absents</CardTitle>
+              <InfoTip>Demi-journées d&apos;absence depuis la rentrée, hors absences excusées.</InfoTip>
+            </div>
           </CardHeader>
           <CardBody>
             {absentees.length ? (
@@ -122,7 +126,6 @@ export default async function AttendancePage(props: PageProps<"/espace/presences
             ) : (
               <p className="text-sm text-muted">Aucune absence depuis la rentrée.</p>
             )}
-            <p className="mt-3 text-xs text-muted">Demi-journées d&apos;absence depuis la rentrée, hors absences excusées.</p>
           </CardBody>
         </Card>
       </div>

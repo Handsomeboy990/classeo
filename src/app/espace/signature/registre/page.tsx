@@ -29,7 +29,7 @@ export default async function RegisterPage({ searchParams }: PageProps<"/espace/
 
   return (
     <>
-      <PageHeader title="Documents délivrés" description={`Registre des documents générés, avec leur code de vérification · ${user.scope.label}`} />
+      <PageHeader title="Documents délivrés" description={user.scope.label} info="Registre des documents générés, avec leur code de vérification." />
       <SignatureNav items={signatureTabs(user)} />
       <Card>
         <CardHeader>

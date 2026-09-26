@@ -1,10 +1,11 @@
 import { FileSignature, ShieldCheck } from "lucide-react";
 import type { Metadata } from "next";
 
+import { InfoTip } from "@/components/kit/info-tip";
 import { PageHeader } from "@/components/kit/page-header";
 import { Alert } from "@/components/ui/alert";
 import { ButtonLink } from "@/components/ui/button";
-import { Card, CardBody, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { SIGNER_LABELS, signerKind } from "@/features/signatures/access";
 import { SignatureImageForm } from "@/features/signatures/components/image-forms";
 import { SignaturePad } from "@/features/signatures/components/signature-pad";
@@ -51,8 +52,10 @@ export default async function SignaturePage() {
           <Card>
             <CardHeader>
               <div>
-                <CardTitle>Tracer ma signature</CardTitle>
-                <CardDescription>Sur un téléphone, une tablette ou avec la souris.</CardDescription>
+                <div className="flex items-center gap-1.5">
+                  <CardTitle>Tracer ma signature</CardTitle>
+                  <InfoTip>Sur un téléphone, une tablette ou avec la souris.</InfoTip>
+                </div>
               </div>
             </CardHeader>
             <CardBody>
@@ -64,8 +67,10 @@ export default async function SignaturePage() {
             <Card>
               <CardHeader>
                 <div>
-                  <CardTitle>Ou importer une image</CardTitle>
-                  <CardDescription>Une signature scannée, détourée sur fond transparent.</CardDescription>
+                  <div className="flex items-center gap-1.5">
+                    <CardTitle>Ou importer une image</CardTitle>
+                    <InfoTip>Une signature scannée, détourée sur fond transparent.</InfoTip>
+                  </div>
                 </div>
               </CardHeader>
               <CardBody>
@@ -75,8 +80,10 @@ export default async function SignaturePage() {
             <Card>
               <CardHeader>
                 <div>
-                  <CardTitle>Cachet</CardTitle>
-                  <CardDescription>Le cachet de votre fonction, apposé à côté de la signature.</CardDescription>
+                  <div className="flex items-center gap-1.5">
+                    <CardTitle>Cachet</CardTitle>
+                    <InfoTip>Le cachet de votre fonction, apposé à côté de la signature.</InfoTip>
+                  </div>
                 </div>
               </CardHeader>
               <CardBody>

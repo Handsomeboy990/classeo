@@ -22,7 +22,6 @@ export function UploadDocForm({ requestId }: { requestId: string }) {
           type="file"
           accept="application/pdf,image/jpeg,image/png"
           onChange={(e) => setTooBig((e.target.files?.[0]?.size ?? 0) > MAX_DOCUMENT_BYTES)}
-          className="file:mr-3 file:rounded-control file:border file:border-border-strong file:bg-surface file:px-3 file:py-1.5 file:font-semibold"
         />
       </FormField>
       <SubmitButton variant="secondary" pendingLabel="Envoi…" disabled={tooBig}>

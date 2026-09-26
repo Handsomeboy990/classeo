@@ -26,7 +26,7 @@ export default async function TerritoryPage({ searchParams }: PageProps<"/espace
 
   return (
     <div className="flex flex-col gap-6">
-      <PageHeader title="Territoire national" description="Indicateurs clés des 12 départements du Bénin. Un département ouvre le détail de ses communes." />
+      <PageHeader title="Territoire national" info="Indicateurs clés des 12 départements du Bénin. Un département ouvre le détail de ses communes." />
       <ScopeBreadcrumb scope={{ level: "NATIONAL" }} basePath="/espace/territoire" user={user} />
       <IndicatorCards stats={stats} requestsHref={can(user, "request:view") ? "/espace/demandes?statut=PENDING" : undefined} />
       <Breakdown

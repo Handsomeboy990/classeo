@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 
 import { Avatar } from "@/components/ui/avatar";
 import { frenchTextContent } from "@/features/languages/client";
+import { SpaceLanguageMenu } from "@/features/languages/language-menu";
 
 import { AccountSheet, type ShellUser } from "./account-sheet";
 import { BellLink } from "./bell-link";
@@ -62,7 +63,21 @@ function useScrolledHeading(pathname: string) {
 // menu pages speak for the user's territory or school (flag or logo and its
 // name, with the school switcher); a page below a menu entry gets a back
 // button and the entry's name.
-export function AppBar({ sections, unread, user, pushKey, scope }: { sections: RenderedSection[]; unread: number; user: ShellUser; pushKey: string | null; scope: ShellScope }) {
+export function AppBar({
+  sections,
+  unread,
+  user,
+  pushKey,
+  scope,
+  languages,
+}: {
+  sections: RenderedSection[];
+  unread: number;
+  user: ShellUser;
+  pushKey: string | null;
+  scope: ShellScope;
+  languages: string[] | null;
+}) {
   const pathname = usePathname();
   const router = useRouter();
   const [account, setAccount] = useState(false);
@@ -108,6 +123,7 @@ export function AppBar({ sections, unread, user, pushKey, scope }: { sections: R
           <ScopeIdentity scope={scope} compact />
         </div>
       )}
+      {languages && <SpaceLanguageMenu languages={languages} className="mx-0.5" />}
       <BellLink unread={unread} />
       <button
         type="button"

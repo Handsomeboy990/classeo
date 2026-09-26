@@ -120,7 +120,8 @@ export default async function ReportCardsPage(props: PageProps<"/espace/bulletin
     <>
       <PageHeader
         title={`Bulletins · ${classroom.name}`}
-        description={`${period.name}, ${year.label} · calculé à partir des notes saisies`}
+        description={`${period.name}, ${year.label}`}
+        info="Calculé à partir des notes saisies : un bulletin se met à jour tant qu'il n'est pas publié."
         actions={
           <>
             {can(user, "report_card:export") && (

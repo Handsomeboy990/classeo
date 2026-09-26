@@ -101,7 +101,8 @@ export default async function SchoolsPage({ searchParams }: PageProps<"/espace/e
     <div className="flex flex-col gap-4">
       <PageHeader
         title="Établissements"
-        description={`Écoles, collèges et lycées de votre périmètre : ${user.scope.label}.`}
+        description={user.scope.label}
+        info="Écoles, collèges et lycées de votre périmètre."
         actions={
           <>
             {can(user, "school:export") && (

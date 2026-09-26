@@ -73,7 +73,7 @@ export function Breakdown({
       ? "Échelle de 0 à 100 %."
       : meta.format === "average"
         ? "Échelle de 0 à 20."
-        : "La barre la plus longue correspond à la valeur la plus élevée.";
+        : undefined;
   const chartData = rows
     .filter((r) => r.indicators[activeSort] !== null)
     .map((r) => {

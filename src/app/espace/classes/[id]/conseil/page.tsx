@@ -101,7 +101,8 @@ export default async function CouncilPage(props: PageProps<"/espace/classes/[id]
       </nav>
       <PageHeader
         title={`Conseil de classe, ${classroom.name}`}
-        description={`Décisions de fin d'année ${classroom.academicYear.label}. Moyenne annuelle : ${YEARLY_RULE[classroom.school.periodicity]}.`}
+        description={`Décisions de fin d'année ${classroom.academicYear.label}`}
+        info={`Moyenne annuelle : ${YEARLY_RULE[classroom.school.periodicity]}.`}
       />
       <Alert tone="info" className="mb-4">
         Proposition selon l&apos;arrêté n° 029 du 6 mai 2024 : passage à partir de 10/20 de moyenne annuelle, redoublement en dessous. Au primaire, le passage est de droit

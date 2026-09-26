@@ -23,8 +23,8 @@ describe("public translation lookup", () => {
     // Broken answers of the service, all kept in French.
     Langue: "",
     Voix: "Voix",
-    "Prototype présenté au défi EduTech Bénin 2026.": "Prototype ɖò EduTech Bénin 2025 mɛ.",
-    "Plateforme nationale de l'éducation, prototype présenté au défi EduTech Bénin, 2026.": "Azɔ̌watɛn tò ɔ tɔn, ɖò défi Bénin, 2026.",
+    "Année scolaire 2026-2027 au Bénin.": "Xwe wemaxɔmɛ tɔn 2025-2026 ɖò Bénin.",
+    "Classéo, la plateforme de gestion scolaire pour le Bénin.": "Azɔ̌watɛn wemaxɔmɛ tɔn.",
     "Accessible à tous": "mɛ mɛ mɛ mɛ",
     // Names and identifiers kept as written: accepted.
     "Votre prénom et votre nom, séparés par un point. Par exemple : afiavi.hounkpatin": "Nyikɔ towe kpo xwédo towe kpo. Ðiðɔ : afiavi.hounkpatin",
@@ -52,8 +52,8 @@ describe("public translation lookup", () => {
     for (const source of [
       "Langue",
       "Voix",
-      "Prototype présenté au défi EduTech Bénin 2026.",
-      "Plateforme nationale de l'éducation, prototype présenté au défi EduTech Bénin, 2026.",
+      "Année scolaire 2026-2027 au Bénin.",
+      "Classéo, la plateforme de gestion scolaire pour le Bénin.",
       "Accessible à tous",
       "Si une autre personne porte déjà le même nom, un chiffre est ajouté à la fin, par exemple afiavi.hounkpatin2.",
     ])

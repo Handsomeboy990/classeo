@@ -18,7 +18,7 @@ export default async function HelpPage() {
 
   return (
     <>
-      <PageHeader title="Guide d'utilisation" description="Les étapes utiles à votre profil, les réglages d'affichage et les réponses aux questions fréquentes." />
+      <PageHeader title="Guide d'utilisation" info="Les étapes utiles à votre profil, les réglages d'affichage et les réponses aux questions fréquentes." />
       <div className="flex flex-col gap-10">
         <GuideSteps guide={mine} />
 

@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { InfoTip } from "@/components/kit/info-tip";
 import { PageHeader } from "@/components/kit/page-header";
 import { EmptyState } from "@/components/kit/states";
 import { Alert } from "@/components/ui/alert";
@@ -121,8 +122,10 @@ export default async function PayInvoicePage({ params }: PageProps<"/espace/paye
             <Card>
               <CardHeader>
                 <div>
-                  <CardTitle>Payer en ligne</CardTitle>
-                  <CardDescription>Mobile Money ou carte bancaire, confirmé automatiquement.</CardDescription>
+                  <div className="flex items-center gap-1.5">
+                    <CardTitle>Payer en ligne</CardTitle>
+                    <InfoTip>Mobile Money ou carte bancaire, confirmé automatiquement.</InfoTip>
+                  </div>
                 </div>
               </CardHeader>
               <CardBody>

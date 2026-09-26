@@ -38,7 +38,7 @@ export function RequestFormDialog() {
             </Select>
           </FormField>
           {type === "YEAR_EXTENSION" && (
-            <FormField label="Date souhaitée" name="wishedUntil" hint="Jusqu'à quand votre établissement a besoin de modifier l'année close. Le ministère fixe la date.">
+            <FormField label="Date souhaitée" name="wishedUntil" info="Jusqu'à quand votre établissement a besoin de modifier l'année close. Le ministère fixe la date.">
               <Input type="date" />
             </FormField>
           )}

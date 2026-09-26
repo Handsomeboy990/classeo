@@ -49,7 +49,7 @@ export default async function RequestsPage({ searchParams }: PageProps<"/espace/
     <div className="flex flex-col gap-4">
       <PageHeader
         title="Demandes"
-        description={isSchool ? "Demandes de votre établissement au ministère et décisions reçues." : "Demandes des établissements de votre périmètre. Chaque décision est accompagnée d'une note motivée."}
+        info={isSchool ? "Demandes de votre établissement au ministère et décisions reçues." : "Demandes des établissements de votre périmètre. Chaque décision est accompagnée d'une note motivée."}
         actions={can(user, "request:create") && isSchool ? <RequestFormDialog /> : null}
       />
       <nav aria-label="Filtrer par statut" className="relative -mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">

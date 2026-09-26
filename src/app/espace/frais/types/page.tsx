@@ -32,7 +32,8 @@ export default async function FeeTypesPage() {
     <>
       <PageHeader
         title="Types de frais et échéanciers"
-        description={`Frais facturés par l'établissement${year ? ` en ${year.label}` : ""} et leurs tranches de paiement.`}
+        description={year ? `Année ${year.label}` : undefined}
+        info="Frais facturés par l'établissement et leurs tranches de paiement."
         actions={
           canCreate ? (
             <FormDialog

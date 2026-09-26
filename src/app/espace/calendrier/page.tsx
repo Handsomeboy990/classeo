@@ -80,7 +80,7 @@ export default async function CalendarPage() {
     <div className="flex flex-col gap-6">
       <PageHeader
         title="Calendrier scolaire"
-        description={
+        info={
           ministry
             ? "Le ministère fixe les années et leurs périodes. Tous les établissements, publics et privés, suivent ce calendrier."
             : "Calendrier fixé par le ministère pour tous les établissements, publics et privés."

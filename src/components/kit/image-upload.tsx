@@ -3,6 +3,7 @@
 import { ImagePlus, X } from "lucide-react";
 import { useId, useRef, useState } from "react";
 
+import { FileInput } from "@/components/ui/file-input";
 import { cn } from "@/lib/utils";
 
 // Resizes an image in the browser so a phone photo of several megabytes is
@@ -80,12 +81,12 @@ export function ImageUpload({
           <ImagePlus className="size-7 text-muted" aria-hidden />
         )}
       </div>
-      <div className="flex min-w-0 flex-col gap-1.5">
+      <div className="flex min-w-0 flex-1 flex-col gap-1.5">
         <label htmlFor={id} className="text-sm font-semibold text-text">
           {label}
         </label>
         <div className="flex flex-wrap items-center gap-2">
-          <input ref={input} id={id} name={name} type="file" accept={accept} onChange={onChange} disabled={busy} className="max-w-full text-sm file:mr-3 file:rounded-control file:border file:border-border-strong file:bg-surface file:px-3 file:py-2 file:font-semibold file:text-text hover:file:bg-surface-2" />
+          <FileInput ref={input} id={id} name={name} accept={accept} onChange={onChange} disabled={busy} placeholder="Choisir une image" className="min-w-0 flex-1" />
           {preview && preview !== currentUrl && (
             <button type="button" onClick={clear} className="inline-flex items-center gap-1 text-sm text-muted hover:text-text">
               <X className="size-4" aria-hidden /> Annuler

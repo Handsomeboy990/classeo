@@ -22,7 +22,7 @@ export default async function CommunePage({ params, searchParams }: PageProps<"/
 
   return (
     <div className="flex flex-col gap-6">
-      <PageHeader title={`Commune ${/^[AEIOUYÀÂÉÈÊÎÔ]/i.test(commune.name) ? "d’" : "de "}${commune.name}`} description={`Département ${commune.department.name}. Indicateurs de la commune et de chacun de ses établissements.`} />
+      <PageHeader title={`Commune ${/^[AEIOUYÀÂÉÈÊÎÔ]/i.test(commune.name) ? "d’" : "de "}${commune.name}`} description={`Département ${commune.department.name}`} info="Indicateurs de la commune et de chacun de ses établissements." />
       <ScopeBreadcrumb scope={{ level: "COMMUNE", id: commune.id }} basePath="/espace/territoire" user={user} />
       <IndicatorCards stats={stats} requestsHref={can(user, "request:view") ? "/espace/demandes?statut=PENDING" : undefined} />
       <Breakdown

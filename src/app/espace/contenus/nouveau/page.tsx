@@ -14,7 +14,7 @@ export default async function NewContentPage() {
 
   return (
     <div className="max-w-3xl">
-      <PageHeader title="Nouveau contenu" description="Annonce, ressource pédagogique ou événement. Le résumé facile à lire et la transcription servent à ceux qui écoutent le texte ou ne l'entendent pas." />
+      <PageHeader title="Nouveau contenu" info="Annonce, ressource pédagogique ou événement. Le résumé facile à lire et la transcription servent à ceux qui écoutent le texte ou ne l'entendent pas." />
       {targets.length === 0 ? (
         <Alert tone="warning" title="Aucune cible disponible">
           Votre compte n&apos;est rattaché à aucune classe ni à aucun territoire. Contactez votre administrateur.
