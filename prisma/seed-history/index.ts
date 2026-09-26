@@ -305,7 +305,7 @@ export async function seedHistory(input: HistoryInput) {
   const formerOf = new Map<string, string>();
   const { phone } = people(rng);
   const former = (teacherId: string) => {
-    let f = formerOf.get(teacherId);
+    const f = formerOf.get(teacherId);
     if (f) return f;
     const t = teacherById.get(teacherId)!;
     const p = person();
