@@ -1,6 +1,6 @@
 import "server-only";
 
-import { getActiveYear, getCurrentPeriod } from "@/features/classes/academic";
+import { getActiveYear, getCurrentPeriod, userPeriodicity } from "@/features/classes/academic";
 import { classroomOptions } from "@/features/classes/queries";
 import { followedEnrollments } from "@/features/family/queries";
 import { allowedSections } from "@/features/family/sections";
@@ -43,7 +43,7 @@ export async function offlinePages(user: User): Promise<string[]> {
 
     if (can(user, "grade:view")) {
       add("/espace/notes");
-      const [year, period] = await Promise.all([getActiveYear(), getCurrentPeriod()]);
+      const [year, period] = await Promise.all([getActiveYear(), getCurrentPeriod(userPeriodicity(user))]);
       if (teacher && year && period && can(user, "grade:update")) {
         const sheets = await db.gradeSheet.findMany({
           where: { AND: [sheetWriteWhere(user), { periodId: period.id, assignment: { classroom: { academicYearId: year.id } } }] },

@@ -14,6 +14,7 @@ import { YearFields, type YearFormValues } from "@/features/calendar/components/
 import { extensionSchoolOptions, listYears, schoolYearAccess } from "@/features/calendar/queries";
 import { isoToUtc, toIso, YEAR_STATUS_LABELS, YEAR_STATUS_TONES } from "@/features/calendar/rules";
 import { can, requirePermission } from "@/lib/auth/authorize";
+import { PERIODICITY_LABELS, periodsOf } from "@/lib/domain/periodicity";
 import { formatDate, formatNumber } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Calendrier scolaire" };
@@ -26,7 +27,8 @@ function formValues(y: Year): YearFormValues {
     label: y.label,
     startDate: toIso(y.startDate),
     endDate: toIso(y.endDate),
-    periods: y.periods.map((p) => ({ name: p.name, startDate: toIso(p.startDate), endDate: toIso(p.endDate) })),
+    periods: periodsOf(y.periods, "TRIMESTER").map((p) => ({ name: p.name, startDate: toIso(p.startDate), endDate: toIso(p.endDate) })),
+    semesters: periodsOf(y.periods, "SEMESTER").map((p) => ({ startDate: toIso(p.startDate), endDate: toIso(p.endDate) })),
   };
 }
 
@@ -34,16 +36,24 @@ function formValues(y: Year): YearFormValues {
 function nextYearValues(latest: Year | undefined): YearFormValues {
   const first = latest ? latest.startDate.getUTCFullYear() + 1 : new Date().getUTCFullYear();
   const start = isoToUtc(`${first}-09-14`);
-  const end = isoToUtc(`${first + 1}-07-02`);
+  const end = isoToUtc(`${first + 1}-06-25`);
   return {
     label: `${first}-${first + 1}`,
     startDate: toIso(start),
     endDate: toIso(end),
-    // Three terms separated by the Christmas and Easter holidays, as usual.
+    // Shaped like the 2026-2027 calendar (interministerial order of 28 July
+    // 2026): no break before Christmas, a February pause inside the second
+    // term, holidays from late March to early April, end of classes in June.
+    // The ministry adjusts the dates to the order of the year.
     periods: [
       { name: "Trimestre 1", startDate: toIso(start), endDate: `${first}-12-18` },
-      { name: "Trimestre 2", startDate: `${first + 1}-01-04`, endDate: `${first + 1}-03-26` },
-      { name: "Trimestre 3", startDate: `${first + 1}-04-12`, endDate: toIso(end) },
+      { name: "Trimestre 2", startDate: `${first + 1}-01-04`, endDate: `${first + 1}-03-24` },
+      { name: "Trimestre 3", startDate: `${first + 1}-04-08`, endDate: toIso(end) },
+    ],
+    // First semester up to the February pause, second one after it.
+    semesters: [
+      { startDate: toIso(start), endDate: `${first + 1}-02-18` },
+      { startDate: `${first + 1}-03-01`, endDate: toIso(end) },
     ],
   };
 }
@@ -186,18 +196,26 @@ export default async function CalendarPage() {
                 </div>
               </CardHeader>
               <CardBody className="grid gap-5 lg:grid-cols-2">
-                <section aria-label={`Périodes ${y.label}`}>
-                  <h3 className="mb-2 text-sm font-semibold text-muted">Périodes</h3>
-                  <ol className="flex flex-col gap-2">
-                    {y.periods.map((p) => (
-                      <li key={p.id} className="flex flex-wrap items-baseline justify-between gap-x-3 rounded-control border border-border px-3 py-2">
-                        <span className="font-semibold">{p.name}</span>
-                        <span className="text-sm text-muted">
-                          {formatDate(p.startDate)} au {formatDate(p.endDate)}
-                        </span>
-                      </li>
-                    ))}
-                  </ol>
+                <section aria-label={`Périodes ${y.label}`} className="flex flex-col gap-4">
+                  {(["TRIMESTER", "SEMESTER"] as const).map((kind) => {
+                    const list = periodsOf(y.periods, kind);
+                    if (!list.length) return null;
+                    return (
+                      <div key={kind}>
+                        <h3 className="mb-2 text-sm font-semibold text-muted">{PERIODICITY_LABELS[kind]}</h3>
+                        <ol className="flex flex-col gap-2">
+                          {list.map((p) => (
+                            <li key={p.id} className="flex flex-wrap items-baseline justify-between gap-x-3 rounded-control border border-border px-3 py-2">
+                              <span className="font-semibold">{p.name}</span>
+                              <span className="text-sm text-muted">
+                                {formatDate(p.startDate)} au {formatDate(p.endDate)}
+                              </span>
+                            </li>
+                          ))}
+                        </ol>
+                      </div>
+                    );
+                  })}
                 </section>
                 <section aria-label={`Prolongations ${y.label}`}>
                   <h3 className="mb-2 text-sm font-semibold text-muted">Prolongations</h3>

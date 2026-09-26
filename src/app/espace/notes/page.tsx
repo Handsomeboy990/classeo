@@ -7,10 +7,11 @@ import { PageHeader } from "@/components/kit/page-header";
 import { EmptyState } from "@/components/kit/states";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
-import { getActiveYear, getCurrentPeriod } from "@/features/classes/academic";
+import { getActiveYear, getCurrentPeriod, getYearPeriods, userPeriodicity } from "@/features/classes/academic";
 import { UrlSelect } from "@/components/kit/url-select";
 import { ClassLockButtons, CreateSheetDialog } from "@/features/grades/components/sheet-forms";
 import { assignmentsWithoutSheet, listSheets, sheetFilterOptions } from "@/features/grades/queries";
+import { db } from "@/lib/db";
 import { can, requirePermission } from "@/lib/auth/authorize";
 import { FORMULA_SHORT } from "@/lib/domain/grade-entry";
 import { listParams, param } from "@/lib/list";
@@ -36,12 +37,17 @@ export default async function NotesPage(props: PageProps<"/espace/notes">) {
   const user = await requirePermission("grade:view");
   const sp = await props.searchParams;
   const { q, page, skip, take } = listParams(sp, 30);
-  const [year, current] = await Promise.all([getActiveYear(), getCurrentPeriod()]);
+  const periodicity = userPeriodicity(user);
+  const [year, current, periods] = await Promise.all([getActiveYear(), getCurrentPeriod(periodicity), getYearPeriods(periodicity)]);
   if (!year || !current) return <EmptyState title="Aucune année scolaire active" description="Les fiches de notes apparaîtront dès qu'une année scolaire sera ouverte." />;
 
-  const periodId = year.periods.find((p) => p.id === param(sp, "periode"))?.id ?? current.id;
-  const period = year.periods.find((p) => p.id === periodId)!;
-  const classes = await sheetFilterOptions(user, year.id);
+  const periodId = periods.find((p) => p.id === param(sp, "periode"))?.id ?? current.id;
+  const period = periods.find((p) => p.id === periodId)!;
+  const [classes, school] = await Promise.all([
+    sheetFilterOptions(user, year.id),
+    user.scope.schoolId ? db.school.findUnique({ where: { id: user.scope.schoolId }, select: { allowsComposition: true } }) : null,
+  ]);
+  const allowsComposition = school?.allowsComposition ?? false;
   const classroomId = classes.find((c) => c.id === param(sp, "classe"))?.id;
   const canCreate = can(user, "grade:create") && !period.isClosed;
   const [{ rows, total }, assignments] = await Promise.all([
@@ -114,7 +120,7 @@ export default async function NotesPage(props: PageProps<"/espace/notes">) {
               </a>
             )}
             {can(user, "grade:lock") && selectedClass && <ClassLockButtons classroomId={selectedClass.id} periodId={periodId} className={selectedClass.name} />}
-            {canCreate && <CreateSheetDialog assignments={assignments} periods={year.periods.filter((p) => !p.isClosed)} defaultPeriodId={periodId} />}
+            {canCreate && <CreateSheetDialog assignments={assignments} periods={periods.filter((p) => !p.isClosed)} defaultPeriodId={periodId} allowsComposition={allowsComposition} />}
           </>
         }
       />
@@ -131,7 +137,7 @@ export default async function NotesPage(props: PageProps<"/espace/notes">) {
         searchPlaceholder="Matière, classe ou enseignant"
         toolbar={
           <>
-            <UrlSelect param="periode" label="Période" hideLabel value={periodId} options={year.periods.map((p) => ({ value: p.id, label: `${p.name}${p.isClosed ? " (clôturée)" : ""}` }))} className="sm:w-48" />
+            <UrlSelect param="periode" label="Période" hideLabel value={periodId} options={periods.map((p) => ({ value: p.id, label: `${p.name}${p.isClosed ? " (clôturée)" : ""}` }))} className="sm:w-48" />
             <UrlSelect
               param="classe"
               label="Classe"

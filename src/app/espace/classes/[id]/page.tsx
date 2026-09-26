@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TD, TH, THead, TR } from "@/components/ui/table";
-import { getCurrentPeriod } from "@/features/classes/academic";
+import { getCurrentPeriod, schoolPeriodicity } from "@/features/classes/academic";
 import { deleteAssignment, deleteClassroom } from "@/features/classes/actions";
 import { AssignmentDialog, EditClassDialog } from "@/features/classes/components/class-forms";
 import { ConfirmButton } from "@/components/kit/confirm-button";
@@ -33,7 +33,7 @@ export default async function ClassPage(props: PageProps<"/espace/classes/[id]">
   const classroom = await getClassroom(user, id);
   if (!classroom) notFound();
 
-  const period = await getCurrentPeriod();
+  const period = await getCurrentPeriod(await schoolPeriodicity(classroom.schoolId));
   const week = schoolWeek(todayIso());
   const canUpdate = can(user, "class:update");
   // Averages and attendance need their own rights: seeing a class (accountant,

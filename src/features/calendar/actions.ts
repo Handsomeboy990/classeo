@@ -9,6 +9,7 @@ import { invalidate, tags } from "@/lib/cache";
 import { db } from "@/lib/db";
 import { DomainError } from "@/lib/errors";
 import { isYearClosed } from "@/lib/guards";
+import { periodName } from "@/lib/domain/periodicity";
 import { formatDate } from "@/lib/utils";
 
 import { grantExtension } from "./extensions";
@@ -43,6 +44,8 @@ const yearSchema = z.object({
   periodName: z.array(z.string().trim().min(1, "Nom obligatoire.").max(40, "40 caractères au maximum.")).min(2, "Prévoyez au moins 2 périodes.").max(4, "4 périodes au maximum."),
   periodStart: dates,
   periodEnd: dates,
+  semesterStart: z.array(isoDate).length(2, "Indiquez les dates des deux semestres."),
+  semesterEnd: z.array(isoDate).length(2, "Indiquez les dates des deux semestres."),
 });
 
 export const saveYear = createAction({
@@ -54,9 +57,15 @@ export const saveYear = createAction({
     const start = isoToUtc(input.startDate);
     const end = isoToUtc(input.endDate);
     if (input.periodStart.length !== input.periodName.length || input.periodEnd.length !== input.periodName.length) throw new DomainError("Chaque période a un nom, un début et une fin.");
-    const periods = input.periodName.map((name, i) => ({ name, startDate: isoToUtc(input.periodStart[i]!), endDate: isoToUtc(input.periodEnd[i]!) }));
-    const error = yearLabelError(input.label, start) ?? calendarError(start, end, periods);
+    const terms = input.periodName.map((name, i) => ({ name, startDate: isoToUtc(input.periodStart[i]!), endDate: isoToUtc(input.periodEnd[i]!) }));
+    const semesters = [0, 1].map((i) => ({ name: periodName("SEMESTER", i + 1), startDate: isoToUtc(input.semesterStart[i]!), endDate: isoToUtc(input.semesterEnd[i]!) }));
+    const error = yearLabelError(input.label, start) ?? calendarError(start, end, terms) ?? calendarError(start, end, semesters);
     if (error) throw new DomainError(error);
+    // Both sets, each numbered from 1 within its periodicity.
+    const periods = [
+      ...terms.map((p, i) => ({ ...p, periodicity: "TRIMESTER" as const, order: i + 1 })),
+      ...semesters.map((p, i) => ({ ...p, periodicity: "SEMESTER" as const, order: i + 1 })),
+    ];
 
     const others = await db.academicYear.findMany({ where: input.id ? { id: { not: input.id } } : {}, select: { label: true, startDate: true, endDate: true } });
     const clash = others.find((o) => o.label === input.label) ?? others.find((o) => overlaps(o, { startDate: start, endDate: end }));
@@ -69,11 +78,11 @@ export const saveYear = createAction({
           startDate: start,
           endDate: end,
           isActive: false,
-          periods: { create: periods.map((p, i) => ({ ...p, order: i + 1 })) },
+          periods: { create: periods },
         },
         select: { id: true },
       });
-      await audit(user, { action: "create", resource: "calendar", resourceId: year.id, summary: `Création de l'année scolaire ${input.label} (${periods.length} périodes)` });
+      await audit(user, { action: "create", resource: "calendar", resourceId: year.id, summary: `Création de l'année scolaire ${input.label} (${terms.length} trimestres et 2 semestres)` });
       invalidateCalendar();
       return `Année ${input.label} créée. Activez-la le moment venu.`;
     }
@@ -85,24 +94,24 @@ export const saveYear = createAction({
         label: true,
         endDate: true,
         closedAt: true,
-        periods: { orderBy: { order: "asc" }, select: { id: true, order: true, _count: { select: { gradeSheets: true, reportCards: true } } } },
+        periods: { orderBy: { order: "asc" }, select: { id: true, order: true, periodicity: true, _count: { select: { gradeSheets: true, reportCards: true } } } },
       },
     });
     if (!year) throw new DomainError("Année scolaire introuvable.");
     if (isYearClosed(year)) throw new DomainError("Cette année est close : elle ne se modifie plus. Accordez une prolongation si des établissements doivent terminer leur saisie.");
     // A period already holding grades or report cards cannot disappear.
-    const dropped = year.periods.filter((p) => p.order > periods.length);
+    const dropped = year.periods.filter((p) => !periods.some((n) => n.periodicity === p.periodicity && n.order === p.order));
     const used = dropped.find((p) => p._count.gradeSheets || p._count.reportCards);
-    if (used) throw new DomainError(`La période ${used.order} contient déjà des notes ou des bulletins : elle ne peut pas être retirée.`);
+    if (used) throw new DomainError(`${periodName(used.periodicity, used.order)} contient déjà des notes ou des bulletins : cette période ne peut pas être retirée.`);
 
     await db.$transaction(async (tx) => {
       await tx.academicYear.update({ where: { id: year.id }, data: { label: input.label, startDate: start, endDate: end } });
       if (dropped.length) await tx.schoolPeriod.deleteMany({ where: { id: { in: dropped.map((p) => p.id) } } });
-      for (const [i, p] of periods.entries()) {
+      for (const p of periods) {
         await tx.schoolPeriod.upsert({
-          where: { academicYearId_order: { academicYearId: year.id, order: i + 1 } },
-          create: { academicYearId: year.id, order: i + 1, ...p },
-          update: p,
+          where: { academicYearId_periodicity_order: { academicYearId: year.id, periodicity: p.periodicity, order: p.order } },
+          create: { academicYearId: year.id, ...p },
+          update: { name: p.name, startDate: p.startDate, endDate: p.endDate },
         });
       }
     });

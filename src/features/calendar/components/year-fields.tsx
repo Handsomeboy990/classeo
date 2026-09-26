@@ -14,18 +14,22 @@ export type YearFormValues = {
   startDate: string;
   endDate: string;
   periods: { name: string; startDate: string; endDate: string }[];
+  semesters: { startDate: string; endDate: string }[];
 };
 
-// Fields of the year form, placed in a FormDialog. Periods are rows the
-// ministry adds or removes (two semesters, three terms, at most four).
+// Fields of the year form, placed in a FormDialog. The terms are rows the
+// ministry adds or removes (three as a rule, at most four): they carry the
+// holidays of every school and the marks of the schools graded by term. The
+// two semesters carry the marks of the schools graded by semester.
 export function YearFields({ values }: { values: YearFormValues }) {
   const [periods, setPeriods] = useState(values.periods.map((p, i) => ({ ...p, key: i })));
   const [next, setNext] = useState(values.periods.length);
   const state = useFormState();
   const periodError = ["periodName", "periodStart", "periodEnd"].map((k) => state?.fieldErrors?.[k]?.[0]).find(Boolean);
+  const semesterError = ["semesterStart", "semesterEnd"].map((k) => state?.fieldErrors?.[k]?.[0]).find(Boolean);
 
   function add() {
-    setPeriods((p) => [...p, { name: `Période ${p.length + 1}`, startDate: "", endDate: "", key: next }]);
+    setPeriods((p) => [...p, { name: `Trimestre ${p.length + 1}`, startDate: "", endDate: "", key: next }]);
     setNext((n) => n + 1);
   }
 
@@ -44,8 +48,8 @@ export function YearFields({ values }: { values: YearFormValues }) {
         </FormField>
       </div>
       <fieldset className="flex flex-col gap-3">
-        <legend className="text-sm font-semibold text-text">Périodes de l&apos;année</legend>
-        <p className="text-sm text-muted">Semestres ou trimestres, dans l&apos;ordre, sans chevauchement.</p>
+        <legend className="text-sm font-semibold text-text">Trimestres</legend>
+        <p className="text-sm text-muted">Dans l&apos;ordre, sans chevauchement. Les congés entre deux trimestres valent pour tous les établissements.</p>
         {periods.map((p, i) => (
           <div key={p.key} className="grid grid-cols-2 gap-2 rounded-control border border-border p-3 sm:grid-cols-[1.2fr_1fr_1fr_auto] sm:items-end">
             <div className="col-span-2 flex flex-col gap-1.5 sm:col-span-1">
@@ -83,6 +87,28 @@ export function YearFields({ values }: { values: YearFormValues }) {
           <Button type="button" variant="secondary" onClick={add} className="self-start">
             <Plus aria-hidden /> Ajouter une période
           </Button>
+        )}
+      </fieldset>
+      <fieldset className="flex flex-col gap-3">
+        <legend className="text-sm font-semibold text-text">Semestres</legend>
+        <p className="text-sm text-muted">Pour les établissements évalués par semestre, en général le secondaire public.</p>
+        {[0, 1].map((i) => (
+          <div key={i} className="grid grid-cols-2 gap-2 rounded-control border border-border p-3 sm:grid-cols-[1.2fr_1fr_1fr] sm:items-end">
+            <p className="col-span-2 font-semibold sm:col-span-1">Semestre {i + 1}</p>
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor={`semester-start-${i}`}>Début</Label>
+              <Input id={`semester-start-${i}`} name="semesterStart[]" type="date" defaultValue={values.semesters[i]?.startDate ?? ""} required />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor={`semester-end-${i}`}>Fin</Label>
+              <Input id={`semester-end-${i}`} name="semesterEnd[]" type="date" defaultValue={values.semesters[i]?.endDate ?? ""} required />
+            </div>
+          </div>
+        ))}
+        {semesterError && (
+          <p role="alert" className="text-sm font-semibold text-danger">
+            {semesterError}
+          </p>
         )}
       </fieldset>
     </>
