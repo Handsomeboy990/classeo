@@ -2437,3 +2437,23 @@ html:is([data-text="xl"], [data-text="xxl"]) .ds-bars-grid {
 [data-contrast="high"] .ds-speak {
   border: 2px solid var(--text);
 }
+
+/*
+ * Status pages (kit/status-page.tsx): the code in a soft green to surface
+ * gradient, decorative (the title carries the meaning), and a short stripe
+ * in the flag colours under it.
+ */
+.ds-status-code {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--primary) 34%, var(--surface)) 0%, color-mix(in srgb, var(--primary) 8%, var(--bg)) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  user-select: none;
+}
+.ds-flag-stripe {
+  background: linear-gradient(90deg, #008751 0 40%, #fcd116 40% 80%, #e8112d 80% 100%);
+}
+[data-contrast="high"] .ds-status-code {
+  background: none;
+  color: var(--text);
+}
