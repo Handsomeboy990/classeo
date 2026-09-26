@@ -330,7 +330,7 @@ export async function seedPaymentsAndSignatures(db: PrismaClient, ctx: SeedConte
       {
         invoiceId: invoice.id,
         accountId: mtn.id,
-        amount: 1000,
+        amount: 500,
         method: "MOBILE_MONEY",
         payerPhone: "0196123456",
         transactionRef: "MP2609250815D77310",
@@ -341,7 +341,7 @@ export async function seedPaymentsAndSignatures(db: PrismaClient, ctx: SeedConte
       {
         invoiceId: invoice.id,
         accountId: moov.id,
-        amount: 500,
+        amount: 250,
         method: "MOBILE_MONEY",
         payerPhone: "0196123456",
         transactionRef: "MV2609250902",
