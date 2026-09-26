@@ -1,4 +1,4 @@
-import { Download } from "lucide-react";
+import { Activity, Download } from "lucide-react";
 import type { Metadata } from "next";
 import { forbidden } from "next/navigation";
 
@@ -69,12 +69,21 @@ export default async function StatisticsPage({ searchParams }: PageProps<"/espac
         info={<MethodNote stats={stats} />}
         infoSize="lg"
         actions={
-          can(user, "statistics:export") ? (
+          can(user, "statistics:export") || can(user, "connection:view") ? (
             <>
-              <ButtonLink href={exportHref} variant="secondary" prefetch={false}>
-                <Download aria-hidden /> Exporter en CSV
-              </ButtonLink>
-              <PdfDownloadLink href={`/api/pdf/statistiques${query.size ? `?${query}` : ""}`} description="indicateurs clés et détail du périmètre affiché" />
+              {can(user, "connection:view") && (
+                <ButtonLink href="/espace/statistiques/connexions" variant="secondary">
+                  <Activity aria-hidden /> Connexions
+                </ButtonLink>
+              )}
+              {can(user, "statistics:export") && (
+                <>
+                  <ButtonLink href={exportHref} variant="secondary" prefetch={false}>
+                    <Download aria-hidden /> Exporter en CSV
+                  </ButtonLink>
+                  <PdfDownloadLink href={`/api/pdf/statistiques${query.size ? `?${query}` : ""}`} description="indicateurs clés et détail du périmètre affiché" />
+                </>
+              )}
             </>
           ) : null
         }

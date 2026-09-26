@@ -1,4 +1,5 @@
 import {
+  Activity,
   Award,
   BarChart3,
   Bell,
@@ -87,6 +88,8 @@ export const NAVIGATION: NavSection[] = [
       { label: "Établissements", href: "/espace/etablissements", icon: Landmark, permission: ["school:view"], scopes: TERRITORY, short: "Écoles", tab: { territory: 4 } },
       { label: "Demandes", href: "/espace/demandes", icon: Inbox, permission: ["request:view"], scopes: STAFF, tab: { territory: 3 } },
       { label: "Comparaison des années", href: "/espace/comparaison", icon: TrendingUp, permission: ["statistics:view"], scopes: STAFF, short: "Comparaison" },
+      // Sign ins, failures, devices and page views of the territory.
+      { label: "Connexions et fréquentation", href: "/espace/statistiques/connexions", icon: Activity, permission: ["connection:view"], scopes: TERRITORY, short: "Connexions" },
       { label: "Pièces demandées", href: "/espace/pieces-demandees", icon: FileStack, permission: ["document_request:view"], scopes: STAFF, short: "Pièces" },
       { label: "Calendrier scolaire", href: "/espace/calendrier", icon: CalendarRange, permission: ["calendar:view"], scopes: STAFF, short: "Calendrier" },
       { label: "Matières", href: "/espace/matieres", icon: BookMarked, permission: ["subject:view"], scopes: STAFF },

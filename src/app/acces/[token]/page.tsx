@@ -44,5 +44,5 @@ export default async function DemoAccessPage({ params, searchParams }: PageProps
   }
 
   if (await getCurrentUser()) redirect("/espace");
-  return <SignInPage searchParams={await searchParams} demo={{ password: resolveDemoPassword() }} />;
+  return <SignInPage searchParams={await searchParams} demo={{ password: resolveDemoPassword(), accessToken: token }} />;
 }

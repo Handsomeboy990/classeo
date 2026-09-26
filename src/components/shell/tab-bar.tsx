@@ -9,7 +9,7 @@ import { badgeText, unreadLabel } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
 
 import { MenuSheet } from "./menu-sheet";
-import { badgeId, isActiveHref, type RenderedItem, type RenderedSection } from "./sidebar-nav";
+import { badgeId, isActiveHref, menuHrefs, type RenderedItem, type RenderedSection } from "./sidebar-nav";
 import { prefersReducedMotion } from "./use-compact";
 
 function Tab({ active, icon, label, badge, dot }: { active: boolean; icon: ReactNode; label: string; badge?: number; dot?: boolean }) {
@@ -49,7 +49,7 @@ const TAB = "group flex h-full w-full min-w-0 flex-col items-center justify-cent
 export function TabBar({ tabs, sections }: { tabs: RenderedItem[]; sections: RenderedSection[] }) {
   const pathname = usePathname();
   const [menu, setMenu] = useState(false);
-  const current = tabs.find((t) => isActiveHref(pathname, t.href));
+  const current = tabs.find((t) => isActiveHref(pathname, t.href, menuHrefs(sections)));
   // An entry of the Menu sheet (not a tab, not Notifications, which the bell
   // already counts) has unread items.
   const menuHasNews = sections.some((s) => s.items.some((i) => i.badge && i.href !== "/espace/notifications" && !tabs.some((t) => t.href === i.href)));
