@@ -275,6 +275,8 @@ test.describe("nothing stays in French on the parent pages in Fongbe", () => {
       { name: "preferences", path: "/espace/preferences" },
       { name: "guide", path: "/espace/aide" },
       { name: "new conversation", path: "/espace/messages", open: (p) => p.locator("#page-content button:has(svg.lucide-message-square-plus)").first().click() },
+      { name: "pieces and justifications", path: "/espace/pieces-justificatifs" },
+      { name: "sending a piece", path: "/espace/pieces-justificatifs", open: (p) => p.locator("#page-content li button[type=button]").first().click() },
     ];
     if (exam) checks.push({ name: "mock exam", path: exam });
     if (content) checks.push({ name: "announcement", path: content });
