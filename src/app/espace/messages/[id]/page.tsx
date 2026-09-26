@@ -85,7 +85,7 @@ export default async function ThreadPage({ params }: PageProps<"/espace/messages
                         {!m.audio && <ReadAloud text={`${m.mine ? "Vous avez écrit" : `${signature} a écrit`} : ${m.body}`} compact label={`Écouter le message de ${sender}`} className="ml-auto size-10 shrink-0" />}
                       </header>
                       {m.audio ? (
-                        <VoicePlayer src={m.audio.url} durationMs={m.audio.durationMs} label={`message vocal de ${sender}`} className="mt-2 w-64 max-w-full" />
+                        <VoicePlayer src={m.audio.url} durationMs={m.audio.durationMs} className="mt-2 w-64 max-w-full" />
                       ) : (
                         <p className="mt-1 text-base whitespace-pre-line">{m.body}</p>
                       )}

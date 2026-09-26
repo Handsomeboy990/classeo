@@ -28,7 +28,7 @@ test("a parent records a voice note and the teacher plays it @mobile", async ({ 
   await expect(page.getByText("Message vocal envoyé.")).toBeVisible();
   const mine = log.getByRole("article").last();
   await expect(mine).toHaveAccessibleName("Message de Vous");
-  await expect(mine.getByRole("button", { name: /^Écouter le message vocal de Vous/ })).toBeVisible();
+  await expect(mine.getByRole("button", { name: /^Écouter le message vocal,/ })).toBeVisible();
   const src = await mine.locator("audio").getAttribute("src");
 
   const teacher = await pageAs("enseignant");
@@ -36,7 +36,7 @@ test("a parent records a voice note and the teacher plays it @mobile", async ({ 
   await teacher.getByRole("link", { name: new RegExp(SUBJECT) }).click();
   const received = teacher.getByRole("log", { name: "Messages de la conversation" }).getByRole("article").last();
   await expect(received).toHaveAccessibleName("Message de Afiavi Hounkpatin");
-  await received.getByRole("button", { name: /^Écouter le message vocal de Afiavi Hounkpatin/ }).click();
+  await received.getByRole("button", { name: /^Écouter le message vocal,/ }).click();
   await expect.poll(() => received.locator("audio").evaluate((a: HTMLAudioElement) => a.currentTime)).toBeGreaterThan(0);
 
   // The recording is served to the participants only, as the type sniffed at
@@ -61,7 +61,7 @@ test("a blocked microphone gets a plain explanation @mobile", async ({ page }) =
 test("the seeded voice notes play for the parent @mobile", async ({ page }) => {
   await page.goto("/espace/messages");
   await page.getByRole("link", { name: new RegExp(SUBJECT) }).click();
-  const first = page.getByRole("button", { name: /^Écouter le message vocal de Vous, 6 secondes/ });
+  const first = page.getByRole("article", { name: "Message de Vous" }).getByRole("button", { name: /^Écouter le message vocal, 6 secondes/ }).first();
   await first.click();
-  await expect(page.getByRole("button", { name: /^Mettre en pause le message vocal de Vous/ }).first()).toBeVisible();
+  await expect(page.getByRole("button", { name: /^Mettre en pause le message vocal/ }).first()).toBeVisible();
 });
