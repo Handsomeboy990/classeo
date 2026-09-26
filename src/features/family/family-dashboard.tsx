@@ -69,9 +69,9 @@ export async function FamilyDashboard({ user }: { user: User }) {
       />
       <GuardianTransferRequests user={user} />
 
-      <div className="lg:max-w-sm">
-        <PictoTile icon={MessageCircle} tone={unread ? "danger" : "primary"} title="Messages" href="/espace/messages" layout="row">
-          <p className="font-display text-lg font-bold lg:text-2xl">{unread ? `${unread} non lu${unread > 1 ? "s" : ""}` : "À jour"}</p>
+      <div className="lg:max-w-md">
+        <PictoTile icon={MessageCircle} tone={unread ? "danger" : "primary"} title="Messages" href="/espace/messages" layout="strip">
+          <p className="font-display text-lg font-bold">{unread ? `${unread} non lu${unread > 1 ? "s" : ""}` : "À jour"}</p>
         </PictoTile>
       </div>
 

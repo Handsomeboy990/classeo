@@ -150,7 +150,7 @@ export function ReadAloud({
   return (
     <>
       {button}
-      <TranslateContent text={text} compact={compact === true ? true : "mobile"} />
+      <TranslateContent text={text} compact />
     </>
   );
 }

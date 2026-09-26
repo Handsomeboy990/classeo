@@ -62,10 +62,18 @@ export function PictoTile({
   href?: string;
   children: ReactNode;
   footer?: ReactNode;
-  layout?: "card" | "row";
+  // strip: a single line at every width (one figure beside the title).
+  layout?: "card" | "row" | "strip";
 }) {
   const row = layout === "row";
-  const body = row ? (
+  const body = layout === "strip" ? (
+    <div className="flex min-w-0 flex-1 items-center gap-3">
+      <Pictogram icon={icon} tone={tone} />
+      <h3 className="min-w-0 flex-1 font-sans text-base font-bold text-text">{title}</h3>
+      <div className="shrink-0 text-text">{children}</div>
+      {href && <ChevronRight className="size-5 shrink-0 text-muted" aria-hidden />}
+    </div>
+  ) : row ? (
     <>
       <div className="flex min-w-0 flex-1 items-center gap-3 lg:flex-none">
         <Pictogram icon={icon} tone={tone} />
@@ -86,9 +94,11 @@ export function PictoTile({
       {footer && <div className="mt-auto pt-2 text-xs text-muted sm:pt-3 sm:text-sm">{footer}</div>}
     </>
   );
-  const cls = row
-    ? "flex h-full items-center rounded-card border border-border bg-surface p-3 sm:p-4 lg:min-h-40 lg:flex-col lg:items-stretch"
-    : "flex h-full min-h-32 flex-col rounded-card border border-border bg-surface p-3 sm:min-h-40 sm:p-4";
+  const cls = {
+    strip: "flex items-center rounded-card border border-border bg-surface p-3 sm:p-4",
+    row: "flex h-full items-center rounded-card border border-border bg-surface p-3 sm:p-4 lg:min-h-40 lg:flex-col lg:items-stretch",
+    card: "flex h-full min-h-32 flex-col rounded-card border border-border bg-surface p-3 sm:min-h-40 sm:p-4",
+  }[layout];
   return href ? (
     <Link href={href} className={cn(cls, "transition-colors hover:border-primary hover:bg-surface-2")}>
       {body}
