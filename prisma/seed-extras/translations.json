@@ -5268,6 +5268,12 @@
 "text": "Mi sixú cá kàn ǎ"
 },
 {
+"key": "4cd9eb92d82e3d193c052119ea7bf8f9646499a4b7201ef8ea4a46376a452e94",
+"lang": "fon",
+"source": "Pour 2. La dispense d'EPS est enregistrée.",
+"text": "Nu 2. EPS sin hwɛɖiɖɔ ɔ wɛ e nɔ wlan."
+},
+{
 "key": "4cd9efb3db967491d25be24536ae289d04aa18ef7283093b1ce2a89b6b9ae866",
 "lang": "fon",
 "source": "QR code de vérification,",
@@ -17676,6 +17682,12 @@
 "text": "Xókwin"
 },
 {
+"key": "ffb5587639e3bcbea48fb5e5b4d0b469d953e8b6853effa47b4de6f7f6f71fe1",
+"lang": "fon",
+"source": "La dispense d'EPS est enregistrée.",
+"text": "È nɔ wlan EPS sín hwɛɖiɖɔ ɔ dó wema mɛ."
+},
+{
 "key": "ffb897c6f20f4a5de25c562193308f3b4c8fd7de5729923ffb2cc9b71c665ba5",
 "lang": "fon",
 "source": "Sections du suivi",
@@ -22744,6 +22756,12 @@
 "lang": "yo",
 "source": "Connexion impossible",
 "text": "Ko le sopọ"
+},
+{
+"key": "4cd9eb92d82e3d193c052119ea7bf8f9646499a4b7201ef8ea4a46376a452e94",
+"lang": "yo",
+"source": "Pour 2. La dispense d'EPS est enregistrée.",
+"text": "Fun 2. Idasile EPS ti wa ni igbasilẹ."
 },
 {
 "key": "4ce57ec016cb07dc836c972da9f3a76d60a2f104685a92a16738ea985e5a1516",
@@ -34612,6 +34630,12 @@
 "lang": "yo",
 "source": "Mot de passe",
 "text": "Ọrọigbaniwọle"
+},
+{
+"key": "ffb5587639e3bcbea48fb5e5b4d0b469d953e8b6853effa47b4de6f7f6f71fe1",
+"lang": "yo",
+"source": "La dispense d'EPS est enregistrée.",
+"text": "Idasile EPS ti wa ni igbasilẹ."
 },
 {
 "key": "ffb897c6f20f4a5de25c562193308f3b4c8fd7de5729923ffb2cc9b71c665ba5",

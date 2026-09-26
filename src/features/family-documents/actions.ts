@@ -217,8 +217,8 @@ export const reviewFamilyDocument = createAction({
       metadata: { decision, kind: doc.kind, fileDeleted: dropFile },
     });
     const family = [...(await guardianUserIds([doc.enrollmentId])), doc.submittedById];
-    // One date, last: the translation layer writes a date that ends a sentence.
-    const period = doc.kind === "MEDICAL" && doc.endsOn ? ` Dispense d'EPS jusqu'au ${formatDate(doc.endsOn)}` : "";
+    // The dates show on the page; the notification stays a fixed sentence.
+    const period = doc.kind === "MEDICAL" ? " La dispense d'EPS est enregistrée." : "";
     await notify(family, {
       kind: "family_document",
       // Short sentences with the name and the dates apart, so the translation
