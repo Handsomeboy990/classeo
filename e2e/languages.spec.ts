@@ -133,6 +133,7 @@ const NAMES = [
   "Classéo",
   "MTN MoMo",
   "Moov Money",
+  "FedaPay",
   "Ecobank Bénin",
 ];
 const NAME = new RegExp(`^(?:${NAMES.map((n) => n.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})$`);
@@ -252,8 +253,9 @@ test.describe("nothing stays in French on the parent pages in Fongbe", () => {
     if (report) checks.push({ name: "report card", path: report });
     if (invoice) {
       checks.push({ name: "invoice", path: invoice });
-      // An empty declaration: the form errors.
-      checks.push({ name: "invoice form errors", path: invoice, open: (p) => p.locator("#page-content form button[type=submit]").first().click() });
+      // An empty declaration: the form errors. Not the online payment form,
+      // shown when a payment provider is configured.
+      checks.push({ name: "invoice form errors", path: invoice, open: (p) => p.locator("#page-content form:has(input[name=transactionRef]) button[type=submit]").click() });
     }
     await expectTranslated(page, checks);
   });
