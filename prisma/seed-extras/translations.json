@@ -282,6 +282,12 @@
 "text": "Yǐ gbè nú mɛylɔwema ɔ."
 },
 {
+"key": "04f10201ad3cf7398e91a5d2e58e5d6f444c6cb1b6b9e3606890d9ebd3b895b4",
+"lang": "fon",
+"source": "Écouter en yoruba",
+"text": "Ðǒtó Yoruba-gbè mɛ."
+},
+{
 "key": "050a5ca8b14cbf801c8dd7218d2577c978f7ec55741a2ef5ccd4928cbc36addc",
 "lang": "fon",
 "source": "Établissement introuvable ou fermé.",
@@ -292,6 +298,12 @@
 "lang": "fon",
 "source": "Message envoyé",
 "text": "È sɛ́ wɛn dó"
+},
+{
+"key": "05511f25ef65f2d954347d1bfad160d56cc7c855b348aaf2990164c4264249c2",
+"lang": "fon",
+"source": "Où trouver mon identifiant ?",
+"text": "Fitɛ un ka sixu mɔ ID ce ɖe?"
 },
 {
 "key": "05847ca4ee03d9a4de54b11f6bcae1df606f39ae4d14a7a9349646efa336e185",
@@ -346,6 +358,12 @@
 "lang": "fon",
 "source": "Soldée",
 "text": "Nùblíblí"
+},
+{
+"key": "06e33876483a1b809f5dcc482dde343e9a8b1b6a42b519c3e8257fd6c8ad8cf0",
+"lang": "fon",
+"source": "Le serveur ne répond pas. Vérifiez votre connexion à Internet, puis réessayez.",
+"text": "Serveur ɔ ɖo gbe yi wɛ a. Kpɔ́n lee a nɔ zán Ɛntɛnɛti gbɔn é, enɛ gudo hǔn, vɔ́ tɛ́n kpɔ́n."
 },
 {
 "key": "06f2d793270840503d2849c25171791ac2644fcd63d7609c3fe220e51f010d43",
@@ -540,6 +558,18 @@
 "text": "Fíziki‚ sinmɛ kpodo nunywɛ xwitixwiti kpo"
 },
 {
+"key": "0a00eb556d5908b12760411f05d2e98b0a9eff49de0a384d6411d51794cec5ab",
+"lang": "fon",
+"source": "Voix de lecture",
+"text": "Gbè xixa tɔn"
+},
+{
+"key": "0a0e39d17b506a4b701c82ecd60cdf92fe588ab8feed1ffede0308997dbf9374",
+"lang": "fon",
+"source": "Demande transmise",
+"text": "È sɛ́ nǔbyɔbyɔ ɔ dó"
+},
+{
 "key": "0a1600f0058b96f9ea33ea188ca83ec84a587831488c00966a1d36b266de6383",
 "lang": "fon",
 "source": "à tout moment.",
@@ -600,6 +630,18 @@
 "text": "2 ko sɔ́ hwenu e è na bló azɔ̌mɛxwé 3gɔ́ ɔ ɖó é ɖó ɛntɛnɛti jí ǎ."
 },
 {
+"key": "0aa18a2bc890d7bbd5c77c89790dd2c6504670c6dec0d4c1af56183c9fd1a142",
+"lang": "fon",
+"source": "Trois élèves en uniforme marchent vers l'école avec une femme, dans une rue de ville.",
+"text": "Azɔ̌mɛví atɔn e dó ahwanwu lɛ é ɖò zɔnlin ɖi wɛ bo xwè wemaxɔmɛ xá nawe ɖé ɖò toxo ɔ sín ali ɖé jí."
+},
+{
+"key": "0ac3d2cb30052ced36bebf53425a8008771d10c4da8fb6107c05bbd1ddab5cbf",
+"lang": "fon",
+"source": "Se connecter",
+"text": "Mi byɔ mɛ"
+},
+{
 "key": "0ae2de361f32c948f2cd7c6f06ac6ca9143f04d0a2e99fcbfc70ea485f9a6f9f",
 "lang": "fon",
 "source": "Dans « Ma scolarité »,",
@@ -610,6 +652,12 @@
 "lang": "fon",
 "source": "Payer une facture",
 "text": "Sú akwɛ"
+},
+{
+"key": "0affe1aa1ab165e9e94355c99b58d5570fc483a1eb64001d581291d20e1de3a7",
+"lang": "fon",
+"source": "Redimensionnée et convertie au format WebP.",
+"text": "È ɖyɔ ɖaxó tɔn bo huzu dó WebP sín alɔkpa mɛ."
 },
 {
 "key": "0b40464ca0313ef734611a97ccba3cf92bb038bf3e6cef02a4210b31e2e9c620",
@@ -646,6 +694,18 @@
 "lang": "fon",
 "source": "Personne à appeler.",
 "text": "Mɛɖé bo na ylɔ ǎ."
+},
+{
+"key": "0bb9435d414660a72fd80db3a124b626e5d5ebf7433868e02bea16a42b78227e",
+"lang": "fon",
+"source": "Facultatif. Le numéro où la personne qui vous aide peut vous joindre.",
+"text": "Nùɖé ǎ. Numɛro e jí mɛ e ɖò alɔ dó we wɛ é sixu mɔ we ɖè é."
+},
+{
+"key": "0bc1eed3eb2f0952ad59b8f3901182e1cf52fbec09015307956106fb7037e1b4",
+"lang": "fon",
+"source": "Accessible à tous",
+"text": "Mɛ bǐ wɛ sixu mɔ"
 },
 {
 "key": "0bde1cea8f6e2891fc041bd5935edef98294b58b1e3d5c3962bcfb733df3c465",
@@ -712,6 +772,12 @@
 "lang": "fon",
 "source": "Administrateur national",
 "text": "Acɛkpikpa To ɔ tɔn"
+},
+{
+"key": "0e570ca6fabe24f94e52c1833f3ffd25567022beb826fa16891f3322051bc221",
+"lang": "fon",
+"source": "Source",
+"text": "Azinkàn"
 },
 {
 "key": "0e6df7dfe7489d6b2665533f549f79280c468648db5960a1f99d8fde1b1941df",
@@ -960,6 +1026,12 @@
 "text": "Mă"
 },
 {
+"key": "137cfbb9ee78da9e2b42eb84a91d373b9ce4b3ac4b5a1ac2c80c27bbae3df5aa",
+"lang": "fon",
+"source": "La voix française qui lit les pages à voix haute.",
+"text": "Gbè Flanségbe tɔn e ɖò wema lɛ xà wɛ syɛnsyɛn é."
+},
+{
 "key": "139fb07976bea7cff7b6d6b26a674985276cc5e566acdc1547cf0b36bafaca89",
 "lang": "fon",
 "source": "Installer Classéo",
@@ -1024,6 +1096,12 @@
 "lang": "fon",
 "source": "Interrogations",
 "text": "Nùkanbyɔ lɛ"
+},
+{
+"key": "1573f31044f4b2e8a294cfe3c660aae48d628d35a55ed24da0cdd396ebe35cae",
+"lang": "fon",
+"source": "Pour les comptes qui ont une adresse e-mail. Un code vous y sera envoyé pour choisir un nouveau mot de passe.",
+"text": "Nú akɔnta ɖěɖee ɖó adlɛsi e-mail tɔn lɛ é. È na sɛ́ kodɛ ɖé dó we bɔ a na sɔ́ xógbe hwláhwlá yɔyɔ̌ ɖé."
 },
 {
 "key": "159196632f8d07f25571eab5d5ba9828580286bc8e15f21cecab1bc47b530d20",
@@ -1192,6 +1270,12 @@
 "lang": "fon",
 "source": "Aucune saisie refusée.",
 "text": "Azɔngblemɛ ɖě gbɛ́ ǎ."
+},
+{
+"key": "18da49bf5a9d55c47aee6aaf9afb726f7c89b4ebc814805f5e8cc6c3565e3b5b",
+"lang": "fon",
+"source": "Aucune adresse e-mail n'est nécessaire. Si votre compte en a une, vous pouvez aussi la saisir ici.",
+"text": "È byɔ adlɛsi email tɔn ɖebǔ ǎ. Enyi akɔnta towe ɖó ɖokpo ɔ, a sixu lɛ́ wlan dó fí."
 },
 {
 "key": "192c0174d785e2c387b08128e767d344d2eb13333fc394561953af989a0337da",
@@ -1404,6 +1488,12 @@
 "text": "Cours e è ma mɔ ɖò azɔ̌xwé mitɔn mɛ ǎ é."
 },
 {
+"key": "1ce769f6ea756b70174b717462dc8e59c97d0d9f46b5e6e6c25182c772ecb496",
+"lang": "fon",
+"source": "Accéder à mon espace",
+"text": "Mi yi tɛn ce mɛ"
+},
+{
 "key": "1cedf6d82056c9c825c813a3a495ca0f82109f4e472e71c46a77fe1b9813de7c",
 "lang": "fon",
 "source": "Trimestre 2 3-4. Moyenne générale : 5 sur 6, Passable. Rang : 7e sur 8. Appréciation : Travail satisfaisant, peut mieux faire.",
@@ -1432,6 +1522,12 @@
 "lang": "fon",
 "source": "Seul l'organisateur clôture l'examen.",
 "text": "Tutoblonunutɔ́ ɔ kɛɖɛ wɛ nɔ sú tɛnkpɔn ɔ."
+},
+{
+"key": "1dfe9009cbb57c7fdcfeb21ac93bdeecc1c182ae67bde20174fa61feddb73b9d",
+"lang": "fon",
+"source": "Photographies",
+"text": "Fótó lɛ"
 },
 {
 "key": "1e122583bcc583b5c040181dc20db4f589bf2253794f5718829364cc098af8a9",
@@ -2052,6 +2148,12 @@
 "text": "Ðyɔ nǔ e ba wɛ a ɖè é alǒ nǔ e è nɔ xò lɛ é."
 },
 {
+"key": "27dea5af978b9830fb5d02d1421977f125a91ee586d458009fdcbe4cf0b36a45",
+"lang": "fon",
+"source": "Sur le chemin de l'école",
+"text": "Ðò wemaxɔmɛ yiyi sín ali jí ɔ."
+},
+{
 "key": "27f4e609babf45b201cdbb7faced7bf0c578079201151219ea818743f5bff595",
 "lang": "fon",
 "source": "Part du montant attendu déjà encaissée. En rouge, moins de la moitié.",
@@ -2062,6 +2164,12 @@
 "lang": "fon",
 "source": "ajoutez une fiche. Une vidéo ou un audio doit avoir sa transcription écrite.",
 "text": "gɔ́ file ɖé na. Video alǒ xóɖiɖɔ ɖé ɖó na ɖó nǔ e è wlan dó wema jí é."
+},
+{
+"key": "280398acb03081df0c3d915fed8668cb45138ee5855af3a330288759054082f1",
+"lang": "fon",
+"source": "Connexion…",
+"text": "Kancica..."
 },
 {
 "key": "2813b1cab4d1f5cb74a072125c71a48e08df07cfd1cfed23247fea718320e2ff",
@@ -3186,6 +3294,12 @@
 "text": "Reseau ɖebu kpodo hɛntɛn ɖebu kpo ɖo azɔwanu elɔ ji: wɛn ɔ sixu hɛn ɖ'ayi ǎ."
 },
 {
+"key": "38df5b7b6b3119da97a00864f6286ae5bfac790f402655daa9591ea10e676af3",
+"lang": "fon",
+"source": "Une cour d'école en sable, des élèves en uniforme kaki ; au premier plan, une petite fille avec son cartable salue.",
+"text": "Azɔmɛxwe e mɛ kɔ́ ɖè é ɖé, wemaxɔmɛví lɛ ɖò awu kaki tɔn mɛ; ɖò nukɔn ɔ, ɖyɔvǐ kpɛví ɖé kpo saki wemaxɔmɛ tɔn tɔn kpo ɖò gbe dó mɛ wɛ."
+},
+{
 "key": "390348167f72d246d80270c35e328451136dceea33f7344e831802252ab03665",
 "lang": "fon",
 "source": "Pas de cours aujourd'hui.",
@@ -3268,6 +3382,18 @@
 "lang": "fon",
 "source": "Code de vérification",
 "text": "Kodu nǔjlɛdonǔwu tɔn"
+},
+{
+"key": "3a26e60e63d84ce192ac7e4f43cc2879937c8aac433ed99c983ab6bf62742fcb",
+"lang": "fon",
+"source": "Plateforme nationale de l'éducation, prototype présenté au défi EduTech Bénin, 2026.",
+"text": "Azɔmɛxwe to ɔ tɔn, kpɔndewu ɖee è xlɛ ɖo EduTech Benin sin tɛnkpɔn ɔ hwenu, 2026."
+},
+{
+"key": "3a429e8a6a9fe6f65983d1277999ca001f891f7fae10d264693813c0a10f5f05",
+"lang": "fon",
+"source": "Votre prénom et votre nom, séparés par un point. Par exemple : afiavi.hounkpatin",
+"text": "Nyikɔ towe nukɔntɔn kpo gudo tɔn kpo, bɔ è sɔ́ wuntun dó klán ye ɖó vo. Kpɔ́ndéwú ɖé ɖíe: afiavi.hounkpatin"
 },
 {
 "key": "3a4b34039a039d608a904b40c57ba4698ed7b670f4d597c95d60afbdf1093a25",
@@ -3570,6 +3696,12 @@
 "text": "Bulletin ɔ ko ɖe tɔn ǎ ."
 },
 {
+"key": "3de1c5c71b385427e86c2fc6f3f143b3c19366a1e3d0afcbd52785c7ef2b93a5",
+"lang": "fon",
+"source": "Utiliser Classéo hors ligne",
+"text": "Zǎn Classeo ɖò ɛntɛnɛti jí ǎ."
+},
+{
 "key": "3df19439f138849629dd721bc6006658a22807dc8ab9b26b3868b7b486dd1bdf",
 "lang": "fon",
 "source": "Ce paiement a été remboursé par le prestataire.",
@@ -3654,6 +3786,12 @@
 "text": "Cyăn"
 },
 {
+"key": "3f56f652d6999da89ccde380024e98aa5c60d310f991e02afc80c602a14915bd",
+"lang": "fon",
+"source": "Chaque photographie est utilisée selon sa licence. Celles sous licence CC BY-SA sont partagées ici sous la même licence.",
+"text": "È nɔ zán fɔtóo ɖokpo ɖokpo sɔgbe xá gbè e è na ɛ é. Mɛ e è na gbè ɖò CC BY-SA glɔ́ lɛ é wɛ è má ɖò fí ɖò gbè ɖokpo ɔ glɔ́."
+},
+{
 "key": "3f571c6297228ccb3ba78d93ed24e08ef5c5d39f67ff45d746334bded98e8ca8",
 "lang": "fon",
 "source": "Attestation (PDF)",
@@ -3724,6 +3862,12 @@
 "lang": "fon",
 "source": "Son des notifications",
 "text": "Gbeɖiɖó nǔjlajla tɔn"
+},
+{
+"key": "40ecb6f4afcd5ad51c22d7f2f669fe5a1f0b808316600cd2244160f3d02b9ef0",
+"lang": "fon",
+"source": "Crédits photos",
+"text": "Fótóo lɛ"
 },
 {
 "key": "412be0b9cd4073dbb20646687bfdd568393f7d0a8bf142da68f2ea568f000902",
@@ -3882,6 +4026,12 @@
 "text": "Mi ko wlan nyikɔ mitɔn 2026-2027 tɔn ǎ. Kàn nǔ byɔ wema wlantɔ́ e ɖò azɔ̌xɔsa towe é."
 },
 {
+"key": "43e09fc7e0fdfd40d2f7a2ca6779e272d3145cb34ba481b767ba095cdb935bf3",
+"lang": "fon",
+"source": "Votre établissement vous le remet avec votre premier mot de passe. Il s'écrit en minuscules, sans accent ni espace.",
+"text": "Azɔ̌xwé towe wɛ nɔ na we kpodo password towe nukɔntɔn ɔ kpo. È nɔ wlan kpo wekwín kpɛví kpɛví lɛ kpo, bɔ è nɔ sɔ́ xógbe e è nɔ dó jǐ tɔn lɛ é alǒ tɛnmɛ ɖě dó jǐ tɔn ǎ."
+},
+{
 "key": "4409e1116f542268cae756724be5c68f82ee8dd9a7bccfa068be88426836e611",
 "lang": "fon",
 "source": "Je suis élève",
@@ -3952,6 +4102,12 @@
 "lang": "fon",
 "source": "Classe introuvable",
 "text": "È mɔ azɔ̌xɔsa ɔ ǎ"
+},
+{
+"key": "4542d61f5f6a365d7f27042144a343aa315edbae79ef2e7668dff27d82e1f7e5",
+"lang": "fon",
+"source": "Mot de passe oublié",
+"text": "Xógbe hwláhwlá wɔn"
 },
 {
 "key": "4546ae0b013232b5b2796928a92cb096edc93c20498337f6c3ee4eb060e57cd9",
@@ -4206,6 +4362,12 @@
 "text": "Sɔ́ dó tò mɛ (CSV)"
 },
 {
+"key": "492998095bb85f0ac914673af899625fbea576f1d9a294889d62978d6ce57123",
+"lang": "fon",
+"source": "Des élèves en uniforme kaki sourient à la porte d'une salle de classe.",
+"text": "Azɔ̌mɛví e dó awu kaki tɔn lɛ é ɖò nǔ ko wɛ ɖò azɔ̌xɔsa ɖé sín hɔn nu."
+},
+{
 "key": "493bc9d70dc6e8ce664051c12b6c8d14d9f782888b95327ef99048e80e7ef64c",
 "lang": "fon",
 "source": "Notification envoyée à vos",
@@ -4404,6 +4566,12 @@
 "text": "2 · È wlan nyikɔ dó wema mɛ"
 },
 {
+"key": "4c93f684ff0ebbdc4289d4b63c6824dba7d3ebf6e04db89a0eb9ed299cdbf8bf",
+"lang": "fon",
+"source": "Connexion impossible",
+"text": "Mi sixú cá kàn ǎ"
+},
+{
 "key": "4cf1fa9eac13ac6c5c5f61a58c225a86939f29e5d1225b563d957b2e421145be",
 "lang": "fon",
 "source": "Bulletin de 2, Trimestre 3 4-5. Moyenne générale : 6 sur 7, Passable. Rang : 8e sur 9. Appréciation : Travail satisfaisant, peut mieux faire.",
@@ -4428,6 +4596,12 @@
 "text": "Nǔwlanwlán"
 },
 {
+"key": "4d3bd161eeea48d48b3a5b1c5f375d7114825515c26e35222dc0ba643e73a68e",
+"lang": "fon",
+"source": "Des élèves à la porte de leur classe.",
+"text": "Azɔmɛvi lɛ ɖo xɔ yetɔn sin hɔn nu."
+},
+{
 "key": "4d8252b66eb06faaeb192571a2fc60516dc31d64a5deed2a6ec53f70de0a9741",
 "lang": "fon",
 "source": "Bulletin de 2, Trimestre 3 4-5.",
@@ -4438,6 +4612,12 @@
 "lang": "fon",
 "source": "La matière est trop longue (80 caractères au plus).",
 "text": "Nǔ e è wlan lɛ é ɖiga dín (é na bo tlɛ nyí wekwín 80 mɔ̌ ɔ)."
+},
+{
+"key": "4daad7c751cae0a52bb3a81f921b2eb8efd7532efb69c673ae9d2d7b314b2fc5",
+"lang": "fon",
+"source": "Masquer le mot de passe",
+"text": "Hwla xógbe hwláhwlá"
 },
 {
 "key": "4db44c9f04f6d71fc22404553a4287ed4cbe982f47052683fbbf7e20d0cd6d6e",
@@ -4462,6 +4642,12 @@
 "lang": "fon",
 "source": "Examens blancs",
 "text": "Tɛnkpɔn ɖagbeɖagbe lɛ"
+},
+{
+"key": "4e145cb8f6314f42a80775c7925d4b57c421c7cfdfd271811e91be055f69b91b",
+"lang": "fon",
+"source": "Voir l'original sur Wikimedia Commons",
+"text": "Kpɔ́n xóxó ɔ ɖò Wikimedia jí."
 },
 {
 "key": "4e54223197cc101ecb557fe39b7d26f99800e4cc3e889a324dfed049fbc594d9",
@@ -4732,6 +4918,12 @@
 "lang": "fon",
 "source": "Le fichier n'est pas en ligne. La transcription ci-dessous en donne le contenu complet.",
 "text": "Fímu ɔ ɖò ɛntɛnɛti jí ǎ. Nǔ e è wlan dó dò é na nǔ e ɖ’emɛ lɛ é bǐ."
+},
+{
+"key": "5278137b0c1a161c0e88b22c6dab7a74cde80cf83de24381b53b4c58cf48954c",
+"lang": "fon",
+"source": "Leçon de lecture dans une école béninoise",
+"text": "Nuxixa kplɔnkplɔn ɖo wemaxɔmɛ Benin tɔn ɖe mɛ."
 },
 {
 "key": "528c19aef1fbd7066cb917675114d481ec958eaab2b51174e4030ca29e82e196",
@@ -5532,10 +5724,22 @@
 "text": "Xóɖɔɖókpɔ́ xá wemaxɔmɛ ɔ."
 },
 {
+"key": "5f559b04e4a568c9ccc88045871f444d6ae746cccb4780b65c694e24e1ee9acc",
+"lang": "fon",
+"source": "Voir la source",
+"text": "Kpɔ́n fí e é gosín é"
+},
+{
 "key": "5f59347b8c44a884d534aa4475d57562d4d535dd78e4f577057db96e97fd314d",
 "lang": "fon",
 "source": "Les notes ne pourront plus être modifiées. Les établissements et les familles sont notifiés des résultats définitifs.",
 "text": "È sɔ́ sixu ɖyɔ nǔwlanwlán lɛ ǎ. È nɔ ɖɔ nǔ e è mɔ ɖò gudogudo lɛ é nú azɔ̌xwé lɛ kpo xwédo lɛ kpo."
+},
+{
+"key": "5f6baab4dbe152fc766bb04ed09724a86f6c3651f3d966d25a786ac43cae45a9",
+"lang": "fon",
+"source": "Langue",
+"text": "Ɖɛ"
 },
 {
 "key": "5f74754b299bbfad4d38f3ae73038913e63d46c4f38b58a70cfc2ab76cf3dae3",
@@ -5736,6 +5940,12 @@
 "text": "È ɖè síìn"
 },
 {
+"key": "61d695041034c12d0ae1b51dac5d5c9e15ec459b53c742da2148caf203191faf",
+"lang": "fon",
+"source": "Connexion",
+"text": "Kancica"
+},
+{
 "key": "61dd28a19746e22c9c221e8e84de12464182b2d1b7c275c23f609afd8544d363",
 "lang": "fon",
 "source": "Marquer comme lu : Attestation de scolarité signé",
@@ -5910,6 +6120,12 @@
 "text": "Azɔmɛvi lɛ sin tomɛyiyi"
 },
 {
+"key": "64e65f584e5587bb53bf70781307b185a1f6011cf21cc178aa7b91756fd11800",
+"lang": "fon",
+"source": "Une classe de lecture au Bénin : au tableau, « ada va à l'école » écrit à la craie, des élèves assis sur des bancs de bois.",
+"text": "Kplékplé nǔxixa tɔn ɖé ɖò Benin: ɖò tavo ɔ jí ɔ, è wlan “ada yì wemaxɔmɛ” kpo kɔ́lu kpo, bɔ wemaxɔmɛví lɛ jinjɔn azinkpo e è sɔ́ atín dó bló lɛ é jí."
+},
+{
 "key": "6501eba0b384ef3d943daf180e85eaedb98d28141229d70d4bf1b07215f70862",
 "lang": "fon",
 "source": "Au plus",
@@ -6016,6 +6232,12 @@
 "lang": "fon",
 "source": "Écouter les notes",
 "text": "Ðǒtó nǔwlanwlán lɛ ."
+},
+{
+"key": "66e7f05facae2810551759f6c6bc72d71ae5b68f0559515691fd511b61375f1e",
+"lang": "fon",
+"source": "Aucune : la voix est utilisée telle quelle, sur le serveur de Classéo.",
+"text": "Mɛɖebǔ: è nɔ zán gbè ɔ lee é ɖè gbɔn é, ɖò Classéo sín serveur jí."
 },
 {
 "key": "67063aa549d57a0c582f664f8495825719b758cc569fac6628363f0ae6030eac",
@@ -6268,6 +6490,12 @@
 "lang": "fon",
 "source": "Touchez",
 "text": "Dŏ alɔ"
+},
+{
+"key": "6b85f26269c3d85e118d63e1ebfb33cb93e42c0d6219444de3812b31759fe28b",
+"lang": "fon",
+"source": "Si cet identifiant correspond à un compte actif, votre demande est arrivée chez la personne qui gère votre compte : le chef d'établissement pour les élèves, les parents et le personnel ; la circonscription pour un chef d'établissement ; puis la direction départementale et le ministère. Elle vous remettra un mot de passe temporaire, en personne ou au numéro indiqué.",
+"text": "Nú nǔ e nɔ xlɛ́ mɛ é enɛ sɔgbe xá akɔnta e ɖò azɔ̌ wà wɛ é ɖé ɔ, nǔ e a byɔ é ko yì mɛ e nɔ kpé nukún dó akɔnta towe wu é gɔ́n: ​​gǎn e nɔ kpé nukún dó wemaxɔmɛví lɛ, mɛjitɔ́ lɛ kpo azɔ̌watɔ́ lɛ kpo wu é; tokpɔn e mɛ è nɔ sɔ́ mɛ ɖó é nú gǎn e è ɖó ayǐ é ɖé; enɛ gudo ɔ, azɔ̌xɔsa ɔ sín gǎn lɛ kpo sinsɛnzɔ́ ɔ kpo. É na na we password nú táan klewun ɖé, é na wá kpɔ́n we alǒ ɖò nɔtɛn e è xlɛ́ é jí."
 },
 {
 "key": "6b988a59e04b2f4667bb471b857d0d408b2613d464fc48488c76b38cb0e2d997",
@@ -6660,6 +6888,12 @@
 "text": "Slέslέ"
 },
 {
+"key": "719d1aaad7cf3f64033976cb2517e1e93eeb19877ed1e883e02d92300f51c0de",
+"lang": "fon",
+"source": "Pour le ministère, les directions départementales, les circonscriptions scolaires, les écoles, les enseignants et les familles.",
+"text": "Nu sinsɛnzɔ́ ɔ, gǎn e nɔ kpé nukún dó azɔ̌xɔsa lɛ wu lɛ é, wemaxɔmɛ gbɛ́ta lɛ, wemaxɔmɛ lɛ, mɛ̌si lɛ kpo xwédo lɛ kpo."
+},
+{
 "key": "71b798ab8fdc90936270f907b0e82deb623b4ccc11434618a3f25d6b8e66f604",
 "lang": "fon",
 "source": "Télécharger l'audio",
@@ -6778,6 +7012,12 @@
 "lang": "fon",
 "source": "Examen proposé par",
 "text": "Nǔ e è gbéjé kpɔ́n é wɛ."
+},
+{
+"key": "73751ad05e1f66041aeeab44320323607a0b67cef9faee68b08b3d93eb4d629c",
+"lang": "fon",
+"source": "Lire la licence",
+"text": "Xà wěma ɔ."
 },
 {
 "key": "737d5e17916841bcf2999a2d99222e0878e55aa186b21c26564861437c2c8234",
@@ -7014,6 +7254,12 @@
 "text": "Xójlawema nǔxixa tɔn (SMS ɖexlɛ́ ɖɔ nǔgbo wɛ) *"
 },
 {
+"key": "768e872f655128904fc9c96da3b91a9ac671e9931bd2898b41b9f8dfd654a07c",
+"lang": "fon",
+"source": "Prototype présenté au défi EduTech Bénin 2026.",
+"text": "Nǔjlɛdonǔwu e è xlɛ́ ɖò EduTech Benin 2026 sín tɛnkpɔn ɔ hwenu é."
+},
+{
 "key": "76d5926c896d30202b706ed549f2a7c5dc0cd3ddad2493c9b2fa734493a65ca2",
 "lang": "fon",
 "source": "Ajoutez d'abord une transcription : les personnes sourdes ou malentendantes doivent pouvoir lire ce contenu.",
@@ -7038,6 +7284,12 @@
 "text": "Akwɛ súsú ɖò Ɛntɛnɛti jí"
 },
 {
+"key": "7738d330991b9674d4cb315e6953289d91afe73cff1789d3d06be2bf101f8238",
+"lang": "fon",
+"source": "Redimensionnée et convertie au format WebP, le haut de l'image recadré.",
+"text": "È ɖyɔ ɖaxó tɔn bo huzu dó WebP sín alɔkpa mɛ, bo ɖè ɖiɖe ɔ sín ta."
+},
+{
 "key": "77767da1e2b387a0a32cf74d6e5bc6aa78e30fb3f048f2dab3136f7492b850cd",
 "lang": "fon",
 "source": "· moyenne provisoire",
@@ -7048,6 +7300,12 @@
 "lang": "fon",
 "source": "MTN MoMo",
 "text": "MTN MoMo"
+},
+{
+"key": "7783a01ae315e342de2ea5787534cf10a280dfbacd74e0a2fb6f4fe2b88cedb7",
+"lang": "fon",
+"source": "Mon compte a une adresse e-mail : recevoir un code",
+"text": "Akɔnta ce ɖo adlɛsi email tɔn: yi kodu ɖokpo"
 },
 {
 "key": "779b6744fca7682bd64f49146d7cada3f2a277d82515ee4fcd54e4410f12ee09",
@@ -7974,6 +8232,12 @@
 "text": "Nùjlὲdónùwú"
 },
 {
+"key": "8638dbe061df2746c24c533d16b32d90e0acef91cc29b503e280001fcb873031",
+"lang": "fon",
+"source": "Saisissez votre identifiant. Votre établissement ou votre administration recevra la demande et vous remettra un mot de passe temporaire.",
+"text": "Wlan nyikɔ towe. Azɔ̌xwé towe alǒ acɛkpikpa towe na yí nǔ e byɔ wɛ a ɖè é bo na na we xógbe e è nɔ zán dó hwlɛn mɛ é ɖé nú táan klewun ɖé."
+},
+{
 "key": "865165827b0a985b61b22e4f694d215e73db44b959e92529e0085c681b0d90f8",
 "lang": "fon",
 "source": "Télécharger en PDF, facture 2",
@@ -8038,6 +8302,12 @@
 "lang": "fon",
 "source": "« Classes » fixe les enseignants,",
 "text": "“Klasi” lɛ wɛ nɔ sɔ́ mɛ̌si lɛ ɖó te,."
+},
+{
+"key": "86bd545ad06fefd3b40ec6e805fce53f7b25617df47446c5899de1c84f6ca6e8",
+"lang": "fon",
+"source": "Ce compte est désactivé. Contactez votre administrateur.",
+"text": "Akɔnta elɔ ɖò te. Kàn nǔ byɔ mɛ e nɔ kpé nukún dó nǔ lɛ wu é."
 },
 {
 "key": "86d652dca3adf01b77299800e47a1e0cd33de2368487aa6e7779e0545d3a9d5d",
@@ -8220,6 +8490,12 @@
 "text": "Vɔ wlan nu"
 },
 {
+"key": "8a14453ef926bb4eaf323224f75ec3f89f96fe1129e5ab371263dbfb9d6dbded",
+"lang": "fon",
+"source": "Saisissez votre mot de passe.",
+"text": "Wlan xógbe hwláhwlá towe."
+},
+{
 "key": "8a24e8b23ed9d481119446d375690d41061885cafd47ea094333b14412375a39",
 "lang": "fon",
 "source": "Par exemple : contribution scolaire, cotisation APE, tenue.",
@@ -8322,6 +8598,12 @@
 "text": "È sú azɔ̌xwé ɔ: è kpó ɖò nǔ e ɖ’emɛ lɛ é kpɔ́n wɛ, è sixu ɖyɔ nǔ ɖevo ǎ."
 },
 {
+"key": "8b3ba0d31742e3bf0f0115c7b4265f39ef08f664433b10697effa2720fd75827",
+"lang": "fon",
+"source": "Modifications",
+"text": "Huzuhuzu lɛ"
+},
+{
 "key": "8b64408c77112edfb95a3d5de6ddb1f566ea784072d1970cce76ff7399472303",
 "lang": "fon",
 "source": "Classement des candidats",
@@ -8388,6 +8670,12 @@
 "text": "gbè lilɛdógbeɖevomɛ tɔn, nǔxixa ɖò Yoruba-gbè mɛ. Enyi é ma yí gbè ǎ ɔ, Kora nɔ xà ɖò Flanségbe mɛ."
 },
 {
+"key": "8cd0e0139e4f5612063ec1e21af15ec8bcf415856e3b2661dbf8fb59432bda46",
+"lang": "fon",
+"source": "Demander un nouveau mot de passe",
+"text": "Byɔ xógbe hwláhwlá yɔyɔ̌ ɖé"
+},
+{
 "key": "8d3914a95e406dea7f4c5f7e911135ddd0689ceba580dc931497a17281724a94",
 "lang": "fon",
 "source": "Notes de",
@@ -8410,6 +8698,12 @@
 "lang": "fon",
 "source": "Redoublant",
 "text": "Vɔ ɖɔ"
+},
+{
+"key": "8db9c12463e34ef02528d7e3d808d4997cba0c3215e525fc0501e204a7bb08c7",
+"lang": "fon",
+"source": "Les photographies de Classéo montrent des écoles du Bénin. Elles viennent de Wikimedia Commons, où leurs auteurs les ont publiées sous une licence libre ou dans le domaine public.",
+"text": "Classeo sín fɔtóo lɛ xlɛ́ wemaxɔmɛ e ɖò Benin lɛ é. Ye gosin Wikimedia Commons mɛ, fi e mɛ e wlan ye lɛ ɖe ye ɖe tɔn ɖo acɛ mɛɖesunɔ tɔn mɛ alo ɖo mɛ bi sin alɔ mɛ."
 },
 {
 "key": "8dd09450659b6ade09164980a862936deb046edbc6e4db86cafc40a65fb140a3",
@@ -8506,6 +8800,12 @@
 "lang": "fon",
 "source": "Date du paiement",
 "text": "Azǎn e jí è na sú akwɛ́ dó é"
+},
+{
+"key": "8f9f9b08ec0d1a6a81b17a3886ff739659eb2cea7e55d17ed08c44f903b9c5bf",
+"lang": "fon",
+"source": "Retour à l'accueil",
+"text": "Mi lɛkɔ yi xwegbe"
 },
 {
 "key": "8fc27021747b59a2db538f0e3b44696ae29fbe8b66338a1157eb2ec94921f800",
@@ -9006,6 +9306,12 @@
 "text": "Ɖŏ"
 },
 {
+"key": "969727a5705ce8f25fe43f420d30739febcd6a713677f335544cf7b0836b0056",
+"lang": "fon",
+"source": "Identifiant ou mot de passe incorrect.",
+"text": "Nyikɔ mɛ e nɔ zán é alǒ xógbe hwlɛnhwlɛn tɔn e ma sɔgbe ǎ é."
+},
+{
 "key": "96ac6fa4f26c65644db97b5b7a5292f3bdb861f4f9741b3b9e83783d740ca96b",
 "lang": "fon",
 "source": "Résumé lu à voix haute : Bulletin de 2, Trimestre 3.",
@@ -9100,6 +9406,12 @@
 "lang": "fon",
 "source": "Vous, votre enfant, son établissement et les services habilités.",
 "text": "Hwi, vǐ towe, tutoblonunu yetɔn kpo azɔ̌ e è na acɛ lɛ é kpo."
+},
+{
+"key": "98037625c8478e0ce458859230cc0e9d18fbd98a5ad9f6daa163018658c29c49",
+"lang": "fon",
+"source": "Chaque écran peut être lu à voix haute.",
+"text": "È sixu xà nǔ e ɖò ɖiɖe ɔ jí lɛ é ɖokpo ɖokpo dó gbè ɖaxó mɛ."
 },
 {
 "key": "98158e310279096b4287f0f3aeeb8f841ac221d3a268bff995af3aa43c73a8cd",
@@ -9456,6 +9768,12 @@
 "text": "Xójlawema 1gɔ́ ɔ sín xójlawema 2-3."
 },
 {
+"key": "9cf468894756863a684433b50a9d878a235e501344f6633c999b1c108bf66668",
+"lang": "fon",
+"source": "Cour d'une école primaire publique",
+"text": "Wemaxɔmɛ kpɛví to ɔ tɔn sín kɔxota"
+},
+{
 "key": "9d0f4828bb137a7fae986624c9ce58ee6b3ba97fd2a3321f3fd00ba5bd58e143",
 "lang": "fon",
 "source": "Décider un examen blanc",
@@ -9720,6 +10038,12 @@
 "text": "Yín tɔn"
 },
 {
+"key": "a1a74ea955dac3c7cb9ffd964dc238a7b37862059b793014de915ca38be28122",
+"lang": "fon",
+"source": "Saisissez le code reçu par e-mail, puis choisissez votre nouveau mot de passe.",
+"text": "Wlan kodɛ e a yí gbɔn e-mail jí é, enɛ gudo hǔn, sɔ́ xógbe hwláhwlá yɔyɔ̌ towe."
+},
+{
 "key": "a1cf2dc7f6b9983f953f42475fbdfa01a12ce1a8544c2c2c60bec7ceb6b562e8",
 "lang": "fon",
 "source": "publié le",
@@ -9790,6 +10114,12 @@
 "lang": "fon",
 "source": "Choisissez la classe d'examen pour voir les établissements concernés.",
 "text": "Sɔ́ tɛnkpɔn sín wemaxɔmɛ ɔ bo kpɔ́n tutoblonunu e xó ɔ kàn lɛ é."
+},
+{
+"key": "a3d65ca5697afe445b551e6cccd18a37be2d34d253a0418ab940f43f03476d84",
+"lang": "fon",
+"source": "Nouveau mot de passe",
+"text": "Xógbe hwlɛnhwlɛn yɔyɔ̌"
 },
 {
 "key": "a3efb44eb529803a65906e59f84c498d4c9b9da293bd9663b01e5e670a1c2e1a",
@@ -9996,6 +10326,18 @@
 "text": "Akwɛ e è mɔ ɖò Moov Money sín wěma 2 septembre tɔn jí é ǎ. Kpɔ́n xójlawema SMS ɔ tɔn."
 },
 {
+"key": "a88c1dacd691afea30aa367af84469cf794833db688e48663aaca971a12a7217",
+"lang": "fon",
+"source": "L'école béninoise, du ministère à la maison.",
+"text": "Wemaxɔmɛ Benin tɔn, sín sinsɛnzɔ́ ɔ mɛ kaka jɛ xwégbe."
+},
+{
+"key": "a8d304bac56902469e89b9dc7b36ea3831eecfae82ee0fcdca48c0ef53dd0e74",
+"lang": "fon",
+"source": "L'école au Bénin, en images",
+"text": "Wemaxɔmɛ ɖò Bénin, ɖò ɖiɖe lɛ mɛ"
+},
+{
 "key": "a8d6dd1cdccdfd9db80c70a71035fc4e43d4a286caf5bbb7c71814fa79dc5ce8",
 "lang": "fon",
 "source": "Motivez la décision.",
@@ -10012,6 +10354,12 @@
 "lang": "fon",
 "source": "Choisissez une réponse.",
 "text": "Sɔ́ xósin ɖé."
+},
+{
+"key": "a948674e9e9fa990a70fa6cc01a62c9f1f38e1d88f31ea0f22cc8dfdf69900a1",
+"lang": "fon",
+"source": "Élèves à la porte de la classe",
+"text": "Azɔmɛvi lɛ ɖo azɔxɔmɛ hɔn nu"
 },
 {
 "key": "a95d1079b25160dc3ef1149af9ae4422830eba515c11d42ed3fcf2e8847335e3",
@@ -10078,6 +10426,12 @@
 "lang": "fon",
 "source": "Échéancier «",
 "text": "Hwenu ɖiɖe «"
+},
+{
+"key": "aafebfc5880f8d7bdde2427ec4186095a52c8e82e72bf1aadf45d6804427e3bc",
+"lang": "fon",
+"source": "Mot de passe oublié : un code par e-mail.",
+"text": "Password wɔn: kodu ɖokpo gbɔn email ji."
 },
 {
 "key": "ab12a946513d31b997143907017dde545e85ab3b0ad934634c5d7ecb8e30bf4d",
@@ -10168,6 +10522,12 @@
 "lang": "fon",
 "source": "2 était absente le jeudi 3 septembre au matin.",
 "text": "2 ɖò nyɔnuzan 3gɔ́ Kɔnyásun tɔn gbè zǎnzǎn."
+},
+{
+"key": "ac504a8d48d5f74247465f887a70e4e4d2a0520d1ca80bf9274c35c4884b2d05",
+"lang": "fon",
+"source": "Si une autre personne porte déjà le même nom, un chiffre est ajouté à la fin, par exemple afiavi.hounkpatin2.",
+"text": "Nú mɛ ɖevo ko ɖó nyikɔ ɖokpo ɔ ɔ, è nɔ sɔ́ kɛ́n ɖé d’eji ɖò vivɔnu, ɖi afiavi.hounkpatin2."
 },
 {
 "key": "ac546c4e6275a47545eab5ec259c629c8e0d3a0da643e0f830f6c428be500526",
@@ -10740,6 +11100,12 @@
 "text": "Sɔ́ mɛɖé..."
 },
 {
+"key": "b4dd9feace0075624c56702feddf68fbe1d0b3a8aedb0b36177e4676774cf93f",
+"lang": "fon",
+"source": "Des élèves sur le chemin de l'école.",
+"text": "Azɔmɛvi lɛ ɖo wemaxɔmɛ yi wɛ."
+},
+{
 "key": "b4e1dc96215e69a7b785b9cef0b5a380e9963f94c6670d55fb2ebaead717e69e",
 "lang": "fon",
 "source": "Aucun établissement ne correspond.",
@@ -10828,6 +11194,12 @@
 "lang": "fon",
 "source": "Calendrier",
 "text": "Azànwèmá"
+},
+{
+"key": "b667d8da8e1b6dd13eee0a1d9269d9dc968b64cc1306393f4f40c056fbda3c17",
+"lang": "fon",
+"source": "Redimensionnée et convertie au format WebP, le bas de l'image recadré.",
+"text": "È ɖyɔ ɖaxó tɔn bo huzu dó WebP sín alɔkpa mɛ, bo ɖè ɖiɖe ɔ sín dò."
 },
 {
 "key": "b6699efebab831bd93f3954c66fb474256a9243a5a39f8e3a8c2e9a3188c325d",
@@ -10950,6 +11322,12 @@
 "text": "gègě alǒ akwɛ e kpò é bǐ, ɖò Ɛntɛnɛti jí alǒ gbɔn akwɛ e è ko sú ɖò Mobile Money jí é ɖiɖɔ gblamɛ."
 },
 {
+"key": "b8c4b6090beb9992e4f5a525bd16b862d1cd7fd2a6b6d2c9c68e150e441e3793",
+"lang": "fon",
+"source": "Des élèves allongés sur un carrelage lisent ensemble des livres illustrés.",
+"text": "Azɔ̌mɛví ɖěɖee mlɔ́ kɔ́mɛ bo sɔ́ kɔ́lu dó bló na lɛ é nɔ xà wema e mɛ è ɖè ɖiɖe lɛ ɖè lɛ é ɖó kpɔ́."
+},
+{
 "key": "b906bf1dcf3d5c4eeaf2e12fe1079f6f9bb44b7528c8cd37d02c4b01247e1e07",
 "lang": "fon",
 "source": "Mardi",
@@ -10996,6 +11374,12 @@
 "lang": "fon",
 "source": "Mode de paiement",
 "text": "Wlɛnwín e è nɔ sú akwɛ na é"
+},
+{
+"key": "ba0f5f3ac5a46c70bae2c1e6748b1200b39615bc1d0e0df70aa0aa3609353dca",
+"lang": "fon",
+"source": "Classéo réunit le ministère, les directions départementales, les écoles et les familles autour des mêmes informations sur chaque élève, pour que chacun voie ce qui le concerne, au bon moment.",
+"text": "Classéo nɔ kplé sinsɛnzɔ́ ɔ, gǎn e nɔ kpé nukún dó azɔ̌xɔsa lɛ wu lɛ é, wemaxɔmɛ lɛ kpo xwédo lɛ kpo lɛlɛ̌ dó nǔ ɖokpo ɔ lɛ dó azɔmɛví ɖokpo ɖokpo jí, bonu mɛ bǐ na mɔ nǔ e kàn ye é, ɖò hwenu e jɛxa é."
 },
 {
 "key": "ba33f776e2bc3001eb6fcb9fbd36d751badaa928d63363e019fbbb1226f89d89",
@@ -11304,6 +11688,12 @@
 "text": "È ɖetɔ́n"
 },
 {
+"key": "beb84a2e38e32fe911e98c35a92d5df4fa67bd477422cd81284193cb802bc26b",
+"lang": "fon",
+"source": "Saisissez votre identifiant.",
+"text": "Wlan nyikɔ towe."
+},
+{
 "key": "bef7b81f865e04bf7fb35e7ca9eace5b361a0000cd2488843a4753b968a61ca4",
 "lang": "fon",
 "source": "Confirmez seulement après avoir retrouvé la transaction",
@@ -11362,6 +11752,12 @@
 "lang": "fon",
 "source": "Disponible sans réseau sur cet appareil",
 "text": "È sixu mɔ réseau mɛvo ɖò alokan elɔ jí."
+},
+{
+"key": "bfd8bcf85083817909b61ea8121a0f546ef463341401c2eb16e39bc896faea09",
+"lang": "fon",
+"source": "Vérifiez les champs du formulaire.",
+"text": "Kpɔ́n fí e è wlan wema ɔ dó lɛ é."
 },
 {
 "key": "bfdae3943d294a1723470dba55ad206587a00e475660ef3bd66de4600f696532",
@@ -11448,6 +11844,12 @@
 "text": "Kplékplé mɛ"
 },
 {
+"key": "c16a18f684d7a0fbb46a73c868a1d62b547696aad34d4693ded65ce34d2a8e5f",
+"lang": "fon",
+"source": "Entrez l'identifiant et le mot de passe que votre établissement ou votre administration vous a remis.",
+"text": "Wlan nyikɔ kpo xógbe e è nɔ zán dó hwlɛn mɛ é kpo e azɔ̌xwé towe alǒ acɛkpikpa towe na we é."
+},
+{
 "key": "c1712fd5a351dac854973db8a7302a25e3eaa3b8f38cde90bde0df71ebb2ba95",
 "lang": "fon",
 "source": "Chaque résultat a une image et une couleur : une étoile ou un pouce vert pour « bien », un trait orange pour « passable », un triangle rouge pour « insuffisant ».",
@@ -11482,6 +11884,12 @@
 "lang": "fon",
 "source": "Cette date est hors de l'année scolaire",
 "text": "Azǎn enɛ ɖò wemaxɔmɛ xwè ɔ gudo"
+},
+{
+"key": "c22ff4a70ed83dd9a064ee2dc820de8750a2fb958aaed38a69ad9e5684ab3de2",
+"lang": "fon",
+"source": "Le texte s'agrandit, le contraste se renforce et tout se fait au clavier, avec un lecteur d'écran ou sur un petit téléphone. Les pages déjà ouvertes restent lisibles sans réseau.",
+"text": "Nǔwlanwlán ɔ nɔ gɔ́ngɔ́n, vogbingbɔn ɔ nɔ syɛn d’eji bɔ è nɔ wà nǔ lɛ bǐ ɖò klavié jí, kpo nǔ e nɔ xà nǔ ɖò écran jí é ɖé kpo alǒ ɖò alokan kpɛví ɖé jí. Wema e ko hun lɛ é kpó ɖò xixa wɛ réseau mɛvo."
 },
 {
 "key": "c24c9439df48714ea1291439e58ccfb13ea6dc1dbc7714d771510532b7694aac",
@@ -11620,6 +12028,12 @@
 "lang": "fon",
 "source": "Capture du SMS ou reçu de la banque : image ou PDF, 2 Mo au maximum.",
 "text": "SMS alǒ wěma e è yí ɖò banki é sín ɖiɖe: ɖiɖe alǒ PDF, 2 MB hú mɔ̌."
+},
+{
+"key": "c44f058d270cb4c1347fad88da39630a11e99fdff54fae9f5e71786522e490c2",
+"lang": "fon",
+"source": "Le code est à usage unique et reste valable 15 minutes. Une fois le mot de passe changé, toutes les sessions ouvertes avec le compte sont fermées.",
+"text": "Kodwé ɔ nyí nǔ e è na zán azɔn ɖokpo é tɔn, bo na nɔ ayǐ nú cɛju 15. Enyi è ɖyɔ xókwín ɔ gudo ɔ, è nɔ sú kplé e è hun kpo akɔnta ɔ kpo lɛ é bǐ."
 },
 {
 "key": "c45544e1fba3808d16a0229edc902dac6b35f61325ba4b7c3aae297f4422a70e",
@@ -11838,6 +12252,12 @@
 "text": "Wezùn"
 },
 {
+"key": "c889745f457fec8a47018ecb22324bb656ace065b5d4c2d7c282fa868fe5fadd",
+"lang": "fon",
+"source": "Pas besoin d'adresse e-mail. Votre demande arrive chez la personne qui gère votre compte : elle vous remet un mot de passe temporaire, que vous remplacez à la connexion.",
+"text": "É byɔ adlɛsi email tɔn ǎ. Nǔ e a byɔ é nɔ wá mɛ e nɔ kpé nukún dó akɔnta towe wu é gɔ́n: ​​ye nɔ na we xógbe hwláhwlá ɖé nú táan klewun ɖé, bɔ a nɔ ɖyɔ hwenu e a byɔ mɛ é."
+},
+{
 "key": "c89ac8f0d41a87f2ca0750e12397709f05e9ff9cb46b3297efb46fda66b44e52",
 "lang": "fon",
 "source": "Motif",
@@ -11932,6 +12352,12 @@
 "lang": "fon",
 "source": "Directions",
 "text": "Alixlɛ́mɛ lɛ"
+},
+{
+"key": "c955c0aea76559d3b893f50cd9409066958f6de82a43dbea7e534789ac74bef8",
+"lang": "fon",
+"source": "Voir le statut sur la page source.",
+"text": "Kpɔ́n ninɔmɛ ɔ ɖò wexwɛ e jí è ɖè é."
 },
 {
 "key": "c97f56576e3334dd3367209653a2b5f4bd50424ed7980b74802ce7ae3bcaaa38",
@@ -12268,6 +12694,12 @@
 "lang": "fon",
 "source": "Nouvelle publication",
 "text": "Wema yɔyɔ̌ ."
+},
+{
+"key": "cfbf127b5c9a48860317e55936f8bd5c72332a9d4393e7f635102cd387a6a6f2",
+"lang": "fon",
+"source": "La cour de l'école primaire publique de Savi, à Godomey.",
+"text": "Kɔxota wemaxɔmɛ kpɛvi to ɔ tɔn Savi tɔn, ɖo Godomey."
 },
 {
 "key": "cfcd7b1ada2505d27cb55be3b64d21417d47c0f3439aea3d44670d3c3964806b",
@@ -12624,6 +13056,12 @@
 "text": "Kpɔ́n bǎ e mɛ è sɔ́ nú akwɛ alɔkpa enɛ é."
 },
 {
+"key": "d55d72f291c1004e3cd24079caf9df3f694480d2f7a11ddb45628cec3483d1e7",
+"lang": "fon",
+"source": "Téléphone pour vous rappeler",
+"text": "Alokan bo na lɛ ylɔ we"
+},
+{
 "key": "d575f015b6e2ff9f13f379488b573254656daa5d71c58d405868a4df8fe6baa6",
 "lang": "fon",
 "source": "Cours ajouté",
@@ -12900,6 +13338,12 @@
 "text": "È yí akwɛ nabi ɖé ǎ."
 },
 {
+"key": "da44fd6a87ac497200a6de08175bb0d7cb81f8c77321bf513f773b581640a9ad",
+"lang": "fon",
+"source": "Compte temporairement verrouillé après plusieurs échecs. Réessayez dans 15 minutes.",
+"text": "È sú akɔnta ɔ nú táan ɖé ɖò nǔglɔ gègě gudo. Tɛ́n kpɔ́n bo lɛ́vɔ tɛ́n kpɔ́n ɖò cɛju 15 gudo."
+},
+{
 "key": "da588f37101e70bdf1fd4c800c1e0148d00a6eb02c5e357572b4ebfb86bb9843",
 "lang": "fon",
 "source": "Chargement des frais",
@@ -12934,6 +13378,12 @@
 "lang": "fon",
 "source": "Compte",
 "text": "Akɔ́nta"
+},
+{
+"key": "dad5ded70076f54c36a89f88977b9eeb77e926dfe236f5b0910f1461c76a9f52",
+"lang": "fon",
+"source": "Afficher le mot de passe",
+"text": "Xlɛ́ xógbe hwláhwlá"
 },
 {
 "key": "dadc8c7aa148849e783add8e40ccaa5b1f058aec81d597ba97c5f6b284d2605f",
@@ -13330,6 +13780,12 @@
 "lang": "fon",
 "source": "Les destinataires",
 "text": "Mɛ e è na lɛ é ."
+},
+{
+"key": "e11a5abc9dd0f64c859d267fc7944e3629d1078a951f23e047ac92f0512968ca",
+"lang": "fon",
+"source": "Des élèves lisent ensemble, à Grand-Popo.",
+"text": "Azɔmɛvi lɛ nɔ xa nu ɖokpo ɔ ɖo Grand-Popo mɛ."
 },
 {
 "key": "e12bd919f612ceb01f821fcf07e92d12f91764a868289df75e6236b592fe1b8d",
@@ -13914,6 +14370,12 @@
 "text": "È ko ɖó akwɛ enɛ te."
 },
 {
+"key": "ec68807a9d145c36c3f71c2fee796d95c35f936789be3cab4f86df5b8172c583",
+"lang": "fon",
+"source": "Les réglages se trouvent sous le bouton rond, en bas à droite de chaque écran.",
+"text": "Nǔ e è sɔ́ ɖ’ayǐ lɛ é ɖò butɔn cícɔ́ e ɖò dò ɖò ɖisixwé nú nǔjlajla ɖokpo ɖokpo é glɔ́."
+},
+{
 "key": "ec7aa381d1e9b6e0e866259e078d9f8f76f87e74da0ff48235519012dace7978",
 "lang": "fon",
 "source": "La lecture vocale n'est pas disponible sur ce navigateur.",
@@ -14110,6 +14572,12 @@
 "lang": "fon",
 "source": "Notification d'essai",
 "text": "Gbeɖiɖó hwɛɖiɖɔ tɔn"
+},
+{
+"key": "ef703d2cbaf0192266949f5d114b9be36f84791cd37d91bf447042dc9319eb16",
+"lang": "fon",
+"source": "Retour à la connexion",
+"text": "Lɔ kɔ bo byɔ mɛ"
 },
 {
 "key": "ef875eb9f6060c3ebc2b8ad17d72d6ba84afb98118c90e31defee7cfcca98e30",
@@ -14316,6 +14784,12 @@
 "text": "Wlan nǔ sɛ́dó mɛɖé, alǒ ɖò nyikɔ tɔn mɛ."
 },
 {
+"key": "f35326ab620f8bf47b1823edb546016f911f1db3bf16ba832e265230e208581d",
+"lang": "fon",
+"source": "Voix",
+"text": "Gbé"
+},
+{
 "key": "f381255690980b9c6863e334b77b1ecb99e6b266583247cf3915d98bdfd84af1",
 "lang": "fon",
 "source": "Photo enregistrée.",
@@ -14326,6 +14800,12 @@
 "lang": "fon",
 "source": "Appréciation : Résultats insuffisants, un soutien est recommandé.",
 "text": "Nǔjlɛdonǔwu: Nǔ e è mɔ lɛ é ma kpé ǎ ɔ, è nɔ kplɔ́n mɛ ɖɔ è ni nɔ gudo nú mɛ."
+},
+{
+"key": "f3ec8e880a46c8a6fb105396ee5400124f828934a9dd68c668f796cf6d47b1c8",
+"lang": "fon",
+"source": "Licence",
+"text": "Acɛ"
 },
 {
 "key": "f403b438c62dbd20c519df5b7038a74185fb5866d98abce9814ab966a5b0f9fe",
@@ -14356,6 +14836,12 @@
 "lang": "fon",
 "source": "Réunion des parents le samedi 2 octobre à 2 h",
 "text": "Kplé mɛjitɔ́ lɛ tɔn ɖò Samedi 2 octobre ɖò gan 2 m.m."
+},
+{
+"key": "f44ead2bb9263f60b6de1d12f253f43c081dd988e8c59a3cf819c4eccd44b37b",
+"lang": "fon",
+"source": "Recevoir un code par e-mail",
+"text": "Yǐ kodu ɖé gbɔn e-mail jí"
 },
 {
 "key": "f484c4b7d4dff1b4e61941d59ed1a8e9414a6ff082375fdbc53a89dcfb142134",
@@ -14448,6 +14934,12 @@
 "text": "Akwɛzinzan alɔkpa enɛ wɛ è nɔ hɛn gblé."
 },
 {
+"key": "f55eb238fd791c0c55d92376ad8d5825cedb2d8cd755645ae89b8e531fb1b0fe",
+"lang": "fon",
+"source": "Une leçon de lecture en 1997 : au tableau, « ada va à l'école » écrit à la craie.",
+"text": "Nǔxixa sín nùkplɔnkplɔn ɖé ɖò 1997: ɖò tavo ɔ jí ɔ, è wlan “ada yì wemaxɔmɛ” kpo kɔ́lu kpo."
+},
+{
 "key": "f5772f71173bfdc8d9e73f84eb35f4e00292562565d44d5d5c0eb3a910eb58ac",
 "lang": "fon",
 "source": "Matière",
@@ -14476,6 +14968,12 @@
 "lang": "fon",
 "source": "2e · Rang général : 2e sur 3 candidats classés",
 "text": "2ème · Rang général : 2ème sur 3 des candidats classés"
+},
+{
+"key": "f655bbb7f6207e1fae0ebdad8cc3891c1de35e338dd269c4ff7ac557aab7e666",
+"lang": "fon",
+"source": "Liens du pied de page",
+"text": "Link afɔdógbě tɔn"
 },
 {
 "key": "f65ddff36b022ad63cae3e4a424a610ee65072c10081f765fb5afe15f2079787",
@@ -14614,6 +15112,12 @@
 "lang": "fon",
 "source": "Déclarations traitées",
 "text": "Gbeɖiɖó e è w’azɔ̌ na lɛ é"
+},
+{
+"key": "f8e3bdf273425b225b6ea5bf3847aca0e834922af6b279d76649ff59032866b5",
+"lang": "fon",
+"source": "Domaine public",
+"text": "Mɛ bǐ sín nǔ"
 },
 {
 "key": "f8e851d4af518ba64acee9233c82350609743cd137571cd4de3a04ec822c3967",
@@ -14928,6 +15432,18 @@
 "text": "Nǔ e è mɔ lɛ é ma kpé ǎ"
 },
 {
+"key": "fd6be6e120971721ba6e5dae4de9ea233c3dc2e1c31eadb931fec8e6efc8f0f1",
+"lang": "fon",
+"source": "Mot de passe oublié : votre administration vous aide.",
+"text": "Password wɔn: acɛkpikpa mitɔn na d'alɔ mi."
+},
+{
+"key": "fd7925a577767f3fe12624ec0358fbe37db19a45a7c2a73a96f57b8a38fb44ee",
+"lang": "fon",
+"source": "Lire à plusieurs",
+"text": "Mi xà nǔ ɖó kpɔ́."
+},
+{
 "key": "fd79ed18179ba6b794068fe1711c64614a36587cd217b662043423464c3e6463",
 "lang": "fon",
 "source": "Choisissez la classe d'examen, les dates, les matières et les établissements concernés : leur participation est obligatoire.",
@@ -15012,6 +15528,12 @@
 "text": "Azɔxɔ"
 },
 {
+"key": "fec229b8b8478fafba339e2a6752f53acbfa06b404ca282b56c3bcecd13b5aac",
+"lang": "fon",
+"source": "Mot de passe oublié ?",
+"text": "A wɔn password à ?"
+},
+{
 "key": "fee2b9ad3074b7305713aaa9fbb45a06f34170a4ccc00e0a1b786e33db0bb471",
 "lang": "fon",
 "source": "Élevé",
@@ -15034,6 +15556,12 @@
 "lang": "fon",
 "source": "Les inscriptions restent ouvertes jusqu'au 2 octobre.",
 "text": "È na hun nyikɔ dó wema mɛ kaka jɛ azǎn 2gɔ́ ɔ Kɔnyásun tɔn gbè."
+},
+{
+"key": "ff288403bd8daf9a25e8fb8eaee91536121b7d97f436ab5e105171ff102857b0",
+"lang": "fon",
+"source": "Numéro invalide : chiffres, espaces et + uniquement.",
+"text": "Numɛro e ma sɔgbe a e: numɛro lɛ, tɛnmɛ lɛ kpodo + kpo kɛɖɛ."
 },
 {
 "key": "ff2984ac447135e28b24f39fae9c88ea3f8e4daabf44cb97609af7219c350501",
@@ -15064,6 +15592,12 @@
 "lang": "fon",
 "source": "Composition uniquement",
 "text": "Nǔwlanwlán kɛɖɛ"
+},
+{
+"key": "ff9c8b8c0677c3d05a018508b29783af6de561164b9f8ecd64a6cdbdcf3e48f5",
+"lang": "fon",
+"source": "Mot de passe",
+"text": "Xókwin"
 },
 {
 "key": "ffb897c6f20f4a5de25c562193308f3b4c8fd7de5729923ffb2cc9b71c665ba5",
@@ -15366,6 +15900,12 @@
 "text": "Gba ìkésíni náà"
 },
 {
+"key": "04f10201ad3cf7398e91a5d2e58e5d6f444c6cb1b6b9e3606890d9ebd3b895b4",
+"lang": "yo",
+"source": "Écouter en yoruba",
+"text": "Gbo ni ede Yoruba"
+},
+{
 "key": "050a5ca8b14cbf801c8dd7218d2577c978f7ec55741a2ef5ccd4928cbc36addc",
 "lang": "yo",
 "source": "Établissement introuvable ou fermé.",
@@ -15376,6 +15916,12 @@
 "lang": "yo",
 "source": "Message envoyé",
 "text": "Ifiranṣẹ ranṣẹ"
+},
+{
+"key": "05511f25ef65f2d954347d1bfad160d56cc7c855b348aaf2990164c4264249c2",
+"lang": "yo",
+"source": "Où trouver mon identifiant ?",
+"text": "Nibo ni MO le wa ID mi?"
 },
 {
 "key": "05847ca4ee03d9a4de54b11f6bcae1df606f39ae4d14a7a9349646efa336e185",
@@ -15430,6 +15976,12 @@
 "lang": "yo",
 "source": "Soldée",
 "text": "Tita"
+},
+{
+"key": "06e33876483a1b809f5dcc482dde343e9a8b1b6a42b519c3e8257fd6c8ad8cf0",
+"lang": "yo",
+"source": "Le serveur ne répond pas. Vérifiez votre connexion à Internet, puis réessayez.",
+"text": "Olupin naa ko dahun. Ṣayẹwo isopọ Ayelujara rẹ, lẹhinna gbiyanju lẹẹkansi."
 },
 {
 "key": "06f2d793270840503d2849c25171791ac2644fcd63d7609c3fe220e51f010d43",
@@ -15618,6 +16170,18 @@
 "text": "Fisiksi, kemistri ati imọ-ẹrọ"
 },
 {
+"key": "0a00eb556d5908b12760411f05d2e98b0a9eff49de0a384d6411d51794cec5ab",
+"lang": "yo",
+"source": "Voix de lecture",
+"text": "Kika ohun"
+},
+{
+"key": "0a0e39d17b506a4b701c82ecd60cdf92fe588ab8feed1ffede0308997dbf9374",
+"lang": "yo",
+"source": "Demande transmise",
+"text": "Ìbéèrè rán"
+},
+{
 "key": "0a1600f0058b96f9ea33ea188ca83ec84a587831488c00966a1d36b266de6383",
 "lang": "yo",
 "source": "à tout moment.",
@@ -15672,10 +16236,28 @@
 "text": "2 ti ko sibẹsibẹ Pipa awọn kilasi 3 timetable online."
 },
 {
+"key": "0aa18a2bc890d7bbd5c77c89790dd2c6504670c6dec0d4c1af56183c9fd1a142",
+"lang": "yo",
+"source": "Trois élèves en uniforme marchent vers l'école avec une femme, dans une rue de ville.",
+"text": "Awọn ọmọ ile-iwe mẹta ti o wọ aṣọ rin si ile-iwe pẹlu obinrin kan ni opopona ilu kan."
+},
+{
+"key": "0ac3d2cb30052ced36bebf53425a8008771d10c4da8fb6107c05bbd1ddab5cbf",
+"lang": "yo",
+"source": "Se connecter",
+"text": "Wo ile"
+},
+{
 "key": "0ae9cf97b0f9e0e8a9e43ca93a2363ae87dce9f4e23d732f57b60b00a3ab81eb",
 "lang": "yo",
 "source": "Payer une facture",
 "text": "San owo kan"
+},
+{
+"key": "0affe1aa1ab165e9e94355c99b58d5570fc483a1eb64001d581291d20e1de3a7",
+"lang": "yo",
+"source": "Redimensionnée et convertie au format WebP.",
+"text": "Ti ṣe atunṣe ati iyipada si ọna kika WebP."
 },
 {
 "key": "0b40464ca0313ef734611a97ccba3cf92bb038bf3e6cef02a4210b31e2e9c620",
@@ -15712,6 +16294,18 @@
 "lang": "yo",
 "source": "Personne à appeler.",
 "text": "Ko si ẹnikan lati pe."
+},
+{
+"key": "0bb9435d414660a72fd80db3a124b626e5d5ebf7433868e02bea16a42b78227e",
+"lang": "yo",
+"source": "Facultatif. Le numéro où la personne qui vous aide peut vous joindre.",
+"text": "Iyan. Nọmba nibiti ẹni ti n ran ọ lọwọ le de ọdọ rẹ."
+},
+{
+"key": "0bc1eed3eb2f0952ad59b8f3901182e1cf52fbec09015307956106fb7037e1b4",
+"lang": "yo",
+"source": "Accessible à tous",
+"text": "Wiwọle si gbogbo"
 },
 {
 "key": "0bde1cea8f6e2891fc041bd5935edef98294b58b1e3d5c3962bcfb733df3c465",
@@ -15772,6 +16366,12 @@
 "lang": "yo",
 "source": "Administrateur national",
 "text": "Alakoso orile-ede"
+},
+{
+"key": "0e570ca6fabe24f94e52c1833f3ffd25567022beb826fa16891f3322051bc221",
+"lang": "yo",
+"source": "Source",
+"text": "Orisun"
 },
 {
 "key": "0e6df7dfe7489d6b2665533f549f79280c468648db5960a1f99d8fde1b1941df",
@@ -16020,6 +16620,12 @@
 "text": "Pin"
 },
 {
+"key": "137cfbb9ee78da9e2b42eb84a91d373b9ce4b3ac4b5a1ac2c80c27bbae3df5aa",
+"lang": "yo",
+"source": "La voix française qui lit les pages à voix haute.",
+"text": "Ohùn Faranse kika awọn oju-iwe naa ni ariwo."
+},
+{
 "key": "139fb07976bea7cff7b6d6b26a674985276cc5e566acdc1547cf0b36bafaca89",
 "lang": "yo",
 "source": "Installer Classéo",
@@ -16084,6 +16690,12 @@
 "lang": "yo",
 "source": "Interrogations",
 "text": "Awọn ibeere"
+},
+{
+"key": "1573f31044f4b2e8a294cfe3c660aae48d628d35a55ed24da0cdd396ebe35cae",
+"lang": "yo",
+"source": "Pour les comptes qui ont une adresse e-mail. Un code vous y sera envoyé pour choisir un nouveau mot de passe.",
+"text": "Fun awọn iroyin ti o ni adirẹsi imeeli. A o fi koodu ranṣẹ si ọ lati yan ọrọ igbaniwọle titun kan."
 },
 {
 "key": "159196632f8d07f25571eab5d5ba9828580286bc8e15f21cecab1bc47b530d20",
@@ -16246,6 +16858,12 @@
 "lang": "yo",
 "source": "Aucune saisie refusée.",
 "text": "Ko si ijagba kọ."
+},
+{
+"key": "18da49bf5a9d55c47aee6aaf9afb726f7c89b4ebc814805f5e8cc6c3565e3b5b",
+"lang": "yo",
+"source": "Aucune adresse e-mail n'est nécessaire. Si votre compte en a une, vous pouvez aussi la saisir ici.",
+"text": "Ko si adirẹsi imeeli ti a beere. Ti akọọlẹ rẹ ba ni ọkan, o tun le tẹ sii nibi."
 },
 {
 "key": "192c0174d785e2c387b08128e767d344d2eb13333fc394561953af989a0337da",
@@ -16452,6 +17070,12 @@
 "text": "Ilana ko ri ni idasile rẹ."
 },
 {
+"key": "1ce769f6ea756b70174b717462dc8e59c97d0d9f46b5e6e6c25182c772ecb496",
+"lang": "yo",
+"source": "Accéder à mon espace",
+"text": "Wọle si aaye mi"
+},
+{
 "key": "1cedf6d82056c9c825c813a3a495ca0f82109f4e472e71c46a77fe1b9813de7c",
 "lang": "yo",
 "source": "Trimestre 2 3-4. Moyenne générale : 5 sur 6, Passable. Rang : 7e sur 8. Appréciation : Travail satisfaisant, peut mieux faire.",
@@ -16480,6 +17104,12 @@
 "lang": "yo",
 "source": "Seul l'organisateur clôture l'examen.",
 "text": "Nikan oluṣeto tilekun kẹhìn."
+},
+{
+"key": "1dfe9009cbb57c7fdcfeb21ac93bdeecc1c182ae67bde20174fa61feddb73b9d",
+"lang": "yo",
+"source": "Photographies",
+"text": "Awọn aworan"
 },
 {
 "key": "1e122583bcc583b5c040181dc20db4f589bf2253794f5718829364cc098af8a9",
@@ -17088,6 +17718,12 @@
 "text": "Yi wiwa tabi awọn asẹ pada."
 },
 {
+"key": "27dea5af978b9830fb5d02d1421977f125a91ee586d458009fdcbe4cf0b36a45",
+"lang": "yo",
+"source": "Sur le chemin de l'école",
+"text": "Ni ọna ile-iwe"
+},
+{
 "key": "27f4e609babf45b201cdbb7faced7bf0c578079201151219ea818743f5bff595",
 "lang": "yo",
 "source": "Part du montant attendu déjà encaissée. En rouge, moins de la moitié.",
@@ -17098,6 +17734,12 @@
 "lang": "yo",
 "source": "ajoutez une fiche. Une vidéo ou un audio doit avoir sa transcription écrite.",
 "text": "fi faili kun. Fídíò tàbí ohun ohun gbọ́dọ̀ ní ìkọ̀wé rẹ̀."
+},
+{
+"key": "280398acb03081df0c3d915fed8668cb45138ee5855af3a330288759054082f1",
+"lang": "yo",
+"source": "Connexion…",
+"text": "Asopọmọra…"
 },
 {
 "key": "2813b1cab4d1f5cb74a072125c71a48e08df07cfd1cfed23247fea718320e2ff",
@@ -18192,6 +18834,12 @@
 "text": "Ko si nẹtiwọọki ko si ibi ipamọ lori ẹrọ yii: ifiranṣẹ naa ko le wa ni fipamọ."
 },
 {
+"key": "38df5b7b6b3119da97a00864f6286ae5bfac790f402655daa9591ea10e676af3",
+"lang": "yo",
+"source": "Une cour d'école en sable, des élèves en uniforme kaki ; au premier plan, une petite fille avec son cartable salue.",
+"text": "Ile-iwe ile-iwe iyanrin, awọn ọmọ ile-iwe ni awọn aṣọ khaki; ni iwaju, ọmọbirin kekere kan pẹlu awọn ikini apo-iwe rẹ."
+},
+{
 "key": "390348167f72d246d80270c35e328451136dceea33f7344e831802252ab03665",
 "lang": "yo",
 "source": "Pas de cours aujourd'hui.",
@@ -18274,6 +18922,18 @@
 "lang": "yo",
 "source": "Code de vérification",
 "text": "Kodu afimo"
+},
+{
+"key": "3a26e60e63d84ce192ac7e4f43cc2879937c8aac433ed99c983ab6bf62742fcb",
+"lang": "yo",
+"source": "Plateforme nationale de l'éducation, prototype présenté au défi EduTech Bénin, 2026.",
+"text": "Syeed eto ẹkọ orilẹ-ede, apẹrẹ ti a gbekalẹ ni ipenija EduTech Benin, 2026."
+},
+{
+"key": "3a429e8a6a9fe6f65983d1277999ca001f891f7fae10d264693813c0a10f5f05",
+"lang": "yo",
+"source": "Votre prénom et votre nom, séparés par un point. Par exemple : afiavi.hounkpatin",
+"text": "Orukọ akọkọ ati idile rẹ, niya nipasẹ akoko kan. Fun apẹẹrẹ: afiavi.hounkpatin"
 },
 {
 "key": "3a4b34039a039d608a904b40c57ba4698ed7b670f4d597c95d60afbdf1093a25",
@@ -18576,6 +19236,12 @@
 "text": "Iwe itẹjade ko tii tẹjade"
 },
 {
+"key": "3de1c5c71b385427e86c2fc6f3f143b3c19366a1e3d0afcbd52785c7ef2b93a5",
+"lang": "yo",
+"source": "Utiliser Classéo hors ligne",
+"text": "Lo Classeo offline"
+},
+{
 "key": "3df19439f138849629dd721bc6006658a22807dc8ab9b26b3868b7b486dd1bdf",
 "lang": "yo",
 "source": "Ce paiement a été remboursé par le prestataire.",
@@ -18660,6 +19326,12 @@
 "text": "Yan"
 },
 {
+"key": "3f56f652d6999da89ccde380024e98aa5c60d310f991e02afc80c602a14915bd",
+"lang": "yo",
+"source": "Chaque photographie est utilisée selon sa licence. Celles sous licence CC BY-SA sont partagées ici sous la même licence.",
+"text": "Aworan kọọkan jẹ lilo gẹgẹbi iwe-aṣẹ rẹ. Awọn ti o ni iwe-aṣẹ labẹ CC BY-SA ni a pin nibi labẹ iwe-aṣẹ kanna."
+},
+{
 "key": "3f571c6297228ccb3ba78d93ed24e08ef5c5d39f67ff45d746334bded98e8ca8",
 "lang": "yo",
 "source": "Attestation (PDF)",
@@ -18724,6 +19396,12 @@
 "lang": "yo",
 "source": "Son des notifications",
 "text": "Ohun iwifunni"
+},
+{
+"key": "40ecb6f4afcd5ad51c22d7f2f669fe5a1f0b808316600cd2244160f3d02b9ef0",
+"lang": "yo",
+"source": "Crédits photos",
+"text": "Photo kirediti"
 },
 {
 "key": "412be0b9cd4073dbb20646687bfdd568393f7d0a8bf142da68f2ea568f000902",
@@ -18870,6 +19548,12 @@
 "text": "Iforukọsilẹ 2026-2027 rẹ ko tii forukọsilẹ. Kan si akọwe ti idasile rẹ."
 },
 {
+"key": "43e09fc7e0fdfd40d2f7a2ca6779e272d3145cb34ba481b767ba095cdb935bf3",
+"lang": "yo",
+"source": "Votre établissement vous le remet avec votre premier mot de passe. Il s'écrit en minuscules, sans accent ni espace.",
+"text": "Idasile rẹ fun ọ pẹlu ọrọ igbaniwọle akọkọ rẹ. O ti wa ni kikọ ni kekere, lai asẹnti tabi awọn alafo."
+},
+{
 "key": "4409e1116f542268cae756724be5c68f82ee8dd9a7bccfa068be88426836e611",
 "lang": "yo",
 "source": "Je suis élève",
@@ -18940,6 +19624,12 @@
 "lang": "yo",
 "source": "Classe introuvable",
 "text": "Kilasi ko ri"
+},
+{
+"key": "4542d61f5f6a365d7f27042144a343aa315edbae79ef2e7668dff27d82e1f7e5",
+"lang": "yo",
+"source": "Mot de passe oublié",
+"text": "Ọrọigbaniwọle gbagbe"
 },
 {
 "key": "4546ae0b013232b5b2796928a92cb096edc93c20498337f6c3ee4eb060e57cd9",
@@ -19194,6 +19884,12 @@
 "text": "Gbejade (CSV)"
 },
 {
+"key": "492998095bb85f0ac914673af899625fbea576f1d9a294889d62978d6ce57123",
+"lang": "yo",
+"source": "Des élèves en uniforme kaki sourient à la porte d'une salle de classe.",
+"text": "Awọn ọmọ ile-iwe ni awọn aṣọ khaki rẹrin musẹ ni ẹnu-ọna ti yara ikawe kan."
+},
+{
 "key": "493bc9d70dc6e8ce664051c12b6c8d14d9f782888b95327ef99048e80e7ef64c",
 "lang": "yo",
 "source": "Notification envoyée à vos",
@@ -19386,6 +20082,12 @@
 "text": "2 · forukọsilẹ"
 },
 {
+"key": "4c93f684ff0ebbdc4289d4b63c6824dba7d3ebf6e04db89a0eb9ed299cdbf8bf",
+"lang": "yo",
+"source": "Connexion impossible",
+"text": "Ko le sopọ"
+},
+{
 "key": "4cf1fa9eac13ac6c5c5f61a58c225a86939f29e5d1225b563d957b2e421145be",
 "lang": "yo",
 "source": "Bulletin de 2, Trimestre 3 4-5. Moyenne générale : 6 sur 7, Passable. Rang : 8e sur 9. Appréciation : Travail satisfaisant, peut mieux faire.",
@@ -19410,6 +20112,12 @@
 "text": "Ifiweranṣẹ ti a kọ"
 },
 {
+"key": "4d3bd161eeea48d48b3a5b1c5f375d7114825515c26e35222dc0ba643e73a68e",
+"lang": "yo",
+"source": "Des élèves à la porte de leur classe.",
+"text": "Awọn ọmọ ile-iwe ni ẹnu-ọna ile-iwe wọn."
+},
+{
 "key": "4d8252b66eb06faaeb192571a2fc60516dc31d64a5deed2a6ec53f70de0a9741",
 "lang": "yo",
 "source": "Bulletin de 2, Trimestre 3 4-5.",
@@ -19420,6 +20128,12 @@
 "lang": "yo",
 "source": "La matière est trop longue (80 caractères au plus).",
 "text": "Awọn ohun elo ti gun ju (awọn ohun kikọ 80 ni julọ)."
+},
+{
+"key": "4daad7c751cae0a52bb3a81f921b2eb8efd7532efb69c673ae9d2d7b314b2fc5",
+"lang": "yo",
+"source": "Masquer le mot de passe",
+"text": "Tọju ọrọ igbaniwọle"
 },
 {
 "key": "4db44c9f04f6d71fc22404553a4287ed4cbe982f47052683fbbf7e20d0cd6d6e",
@@ -19444,6 +20158,12 @@
 "lang": "yo",
 "source": "Examens blancs",
 "text": "Awọn idanwo ẹlẹgàn"
+},
+{
+"key": "4e145cb8f6314f42a80775c7925d4b57c421c7cfdfd271811e91be055f69b91b",
+"lang": "yo",
+"source": "Voir l'original sur Wikimedia Commons",
+"text": "Wo atilẹba lori Wikimedia Commons"
 },
 {
 "key": "4e54223197cc101ecb557fe39b7d26f99800e4cc3e889a324dfed049fbc594d9",
@@ -19714,6 +20434,12 @@
 "lang": "yo",
 "source": "Le fichier n'est pas en ligne. La transcription ci-dessous en donne le contenu complet.",
 "text": "Faili ko si lori ayelujara. Awọn transcription ni isalẹ yoo fun ni kikun akoonu."
+},
+{
+"key": "5278137b0c1a161c0e88b22c6dab7a74cde80cf83de24381b53b4c58cf48954c",
+"lang": "yo",
+"source": "Leçon de lecture dans une école béninoise",
+"text": "Ẹkọ kika ni ile-iwe Beninese"
 },
 {
 "key": "528c19aef1fbd7066cb917675114d481ec958eaab2b51174e4030ca29e82e196",
@@ -20298,6 +21024,12 @@
 "text": "Gbogbo idanwo"
 },
 {
+"key": "5cd474393651cbf118389d681cab687d4d95cc7ee572f517c209d55b7ae00c81",
+"lang": "yo",
+"source": "Écouter en fongbe",
+"text": "Gbọ ni Fongbe"
+},
+{
 "key": "5cd5eb1313d858a41214bdb3dccb9429204e2cb6242fa0f8f0cbe10c9ab84d80",
 "lang": "yo",
 "source": "2e ex æquo · Rang général : 2e ex æquo sur 3 candidats classés",
@@ -20472,10 +21204,22 @@
 "text": "Awọn ibaraẹnisọrọ pẹlu ile-iwe"
 },
 {
+"key": "5f559b04e4a568c9ccc88045871f444d6ae746cccb4780b65c694e24e1ee9acc",
+"lang": "yo",
+"source": "Voir la source",
+"text": "Wo orisun"
+},
+{
 "key": "5f59347b8c44a884d534aa4475d57562d4d535dd78e4f577057db96e97fd314d",
 "lang": "yo",
 "source": "Les notes ne pourront plus être modifiées. Les établissements et les familles sont notifiés des résultats définitifs.",
 "text": "Awọn akọsilẹ ko le ṣe atunṣe. Awọn idasile ati awọn idile ti wa ni iwifunni ti awọn esi ipari."
+},
+{
+"key": "5f6baab4dbe152fc766bb04ed09724a86f6c3651f3d966d25a786ac43cae45a9",
+"lang": "yo",
+"source": "Langue",
+"text": "Ede"
 },
 {
 "key": "5f74754b299bbfad4d38f3ae73038913e63d46c4f38b58a70cfc2ab76cf3dae3",
@@ -20664,6 +21408,12 @@
 "text": "Yiyọ kuro"
 },
 {
+"key": "61d695041034c12d0ae1b51dac5d5c9e15ec459b53c742da2148caf203191faf",
+"lang": "yo",
+"source": "Connexion",
+"text": "Asopọmọra"
+},
+{
 "key": "61dd28a19746e22c9c221e8e84de12464182b2d1b7c275c23f609afd8544d363",
 "lang": "yo",
 "source": "Marquer comme lu : Attestation de scolarité signé",
@@ -20832,6 +21582,12 @@
 "text": "Irin ajo ọmọ ile-iwe"
 },
 {
+"key": "64e65f584e5587bb53bf70781307b185a1f6011cf21cc178aa7b91756fd11800",
+"lang": "yo",
+"source": "Une classe de lecture au Bénin : au tableau, « ada va à l'école » écrit à la craie, des élèves assis sur des bancs de bois.",
+"text": "Kilasi kika ni Benin: lori igbimọ, \"ada lọ si ile-iwe\" ti a kọ sinu chalk, awọn ọmọ ile-iwe joko lori awọn ijoko igi."
+},
+{
 "key": "6501eba0b384ef3d943daf180e85eaedb98d28141229d70d4bf1b07215f70862",
 "lang": "yo",
 "source": "Au plus",
@@ -20932,6 +21688,12 @@
 "lang": "yo",
 "source": "Écouter les notes",
 "text": "Gbọ awọn akọsilẹ"
+},
+{
+"key": "66e7f05facae2810551759f6c6bc72d71ae5b68f0559515691fd511b61375f1e",
+"lang": "yo",
+"source": "Aucune : la voix est utilisée telle quelle, sur le serveur de Classéo.",
+"text": "Ko si: a lo ohun bi o ti ri, lori olupin Classéo."
 },
 {
 "key": "67063aa549d57a0c582f664f8495825719b758cc569fac6628363f0ae6030eac",
@@ -21166,6 +21928,12 @@
 "lang": "yo",
 "source": "Touchez",
 "text": "Fọwọkan"
+},
+{
+"key": "6b85f26269c3d85e118d63e1ebfb33cb93e42c0d6219444de3812b31759fe28b",
+"lang": "yo",
+"source": "Si cet identifiant correspond à un compte actif, votre demande est arrivée chez la personne qui gère votre compte : le chef d'établissement pour les élèves, les parents et le personnel ; la circonscription pour un chef d'établissement ; puis la direction départementale et le ministère. Elle vous remettra un mot de passe temporaire, en personne ou au numéro indiqué.",
+"text": "Ti idanimọ yii ba ni ibamu si akọọlẹ ti nṣiṣe lọwọ, ibeere rẹ ti de ọdọ ẹniti o ṣakoso akọọlẹ rẹ: ori idasile fun awọn ọmọ ile-iwe, awọn obi ati oṣiṣẹ; agbegbe fun olori idasile; lẹhinna iṣakoso ẹka ati iṣẹ-iranṣẹ. Yoo fun ọ ni ọrọ igbaniwọle igba diẹ, ni eniyan tabi ni nọmba ti o tọka."
 },
 {
 "key": "6b988a59e04b2f4667bb471b857d0d408b2613d464fc48488c76b38cb0e2d997",
@@ -21558,6 +22326,12 @@
 "text": "Ipo"
 },
 {
+"key": "719d1aaad7cf3f64033976cb2517e1e93eeb19877ed1e883e02d92300f51c0de",
+"lang": "yo",
+"source": "Pour le ministère, les directions départementales, les circonscriptions scolaires, les écoles, les enseignants et les familles.",
+"text": "Fun iṣẹ-iranṣẹ, awọn oludari ẹka, awọn agbegbe ile-iwe, awọn ile-iwe, awọn olukọ ati awọn idile."
+},
+{
 "key": "71b798ab8fdc90936270f907b0e82deb623b4ccc11434618a3f25d6b8e66f604",
 "lang": "yo",
 "source": "Télécharger l'audio",
@@ -21676,6 +22450,12 @@
 "lang": "yo",
 "source": "Examen proposé par",
 "text": "Atunwo funni nipasẹ"
+},
+{
+"key": "73751ad05e1f66041aeeab44320323607a0b67cef9faee68b08b3d93eb4d629c",
+"lang": "yo",
+"source": "Lire la licence",
+"text": "Ka iwe-aṣẹ naa"
 },
 {
 "key": "737d5e17916841bcf2999a2d99222e0878e55aa186b21c26564861437c2c8234",
@@ -21900,6 +22680,12 @@
 "text": "Itọkasi iṣowo (SMS ìmúdájú) *"
 },
 {
+"key": "768e872f655128904fc9c96da3b91a9ac671e9931bd2898b41b9f8dfd654a07c",
+"lang": "yo",
+"source": "Prototype présenté au défi EduTech Bénin 2026.",
+"text": "Afọwọṣe ti a gbekalẹ ni ipenija EduTech Benin 2026."
+},
+{
 "key": "76d5926c896d30202b706ed549f2a7c5dc0cd3ddad2493c9b2fa734493a65ca2",
 "lang": "yo",
 "source": "Ajoutez d'abord une transcription : les personnes sourdes ou malentendantes doivent pouvoir lire ce contenu.",
@@ -21924,6 +22710,12 @@
 "text": "Owo sisan lori ayelujara"
 },
 {
+"key": "7738d330991b9674d4cb315e6953289d91afe73cff1789d3d06be2bf101f8238",
+"lang": "yo",
+"source": "Redimensionnée et convertie au format WebP, le haut de l'image recadré.",
+"text": "Ti ṣe atunṣe ati iyipada si ọna kika WebP, oke aworan ti ge."
+},
+{
 "key": "77767da1e2b387a0a32cf74d6e5bc6aa78e30fb3f048f2dab3136f7492b850cd",
 "lang": "yo",
 "source": "· moyenne provisoire",
@@ -21934,6 +22726,12 @@
 "lang": "yo",
 "source": "MTN MoMo",
 "text": "MTN MoMo"
+},
+{
+"key": "7783a01ae315e342de2ea5787534cf10a280dfbacd74e0a2fb6f4fe2b88cedb7",
+"lang": "yo",
+"source": "Mon compte a une adresse e-mail : recevoir un code",
+"text": "Akọọlẹ mi ni adirẹsi imeeli: gba koodu kan"
 },
 {
 "key": "779b6744fca7682bd64f49146d7cada3f2a277d82515ee4fcd54e4410f12ee09",
@@ -22848,6 +23646,12 @@
 "text": "Ifiwera"
 },
 {
+"key": "8638dbe061df2746c24c533d16b32d90e0acef91cc29b503e280001fcb873031",
+"lang": "yo",
+"source": "Saisissez votre identifiant. Votre établissement ou votre administration recevra la demande et vous remettra un mot de passe temporaire.",
+"text": "Tẹ orukọ olumulo rẹ sii. Idasile tabi iṣakoso rẹ yoo gba ibeere naa ati fun ọ ni ọrọ igbaniwọle igba diẹ."
+},
+{
 "key": "865165827b0a985b61b22e4f694d215e73db44b959e92529e0085c681b0d90f8",
 "lang": "yo",
 "source": "Télécharger en PDF, facture 2",
@@ -22906,6 +23710,12 @@
 "lang": "yo",
 "source": "Élève",
 "text": "Omo ile iwe"
+},
+{
+"key": "86bd545ad06fefd3b40ec6e805fce53f7b25617df47446c5899de1c84f6ca6e8",
+"lang": "yo",
+"source": "Ce compte est désactivé. Contactez votre administrateur.",
+"text": "Iwe akọọlẹ yii jẹ alaabo. Kan si alakoso rẹ."
 },
 {
 "key": "86d652dca3adf01b77299800e47a1e0cd33de2368487aa6e7779e0545d3a9d5d",
@@ -23082,6 +23892,12 @@
 "text": "Tun ọrọ bẹrẹ"
 },
 {
+"key": "8a14453ef926bb4eaf323224f75ec3f89f96fe1129e5ab371263dbfb9d6dbded",
+"lang": "yo",
+"source": "Saisissez votre mot de passe.",
+"text": "Tẹ ọrọ igbaniwọle rẹ sii."
+},
+{
 "key": "8a24e8b23ed9d481119446d375690d41061885cafd47ea094333b14412375a39",
 "lang": "yo",
 "source": "Par exemple : contribution scolaire, cotisation APE, tenue.",
@@ -23178,6 +23994,12 @@
 "text": "Idasile ti wa ni pipade: data rẹ wa ni wiwo, ko si iyipada siwaju sii ṣee ṣe."
 },
 {
+"key": "8b3ba0d31742e3bf0f0115c7b4265f39ef08f664433b10697effa2720fd75827",
+"lang": "yo",
+"source": "Modifications",
+"text": "Awọn iyipada"
+},
+{
 "key": "8b64408c77112edfb95a3d5de6ddb1f566ea784072d1970cce76ff7399472303",
 "lang": "yo",
 "source": "Classement des candidats",
@@ -23244,6 +24066,12 @@
 "text": "ohùn iṣẹ translation, kika ni Yorùbá. Ti ko ba dahun, Kora ka ni Faranse."
 },
 {
+"key": "8cd0e0139e4f5612063ec1e21af15ec8bcf415856e3b2661dbf8fb59432bda46",
+"lang": "yo",
+"source": "Demander un nouveau mot de passe",
+"text": "Beere ọrọ igbaniwọle titun kan"
+},
+{
 "key": "8d3914a95e406dea7f4c5f7e911135ddd0689ceba580dc931497a17281724a94",
 "lang": "yo",
 "source": "Notes de",
@@ -23266,6 +24094,12 @@
 "lang": "yo",
 "source": "Redoublant",
 "text": "Titun"
+},
+{
+"key": "8db9c12463e34ef02528d7e3d808d4997cba0c3215e525fc0501e204a7bb08c7",
+"lang": "yo",
+"source": "Les photographies de Classéo montrent des écoles du Bénin. Elles viennent de Wikimedia Commons, où leurs auteurs les ont publiées sous une licence libre ou dans le domaine public.",
+"text": "Awọn fọto Classeo fihan awọn ile-iwe ni Benin. Wọn wa lati Wikimedia Commons, nibiti awọn onkọwe wọn ti ṣe atẹjade labẹ iwe-aṣẹ ọfẹ tabi ni agbegbe gbogbo eniyan."
 },
 {
 "key": "8dd09450659b6ade09164980a862936deb046edbc6e4db86cafc40a65fb140a3",
@@ -23362,6 +24196,12 @@
 "lang": "yo",
 "source": "Date du paiement",
 "text": "Ọjọ sisan"
+},
+{
+"key": "8f9f9b08ec0d1a6a81b17a3886ff739659eb2cea7e55d17ed08c44f903b9c5bf",
+"lang": "yo",
+"source": "Retour à l'accueil",
+"text": "Pada si ile"
 },
 {
 "key": "8fc27021747b59a2db538f0e3b44696ae29fbe8b66338a1157eb2ec94921f800",
@@ -23856,6 +24696,12 @@
 "text": "Ṣẹda"
 },
 {
+"key": "969727a5705ce8f25fe43f420d30739febcd6a713677f335544cf7b0836b0056",
+"lang": "yo",
+"source": "Identifiant ou mot de passe incorrect.",
+"text": "Orukọ olumulo tabi ọrọ igbaniwọle ti ko tọ."
+},
+{
 "key": "96ac6fa4f26c65644db97b5b7a5292f3bdb861f4f9741b3b9e83783d740ca96b",
 "lang": "yo",
 "source": "Résumé lu à voix haute : Bulletin de 2, Trimestre 3.",
@@ -23950,6 +24796,12 @@
 "lang": "yo",
 "source": "Vous, votre enfant, son établissement et les services habilités.",
 "text": "Iwọ, ọmọ rẹ, idasile wọn ati awọn iṣẹ ti a fun ni aṣẹ."
+},
+{
+"key": "98037625c8478e0ce458859230cc0e9d18fbd98a5ad9f6daa163018658c29c49",
+"lang": "yo",
+"source": "Chaque écran peut être lu à voix haute.",
+"text": "Iboju kọọkan le ka soke."
 },
 {
 "key": "98158e310279096b4287f0f3aeeb8f841ac221d3a268bff995af3aa43c73a8cd",
@@ -24294,6 +25146,12 @@
 "text": "bulletin du Trimestre 1 2-3"
 },
 {
+"key": "9cf468894756863a684433b50a9d878a235e501344f6633c999b1c108bf66668",
+"lang": "yo",
+"source": "Cour d'une école primaire publique",
+"text": "Àgbàlá ilé-ìwé alákọ̀ọ́bẹ̀rẹ̀ ti gbogbogbòò"
+},
+{
 "key": "9d0f4828bb137a7fae986624c9ce58ee6b3ba97fd2a3321f3fd00ba5bd58e143",
 "lang": "yo",
 "source": "Décider un examen blanc",
@@ -24552,6 +25410,12 @@
 "text": "Ni temi"
 },
 {
+"key": "a1a74ea955dac3c7cb9ffd964dc238a7b37862059b793014de915ca38be28122",
+"lang": "yo",
+"source": "Saisissez le code reçu par e-mail, puis choisissez votre nouveau mot de passe.",
+"text": "Tẹ koodu ti o gba nipasẹ imeeli sii, lẹhinna yan ọrọ igbaniwọle tuntun rẹ."
+},
+{
 "key": "a1cf2dc7f6b9983f953f42475fbdfa01a12ce1a8544c2c2c60bec7ceb6b562e8",
 "lang": "yo",
 "source": "publié le",
@@ -24622,6 +25486,12 @@
 "lang": "yo",
 "source": "Choisissez la classe d'examen pour voir les établissements concernés.",
 "text": "Yan kilasi idanwo lati wo awọn idasile ti oro kan."
+},
+{
+"key": "a3d65ca5697afe445b551e6cccd18a37be2d34d253a0418ab940f43f03476d84",
+"lang": "yo",
+"source": "Nouveau mot de passe",
+"text": "Ọrọ aṣina Tuntun"
 },
 {
 "key": "a3efb44eb529803a65906e59f84c498d4c9b9da293bd9663b01e5e670a1c2e1a",
@@ -24828,6 +25698,18 @@
 "text": "Idunadura ko ri lori Kẹsán 2 Moov Owo gbólóhùn. Ṣayẹwo SMS itọkasi."
 },
 {
+"key": "a88c1dacd691afea30aa367af84469cf794833db688e48663aaca971a12a7217",
+"lang": "yo",
+"source": "L'école béninoise, du ministère à la maison.",
+"text": "Ile-iwe Beninese, lati iṣẹ-iranṣẹ si ile."
+},
+{
+"key": "a8d304bac56902469e89b9dc7b36ea3831eecfae82ee0fcdca48c0ef53dd0e74",
+"lang": "yo",
+"source": "L'école au Bénin, en images",
+"text": "Ile-iwe ni Benin, ni awọn aworan"
+},
+{
 "key": "a8d6dd1cdccdfd9db80c70a71035fc4e43d4a286caf5bbb7c71814fa79dc5ce8",
 "lang": "yo",
 "source": "Motivez la décision.",
@@ -24844,6 +25726,12 @@
 "lang": "yo",
 "source": "Choisissez une réponse.",
 "text": "Yan idahun."
+},
+{
+"key": "a948674e9e9fa990a70fa6cc01a62c9f1f38e1d88f31ea0f22cc8dfdf69900a1",
+"lang": "yo",
+"source": "Élèves à la porte de la classe",
+"text": "Awọn ọmọ ile-iwe ni ẹnu-ọna ile-iwe"
 },
 {
 "key": "a95d1079b25160dc3ef1149af9ae4422830eba515c11d42ed3fcf2e8847335e3",
@@ -24910,6 +25798,12 @@
 "lang": "yo",
 "source": "Échéancier «",
 "text": "Ago\""
+},
+{
+"key": "aafebfc5880f8d7bdde2427ec4186095a52c8e82e72bf1aadf45d6804427e3bc",
+"lang": "yo",
+"source": "Mot de passe oublié : un code par e-mail.",
+"text": "Ọrọigbaniwọle ti a gbagbe: koodu nipasẹ imeeli."
 },
 {
 "key": "ab12a946513d31b997143907017dde545e85ab3b0ad934634c5d7ecb8e30bf4d",
@@ -25000,6 +25894,12 @@
 "lang": "yo",
 "source": "2 était absente le jeudi 3 septembre au matin.",
 "text": "2 ko si ni Ojobo Oṣu Kẹsan Ọjọ 3 ni owurọ."
+},
+{
+"key": "ac504a8d48d5f74247465f887a70e4e4d2a0520d1ca80bf9274c35c4884b2d05",
+"lang": "yo",
+"source": "Si une autre personne porte déjà le même nom, un chiffre est ajouté à la fin, par exemple afiavi.hounkpatin2.",
+"text": "Ti eniyan miiran ba ti ni orukọ kanna, a fi nọmba kan kun ni ipari, fun apẹẹrẹ afiavi.hounkpatin2."
 },
 {
 "key": "ac546c4e6275a47545eab5ec259c629c8e0d3a0da643e0f830f6c428be500526",
@@ -25566,6 +26466,12 @@
 "text": "Yan eniyan kan…"
 },
 {
+"key": "b4dd9feace0075624c56702feddf68fbe1d0b3a8aedb0b36177e4676774cf93f",
+"lang": "yo",
+"source": "Des élèves sur le chemin de l'école.",
+"text": "Awọn ọmọ ile-iwe ni ọna wọn si ile-iwe."
+},
+{
 "key": "b4e1dc96215e69a7b785b9cef0b5a380e9963f94c6670d55fb2ebaead717e69e",
 "lang": "yo",
 "source": "Aucun établissement ne correspond.",
@@ -25654,6 +26560,12 @@
 "lang": "yo",
 "source": "Calendrier",
 "text": "Kalẹnda"
+},
+{
+"key": "b667d8da8e1b6dd13eee0a1d9269d9dc968b64cc1306393f4f40c056fbda3c17",
+"lang": "yo",
+"source": "Redimensionnée et convertie au format WebP, le bas de l'image recadré.",
+"text": "Ti ṣe atunṣe ati iyipada si ọna kika WebP, isalẹ ti gige aworan."
 },
 {
 "key": "b6699efebab831bd93f3954c66fb474256a9243a5a39f8e3a8c2e9a3188c325d",
@@ -25770,6 +26682,12 @@
 "text": "pupọ tabi gbogbo iwọntunwọnsi, lori ayelujara tabi nipa sisọ isanwo Owo Alagbeka ti a ti ṣe tẹlẹ."
 },
 {
+"key": "b8c4b6090beb9992e4f5a525bd16b862d1cd7fd2a6b6d2c9c68e150e441e3793",
+"lang": "yo",
+"source": "Des élèves allongés sur un carrelage lisent ensemble des livres illustrés.",
+"text": "Awọn ọmọ ile-iwe ti o dubulẹ lori ilẹ tile kan ka awọn iwe alaworan papọ."
+},
+{
 "key": "b906bf1dcf3d5c4eeaf2e12fe1079f6f9bb44b7528c8cd37d02c4b01247e1e07",
 "lang": "yo",
 "source": "Mardi",
@@ -25816,6 +26734,12 @@
 "lang": "yo",
 "source": "Mode de paiement",
 "text": "Eto isanwo"
+},
+{
+"key": "ba0f5f3ac5a46c70bae2c1e6748b1200b39615bc1d0e0df70aa0aa3609353dca",
+"lang": "yo",
+"source": "Classéo réunit le ministère, les directions départementales, les écoles et les familles autour des mêmes informations sur chaque élève, pour que chacun voie ce qui le concerne, au bon moment.",
+"text": "Classéo ṣajọpọ iṣẹ-ojiṣẹ, awọn oludari ẹka, awọn ile-iwe ati awọn idile ni ayika alaye kanna lori ọmọ ile-iwe kọọkan, ki gbogbo eniyan rii ohun ti o kan wọn, ni akoko to tọ."
 },
 {
 "key": "ba33f776e2bc3001eb6fcb9fbd36d751badaa928d63363e019fbbb1226f89d89",
@@ -26124,6 +27048,12 @@
 "text": "Atejade"
 },
 {
+"key": "beb84a2e38e32fe911e98c35a92d5df4fa67bd477422cd81284193cb802bc26b",
+"lang": "yo",
+"source": "Saisissez votre identifiant.",
+"text": "Tẹ orukọ olumulo rẹ sii."
+},
+{
 "key": "bef7b81f865e04bf7fb35e7ca9eace5b361a0000cd2488843a4753b968a61ca4",
 "lang": "yo",
 "source": "Confirmez seulement après avoir retrouvé la transaction",
@@ -26182,6 +27112,12 @@
 "lang": "yo",
 "source": "Disponible sans réseau sur cet appareil",
 "text": "Wa laisi nẹtiwọki lori ẹrọ yii"
+},
+{
+"key": "bfd8bcf85083817909b61ea8121a0f546ef463341401c2eb16e39bc896faea09",
+"lang": "yo",
+"source": "Vérifiez les champs du formulaire.",
+"text": "Ṣayẹwo awọn aaye fọọmu."
 },
 {
 "key": "c0351efc54d43ebb1c902195d8d07404bc55274d5639f4d5c48040391183212f",
@@ -26256,6 +27192,12 @@
 "text": "Apapọ kilasi"
 },
 {
+"key": "c16a18f684d7a0fbb46a73c868a1d62b547696aad34d4693ded65ce34d2a8e5f",
+"lang": "yo",
+"source": "Entrez l'identifiant et le mot de passe que votre établissement ou votre administration vous a remis.",
+"text": "Tẹ orukọ olumulo ati ọrọ igbaniwọle ti idasile tabi iṣakoso rẹ fun ọ."
+},
+{
 "key": "c1712fd5a351dac854973db8a7302a25e3eaa3b8f38cde90bde0df71ebb2ba95",
 "lang": "yo",
 "source": "Chaque résultat a une image et une couleur : une étoile ou un pouce vert pour « bien », un trait orange pour « passable », un triangle rouge pour « insuffisant ».",
@@ -26290,6 +27232,12 @@
 "lang": "yo",
 "source": "Cette date est hors de l'année scolaire",
 "text": "Ọjọ yii wa ni ita ti ọdun ile-iwe"
+},
+{
+"key": "c22ff4a70ed83dd9a064ee2dc820de8750a2fb958aaed38a69ad9e5684ab3de2",
+"lang": "yo",
+"source": "Le texte s'agrandit, le contraste se renforce et tout se fait au clavier, avec un lecteur d'écran ou sur un petit téléphone. Les pages déjà ouvertes restent lisibles sans réseau.",
+"text": "Ọrọ naa pọ si, itansan ṣoki ati pe ohun gbogbo ni a ṣe lori keyboard, pẹlu oluka iboju tabi lori foonu kekere kan. Awọn oju-iwe ti ṣiṣi tẹlẹ wa ni kika laisi nẹtiwọọki kan."
 },
 {
 "key": "c24c9439df48714ea1291439e58ccfb13ea6dc1dbc7714d771510532b7694aac",
@@ -26428,6 +27376,12 @@
 "lang": "yo",
 "source": "Capture du SMS ou reçu de la banque : image ou PDF, 2 Mo au maximum.",
 "text": "Gbigba SMS tabi gbigba banki: aworan tabi PDF, o pọju 2 MB."
+},
+{
+"key": "c44f058d270cb4c1347fad88da39630a11e99fdff54fae9f5e71786522e490c2",
+"lang": "yo",
+"source": "Le code est à usage unique et reste valable 15 minutes. Une fois le mot de passe changé, toutes les sessions ouvertes avec le compte sont fermées.",
+"text": "Awọn koodu ti wa ni fun nikan lilo ati ki o si maa wa wulo fun 15 iṣẹju. Ni kete ti ọrọ igbaniwọle ti yipada, gbogbo awọn akoko ṣiṣi pẹlu akọọlẹ naa ti wa ni pipade."
 },
 {
 "key": "c45544e1fba3808d16a0229edc902dac6b35f61325ba4b7c3aae297f4422a70e",
@@ -26646,6 +27600,12 @@
 "text": "Dajudaju"
 },
 {
+"key": "c889745f457fec8a47018ecb22324bb656ace065b5d4c2d7c282fa868fe5fadd",
+"lang": "yo",
+"source": "Pas besoin d'adresse e-mail. Votre demande arrive chez la personne qui gère votre compte : elle vous remet un mot de passe temporaire, que vous remplacez à la connexion.",
+"text": "Ko si nilo fun adirẹsi imeeli. Ibeere rẹ de ọdọ ẹni ti o ṣakoso akọọlẹ rẹ: wọn fun ọ ni ọrọ igbaniwọle igba diẹ, eyiti o rọpo nigbati o wọle."
+},
+{
 "key": "c89ac8f0d41a87f2ca0750e12397709f05e9ff9cb46b3297efb46fda66b44e52",
 "lang": "yo",
 "source": "Motif",
@@ -26740,6 +27700,12 @@
 "lang": "yo",
 "source": "Directions",
 "text": "Awọn itọnisọna"
+},
+{
+"key": "c955c0aea76559d3b893f50cd9409066958f6de82a43dbea7e534789ac74bef8",
+"lang": "yo",
+"source": "Voir le statut sur la page source.",
+"text": "Wo ipo lori oju-iwe orisun."
 },
 {
 "key": "c97f56576e3334dd3367209653a2b5f4bd50424ed7980b74802ce7ae3bcaaa38",
@@ -27070,6 +28036,12 @@
 "lang": "yo",
 "source": "Nouvelle publication",
 "text": "Titun atejade"
+},
+{
+"key": "cfbf127b5c9a48860317e55936f8bd5c72332a9d4393e7f635102cd387a6a6f2",
+"lang": "yo",
+"source": "La cour de l'école primaire publique de Savi, à Godomey.",
+"text": "Àgbàlá ilé ẹ̀kọ́ alákọ̀ọ́bẹ̀rẹ̀ Savi, ní Godomey."
 },
 {
 "key": "cfcd7b1ada2505d27cb55be3b64d21417d47c0f3439aea3d44670d3c3964806b",
@@ -27426,6 +28398,12 @@
 "text": "Ṣayẹwo ipele ti a yan fun iru ọya yii."
 },
 {
+"key": "d55d72f291c1004e3cd24079caf9df3f694480d2f7a11ddb45628cec3483d1e7",
+"lang": "yo",
+"source": "Téléphone pour vous rappeler",
+"text": "Foonu lati pe ọ pada"
+},
+{
 "key": "d575f015b6e2ff9f13f379488b573254656daa5d71c58d405868a4df8fe6baa6",
 "lang": "yo",
 "source": "Cours ajouté",
@@ -27696,6 +28674,12 @@
 "text": "Ko si iye ti a gba."
 },
 {
+"key": "da44fd6a87ac497200a6de08175bb0d7cb81f8c77321bf513f773b581640a9ad",
+"lang": "yo",
+"source": "Compte temporairement verrouillé après plusieurs échecs. Réessayez dans 15 minutes.",
+"text": "Iwe akọọlẹ ti wa ni titiipa fun igba diẹ lẹhin awọn ikuna pupọ. Gbiyanju lẹẹkansi ni iṣẹju 15."
+},
+{
 "key": "da588f37101e70bdf1fd4c800c1e0148d00a6eb02c5e357572b4ebfb86bb9843",
 "lang": "yo",
 "source": "Chargement des frais",
@@ -27730,6 +28714,12 @@
 "lang": "yo",
 "source": "Compte",
 "text": "Iroyin"
+},
+{
+"key": "dad5ded70076f54c36a89f88977b9eeb77e926dfe236f5b0910f1461c76a9f52",
+"lang": "yo",
+"source": "Afficher le mot de passe",
+"text": "Ṣafihan ọrọ igbaniwọle"
 },
 {
 "key": "dadc8c7aa148849e783add8e40ccaa5b1f058aec81d597ba97c5f6b284d2605f",
@@ -28120,6 +29110,12 @@
 "lang": "yo",
 "source": "Les destinataires",
 "text": "Awọn olugba"
+},
+{
+"key": "e11a5abc9dd0f64c859d267fc7944e3629d1078a951f23e047ac92f0512968ca",
+"lang": "yo",
+"source": "Des élèves lisent ensemble, à Grand-Popo.",
+"text": "Awọn ọmọ ile-iwe ka papọ ni Grand-Popo."
 },
 {
 "key": "e12bd919f612ceb01f821fcf07e92d12f91764a868289df75e6236b592fe1b8d",
@@ -28680,6 +29676,12 @@
 "text": "A ti fagile owo sisan yii tẹlẹ."
 },
 {
+"key": "ec68807a9d145c36c3f71c2fee796d95c35f936789be3cab4f86df5b8172c583",
+"lang": "yo",
+"source": "Les réglages se trouvent sous le bouton rond, en bas à droite de chaque écran.",
+"text": "Awọn eto ti wa ni be labẹ awọn yika bọtini ni isale ọtun ti kọọkan iboju."
+},
+{
 "key": "ec7aa381d1e9b6e0e866259e078d9f8f76f87e74da0ff48235519012dace7978",
 "lang": "yo",
 "source": "La lecture vocale n'est pas disponible sur ce navigateur.",
@@ -28878,6 +29880,12 @@
 "text": "Ifitonileti idanwo"
 },
 {
+"key": "ef703d2cbaf0192266949f5d114b9be36f84791cd37d91bf447042dc9319eb16",
+"lang": "yo",
+"source": "Retour à la connexion",
+"text": "Pada si wiwọle"
+},
+{
 "key": "ef875eb9f6060c3ebc2b8ad17d72d6ba84afb98118c90e31defee7cfcca98e30",
 "lang": "yo",
 "source": "Nouvelle notification :",
@@ -29064,6 +30072,12 @@
 "text": "Kọ si eniyan kan, tabi ni ipo ti"
 },
 {
+"key": "f35326ab620f8bf47b1823edb546016f911f1db3bf16ba832e265230e208581d",
+"lang": "yo",
+"source": "Voix",
+"text": "Ohùn"
+},
+{
 "key": "f381255690980b9c6863e334b77b1ecb99e6b266583247cf3915d98bdfd84af1",
 "lang": "yo",
 "source": "Photo enregistrée.",
@@ -29074,6 +30088,12 @@
 "lang": "yo",
 "source": "Appréciation : Résultats insuffisants, un soutien est recommandé.",
 "text": "Igbelewọn: Awọn abajade ti ko to, atilẹyin ni iṣeduro."
+},
+{
+"key": "f3ec8e880a46c8a6fb105396ee5400124f828934a9dd68c668f796cf6d47b1c8",
+"lang": "yo",
+"source": "Licence",
+"text": "Iwe-aṣẹ"
 },
 {
 "key": "f403b438c62dbd20c519df5b7038a74185fb5866d98abce9814ab966a5b0f9fe",
@@ -29104,6 +30124,12 @@
 "lang": "yo",
 "source": "Réunion des parents le samedi 2 octobre à 2 h",
 "text": "Awọn obi ipade ni Satidee, Oṣu Kẹwa 2 ni 2 owurọ."
+},
+{
+"key": "f44ead2bb9263f60b6de1d12f253f43c081dd988e8c59a3cf819c4eccd44b37b",
+"lang": "yo",
+"source": "Recevoir un code par e-mail",
+"text": "Gba koodu nipasẹ imeeli"
 },
 {
 "key": "f484c4b7d4dff1b4e61941d59ed1a8e9414a6ff082375fdbc53a89dcfb142134",
@@ -29196,6 +30222,12 @@
 "text": "Iru ọya yii jẹ alaabo."
 },
 {
+"key": "f55eb238fd791c0c55d92376ad8d5825cedb2d8cd755645ae89b8e531fb1b0fe",
+"lang": "yo",
+"source": "Une leçon de lecture en 1997 : au tableau, « ada va à l'école » écrit à la craie.",
+"text": "Ẹkọ kika ni 1997: lori igbimọ, \"ada lọ si ile-iwe\" ti a kọ ni chalk."
+},
+{
 "key": "f5772f71173bfdc8d9e73f84eb35f4e00292562565d44d5d5c0eb3a910eb58ac",
 "lang": "yo",
 "source": "Matière",
@@ -29224,6 +30256,12 @@
 "lang": "yo",
 "source": "2e · Rang général : 2e sur 3 candidats classés",
 "text": "2nd · Gbogbogbo ipo: 2nd ninu 3 awọn oludije ipo"
+},
+{
+"key": "f655bbb7f6207e1fae0ebdad8cc3891c1de35e338dd269c4ff7ac557aab7e666",
+"lang": "yo",
+"source": "Liens du pied de page",
+"text": "Awọn ọna asopọ ẹlẹsẹ"
 },
 {
 "key": "f65ddff36b022ad63cae3e4a424a610ee65072c10081f765fb5afe15f2079787",
@@ -29350,6 +30388,12 @@
 "lang": "yo",
 "source": "Déclarations traitées",
 "text": "Awọn ikede ilana"
+},
+{
+"key": "f8e3bdf273425b225b6ea5bf3847aca0e834922af6b279d76649ff59032866b5",
+"lang": "yo",
+"source": "Domaine public",
+"text": "Agbegbe agbegbe"
 },
 {
 "key": "f8e851d4af518ba64acee9233c82350609743cd137571cd4de3a04ec822c3967",
@@ -29658,6 +30702,18 @@
 "text": "Awọn abajade ti ko to"
 },
 {
+"key": "fd6be6e120971721ba6e5dae4de9ea233c3dc2e1c31eadb931fec8e6efc8f0f1",
+"lang": "yo",
+"source": "Mot de passe oublié : votre administration vous aide.",
+"text": "Ọrọigbaniwọle ti o gbagbe: iṣakoso rẹ yoo ran ọ lọwọ."
+},
+{
+"key": "fd7925a577767f3fe12624ec0358fbe37db19a45a7c2a73a96f57b8a38fb44ee",
+"lang": "yo",
+"source": "Lire à plusieurs",
+"text": "Ka papọ"
+},
+{
 "key": "fd79ed18179ba6b794068fe1711c64614a36587cd217b662043423464c3e6463",
 "lang": "yo",
 "source": "Choisissez la classe d'examen, les dates, les matières et les établissements concernés : leur participation est obligatoire.",
@@ -29742,6 +30798,12 @@
 "text": "Kilasi"
 },
 {
+"key": "fec229b8b8478fafba339e2a6752f53acbfa06b404ca282b56c3bcecd13b5aac",
+"lang": "yo",
+"source": "Mot de passe oublié ?",
+"text": "Ọrọ igbagbe gbagbe?"
+},
+{
 "key": "fee2b9ad3074b7305713aaa9fbb45a06f34170a4ccc00e0a1b786e33db0bb471",
 "lang": "yo",
 "source": "Élevé",
@@ -29764,6 +30826,12 @@
 "lang": "yo",
 "source": "Les inscriptions restent ouvertes jusqu'au 2 octobre.",
 "text": "Awọn iforukọsilẹ wa ni ṣiṣi titi di Oṣu Kẹwa ọjọ 2."
+},
+{
+"key": "ff288403bd8daf9a25e8fb8eaee91536121b7d97f436ab5e105171ff102857b0",
+"lang": "yo",
+"source": "Numéro invalide : chiffres, espaces et + uniquement.",
+"text": "Nọmba ti ko tọ: awọn nọmba, awọn alafo ati + nikan."
 },
 {
 "key": "ff2984ac447135e28b24f39fae9c88ea3f8e4daabf44cb97609af7219c350501",
@@ -29794,6 +30862,12 @@
 "lang": "yo",
 "source": "Composition uniquement",
 "text": "Tiwqn nikan"
+},
+{
+"key": "ff9c8b8c0677c3d05a018508b29783af6de561164b9f8ecd64a6cdbdcf3e48f5",
+"lang": "yo",
+"source": "Mot de passe",
+"text": "Ọrọigbaniwọle"
 },
 {
 "key": "ffb897c6f20f4a5de25c562193308f3b4c8fd7de5729923ffb2cc9b71c665ba5",

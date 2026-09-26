@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
 import { useFormState } from "./action-form";
+import { useText } from "./text-provider";
 
 // Label, control, hint and server side error, wired for screen readers.
 // The control is passed as the only child and receives id, name and ARIA.
@@ -27,6 +28,7 @@ export function FormField({
 }) {
   const id = useId();
   const state = useFormState();
+  const { t } = useText();
   const error = state?.fieldErrors?.[name]?.[0];
   const describedBy = [hint && `${id}-hint`, error && `${id}-error`].filter(Boolean).join(" ") || undefined;
 
@@ -56,7 +58,7 @@ export function FormField({
       {error && (
         <p id={`${id}-error`} className="flex items-start gap-1.5 text-sm leading-snug font-semibold text-danger">
           <CircleAlert className="mt-px size-4 shrink-0" aria-hidden />
-          <span>{error}</span>
+          <span>{t(error)}</span>
         </p>
       )}
     </div>
