@@ -135,14 +135,17 @@ test.describe("pieces sent by families", () => {
     await expect(parent.getByRole("listitem").filter({ hasText: label }).getByText("Validée")).toBeVisible();
   });
 
-  test("a parent justifies an absence and the school accepts it @mobile", async ({ pageAs }) => {
+  test("a parent justifies an absence and the school accepts it @mobile", async ({ pageAs, isMobile }) => {
     const reason = `Rendez-vous chez le dentiste ${uniqueSuffix()}`;
     const parent = await pageAs("parent");
     await openSenami(parent);
     const dialog = parent.getByRole("dialog", { name: /^Justifier l'absence du/ });
     // A tap before hydration opens nothing: tap again until the form shows.
     await expect(async () => {
-      await parent.getByRole("button", { name: "Justifier" }).first().click();
+      // The desktop and mobile runs share the parent account and run at the
+      // same time: each justifies a different absence.
+      const buttons = parent.getByRole("button", { name: "Justifier" });
+      await (isMobile ? buttons.last() : buttons.first()).click();
       await expect(dialog).toBeVisible({ timeout: 2_000 });
     }).toPass({ timeout: 30_000 });
     await dialog.getByLabel("Motif de l'absence").fill(reason);
