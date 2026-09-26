@@ -66,6 +66,7 @@ export const DOCUMENT_KINDS = {
   emploi_du_temps: "Emploi du temps",
   statistiques: "Statistiques",
   examen_blanc: "Relevé d'examen blanc",
+  fiche_enseignant: "Fiche enseignant",
 } as const;
 export type DocumentKind = keyof typeof DOCUMENT_KINDS;
 
@@ -93,6 +94,8 @@ export const REVOKE_PERMISSION: Record<DocumentKind, PermissionCode> = {
   emploi_du_temps: "timetable:update",
   statistiques: "statistics:export",
   examen_blanc: "mock_exam:create",
+  // Issued by the ministry chain: the national level revokes it.
+  fiche_enseignant: "teacher:update",
 };
 
 // "Afiavi Sènami Hounkpatin" gives "A. S. H.": enough to match the paper in
