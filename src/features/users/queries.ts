@@ -1,7 +1,7 @@
 import "server-only";
 
 import type { Prisma } from "@/generated/prisma/client";
-import { schoolWhere } from "@/lib/auth/scope";
+import { chainWhere, schoolWhere } from "@/lib/auth/scope";
 import type { CurrentUser } from "@/lib/auth/session";
 import { db } from "@/lib/db";
 import { MAILBOX_ROLE_CODE } from "@/lib/domain/institutions";
@@ -13,18 +13,30 @@ import { roleVisibleWhere } from "../roles/queries";
 type User = NonNullable<CurrentUser>;
 
 // Accounts a user may see: those attached to an entity inside their
-// territory. Parents and students (no entity) are only visible nationally.
+// territory and their chain. Parents and students (no entity) are only
+// visible nationally. A DDEMP sees its circonscriptions and the staff of
+// nursery and primary schools; a DDESTFP the staff of secondary schools;
+// neither sees the departmental accounts of the other chain.
 function territoryWhere(user: User): Prisma.UserWhereInput {
   const s = user.scope;
+  const cycles = s.cycles ?? null;
   switch (s.level) {
     case "NATIONAL":
       return {};
-    case "DEPARTMENT":
+    case "DEPARTMENT": {
       if (!s.departmentId) return { id: "__none__" };
-      return { OR: [{ departmentId: s.departmentId }, { commune: { departmentId: s.departmentId } }, { school: { commune: { departmentId: s.departmentId } } }] };
+      const primaryChain = !cycles || cycles.includes("PRIMARY");
+      return {
+        OR: [
+          s.chain ? { departmentId: s.departmentId, OR: [{ chain: null }, { chain: s.chain }] } : { departmentId: s.departmentId },
+          ...(primaryChain ? [{ commune: { departmentId: s.departmentId } }] : []),
+          { school: { commune: { departmentId: s.departmentId }, ...chainWhere(user) } },
+        ],
+      };
+    }
     case "COMMUNE":
       if (!s.communeId) return { id: "__none__" };
-      return { OR: [{ communeId: s.communeId }, { school: { communeId: s.communeId } }] };
+      return { OR: [{ communeId: s.communeId }, { school: { communeId: s.communeId, ...chainWhere(user) } }] };
     case "SCHOOL":
       return s.schoolId ? { schoolId: s.schoolId } : { id: "__none__" };
     case "SELF":

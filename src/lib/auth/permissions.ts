@@ -141,14 +141,14 @@ export const DEFAULT_ROLES: {
   {
     code: "NATIONAL_ADMIN",
     name: "Administrateur national",
-    description: "Ministère, administration centrale. Tous les droits sur tout le territoire.",
+    description: "Ministères en charge de l'éducation (MEMP, MESTFP), administration centrale. Tous les droits sur tout le territoire.",
     scopeLevel: "NATIONAL",
     permissions: PERMISSIONS.map((p) => p.code),
   },
   {
     code: "NATIONAL_ANALYST",
     name: "Analyste national",
-    description: "Ministère, cellule des statistiques. Consultation et export, sans modification.",
+    description: "Ministères en charge de l'éducation, cellule des statistiques. Consultation et export, sans modification.",
     scopeLevel: "NATIONAL",
     permissions: [
       ...only("territory", "view", "export"),
@@ -165,7 +165,7 @@ export const DEFAULT_ROLES: {
   {
     code: "DEPARTMENT_DIRECTOR",
     name: "Directeur départemental",
-    description: "Direction départementale. Pilote les communes et établissements de son département.",
+    description: "DDEMP pour la maternelle et le primaire, DDESTFP pour le secondaire. Pilote les établissements de son ordre d'enseignement dans le département.",
     scopeLevel: "DEPARTMENT",
     permissions: [
       ...only("territory", "view", "export"),
@@ -192,8 +192,8 @@ export const DEFAULT_ROLES: {
   },
   {
     code: "COMMUNE_INSPECTOR",
-    name: "Chef de circonscription",
-    description: "Circonscription scolaire. Suit et appuie les établissements de sa commune.",
+    name: "Chef de circonscription scolaire",
+    description: "Circonscription scolaire, maternelle et primaire. Suit et appuie les écoles de sa circonscription ; le secondaire relève directement de la DDESTFP.",
     scopeLevel: "COMMUNE",
     permissions: [
       ...only("territory", "view"),
@@ -211,8 +211,9 @@ export const DEFAULT_ROLES: {
       ...all("message"),
       ...only("request", "view", "approve"),
       ...all("statistics"),
-      // Handles the password help requests of the school heads of its
-      // commune, and creates roles for its own staff.
+      // Handles the password help requests of the heads of the nursery and
+      // primary schools of its circonscription, and creates roles for its
+      // own staff.
       ...only("user", "view", "update"),
       ...only("role", "view", "update"),
       ...only("audit", "view"),
@@ -222,7 +223,7 @@ export const DEFAULT_ROLES: {
   {
     code: "SCHOOL_DIRECTOR",
     name: "Chef d'établissement",
-    description: "Directeur ou proviseur. Tous les droits sur son établissement.",
+    description: "Directeur d'école, directeur de CEG ou proviseur. Tous les droits sur son établissement.",
     scopeLevel: "SCHOOL",
     permissions: [
       ...only("school", "view", "update"),

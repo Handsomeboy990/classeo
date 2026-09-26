@@ -218,3 +218,21 @@ describe("role names and codes", () => {
     expect(customRoleCode("!!!", "ff00aa")).toBe("CUSTOM_ROLE_FF00AA");
   });
 });
+
+describe("isWithinScope and the administrative chains", () => {
+  const college = { level: "SCHOOL" as const, departmentId: "D1", communeId: "C1", schoolId: "S1", cycle: "SECONDARY" as const };
+  const primary = { level: "SCHOOL" as const, departmentId: "D1", communeId: "C1", schoolId: "S2", cycle: "PRIMARY" as const };
+  it("keeps a DDESTFP out of primary schools and a DDEMP out of colleges", () => {
+    expect(isWithinScope({ level: "DEPARTMENT", departmentId: "D1", cycles: ["SECONDARY", "TECHNICAL"] }, college)).toBe(true);
+    expect(isWithinScope({ level: "DEPARTMENT", departmentId: "D1", cycles: ["SECONDARY", "TECHNICAL"] }, primary)).toBe(false);
+    expect(isWithinScope({ level: "DEPARTMENT", departmentId: "D1", cycles: ["PRESCHOOL", "PRIMARY"] }, college)).toBe(false);
+  });
+  it("keeps a circonscription out of colleges, and a department without a chain on both", () => {
+    expect(isWithinScope({ level: "COMMUNE", departmentId: "D1", communeId: "C1", cycles: ["PRESCHOOL", "PRIMARY"] }, college)).toBe(false);
+    expect(isWithinScope({ level: "COMMUNE", departmentId: "D1", communeId: "C1", cycles: ["PRESCHOOL", "PRIMARY"] }, primary)).toBe(true);
+    expect(isWithinScope({ level: "DEPARTMENT", departmentId: "D1" }, college)).toBe(true);
+  });
+  it("fails closed on a school of unknown cycle", () => {
+    expect(isWithinScope({ level: "DEPARTMENT", departmentId: "D1", cycles: ["SECONDARY"] }, { level: "SCHOOL", departmentId: "D1", schoolId: "S3" })).toBe(false);
+  });
+});

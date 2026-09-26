@@ -41,7 +41,7 @@ export default async function MessagesPage({ searchParams }: PageProps<"/espace/
               ? "Vos conversations et celles de votre établissement ou service avec les autres structures."
               : "Conversations avec l'école, les enseignants et les familles."
         }
-        actions={canWrite && <NewConversation contacts={contacts} institutions={institutions} sender={acting ? institutionName(acting.kind, user.scope.label) : null} showQuick={!!user.guardianId} />}
+        actions={canWrite && <NewConversation contacts={contacts} institutions={institutions} sender={acting ? institutionName(acting.kind, user.scope.label, acting.chain) : null} showQuick={!!user.guardianId} />}
       />
       {Number.isInteger(sent) && sent > 1 && (
         <Alert tone="success" className="mb-4">

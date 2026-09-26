@@ -48,6 +48,24 @@ describe("approvalLevel", () => {
   });
 });
 
+describe("approvalLevel and the chains", () => {
+  const college = (communeId: string) => ({ communeId, departmentId: "AQ", cycle: "SECONDARY" as const });
+  const primary = (communeId: string) => ({ communeId, departmentId: "AQ", cycle: "PRIMARY" as const });
+  it("sends a CEP mock exam of one commune to the circonscription, a BEPC one to the DDESTFP", () => {
+    expect(approvalLevel([primary("CAL"), primary("CAL")])).toBe("COMMUNE");
+    expect(approvalLevel([college("CAL"), college("CAL")])).toBe("DEPARTMENT");
+  });
+  it("lets only a direction of the right chain decide", () => {
+    const ddemp = { level: "DEPARTMENT" as const, communeId: null, departmentId: "AQ", cycles: ["PRESCHOOL", "PRIMARY"] as const };
+    const ddestfp = { level: "DEPARTMENT" as const, communeId: null, departmentId: "AQ", cycles: ["SECONDARY", "TECHNICAL"] as const };
+    const district = { level: "COMMUNE" as const, communeId: "CAL", departmentId: "AQ", cycles: ["PRESCHOOL", "PRIMARY"] as const };
+    expect(canDecideAt(ddestfp, "DEPARTMENT", [college("CAL"), college("CAL")])).toBe(true);
+    expect(canDecideAt(ddemp, "DEPARTMENT", [college("CAL"), college("CAL")])).toBe(false);
+    expect(canDecideAt(district, "COMMUNE", [primary("CAL")])).toBe(true);
+    expect(canDecideAt(district, "COMMUNE", [college("CAL")])).toBe(false);
+  });
+});
+
 describe("canDecideAt", () => {
   const commune = { level: "COMMUNE" as const, communeId: "calavi", departmentId: "atlantique" };
   const department = { level: "DEPARTMENT" as const, communeId: null, departmentId: "atlantique" };

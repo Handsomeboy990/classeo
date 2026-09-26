@@ -1,6 +1,7 @@
 // Mock examination (examen blanc) rules. Pure functions shared by the pages,
 // the actions and the results sheet, fully unit tested. No database access.
 
+import { cycleInScope, type CycleCode } from "@/lib/domain/chains";
 import { isPassing, rankEntries, round2 } from "@/lib/domain/grades";
 
 // The classes that end with a national examination: CEP (CM2), BEPC (3e)
@@ -23,24 +24,30 @@ export function organizerLevelOf(scope: ScopeLevel): Territory | null {
   return scope === "SELF" ? null : scope;
 }
 
-// Who approves a school initiated exam: the commune district when every
-// school taking part is in one commune, the departmental direction when
-// they span communes of one department, the ministry beyond.
-export function approvalLevel(schools: { communeId: string; departmentId: string }[]): Exclude<Territory, "SCHOOL"> {
-  if (new Set(schools.map((s) => s.communeId)).size <= 1) return "COMMUNE";
+type ExamSchool = { communeId: string; departmentId: string; cycle?: CycleCode };
+
+// Who approves a school initiated exam: the circonscription scolaire when
+// every school taking part is a nursery or primary school of one commune,
+// the departmental direction (DDEMP or DDESTFP) when they span communes of
+// one department or when colleges take part (the secondary chain has no
+// circonscription), the ministry beyond.
+export function approvalLevel(schools: ExamSchool[]): Exclude<Territory, "SCHOOL"> {
+  const primaryOnly = schools.every((s) => s.cycle === undefined || s.cycle === "PRESCHOOL" || s.cycle === "PRIMARY");
+  if (primaryOnly && new Set(schools.map((s) => s.communeId)).size <= 1) return "COMMUNE";
   if (new Set(schools.map((s) => s.departmentId)).size <= 1) return "DEPARTMENT";
   return "NATIONAL";
 }
 
 // An authority may decide when it sits at the required level or above and
-// every school taking part is inside its territory.
+// every school taking part is inside its territory and its chain.
 export function canDecideAt(
-  scope: { level: ScopeLevel; communeId: string | null; departmentId: string | null },
+  scope: { level: ScopeLevel; communeId: string | null; departmentId: string | null; cycles?: readonly CycleCode[] | null },
   required: Exclude<Territory, "SCHOOL">,
-  schools: { communeId: string; departmentId: string }[],
+  schools: ExamSchool[],
 ) {
   if (scope.level === "SELF" || scope.level === "SCHOOL") return false;
   if (RANK[scope.level] < RANK[required]) return false;
+  if (scope.cycles && !schools.every((s) => cycleInScope(scope.cycles, s.cycle))) return false;
   if (scope.level === "NATIONAL") return true;
   if (scope.level === "DEPARTMENT") return !!scope.departmentId && schools.every((s) => s.departmentId === scope.departmentId);
   return !!scope.communeId && schools.every((s) => s.communeId === scope.communeId);

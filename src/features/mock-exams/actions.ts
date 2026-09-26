@@ -14,6 +14,7 @@ import { db } from "@/lib/db";
 import { DomainError } from "@/lib/errors";
 import { isEnabled } from "@/lib/features";
 import { assertWritable } from "@/lib/guards";
+import { chainOfCycle, type CycleCode } from "@/lib/domain/chains";
 import { guardianUserIds, notify } from "@/lib/notify";
 import { plural } from "@/lib/utils";
 
@@ -60,12 +61,14 @@ async function schoolStaff(schoolIds: string[], permission: PermissionCode) {
 }
 
 // The approvers of the required level for these schools.
-async function approvers(level: "COMMUNE" | "DEPARTMENT" | "NATIONAL", schools: { communeId: string; departmentId: string }[]) {
+// A departmental direction of the other chain is not asked.
+async function approvers(level: "COMMUNE" | "DEPARTMENT" | "NATIONAL", schools: { communeId: string; departmentId: string; cycle: CycleCode }[]) {
+  const chain = schools[0] ? chainOfCycle(schools[0].cycle) : null;
   const where: Prisma.UserWhereInput =
     level === "NATIONAL"
       ? { scopeLevel: "NATIONAL" }
       : level === "DEPARTMENT"
-        ? { scopeLevel: "DEPARTMENT", departmentId: schools[0]?.departmentId ?? "__none__" }
+        ? { scopeLevel: "DEPARTMENT", departmentId: schools[0]?.departmentId ?? "__none__", OR: [{ chain: null }, ...(chain ? [{ chain }] : [])] }
         : { scopeLevel: "COMMUNE", communeId: schools[0]?.communeId ?? "__none__" };
   const rows = await db.user.findMany({
     where: { AND: [where, { isActive: true, role: { permissions: { some: { permission: { code: "mock_exam:approve" } } } } }] },
@@ -75,7 +78,7 @@ async function approvers(level: "COMMUNE" | "DEPARTMENT" | "NATIONAL", schools: 
   return rows.map((r) => r.id);
 }
 
-const territoryOf = (p: ExamDetail["participants"][number]) => ({ communeId: p.school.communeId, departmentId: p.school.commune.departmentId });
+const territoryOf = (p: ExamDetail["participants"][number]) => ({ communeId: p.school.communeId, departmentId: p.school.commune.departmentId, cycle: p.school.cycle });
 
 // Schools still in the exam for the approval: the organiser, the partners
 // that accepted and those that have not answered yet.

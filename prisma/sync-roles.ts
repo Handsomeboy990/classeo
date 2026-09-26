@@ -19,6 +19,7 @@ async function main() {
 
   let createdRoles = 0;
   let addedGrants = 0;
+  let renamedRoles = 0;
   for (const role of DEFAULT_ROLES) {
     const existing = await db.role.findUnique({ where: { code: role.code } });
     const r =
@@ -27,13 +28,20 @@ async function main() {
         data: { code: role.code, name: role.name, description: role.description, scopeLevel: role.scopeLevel, isSystem: true },
       }));
     if (!existing) createdRoles++;
+    // System roles keep the names and descriptions of the catalogue (they are
+    // not editable in the application), so a corrected label reaches
+    // existing databases.
+    else if (existing.isSystem && (existing.name !== role.name || existing.description !== role.description)) {
+      await db.role.update({ where: { id: existing.id }, data: { name: role.name, description: role.description } });
+      renamedRoles++;
+    }
     const result = await db.rolePermission.createMany({
       data: role.permissions.map((code) => ({ roleId: r.id, permissionId: permIds.get(code)! })),
       skipDuplicates: true,
     });
     addedGrants += result.count;
   }
-  console.log(`permissions created: ${createdPermissions.count}, roles created: ${createdRoles}, grants added: ${addedGrants}`);
+  console.log(`permissions created: ${createdPermissions.count}, roles created: ${createdRoles}, roles relabelled: ${renamedRoles}, grants added: ${addedGrants}`);
 }
 
 main()

@@ -4,6 +4,7 @@ import type { Prisma } from "@/generated/prisma/client";
 import { can } from "@/lib/auth/authorize";
 import type { CurrentUser } from "@/lib/auth/session";
 import { db } from "@/lib/db";
+import { CHAIN_CYCLES, chainOfCycle } from "@/lib/domain/chains";
 
 import { helpRouteLevel, MANAGE_USERS } from "./routing";
 
@@ -45,10 +46,16 @@ export function helpRequestWhere(user: User): Prisma.PasswordHelpRequestWhereInp
       };
     case "COMMUNE":
       if (!s.communeId) return NOTHING;
-      return { user: { AND: [notMe, { scopeLevel: "SCHOOL", school: { communeId: s.communeId } }, manages] } };
-    case "DEPARTMENT":
+      return { user: { AND: [notMe, { scopeLevel: "SCHOOL", school: { communeId: s.communeId, cycle: { in: CHAIN_CYCLES.PRIMARY } } }, manages] } };
+    case "DEPARTMENT": {
       if (!s.departmentId) return NOTHING;
-      return { user: { AND: [notMe, { scopeLevel: "COMMUNE", commune: { departmentId: s.departmentId } }] } };
+      // The circonscriptions for a DDEMP, the heads of secondary schools for
+      // a DDESTFP, both for an account without a chain.
+      const or: Prisma.UserWhereInput[] = [];
+      if (!s.chain || s.chain === "PRIMARY") or.push({ scopeLevel: "COMMUNE", commune: { departmentId: s.departmentId } });
+      if (!s.chain || s.chain === "SECONDARY") or.push({ AND: [{ scopeLevel: "SCHOOL", school: { commune: { departmentId: s.departmentId }, cycle: { in: CHAIN_CYCLES.SECONDARY } } }, manages] });
+      return { user: { AND: [notMe, { OR: or }] } };
+    }
     case "NATIONAL":
       return { user: { AND: [notMe, { scopeLevel: { in: ["DEPARTMENT", "NATIONAL"] } }] } };
     case "SELF":
@@ -111,7 +118,7 @@ export async function handlerIds(requesterId: string) {
       schoolId: true,
       communeId: true,
       departmentId: true,
-      school: { select: { communeId: true } },
+      school: { select: { communeId: true, cycle: true, commune: { select: { departmentId: true } } } },
       commune: { select: { departmentId: true } },
       role: { select: { permissions: { where: { permission: { code: MANAGE_USERS } }, select: { permissionId: true } } } },
       student: { select: { enrollments: { where: { status: "ACTIVE", academicYear: { isActive: true } }, select: { schoolId: true } } } },
@@ -119,7 +126,7 @@ export async function handlerIds(requesterId: string) {
     },
   });
   if (!r) return [];
-  const level = helpRouteLevel({ scopeLevel: r.scopeLevel, managesUsers: r.role.permissions.length > 0 });
+  const level = helpRouteLevel({ scopeLevel: r.scopeLevel, managesUsers: r.role.permissions.length > 0, schoolCycle: r.school?.cycle });
   let where: Prisma.UserWhereInput | null = null;
   if (level === "SCHOOL") {
     const schoolIds =
@@ -130,7 +137,8 @@ export async function handlerIds(requesterId: string) {
           : [];
     if (schoolIds.length) where = { scopeLevel: "SCHOOL", schoolId: { in: [...new Set(schoolIds)] } };
   } else if (level === "COMMUNE" && r.school) where = { scopeLevel: "COMMUNE", communeId: r.school.communeId };
-  else if (level === "DEPARTMENT" && r.commune) where = { scopeLevel: "DEPARTMENT", departmentId: r.commune.departmentId };
+  else if (level === "DEPARTMENT" && r.commune) where = { scopeLevel: "DEPARTMENT", departmentId: r.commune.departmentId, OR: [{ chain: null }, { chain: "PRIMARY" }] };
+  else if (level === "DEPARTMENT" && r.school) where = { scopeLevel: "DEPARTMENT", departmentId: r.school.commune.departmentId, OR: [{ chain: null }, { chain: chainOfCycle(r.school.cycle) }] };
   else if (level === "NATIONAL") where = { scopeLevel: "NATIONAL" };
   if (!where) return [];
   const rows = await db.user.findMany({ where: { AND: [where, manages, { isActive: true, id: { not: requesterId } }] }, select: { id: true }, take: 50 });

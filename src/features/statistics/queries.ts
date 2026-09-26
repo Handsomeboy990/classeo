@@ -83,13 +83,14 @@ type SchoolCountsRow = {
 };
 
 function schoolFilter(scope: StatScope): Prisma.Sql {
+  const chain = scope.level !== "SCHOOL" && scope.cycles ? Prisma.sql` AND s.cycle::text IN (${Prisma.join([...scope.cycles])})` : Prisma.empty;
   switch (scope.level) {
     case "NATIONAL":
-      return Prisma.sql`TRUE`;
+      return Prisma.sql`TRUE${chain}`;
     case "DEPARTMENT":
-      return Prisma.sql`c."departmentId" = ${scope.id}`;
+      return Prisma.sql`c."departmentId" = ${scope.id}${chain}`;
     case "COMMUNE":
-      return Prisma.sql`s."communeId" = ${scope.id}`;
+      return Prisma.sql`s."communeId" = ${scope.id}${chain}`;
     case "SCHOOL":
       return Prisma.sql`s.id = ${scope.id}`;
   }

@@ -25,9 +25,20 @@ export async function examWhere(user: User): Promise<Prisma.MockExamWhereInput> 
     case "NATIONAL":
       return {};
     case "DEPARTMENT":
-      return s.departmentId ? { OR: [{ organizerDepartmentId: s.departmentId }, { participants: { some: { school: { commune: { departmentId: s.departmentId } } } } }] } : NOTHING;
+      // Its own exams and those of the schools of its department, within
+      // its chain (a DDEMP does not follow the BEPC mock exams).
+      return s.departmentId
+        ? {
+            OR: [
+              { organizerDepartmentId: s.departmentId, organizerLevel: "DEPARTMENT", ...(s.cycles ? { participants: { some: { school: { cycle: { in: s.cycles } } } } } : {}) },
+              { participants: { some: { school: { commune: { departmentId: s.departmentId }, ...(s.cycles ? { cycle: { in: s.cycles } } : {}) } } } },
+            ],
+          }
+        : NOTHING;
     case "COMMUNE":
-      return s.communeId ? { OR: [{ organizerCommuneId: s.communeId }, { participants: { some: { school: { communeId: s.communeId } } } }] } : NOTHING;
+      return s.communeId
+        ? { OR: [{ organizerCommuneId: s.communeId, organizerLevel: "COMMUNE" }, { participants: { some: { school: { communeId: s.communeId, ...(s.cycles ? { cycle: { in: s.cycles } } : {}) } } } }] }
+        : NOTHING;
     case "SCHOOL":
       if (!s.schoolId) return NOTHING;
       if (isTeacherRole(user)) return { status: { in: RUNNING }, participants: { some: { schoolId: s.schoolId, status: { in: TAKES_PART } } } };
@@ -220,7 +231,7 @@ const participantSelect = {
   status: true,
   respondedAt: true,
   respondedById: true,
-  school: { select: { id: true, name: true, code: true, communeId: true, commune: { select: { name: true, departmentId: true, department: { select: { name: true } } } } } },
+  school: { select: { id: true, name: true, code: true, communeId: true, cycle: true, commune: { select: { name: true, departmentId: true, department: { select: { name: true } } } } } },
 } as const;
 
 export async function getExam(user: User, id: string) {

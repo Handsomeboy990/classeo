@@ -52,7 +52,7 @@ export default async function MockExamPage({ params }: PageProps<"/espace/examen
   const head = !!schoolId && !isTeacherRole(user);
   const organizerHead = exam.viewerIsOrganizer && head && can(user, "mock_exam:create");
   const territoryOrganizer = exam.viewerIsOrganizer && !schoolId && can(user, "mock_exam:create");
-  const approvalSchools = exam.participants.filter((p) => p.status !== "DECLINED").map((p) => ({ communeId: p.school.communeId, departmentId: p.school.commune.departmentId }));
+  const approvalSchools = exam.participants.filter((p) => p.status !== "DECLINED").map((p) => ({ communeId: p.school.communeId, departmentId: p.school.commune.departmentId, cycle: p.school.cycle }));
   const required = exam.organizerLevel === "SCHOOL" ? approvalLevel(approvalSchools) : null;
   const partnerCount = exam.participants.filter((p) => !p.isOrganizer && p.status !== "DECLINED").length;
 
