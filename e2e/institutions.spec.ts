@@ -14,6 +14,8 @@ const SHOTS = process.env.E2E_SHOTS_DIR;
 const shot = (name: string) => (SHOTS ? { path: path.join(SHOTS, `${name}.png`), fullPage: true } : undefined);
 
 test("the DDESTFP writes to two colleges, one answers, receipts follow", async ({ page, pageAs }) => {
+  // Five accounts take part in this journey.
+  test.setTimeout(120_000);
   const subject = `Circulaire de test ${uniqueSuffix()}`;
 
   await page.goto("/espace/messages");

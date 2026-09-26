@@ -38,6 +38,8 @@ function frIn(days: number) {
 test.describe.configure({ mode: "serial" });
 
 test("a college proposes an exam, the partner accepts and the DDESTFP validates it", async ({ pageAs, browser }) => {
+  // Four accounts sign in one after the other in this journey.
+  test.setTimeout(120_000);
   const title = `Examen blanc de 3e ${Date.now().toString(36)}`;
   const director = await pageAs("directeur");
   await director.goto("/espace/examens-blancs");
