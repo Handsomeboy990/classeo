@@ -104,7 +104,7 @@ test.describe("teacher registry", () => {
 });
 
 test.describe("teacher registry of a department", () => {
-  test.use({ storageState: authFile("ddemp") });
+  test.use({ storageState: authFile("ddestfp") });
 
   test("lists each teacher once with their schools", async ({ page }) => {
     await page.goto("/espace/enseignants?q=Issifou");

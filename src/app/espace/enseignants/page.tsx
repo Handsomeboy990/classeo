@@ -1,4 +1,4 @@
-import { Download } from "lucide-react";
+import { Download, Plus } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 
@@ -7,11 +7,15 @@ import { PageHeader } from "@/components/kit/page-header";
 import { UrlSelect } from "@/components/kit/url-select";
 import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
+import { FormDialog } from "@/components/kit/form-dialog";
+import { recordStateTeacher } from "@/features/teachers/actions";
 import { AddTeacherDialog } from "@/features/teachers/components/add-teacher-dialog";
-import { listTeachers } from "@/features/teachers/queries";
+import { StateTeacherFields } from "@/features/teachers/components/state-registry-fields";
+import { listTeachers, schoolSector } from "@/features/teachers/queries";
 import { listRegistry, registryFilterOptions, registryFilters } from "@/features/teachers/registry";
 import { FilterBar, type FilterField } from "@/features/territory/components/filter-bar";
 import { can, requirePermission } from "@/lib/auth/authorize";
+import { creatableStatuses, isStateStatus, TEACHER_STATUS_SHORT } from "@/lib/domain/teacher-status";
 import type { CurrentUser } from "@/lib/auth/session";
 import { listParams, param, type SearchParams } from "@/lib/list";
 
@@ -33,7 +37,7 @@ async function SchoolTeachers({ user, sp }: { user: User; sp: SearchParams }) {
   const { q, page, pageSize, skip, take } = listParams(sp);
   const statut = param(sp, "statut");
   const active = statut === "tous" ? null : statut !== "inactifs";
-  const { rows, total } = await listTeachers(user, { q, active, skip, take });
+  const [{ rows, total }, sector] = await Promise.all([listTeachers(user, { q, active, skip, take }), schoolSector(user)]);
 
   const columns: Column<Row>[] = [
     {
@@ -67,6 +71,7 @@ async function SchoolTeachers({ user, sp }: { user: User; sp: SearchParams }) {
         return (
           <span className="flex flex-wrap gap-1">
             <Badge tone={r.isActive ? "success" : "neutral"}>{r.isActive ? "En activité" : "Inactif"}</Badge>
+            {r.status && <Badge tone={isStateStatus(r.status) ? "accent" : "neutral"}>{TEACHER_STATUS_SHORT[r.status]}</Badge>}
             {r.userId && <Badge tone="info">Compte</Badge>}
             {elsewhere.length > 0 && <Badge tone="accent" title={elsewhere.map((t) => t.school.name).join(", ")}>Aussi à {elsewhere.map((t) => t.school.name).join(", ")}</Badge>}
           </span>
@@ -80,7 +85,7 @@ async function SchoolTeachers({ user, sp }: { user: User; sp: SearchParams }) {
       <PageHeader
         title="Enseignants"
         description="Équipe pédagogique de l'année active. Un enseignant qui travaille aussi dans une autre école garde une seule fiche au registre national."
-        actions={can(user, "teacher:create") && user.scope.schoolId && <AddTeacherDialog />}
+        actions={can(user, "teacher:create") && user.scope.schoolId && <AddTeacherDialog statusOptions={creatableStatuses(sector)} />}
       />
       <DataTable
         rows={rows}
@@ -119,6 +124,8 @@ async function Registry({ user, sp }: { user: User; sp: SearchParams }) {
   const { page, pageSize, skip, take } = listParams(sp);
   const filters = registryFilters(sp);
   const [{ rows, total }, options] = await Promise.all([listRegistry(user, filters, { skip, take }), registryFilterOptions(user)]);
+  // The ministry keeps the registry of the agents of the State.
+  const keepsRegistry = user.scope.level === "NATIONAL" && can(user, "teacher:update");
 
   const columns: Column<RegistryRow>[] = [
     {
@@ -162,12 +169,40 @@ async function Registry({ user, sp }: { user: User; sp: SearchParams }) {
       header: "Statut",
       cell: (r) => (
         <span className="flex flex-wrap gap-1">
+          {r.stateStatus && (
+            <Badge tone="accent" title={r.stateMatricule ? `Matricule de l'État ${r.stateMatricule}` : undefined}>
+              {TEACHER_STATUS_SHORT[r.stateStatus]}
+              {r.stateMatricule ? ` ${r.stateMatricule}` : ""}
+            </Badge>
+          )}
           {r._count.teachers > 1 && <Badge tone="accent">{r._count.teachers} établissements</Badge>}
           {r.userId && <Badge tone="info">Compte</Badge>}
         </span>
       ),
       hideBelow: "sm",
     },
+    ...(keepsRegistry
+      ? [
+          {
+            header: "Registre de l'État",
+            cell: (r: RegistryRow) => (
+              <FormDialog
+                action={recordStateTeacher}
+                variant="ghost"
+                size="sm"
+                trigger={<>{r.stateStatus ? "Modifier" : "Inscrire"}</>}
+                title={`Agent de l'État : ${r.firstName} ${r.lastName}`}
+                description="Statut et matricule de l'État. Ses nominations dans les établissements publics prennent ce statut."
+                submitLabel="Enregistrer"
+              >
+                <StateTeacherFields
+                  values={{ profileId: r.id, lastName: r.lastName, firstName: r.firstName, gender: r.gender, phone: r.phone, npi: r.npi, stateStatus: r.stateStatus, stateMatricule: r.stateMatricule }}
+                />
+              </FormDialog>
+            ),
+          } satisfies Column<RegistryRow>,
+        ]
+      : []),
   ];
 
   const fields: FilterField[] = [
@@ -197,11 +232,29 @@ async function Registry({ user, sp }: { user: User; sp: SearchParams }) {
         title="Registre des enseignants"
         description={`Une fiche par personne, avec ses établissements : ${user.scope.label}.`}
         actions={
-          can(user, "teacher:export") && (
-            <ButtonLink href={`/api/export/enseignants${exportQuery.size ? `?${exportQuery}` : ""}`} variant="secondary" prefetch={false}>
-              <Download aria-hidden /> Exporter en CSV
-            </ButtonLink>
-          )
+          <>
+            {keepsRegistry && (
+              <FormDialog
+                action={recordStateTeacher}
+                trigger={
+                  <>
+                    <Plus aria-hidden /> Inscrire un agent de l&apos;État
+                  </>
+                }
+                title="Inscrire un agent de l'État"
+                description="APE, ACE ou AME : les établissements le trouveront au registre pour le nommer, sans pouvoir le créer eux-mêmes."
+                submitLabel="Inscrire au registre"
+                wide
+              >
+                <StateTeacherFields />
+              </FormDialog>
+            )}
+            {can(user, "teacher:export") && (
+              <ButtonLink href={`/api/export/enseignants${exportQuery.size ? `?${exportQuery}` : ""}`} variant="secondary" prefetch={false}>
+                <Download aria-hidden /> Exporter en CSV
+              </ButtonLink>
+            )}
+          </>
         }
       />
       <FilterBar basePath="/espace/enseignants" keep={{ q: filters.q }} fields={fields} />

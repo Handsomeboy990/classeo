@@ -5,6 +5,8 @@ import { can } from "@/lib/auth/authorize";
 import { classroomWhere, enrollmentWhere, isTeacherRole, schoolWhere } from "@/lib/auth/scope";
 import type { CurrentUser } from "@/lib/auth/session";
 import { db } from "@/lib/db";
+import { chainOfCycle, ministryName } from "@/lib/domain/chains";
+import { institutionName } from "@/lib/domain/institutions";
 import { param, type SearchParams } from "@/lib/list";
 
 import { computeResults, EXAM_LEVEL_CODES, isExamStatus, isOrganizer, TAKES_PART, type ExamStatus, type Participation, type Territory } from "./rules";
@@ -175,9 +177,13 @@ export async function listExams(user: User, f: ExamFilters, page: { skip: number
   return { rows: rows.map((r) => ({ ...r, levelName: levelName.get(r.levelId) ?? "", organizerName: organizers(r) })), total, byStatus };
 }
 
-type OrganizerRow = { organizerLevel: Territory; organizerSchool: { name: string } | null; organizerCommuneId: string | null; organizerDepartmentId: string | null };
+type OrganizerRow = { levelId: string; organizerLevel: Territory; organizerSchool: { name: string } | null; organizerCommuneId: string | null; organizerDepartmentId: string | null };
 
+// An authority is named by the chain of the exam class: the CEP (CM2)
+// belongs to the MEMP chain, the BEPC and the baccalauréat to the MESTFP.
 async function organizerNames(rows: OrganizerRow[]) {
+  const levels = await examLevels();
+  const chainOf = new Map(levels.map((l) => [l.id, chainOfCycle(l.cycle)]));
   const communeIds = [...new Set(rows.filter((r) => r.organizerLevel === "COMMUNE").map((r) => r.organizerCommuneId!).filter(Boolean))];
   const departmentIds = [...new Set(rows.filter((r) => r.organizerLevel === "DEPARTMENT").map((r) => r.organizerDepartmentId!).filter(Boolean))];
   const [communes, departments] = await Promise.all([
@@ -191,11 +197,11 @@ async function organizerNames(rows: OrganizerRow[]) {
       case "SCHOOL":
         return r.organizerSchool?.name ?? "Établissement";
       case "COMMUNE":
-        return `Circonscription scolaire de ${c.get(r.organizerCommuneId ?? "") ?? "?"}`;
+        return institutionName("COMMUNE", c.get(r.organizerCommuneId ?? "") ?? null);
       case "DEPARTMENT":
-        return `Direction départementale ${d.get(r.organizerDepartmentId ?? "") ?? ""}`.trim();
+        return institutionName("DEPARTMENT", d.get(r.organizerDepartmentId ?? "") ?? null, chainOf.get(r.levelId) ?? null);
       case "NATIONAL":
-        return "Ministère des Enseignements";
+        return ministryName(chainOf.get(r.levelId) ?? null);
     }
   };
 }

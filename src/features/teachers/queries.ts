@@ -42,6 +42,7 @@ export async function listTeachers(user: User, opts: { q: string; active: boolea
     select: {
       id: true,
       matricule: true,
+      status: true,
       firstName: true,
       lastName: true,
       phone: true,
@@ -66,8 +67,8 @@ export async function getTeacher(user: User, id: string) {
     where: { AND: [{ id }, teacherWhere(user)] },
     include: {
       user: { select: { username: true, email: true, lastLoginAt: true } },
-      school: { select: { name: true } },
-      profile: { select: { npi: true, teachers: { where: { isActive: true }, select: { id: true, schoolId: true, school: { select: { name: true } } } } } },
+      school: { select: { name: true, sector: true } },
+      profile: { select: { npi: true, stateStatus: true, stateMatricule: true, teachers: { where: { isActive: true }, select: { id: true, schoolId: true, school: { select: { name: true } } } } } },
       assignments: {
         where: { classroom: { academicYearId: year?.id ?? "__none__" } },
         orderBy: [{ classroom: { level: { order: "asc" } } }, { classroom: { name: "asc" } }],
@@ -81,4 +82,10 @@ export async function getTeacher(user: User, id: string) {
       attendances: { orderBy: { date: "desc" }, take: 10, select: { date: true, status: true, reason: true } },
     },
   });
+}
+
+// The sector of the user's school, which decides the statuses it may give.
+export async function schoolSector(user: User) {
+  const school = user.scope.schoolId ? await db.school.findUnique({ where: { id: user.scope.schoolId }, select: { sector: true } }) : null;
+  return school?.sector ?? "PUBLIC";
 }

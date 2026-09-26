@@ -421,6 +421,16 @@ model Subject {
   assignments         CourseAssignment[]
 }
 
+// Employment of a teacher: agents of the State (APE, ACE, AME), paid by the
+// Ministry of Finance; vacataires and private teachers, paid by the school.
+enum TeacherStatus {
+  APE
+  ACE
+  AME
+  VACATAIRE
+  PRIVATE
+}
+
 // A teacher's appointment in one school. The same person teaching in two
 // schools has two Teacher rows sharing one TeacherProfile and one account.
 model Teacher {
@@ -432,6 +442,10 @@ model Teacher {
   schoolId    String
   school      School              @relation(fields: [schoolId], references: [id])
   matricule   String              @unique
+  // Status in this school: an agent of the State keeps the status of the
+  // ministry registry; a school hires vacataires and, if private, its own
+  // teachers. Null: not yet recorded.
+  status      TeacherStatus?
   firstName   String
   lastName    String
   gender      Gender?
@@ -451,17 +465,22 @@ model Teacher {
 // The person behind the appointments: found by NPI, phone or names before a
 // school creates a new teacher, so nobody is registered twice.
 model TeacherProfile {
-  id        String    @id @default(cuid())
-  userId    String?   @unique
-  user      User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
-  npi       String?   @unique
-  firstName String
-  lastName  String
-  gender    Gender?
-  phone     String?
-  email     String?
-  createdAt DateTime  @default(now())
-  teachers  Teacher[]
+  id             String         @id @default(cuid())
+  userId         String?        @unique
+  user           User?          @relation(fields: [userId], references: [id], onDelete: SetNull)
+  npi            String?        @unique
+  // The ministry's registry of State teachers: status (APE, ACE or AME) and
+  // State matricule, the one of the Ministry of Finance payslips. Recorded
+  // by the ministry only; schools appoint these teachers, never create them.
+  stateStatus    TeacherStatus?
+  stateMatricule String?        @unique
+  firstName      String
+  lastName       String
+  gender         Gender?
+  phone          String?
+  email          String?
+  createdAt      DateTime       @default(now())
+  teachers       Teacher[]
 
   @@index([phone])
   @@index([lastName, firstName])

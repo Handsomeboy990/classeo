@@ -383,7 +383,7 @@ async function main() {
     const of = /^[AEIOUYÀÂÉÈÊÎÏÔÛ]/i.test(place) ? `d'${place}` : `de ${place}`;
     const sec = sc.cycle === "SECONDARY";
     if (sector === "PRIVATE") {
-      if (sec && !bilingualDone && sc.communeName === "Cotonou") {
+      if (sec && !bilingualDone && sc.urban) {
         bilingualDone = true;
         bilingual.add(sc.id);
         sc.name = `Complexe scolaire bilingue Les Lauriers ${of}`;

@@ -14,6 +14,7 @@ import { EditTeacherDialog } from "@/features/teachers/components/teacher-forms"
 import { getTeacher } from "@/features/teachers/queries";
 import { can, requirePermission } from "@/lib/auth/authorize";
 import { ATTENDANCE_LABELS, dateToIso } from "@/lib/domain/attendance";
+import { creatableStatuses, PAYER_LABELS, payerOf, TEACHER_STATUS_LABELS } from "@/lib/domain/teacher-status";
 import { PdfDownloadLink } from "@/lib/pdf/download-link";
 import { formatDateTime, formatNumber } from "@/lib/utils";
 
@@ -38,7 +39,16 @@ export default async function TeacherPage(props: PageProps<"/espace/enseignants/
       </nav>
       <PageHeader
         title={name}
-        description={`Matricule ${t.matricule} · ${t.school.name}${t.specialty ? ` · ${t.specialty}` : ""}`}
+        description={[
+          `Matricule ${t.matricule}`,
+          t.school.name,
+          t.specialty,
+          t.status ? TEACHER_STATUS_LABELS[t.status] : "Statut non renseigné",
+          t.status ? `payé par : ${PAYER_LABELS[payerOf(t.status)!].toLowerCase()}` : null,
+          t.profile?.stateMatricule ? `matricule de l'État ${t.profile.stateMatricule}` : null,
+        ]
+          .filter(Boolean)
+          .join(" · ")}
         actions={
           <>
             {can(user, "timetable:view") && (
@@ -56,7 +66,10 @@ export default async function TeacherPage(props: PageProps<"/espace/enseignants/
                   hiredAt: t.hiredAt ? dateToIso(t.hiredAt) : null,
                   isActive: t.isActive,
                   npi: t.profile?.npi ?? null,
+                  status: t.status,
+                  stateStatus: t.profile?.stateStatus ?? null,
                 }}
+                statusOptions={creatableStatuses(t.school.sector)}
               />
             )}
           </>

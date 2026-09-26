@@ -106,7 +106,7 @@ test("a school proposes an exam, the partner accepts and the district validates 
 
 test("a department imposes an exam on every school of a commune", async ({ pageAs }) => {
   const title = `Examen blanc imposé ${Date.now().toString(36)}`;
-  const page = await pageAs("ddemp");
+  const page = await pageAs("ddestfp");
   await page.goto("/espace/examens-blancs/nouveau");
   await expect(page.getByText(/La participation est imposée/)).toBeVisible();
   await page.getByLabel("Classe d'examen").selectOption({ label: "3e" });

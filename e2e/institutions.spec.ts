@@ -6,7 +6,7 @@ import { expect, test, uniqueSuffix } from "./support/fixtures";
 // Institutional messaging: the departmental direction writes to two schools
 // at once, each school answers for itself, its staff (not its teachers) see
 // the thread, and the direction sees who has read it.
-test.use({ storageState: authFile("ddemp") });
+test.use({ storageState: authFile("ddestfp") });
 
 const SHOTS = process.env.E2E_SHOTS_DIR;
 const shot = (name: string) => (SHOTS ? { path: path.join(SHOTS, `${name}.png`), fullPage: true } : undefined);

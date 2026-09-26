@@ -4,6 +4,8 @@ import { FormDialog } from "@/components/kit/form-dialog";
 import { FormField } from "@/components/kit/form-field";
 import { Input, Select, Switch } from "@/components/ui/input";
 
+import { isStateStatus, TEACHER_STATUS_LABELS, type TeacherStatus } from "@/lib/domain/teacher-status";
+
 import { updateTeacher } from "../actions";
 
 export type TeacherValues = {
@@ -16,9 +18,16 @@ export type TeacherValues = {
   hiredAt: string | null;
   isActive: boolean;
   npi: string | null;
+  status: TeacherStatus | null;
+  // Status recorded by the ministry for an agent of the State.
+  stateStatus: TeacherStatus | null;
 };
 
-export function TeacherFields({ values }: { values?: TeacherValues }) {
+// statusOptions: the statuses the school may give (a public school hires
+// vacataires, a private school its own teachers too). An agent of the State
+// keeps the status of the ministry registry.
+export function TeacherFields({ values, statusOptions }: { values?: TeacherValues; statusOptions: TeacherStatus[] }) {
+  const fromRegistry = isStateStatus(values?.status) && values?.status === values?.stateStatus;
   return (
     <div className="grid gap-4 sm:grid-cols-2">
       {values && <input type="hidden" name="id" value={values.id} />}
@@ -45,6 +54,22 @@ export function TeacherFields({ values }: { values?: TeacherValues }) {
       >
         <Input inputMode="numeric" maxLength={14} defaultValue={values?.npi ?? ""} readOnly={!!values?.npi} autoComplete="off" />
       </FormField>
+      {fromRegistry ? (
+        <div className="flex flex-col gap-1 text-sm">
+          <span className="font-semibold">Statut</span>
+          <span className="text-muted">{TEACHER_STATUS_LABELS[values!.status!]}, inscrit au registre du ministère.</span>
+        </div>
+      ) : (
+        <FormField label="Statut" name="status" required hint="Les agents de l'État (APE, ACE, AME) sont inscrits par le ministère : recherchez-les au registre.">
+          <Select defaultValue={values?.status && statusOptions.includes(values.status) ? values.status : statusOptions[0]}>
+            {statusOptions.map((s) => (
+              <option key={s} value={s}>
+                {TEACHER_STATUS_LABELS[s]}
+              </option>
+            ))}
+          </Select>
+        </FormField>
+      )}
       <FormField label="Spécialité" name="specialty" hint="Par exemple : Mathématiques">
         <Input defaultValue={values?.specialty ?? ""} maxLength={80} />
       </FormField>
@@ -58,7 +83,7 @@ export function TeacherFields({ values }: { values?: TeacherValues }) {
   );
 }
 
-export function EditTeacherDialog({ values }: { values: TeacherValues }) {
+export function EditTeacherDialog({ values, statusOptions }: { values: TeacherValues; statusOptions: TeacherStatus[] }) {
   return (
     <FormDialog
       action={updateTeacher}
@@ -72,7 +97,7 @@ export function EditTeacherDialog({ values }: { values: TeacherValues }) {
         </>
       }
     >
-      <TeacherFields values={values} />
+      <TeacherFields values={values} statusOptions={statusOptions} />
     </FormDialog>
   );
 }

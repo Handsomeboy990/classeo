@@ -3,7 +3,7 @@ import { expect, expectForbidden, test } from "./support/fixtures";
 
 // Journey 2: statistics follow the territorial scope of the account.
 test.describe("departmental director of Atlantique", () => {
-  test.use({ storageState: authFile("ddemp") });
+  test.use({ storageState: authFile("ddestfp") });
 
   test("sees Atlantique in statistics", async ({ page }) => {
     await page.goto("/espace/statistiques");
