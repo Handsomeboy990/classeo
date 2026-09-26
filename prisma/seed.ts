@@ -22,11 +22,15 @@ import { nextFreeUsername, usernameBase } from "../src/lib/auth/username";
 import { DEMO_ACCOUNTS } from "../src/lib/demo/accounts";
 import { resolveDemoPassword } from "../src/lib/demo/password";
 import { seedExtras } from "./seed-extras";
-import { generalAverage, rankEntries, round2 } from "../src/lib/domain/grades";
+import { seedHistory } from "./seed-history";
+import { createBulk } from "./seed-lib/bulk";
+import { coefficientOf, FIRST_F, FIRST_M, LAST, LEVELS, PRIMARY_HOURS, PRIMARY_SUBJECTS, PROFESSIONS, SECONDARY_HOURS, SECONDARY_SUBJECTS } from "./seed-lib/reference";
+import { planWeek, SPLIT, type Lesson } from "./seed-lib/timetable";
+import { round2 } from "../src/lib/domain/grades";
 import { defaultPeriodicity } from "../src/lib/domain/periodicity";
-import { describeConflict, findConflicts, slotTimeError, type PlannedSlot } from "../src/lib/domain/timetable";
 
 const db = new PrismaClient({ adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL! }) });
+const bulk = createBulk(process.env.DATABASE_URL!);
 
 // ---------------------------------------------------------------------------
 // Deterministic randomness
@@ -101,67 +105,6 @@ const URBAN: Record<string, number> = {
 // Current year classes seeded outside the two detailed schools.
 const CLASS_BUDGET = 290;
 
-// Weekly hours of each secondary subject, roughly by coefficient.
-const SECONDARY_HOURS: Record<string, number> = { FR: 5, MATH: 5, ANG: 3, HG: 3, SVT: 3, PCT: 2, EPS: 2 };
-
-const LEVELS = [
-  { code: "CI", name: "CI", cycle: "PRIMARY", order: 1 },
-  { code: "CP", name: "CP", cycle: "PRIMARY", order: 2 },
-  { code: "CE1", name: "CE1", cycle: "PRIMARY", order: 3 },
-  { code: "CE2", name: "CE2", cycle: "PRIMARY", order: 4 },
-  { code: "CM1", name: "CM1", cycle: "PRIMARY", order: 5 },
-  { code: "CM2", name: "CM2", cycle: "PRIMARY", order: 6 },
-  { code: "6E", name: "6e", cycle: "SECONDARY", order: 7 },
-  { code: "5E", name: "5e", cycle: "SECONDARY", order: 8 },
-  { code: "4E", name: "4e", cycle: "SECONDARY", order: 9 },
-  { code: "3E", name: "3e", cycle: "SECONDARY", order: 10 },
-  { code: "2NDE", name: "2nde", cycle: "SECONDARY", order: 11 },
-  { code: "1ERE", name: "1ère", cycle: "SECONDARY", order: 12 },
-  { code: "TLE", name: "Tle", cycle: "SECONDARY", order: 13 },
-] as const;
-
-const SECONDARY_SUBJECTS = [
-  { code: "FR", name: "Français", coef: 3 },
-  { code: "MATH", name: "Mathématiques", coef: 3 },
-  { code: "ANG", name: "Anglais", coef: 2 },
-  { code: "HG", name: "Histoire-Géographie", coef: 2 },
-  { code: "SVT", name: "Sciences de la vie et de la terre", coef: 2 },
-  { code: "PCT", name: "Physique, chimie et technologie", coef: 2 },
-  { code: "EPS", name: "Éducation physique et sportive", coef: 1 },
-];
-// Official coefficients (MESTFP order n° 029 of 2024, annex 2): every
-// subject at 1 in 6e and 5e; the national grid in 4e and 3e (Mathématiques
-// 3, PCT 2, SVT 2, Français 2 for reading and 2 for writing, Anglais 2,
-// Histoire-Géographie 2, EPS 1); a grid per series in the second cycle. The
-// seed has a single Français subject, given the reading coefficient. The
-// second cycle values other than Mathématiques 6 and PCT 5 in série C come
-// from common practice and are to be checked against the annex.
-const SERIES_COEFFICIENTS: Record<string, Record<string, number>> = {
-  C: { FR: 2, MATH: 6, ANG: 2, HG: 2, SVT: 2, PCT: 5, EPS: 1 },
-  D: { FR: 2, MATH: 4, ANG: 2, HG: 2, SVT: 5, PCT: 4, EPS: 1 },
-};
-const FIRST_CYCLE_UPPER: Record<string, number> = { FR: 2, MATH: 3, ANG: 2, HG: 2, SVT: 2, PCT: 2, EPS: 1 };
-function coefficientOf(levelCode: string, stream: string, subject: { code: string; coef: number }) {
-  if (levelCode === "6E" || levelCode === "5E") return 1;
-  if (levelCode === "4E" || levelCode === "3E") return FIRST_CYCLE_UPPER[subject.code] ?? 1;
-  if (levelCode === "2NDE" || levelCode === "1ERE" || levelCode === "TLE") return SERIES_COEFFICIENTS[stream]?.[subject.code] ?? 1;
-  return subject.coef;
-}
-
-const PRIMARY_SUBJECTS = [
-  { code: "P-FR", name: "Français", coef: 3 },
-  { code: "P-MATH", name: "Mathématiques", coef: 3 },
-  { code: "P-EST", name: "Éducation scientifique et technologique", coef: 2 },
-  { code: "P-ES", name: "Éducation sociale", coef: 2 },
-  { code: "P-EA", name: "Éducation artistique", coef: 1 },
-  { code: "P-EPS", name: "Éducation physique et sportive", coef: 1 },
-];
-
-const FIRST_F = ["Afiavi", "Akouavi", "Sènami", "Ayaba", "Houéfa", "Nafissatou", "Rachidatou", "Chimène", "Grâce", "Mireille", "Pélagie", "Bénédicta", "Esther", "Fifamè", "Sèdami", "Aïcha", "Mariam", "Rosine", "Carine", "Estelle", "Laurelle", "Fadilatou", "Olga", "Prisca", "Ruth"];
-const FIRST_M = ["Koffi", "Codjo", "Comlan", "Mahougnon", "Arnaud", "Ulrich", "Romaric", "Fiacre", "Brice", "Ibrahim", "Moussa", "Soulé", "Saka", "Orou", "Sabi", "Yacoubou", "Kamarou", "Rodrigue", "Gildas", "Jonas", "Aristide", "Mathias", "Florentin", "Sèdjro", "Rachad"];
-const LAST = ["Adjovi", "Agossou", "Ahouandjinou", "Akpovi", "Amoussou", "Assogba", "Avocè", "Azonhiho", "Dossou", "Gbaguidi", "Hounkpatin", "Houngbédji", "Kiki", "Kpadonou", "Lokossou", "Sossou", "Tossou", "Houénou", "Agbodjogbé", "Adéoti", "Akanni", "Olatoundji", "Idrissou", "Adékambi", "Sanni", "Chabi", "Worou", "Gounou", "Bani", "Issifou", "Alassane", "Salifou", "Mama", "Yessoufou", "Dègbo", "Zannou", "Hounsa", "Tchibozo", "Ahouansou", "Kakpo"];
-const PROFESSIONS = ["Commerçante", "Agriculteur", "Enseignante", "Couturière", "Mécanicien", "Infirmière", "Conducteur de taxi-moto", "Fonctionnaire", "Artisan", "Pêcheur", "Revendeuse", "Menuisier"];
-
 function person(gender?: "F" | "M") {
   const g = gender ?? (rand() < 0.49 ? "F" : "M");
   return { gender: g, firstName: pick(g === "F" ? FIRST_F : FIRST_M), lastName: pick(LAST) } as const;
@@ -171,10 +114,6 @@ const phone = () => `01${pick(["90", "91", "94", "95", "96", "97", "61", "62", "
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
-
-async function chunked<T>(rows: T[], size: number, insert: (batch: T[]) => Promise<unknown>) {
-  for (let i = 0; i < rows.length; i += size) await insert(rows.slice(i, i + size));
-}
 
 function schoolDays(from: string, to: string) {
   const days: Date[] = [];
@@ -503,16 +442,16 @@ async function main() {
   const assignments: (Prisma.CourseAssignmentCreateManyInput & { schoolId: string; subjectCode: string })[] = [];
   const students: Prisma.StudentCreateManyInput[] = [];
   const enrollments: Prisma.EnrollmentCreateManyInput[] = [];
-  const studentMeta = new Map<string, { ability: number; schoolId: string; classroomId: string; enrollmentId: string; prevEnrollmentId?: string; prevClassroomId?: string }>();
+  const studentMeta = new Map<string, { ability: number; schoolId: string; classroomId: string; enrollmentId: string }>();
   let teacherSeq = 0;
   let studentSeq = 0;
   let demoTeacherId = "";
   let demoStudentId = "";
 
-  // Teachers of last year's classes, subject code to teacher id: the teacher
-  // of the class of the same name this year (teachers keep their levels),
-  // otherwise the teacher of the cohort's current class.
-  const prevClassTeachers = new Map<string, Map<string, string>>();
+  // Teacher of each (class index, subject code) per school, for the classes
+  // of the past years.
+  const teacherOfBySchool = new Map<string, Map<string, string>>();
+  let burnedDraws = 0;
   const teacherById = new Map<string, Prisma.TeacherCreateManyInput>();
   const addTeacher = (schoolId: string, specialty: string) => {
     const p = person();
@@ -533,7 +472,6 @@ async function main() {
   // Teachers per subject at CEG Godomey, sized for its eight classes so the
   // timetable can be built without any teacher in two places at once.
   const DETAILED_TEACHERS: Record<string, number> = { FR: 3, MATH: 3, ANG: 2, HG: 2, SVT: 2, PCT: 2, EPS: 1 };
-  const PRIMARY_HOURS: Record<string, number> = { "P-FR": 7, "P-MATH": 6, "P-EST": 3, "P-ES": 3, "P-EA": 2, "P-EPS": 2 };
   const LEVEL_FACTOR: Record<string, number> = { "6E": 1.08, "5E": 1.03, "4E": 0.97, "3E": 0.92, "2NDE": 0.9, "1ERE": 0.85, TLE: 0.82, CE2: 1.03, CM1: 1, CM2: 0.96 };
 
   const classSize = (school: SchoolPlan, levelCode: string) => {
@@ -549,6 +487,7 @@ async function main() {
     const classIds = specs.map(() => id());
     // Teacher of each (class index, subject code).
     const teacherOf = new Map<string, string>();
+    teacherOfBySchool.set(school.id, teacherOf);
 
     if (isSec) {
       // Secondary: each subject is shared by one or several teachers, each
@@ -580,7 +519,6 @@ async function main() {
       Object.assign(teacherById.get(demoTeacherId)!, { firstName: "Nafissatou", lastName: "Issifou", gender: "F" });
     }
 
-    const specIndex = new Map(specs.map((s, i) => [s, i]));
     specs.forEach((spec, c) => {
       const [levelCode, letter] = spec.split(":") as [string, string];
       const level = levels.get(levelCode)!;
@@ -609,24 +547,15 @@ async function main() {
         });
       }
 
-      // Previous year classroom one level below, same school, for history.
+      // The classes of the past years are built by prisma/seed-history. The
+      // draw that used to pick last year's main teacher here is kept, and
+      // so are the draws of last year's report cards below (counted in
+      // burnedDraws), so every later draw, and every current year fact the
+      // journeys rely on, stays the same.
       const prevLevel = LEVELS.find((l) => l.order === level.order - 1 && l.cycle === level.cycle);
-      let prevClassroomId: string | undefined;
       if (prevLevel) {
-        prevClassroomId = id();
-        const sameName = specIndex.get(`${prevLevel.code}:${letter}`);
-        const source = sameName ?? c;
-        const taught = new Map(subjectList.map((s) => [s.code, teacherOf.get(`${source}:${s.code}`)!]));
-        prevClassTeachers.set(prevClassroomId, taught);
-        classrooms.push({
-          id: prevClassroomId,
-          schoolId: school.id,
-          academicYearId: prevYear.id,
-          levelId: levels.get(prevLevel.code)!.id,
-          name: `${prevLevel.name} ${letter}`,
-          capacity: Math.max(size, isSec ? 70 : 60),
-          mainTeacherId: taught.get(isSec ? pick(["FR", "MATH", "HG"]) : "P-FR")!,
-        });
+        if (isSec) pick(["FR", "MATH", "HG"]);
+        burnedDraws += size * subjectList.length * 3 * 2;
       }
 
       for (let k = 0; k < size; k++) {
@@ -646,18 +575,12 @@ async function main() {
         });
         const enrollmentId = id();
         enrollments.push({ id: enrollmentId, studentId, schoolId: school.id, classroomId, academicYearId: year.id, isRepeating: rand() < 0.08, enrolledAt: year.startDate });
-        const meta: { ability: number; schoolId: string; classroomId: string; enrollmentId: string; prevEnrollmentId?: string; prevClassroomId?: string } = {
+        studentMeta.set(studentId, {
           ability: normal(10.6 + school.quality * 0.9 + (p.gender === "F" ? 0.15 : 0), 2.6),
           schoolId: school.id,
           classroomId,
           enrollmentId,
-        };
-        if (prevClassroomId) {
-          meta.prevEnrollmentId = id();
-          meta.prevClassroomId = prevClassroomId;
-          enrollments.push({ id: meta.prevEnrollmentId, studentId, schoolId: school.id, classroomId: prevClassroomId, academicYearId: prevYear.id, enrolledAt: prevYear.startDate });
-        }
-        studentMeta.set(studentId, meta);
+        });
         if (school.id === ceg.id && levelCode === "3E" && k === 0) demoStudentId = studentId;
       }
     });
@@ -697,17 +620,16 @@ async function main() {
   demoStudent.userId = studentUserId;
   const parentUserId = addUser({ username: "afiavi.hounkpatin", email: "parent@classeo.bj", firstName: "Afiavi", lastName: "Hounkpatin", gender: "F", phone: "0196123456", roleId: roleIds.PARENT!, scopeLevel: "SELF" });
 
-  await chunked(users, 500, (b) => db.user.createMany({ data: b }));
-  await chunked(teachers, 2000, (b) => db.teacher.createMany({ data: b }));
-  await chunked(classrooms, 2000, (b) => db.classroom.createMany({ data: b }));
-  await chunked(
+  await bulk.insert("User", users);
+  await bulk.insert("Teacher", teachers);
+  await bulk.insert("Classroom", classrooms);
+  await bulk.insert(
+    "CourseAssignment",
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     assignments.map(({ schoolId, subjectCode, ...a }) => a),
-    3000,
-    (b) => db.courseAssignment.createMany({ data: b }),
   );
-  await chunked(students, 3000, (b) => db.student.createMany({ data: b }));
-  await chunked(enrollments, 3000, (b) => db.enrollment.createMany({ data: b }));
+  await bulk.insert("Student", students);
+  await bulk.insert("Enrollment", enrollments);
   console.timeLog("seed", `schools ${schools.length}, teachers ${teachers.length}, students ${students.length}, enrollments ${enrollments.length}`);
 
   // Guardians for the detailed schools, the demo parent first ----------------
@@ -726,77 +648,13 @@ async function main() {
     guardians.push({ id: gId, firstName: p.firstName, lastName: s.lastName, phone: phone(), profession: pick(PROFESSIONS), preferredChannel: pick(["APP", "SMS", "VOICE_CALL"] as const), prefersAudio: rand() < 0.35 });
     links.push({ studentId: s.id!, guardianId: gId, relationship: mother ? "Mère" : "Père", isPrimary: true });
   }
-  await chunked(guardians, 2000, (b) => db.guardian.createMany({ data: b }));
-  await chunked(links, 2000, (b) => db.studentGuardian.createMany({ data: b }));
+  await bulk.insert("Guardian", guardians);
+  await bulk.insert("StudentGuardian", links);
 
-  // Last year's published report cards, every school: three terms, or two
-  // semesters where the school is graded by semester. The subject averages
-  // are drawn per term in every case (the same draws as always); a first
-  // semester takes the mean of the first two terms, the second the third.
-  const reportCards: Prisma.ReportCardCreateManyInput[] = [];
-  const teacherNameOf = (teacherId: string | undefined) => {
-    const t = teacherId ? teacherById.get(teacherId) : undefined;
-    return t ? `${t.firstName} ${t.lastName}` : null;
-  };
-  const byPrevClass = new Map<string, string[]>();
-  for (const [sid, m] of studentMeta) if (m.prevClassroomId) byPrevClass.set(m.prevClassroomId, [...(byPrevClass.get(m.prevClassroomId) ?? []), sid]);
-  const classById = new Map(classrooms.map((c) => [c.id!, c]));
-  const levelCodeById = new Map([...levels.values()].map((l) => [l.id, l.code]));
-  const schoolCycle = new Map(schools.map((s) => [s.id, s.cycle]));
-  for (const [prevClassId, sids] of byPrevClass) {
-    const klass = classById.get(prevClassId)!;
-    const subjectList = schoolCycle.get(klass.schoolId) === "SECONDARY" ? SECONDARY_SUBJECTS : PRIMARY_SUBJECTS;
-    const levelCode = levelCodeById.get(klass.levelId)!;
-    const stream = klass.name.slice(-1);
-    const taught = prevClassTeachers.get(prevClassId);
-    const drawnTerms = prevPeriods.map((_, pIndex) =>
-      sids.map((sid) => {
-        const m = studentMeta.get(sid)!;
-        return subjectList.map(() => round2(clamp(normal(m.ability + pIndex * 0.25, 2.2), 1, 19.5)));
-      }),
-    );
-    const semesterSchool = periodicityOf.get(klass.schoolId) === "SEMESTER";
-    const published = semesterSchool
-      ? [
-          { period: prevSemesters[0]!, averages: drawnTerms[0]!.map((row, k) => row.map((v, j) => round2((v + drawnTerms[1]![k]![j]!) / 2))) },
-          { period: prevSemesters[1]!, averages: drawnTerms[2]! },
-        ]
-      : prevPeriods.map((period, pIndex) => ({ period, averages: drawnTerms[pIndex]! }));
-    for (const { period, averages } of published) {
-      const rows = sids.map((sid, k) => {
-        const m = studentMeta.get(sid)!;
-        const lines = subjectList.map((s, j) => ({
-          subject: s.name,
-          coefficient: coefficientOf(levelCode, stream, s),
-          average: averages[k]![j]!,
-          rank: null as number | null,
-          teacher: teacherNameOf(taught?.get(s.code)),
-        }));
-        return { sid, m, lines, avg: generalAverage(lines) };
-      });
-      const ranks = rankEntries(rows, (r) => r.avg);
-      for (const s of subjectList) {
-        const subjectRanks = rankEntries(rows, (r) => r.lines.find((l) => l.subject === s.name)!.average);
-        rows.forEach((r) => (r.lines.find((l) => l.subject === s.name)!.rank = subjectRanks.get(r)!));
-      }
-      for (const r of rows) {
-        reportCards.push({
-          id: id(),
-          enrollmentId: r.m.prevEnrollmentId!,
-          periodId: period.id,
-          generalAverage: r.avg,
-          rank: ranks.get(r) ?? null,
-          classSize: rows.length,
-          appreciation: r.avg === null ? null : r.avg >= 14 ? "Très bon travail, continuez ainsi." : r.avg >= 10 ? "Travail satisfaisant, peut mieux faire." : "Résultats insuffisants, un soutien est recommandé.",
-          lines: r.lines,
-          publishedAt: new Date(period.endDate.getTime() + 7 * 86400000),
-          publishedById: ministerId,
-        });
-      }
-    }
-  }
-  await chunked(reportCards, 2500, (b) => db.reportCard.createMany({ data: b }));
-  console.timeLog("seed", `report cards ${reportCards.length}`);
+  // Last year's report cards used to be drawn here, three terms of subject
+  // averages per pupil. The history seed now writes every past year; the
+  // same number of draws is consumed so the current year stays as it was.
+  for (let i = 0; i < burnedDraws; i++) rand();
 
   // Current period grade sheets for the two detailed schools ----------------
   // National formula: two interrogations écrites and two devoirs surveillés.
@@ -820,8 +678,8 @@ async function main() {
         grades.push({ id: id(), gradeSheetId: sheetId, enrollmentId: m.enrollmentId, type: "DEVOIR", sequence: 1, value: round2(clamp(Math.round(normal(m.ability, 2.5) * 2) / 2, 0, 20)), maxValue: 20, gradedById: graderId });
     }
   }
-  await chunked(sheets, 2000, (b) => db.gradeSheet.createMany({ data: b }));
-  await chunked(grades, 4000, (b) => db.grade.createMany({ data: b }));
+  await bulk.insert("GradeSheet", sheets);
+  await bulk.insert("Grade", grades);
 
   // Attendance: every school day since the start of term for the detailed
   // schools, the last three days everywhere else ------------------------------
@@ -845,10 +703,10 @@ async function main() {
       }
     }
   }
-  await chunked(attendance, 5000, (b) => db.studentAttendance.createMany({ data: b }));
+  await bulk.insert("StudentAttendance", attendance);
   const teacherAttendance: Prisma.TeacherAttendanceCreateManyInput[] = [];
   for (const t of teachers) for (const date of recentDays) teacherAttendance.push({ id: id(), teacherId: t.id!, date, status: rand() < 0.05 ? "ABSENT" : "PRESENT" });
-  await chunked(teacherAttendance, 5000, (b) => db.teacherAttendance.createMany({ data: b }));
+  await bulk.insert("TeacherAttendance", teacherAttendance);
   console.timeLog("seed", `attendance ${attendance.length}`);
 
   // Content ------------------------------------------------------------------
@@ -1242,94 +1100,62 @@ async function main() {
   // Receipt references follow the order in which the money came in.
   payments.sort((a, b) => (a.paidAt as Date).getTime() - (b.paidAt as Date).getTime());
   payments.forEach((p, i) => (p.reference = `PAY-2026-${String(i + 1).padStart(5, "0")}`));
-  await chunked(invoices, 1000, (b) => db.invoice.createMany({ data: b }));
-  await chunked(invoiceItems, 2000, (b) => db.invoiceItem.createMany({ data: b }));
-  await chunked(invoiceInstallments, 2000, (b) => db.invoiceInstallment.createMany({ data: b }));
-  await chunked(payments, 1000, (b) => db.payment.createMany({ data: b }));
+  await bulk.insert("Invoice", invoices);
+  await bulk.insert("InvoiceItem", invoiceItems);
+  await bulk.insert("InvoiceInstallment", invoiceInstallments);
+  await bulk.insert("Payment", payments);
 
   // W2: timetable for CEG Godomey --------------------------------------------
-  // Blocks of the week: two hour blocks at 7 h, 9 h 15 and 15 h (no class on
-  // Wednesday afternoon), a one hour block at 11 h 15. Every lesson of every
-  // class is placed so that neither a class nor a teacher is ever in two
-  // places at once, then the result is checked with the application rules.
-  const BLOCKS: { key: string; day: number; start: string; end: string; hours: number }[] = [];
-  for (let day = 1; day <= 5; day++) {
-    BLOCKS.push({ key: `${day}-0700`, day, start: "07:00", end: "09:00", hours: 2 });
-    BLOCKS.push({ key: `${day}-0915`, day, start: "09:15", end: "11:15", hours: 2 });
-    BLOCKS.push({ key: `${day}-1115`, day, start: "11:15", end: "12:15", hours: 1 });
-    if (day !== 3) BLOCKS.push({ key: `${day}-1500`, day, start: "15:00", end: "17:00", hours: 2 });
-  }
-  // Weekly hours split into blocks: 5 h = 2 + 2 + 1, 3 h = 2 + 1, 2 h = 2.
-  const SPLIT: Record<number, number[]> = { 5: [2, 2, 1], 3: [2, 1], 2: [2] };
-  type Lesson = { classroomId: string; className: string; assignmentId: string; teacherId: string; subjectCode: string; hours: number };
+  // Every lesson of every class placed without any class or teacher in two
+  // places at once (prisma/seed-lib/timetable.ts).
   const lessons: Lesson[] = [];
   for (const c of cegClassLevels) {
     for (const a of assignments.filter((x) => x.classroomId === c.id)) {
       for (const hours of SPLIT[a.weeklyHours!]!) lessons.push({ classroomId: c.id!, className: c.name, assignmentId: a.id!, teacherId: a.teacherId!, subjectCode: a.subjectCode, hours });
     }
   }
-  const busy = new Set<string>();
-  const placed = new Map<Lesson, (typeof BLOCKS)[number]>();
-  const free = (l: Lesson, b: (typeof BLOCKS)[number]) =>
-    b.hours === l.hours && !busy.has(`c:${l.classroomId}:${b.key}`) && !busy.has(`t:${l.teacherId}:${b.key}`) && !busy.has(`s:${l.classroomId}:${l.subjectCode}:${b.day}`);
-  const mark = (l: Lesson, b: (typeof BLOCKS)[number], on: boolean) => {
-    for (const k of [`c:${l.classroomId}:${b.key}`, `t:${l.teacherId}:${b.key}`, `s:${l.classroomId}:${l.subjectCode}:${b.day}`]) {
-      if (on) busy.add(k);
-      else busy.delete(k);
-    }
-  };
-  let steps = 0;
-  const solve = (): boolean => {
-    if (++steps > 200000) throw new Error("Timetable: no conflict free placement found.");
-    let best: Lesson | null = null;
-    let bestOptions: (typeof BLOCKS)[number][] = [];
-    for (const l of lessons) {
-      if (placed.has(l)) continue;
-      const options = BLOCKS.filter((b) => free(l, b));
-      if (!best || options.length < bestOptions.length) {
-        best = l;
-        bestOptions = options;
-        if (!options.length) return false;
-      }
-    }
-    if (!best) return true;
-    // Deterministic shuffle so the week does not look mechanical.
-    const order = bestOptions.map((b) => ({ b, r: rand() })).sort((x, y) => x.r - y.r).map((x) => x.b);
-    for (const b of order) {
-      placed.set(best, b);
-      mark(best, b, true);
-      if (solve()) return true;
-      mark(best, b, false);
-      placed.delete(best);
-    }
-    return false;
-  };
-  if (!solve()) throw new Error("Timetable: no conflict free placement found.");
-  const slots: Prisma.TimetableSlotCreateManyInput[] = [];
-  const planned: PlannedSlot[] = [];
-  for (const l of lessons) {
-    const b = placed.get(l)!;
-    const slotId = id();
-    slots.push({ id: slotId, assignmentId: l.assignmentId, dayOfWeek: b.day, startTime: b.start, endTime: b.end, room: l.subjectCode === "EPS" ? "Terrain de sport" : `Salle ${l.className}` });
-    planned.push({ id: slotId, dayOfWeek: b.day, startTime: b.start, endTime: b.end, classroomId: l.classroomId, teacherId: l.teacherId, label: `${l.className} ${l.subjectCode}` });
-  }
-  // Checked with the rules the application enforces when a slot is edited.
-  for (const s of planned) {
-    const timeError = slotTimeError(s);
-    if (timeError) throw new Error(`Timetable slot ${s.label}: ${timeError}`);
-    const conflicts = findConflicts(s, planned);
-    if (conflicts.length) throw new Error(`Timetable conflict for ${s.label}: ${conflicts.map(describeConflict).join(" ")}`);
-  }
-  await db.timetableSlot.createMany({ data: slots });
+  const slots = planWeek(lessons, rand, id);
+  await bulk.insert("TimetableSlot", slots);
   console.timeLog("seed", `timetable ${slots.length} slots, no class or teacher conflict`);
 
   await db.auditLog.create({ data: { userId: ministerId, action: "seed", resource: "system", summary: "Initialisation des données de démonstration" } });
+
+  // The four past years, 2022-2023 to 2025-2026, built from this year's
+  // pupils and classes (prisma/seed-history).
+  await seedHistory({
+    db,
+    bulk,
+    passwordHash,
+    roleIds,
+    takenUsernames,
+    year: { id: year.id, label: year.label, startDate: year.startDate, endDate: year.endDate },
+    prevYear: { id: prevYear.id, label: prevYear.label, startDate: prevYear.startDate, endDate: prevYear.endDate },
+    periods: { current: [...periods, ...semesters], prev: [...prevPeriods, ...prevSemesters] },
+    levels,
+    subjects,
+    schools: schools.map((s, i) => ({ ...s, sector: sectors[i]!, periodicity: periodicityOf.get(s.id)!, departmentName: communeByName.get(s.communeName)!.departmentName, departmentId: communeByName.get(s.communeName)!.departmentId })),
+    teachers,
+    teacherOfBySchool,
+    teacherUserIds,
+    classrooms,
+    assignments,
+    students,
+    enrollments,
+    studentMeta,
+    users: { minister: ministerId, director: directorId, accountant: accountantId, parent: parentUserId, student: studentUserId, teacher: demoTeacherUserId, ddemp: ddempIds, ddestfp: ddestfpIds, heads },
+    demo: { senami: demoStudent.id!, mahougnon: sibling.id!, guardian: demoGuardianId },
+    ceg: ceg.id,
+    epp: epp.id,
+    currentDays: allDays,
+  });
+
   await seedExtras(db, {
     passwordHash,
     ids: { minister: ministerId, director: directorId, accountant: accountantId, parent: parentUserId, student: studentUserId, teacher: demoTeacherUserId },
     schools: { ceg: ceg.id, epp: epp.id },
     yearId: year.id,
   });
+  await bulk.end();
   console.timeEnd("seed");
 }
 
