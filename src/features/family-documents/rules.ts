@@ -85,7 +85,7 @@ export const KIND_LABELS: Record<FamilyDocKind, string> = {
 };
 
 export const STATUS_LABELS: Record<FamilyDocStatus, string> = {
-  PENDING: "En attente de l'école",
+  PENDING: "L'école n'a pas encore répondu",
   ACCEPTED: "Validée",
   REJECTED: "Refusée",
 };

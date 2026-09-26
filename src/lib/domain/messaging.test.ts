@@ -20,6 +20,8 @@ describe("voice note durations", () => {
     expect(spokenDuration(7_000)).toBe("7 secondes");
     expect(spokenDuration(60_000)).toBe("1 minute");
     expect(spokenDuration(105_000)).toBe("1 minute 45");
+    expect(spokenDuration(0, true)).toBe("0 seconde");
+    expect(spokenDuration(0)).toBe("1 seconde");
   });
 });
 

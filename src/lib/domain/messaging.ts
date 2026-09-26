@@ -33,9 +33,10 @@ export function voiceLabel(ms: number | null | undefined) {
   return ms ? `Message vocal (${clock(ms)})` : "Message vocal";
 }
 
-// "7 secondes", "1 minute 45": the length read by a screen reader.
-export function spokenDuration(ms: number) {
-  const total = Math.max(1, Math.round(ms / 1000));
+// "7 secondes", "1 minute 45": the length read by a screen reader. A
+// position may be zero ("0 seconde"); a length is one second at least.
+export function spokenDuration(ms: number, allowZero = false) {
+  const total = Math.max(allowZero ? 0 : 1, Math.round(ms / 1000));
   const m = Math.floor(total / 60);
   const s = total % 60;
   const sec = `${s} seconde${s > 1 ? "s" : ""}`;

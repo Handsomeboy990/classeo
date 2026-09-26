@@ -79,7 +79,7 @@ export function VoicePlayer({ src, durationMs, label = "message vocal", classNam
         value={Math.min(position, total)}
         onChange={(e) => seek(Number(e.target.value))}
         aria-label={`Position dans le ${label}`}
-        aria-valuetext={`${clock(position * 1000)} sur ${clock(durationMs)}`}
+        aria-valuetext={`${spokenDuration(position * 1000, true)} sur ${spokenDuration(durationMs)}`}
         className="h-2 min-w-16 flex-1 cursor-pointer accent-primary"
       />
       <span className="shrink-0 text-xs text-muted tabular-nums" aria-hidden>

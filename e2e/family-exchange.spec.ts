@@ -105,7 +105,7 @@ test.describe("pieces sent by families", () => {
     await send.getByLabel("Fichier").setInputFiles(PDF(label));
     await send.getByRole("button", { name: "Envoyer", exact: true }).click();
     await expect(parent.getByText("Pièce envoyée. L'école vous répondra ici.")).toBeVisible();
-    await expect(item.getByText("En attente de l'école")).toBeVisible();
+    await expect(item.getByText("L'école n'a pas encore répondu")).toBeVisible();
 
     // The file opens for the parent, never for a teacher.
     const href = await item.getByRole("link", { name: "Voir le fichier envoyé" }).getAttribute("href");
