@@ -8,7 +8,7 @@ import { can } from "@/lib/auth/authorize";
 import { enrollmentWhere } from "@/lib/auth/scope";
 import { requireUser, type CurrentUser } from "@/lib/auth/session";
 import { db } from "@/lib/db";
-import { generalAverage, subjectAverage } from "@/lib/domain/grades";
+import { DEFAULT_FORMULA, generalAverage, subjectAverage } from "@/lib/domain/grades";
 
 import { beninToday, parseReportLines, sortSlots, weekRange, type SchoolDay } from "./logic";
 import { allowedSections, SECTION_PERMISSIONS, type StudentFileSection } from "./sections";
@@ -147,7 +147,7 @@ export async function termGrades(enrollment: FamilyEnrollment, today: SchoolDay 
   const subjects = assignments.map((a) => {
     const sheet = a.gradeSheets[0];
     const grades = (sheet?.grades ?? []).map((g) => ({ type: g.type, sequence: g.sequence, value: Number(g.value), maxValue: Number(g.maxValue) }));
-    const breakdown = subjectAverage(sheet?.formula ?? "WEIGHTED_STANDARD", grades);
+    const breakdown = subjectAverage(sheet?.formula ?? DEFAULT_FORMULA, grades);
     return {
       id: a.id,
       subject: a.subject.name,

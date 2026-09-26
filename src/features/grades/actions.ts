@@ -12,6 +12,8 @@ import { invalidate, tags } from "@/lib/cache";
 import { db } from "@/lib/db";
 import { assertClassroomWritable, assertSheetWritable, assertWritable } from "@/lib/guards";
 import { DomainError } from "@/lib/errors";
+import { sheetConfigError, type SheetConfig } from "@/lib/domain/grade-entry";
+import { periodsOf } from "@/lib/domain/periodicity";
 import { plural } from "@/lib/utils";
 
 import { withSubmission } from "@/features/offline/submission";
@@ -20,7 +22,15 @@ import { sheetWriteWhere } from "./queries";
 
 type User = NonNullable<CurrentUser>;
 
-const formula = z.enum(["WEIGHTED_STANDARD", "SIMPLE_AVERAGE", "COMPOSITION_ONLY"], { error: "Choisissez une formule." });
+const formula = z.enum(["OFFICIAL_2024", "WEIGHTED_STANDARD", "SIMPLE_AVERAGE", "COMPOSITION_ONLY"], { error: "Choisissez une formule." });
+
+// The configuration must follow the school's evaluation options: the
+// national formula, or compositions when the school enabled them.
+async function assertSheetConfig(schoolId: string, config: SheetConfig) {
+  const school = await db.school.findUnique({ where: { id: schoolId }, select: { allowsComposition: true } });
+  const error = sheetConfigError(config, { allowsComposition: school?.allowsComposition ?? false });
+  if (error) throw new DomainError(error);
+}
 
 const configFields = {
   formula,
@@ -59,11 +69,13 @@ export const createSheet = createAction({
     const year = await requireActiveYear();
     const assignment = await db.courseAssignment.findFirst({
       where: { AND: [{ id: input.assignmentId }, assignmentWriteWhere(user), { classroom: classroomWhere(user) }, { classroom: { academicYearId: year.id } }] },
-      include: { subject: true, classroom: { select: { name: true, schoolId: true } } },
+      include: { subject: true, classroom: { select: { name: true, schoolId: true, school: { select: { periodicity: true } } } } },
     });
     if (!assignment) throw new DomainError("Matière introuvable ou hors de votre périmètre.");
     await assertWritable({ schoolId: assignment.classroom.schoolId, academicYearId: year.id });
-    const period = year.periods.find((p) => p.id === input.periodId);
+    await assertSheetConfig(assignment.classroom.schoolId, input);
+    // Only a period of the school's own periodicity (trimester or semester).
+    const period = periodsOf(year.periods, assignment.classroom.school.periodicity).find((p) => p.id === input.periodId);
     if (!period) throw new DomainError("Période inconnue pour l'année scolaire active.");
     if (period.isClosed) throw new DomainError("Cette période est clôturée.");
     let sheetId: string;
@@ -101,6 +113,7 @@ export const updateSheet = createAction({
   handler: async (input, user) => {
     const sheet = await findWritableSheet(user, input.id);
     assertEditable(sheet);
+    await assertSheetConfig(sheet.assignment.classroom.schoolId, input);
     // Reducing a count must not silently hide grades already entered.
     const beyond = await db.grade.count({
       where: {

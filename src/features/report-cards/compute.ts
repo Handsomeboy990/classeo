@@ -1,7 +1,7 @@
 import "server-only";
 
 import { computeReportCards, summarizeClass, type SheetInput } from "@/lib/domain/report-card";
-import type { GradeInput } from "@/lib/domain/grades";
+import { DEFAULT_FORMULA, type GradeInput } from "@/lib/domain/grades";
 import { db } from "@/lib/db";
 import { sortByName } from "@/lib/utils";
 
@@ -50,7 +50,7 @@ export async function computeClassCards(classroomId: string, periodId: string) {
       subject: a.subject.name,
       coefficient: a.coefficient,
       teacher: a.teacher ? `${a.teacher.firstName} ${a.teacher.lastName}` : null,
-      formula: sheet?.formula ?? "WEIGHTED_STANDARD",
+      formula: sheet?.formula ?? DEFAULT_FORMULA,
       grades,
     };
   });

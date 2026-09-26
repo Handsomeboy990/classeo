@@ -98,7 +98,7 @@ export async function getSheetForEntry(user: User, id: string) {
         include: {
           subject: true,
           teacher: { select: { firstName: true, lastName: true } },
-          classroom: { select: { id: true, name: true, schoolId: true, school: { select: { name: true } } } },
+          classroom: { select: { id: true, name: true, schoolId: true, school: { select: { name: true, allowsComposition: true } } } },
         },
       },
     },
