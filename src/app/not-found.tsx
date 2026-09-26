@@ -1,5 +1,6 @@
 import { Compass } from "lucide-react";
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import { BackButton, StatusPage } from "@/components/kit/status-page";
 import { ButtonLink } from "@/components/ui/button";
@@ -23,9 +24,9 @@ export default function NotFound() {
         </>
       }
       footer={
-        <a href="/" className="font-semibold text-primary underline-offset-4 hover:underline">
+        <Link href="/" className="font-semibold text-primary underline-offset-4 hover:underline">
           Accueil du site
-        </a>
+        </Link>
       }
     >
       <p>Le lien est peut-être incomplet, ou la page a été déplacée. Vérifiez l&apos;adresse, ou repartez de votre espace.</p>
