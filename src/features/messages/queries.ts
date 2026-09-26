@@ -29,12 +29,15 @@ import { roleLabel } from "./role-label";
 
 type User = NonNullable<CurrentUser>;
 
-export type Contact = { id: string; name: string; group: string; detail: string };
+// family: a parent or student account, never put in a shared conversation
+// with other people (see recipients.ts).
+export type Contact = { id: string; name: string; group: string; detail: string; family: boolean };
 
 const contactSelect = {
   id: true,
   firstName: true,
   lastName: true,
+  scopeLevel: true,
   role: { select: { name: true } },
   school: { select: { name: true } },
 } satisfies Prisma.UserSelect;
@@ -49,7 +52,7 @@ const LIMIT = 300;
 
 async function users(where: Prisma.UserWhereInput, group: (u: ContactRow) => string): Promise<Contact[]> {
   const rows = await db.user.findMany({ where: { AND: [where, { isActive: true }] }, select: contactSelect, orderBy: [{ lastName: "asc" }, { firstName: "asc" }], take: LIMIT });
-  return rows.map((u) => ({ id: u.id, name: `${u.firstName} ${u.lastName}`, group: group(u), detail: [u.role.name, u.school?.name].filter(Boolean).join(", ") }));
+  return rows.map((u) => ({ id: u.id, name: `${u.firstName} ${u.lastName}`, group: group(u), detail: [u.role.name, u.school?.name].filter(Boolean).join(", "), family: u.scopeLevel === "SELF" }));
 }
 
 // Who the user may start a conversation with, person to person.

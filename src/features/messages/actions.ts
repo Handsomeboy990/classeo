@@ -12,9 +12,11 @@ import { mailboxUsername, MAX_INSTITUTION_RECIPIENTS, parseMailboxUsername } fro
 import { excerpt } from "@/lib/domain/messaging";
 import { DomainError } from "@/lib/errors";
 import { notify } from "@/lib/notify";
+import { hitRateLimit } from "@/lib/rate-limit";
 import { withSubmission } from "@/features/offline/submission";
 
-import { allowedContacts, conversationWhere, ensureMailbox, institutionOf, partySelect, resolveInstitutions, sides, staffOf } from "./queries";
+import { allowedContacts, conversationWhere, ensureMailbox, institutionOf, partySelect, resolveInstitutions, sides, staffOf, type Contact } from "./queries";
+import { deliveryPlan, MAX_RECIPIENTS, resolveRecipients } from "./recipients";
 
 type User = NonNullable<CurrentUser>;
 
@@ -40,12 +42,27 @@ async function notifyOthers(user: User, conversationId: string, text: string, as
   );
 }
 
+const PICK_ONE = "Choisissez au moins un destinataire.";
+
 const personSchema = z.object({
   mode: z.literal("person"),
-  recipientId: z.string("Choisissez un destinataire.").min(1, "Choisissez un destinataire.").max(40),
+  recipientIds: z
+    .union([z.array(z.string().min(1).max(40)), z.string().min(1).max(40)], PICK_ONE)
+    .transform((v) => (Array.isArray(v) ? v : [v]))
+    .pipe(z.array(z.string()).min(1, PICK_ONE).max(MAX_RECIPIENTS, `${MAX_RECIPIENTS} destinataires au plus par envoi.`)),
+  // Staff writing to staff only: one conversation where everyone reads
+  // everyone. Ignored whenever a family takes part.
+  shared: z
+    .enum(["on"])
+    .optional()
+    .transform((v) => v === "on"),
   subject,
   body,
 });
+
+// Group sends fan out conversations and notifications: kept to a pace a
+// person writing by hand never reaches.
+const GROUP_SENDS_PER_HOUR = 20;
 
 const institutionSchema = z.object({
   mode: z.literal("institution"),
@@ -63,19 +80,52 @@ export const startConversation = createAction({
   handler: async (input, user) => {
     const now = new Date();
     if (input.mode === "person") {
-      const contacts = await allowedContacts(user);
-      const recipient = contacts.find((c) => c.id === input.recipientId);
-      if (!recipient) throw new ForbiddenError("Vous ne pouvez pas écrire à cette personne.");
-      const conversation = await db.conversation.create({
-        data: {
-          subject: input.subject,
-          participants: { create: [{ userId: user.id, lastReadAt: now }, { userId: recipient.id }] },
-          messages: { create: { senderId: user.id, body: input.body, createdAt: now } },
-        },
-      });
-      await audit(user, { action: "create", resource: "conversation", resourceId: conversation.id, summary: `Nouvelle conversation avec ${recipient.name}` });
-      await notifyOthers(user, conversation.id, input.body, null);
-      redirect(`/espace/messages/${conversation.id}`);
+      // The same contact list as the single recipient path, computed on the
+      // server: every picked id must be in it, or nothing is sent.
+      const recipients = resolveRecipients(input.recipientIds, await allowedContacts(user));
+      if (!recipients) throw new ForbiddenError(input.recipientIds.length > 1 ? "Vous ne pouvez pas écrire à l'une des personnes choisies." : "Vous ne pouvez pas écrire à cette personne.");
+      const plan = deliveryPlan({ senderIsFamily: user.scope.level === "SELF", recipientsAreFamily: recipients.map((r) => r.family), wantShared: input.shared });
+      if (plan !== "single") {
+        const limit = await hitRateLimit(`message:group:${user.id}`, GROUP_SENDS_PER_HOUR, 3_600_000);
+        if (!limit.allowed) throw new DomainError("Trop d'envois groupés en une heure. Réessayez un peu plus tard.");
+      }
+      const create = (people: Contact[]) =>
+        db.conversation.create({
+          data: {
+            subject: input.subject,
+            participants: { create: [{ userId: user.id, lastReadAt: now }, ...people.map((p) => ({ userId: p.id }))] },
+            messages: { create: { senderId: user.id, body: input.body, createdAt: now } },
+          },
+          select: { id: true },
+        });
+
+      if (plan !== "separate") {
+        const conversation = await create(recipients);
+        const names = recipients.map((r) => r.name).join(", ");
+        await audit(user, {
+          action: "create",
+          resource: "conversation",
+          resourceId: conversation.id,
+          summary: plan === "shared" ? `Nouvelle conversation de groupe avec ${names}` : `Nouvelle conversation avec ${names}`,
+          metadata: { recipients: recipients.length, shared: plan === "shared" },
+        });
+        await notifyOthers(user, conversation.id, input.body, null);
+        redirect(`/espace/messages/${conversation.id}`);
+      }
+
+      // One private conversation per recipient, written together.
+      const created = await db.$transaction(recipients.map((r) => create([r])));
+      for (const [n, c] of created.entries()) {
+        await audit(user, {
+          action: "create",
+          resource: "conversation",
+          resourceId: c.id,
+          summary: `Nouvelle conversation avec ${recipients[n]!.name} (envoi groupé à ${created.length} destinataires)`,
+          metadata: { recipients: created.length, shared: false },
+        });
+        await notifyOthers(user, c.id, input.body, null);
+      }
+      redirect(`/espace/messages?envoye=${created.length}`);
     }
 
     // Institution to institution: one conversation per recipient, so each
