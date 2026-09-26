@@ -96,8 +96,8 @@ export function LineChartPlot({
       <svg width="100%" height={HEIGHT} viewBox={`0 0 ${width} ${HEIGHT}`} className="block overflow-visible" aria-hidden focusable="false">
         <defs>
           <linearGradient id={gradientId} x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0%" stopColor="currentColor" stopOpacity="0.22" />
-            <stop offset="100%" stopColor="currentColor" stopOpacity="0" />
+            <stop offset="0%" stopColor={series[0]?.color} stopOpacity="0.24" />
+            <stop offset="100%" stopColor={series[0]?.color} stopOpacity="0" />
           </linearGradient>
         </defs>
         {ticks.map((t) => (
@@ -135,7 +135,7 @@ export function LineChartPlot({
                 <g key={i} className="ds-line-point" data-active={active === i || undefined}>
                   <circle cx={x(i)} cy={y(v)} r={active === i ? 6 : 4} />
                   {showValues && active !== i && (
-                    <text x={x(i)} y={y(v) - 12} textAnchor="middle" className="ds-line-value">
+                    <text x={x(i)} y={y(v) - 12} textAnchor={n > 1 && i === 0 ? "start" : n > 1 && i === n - 1 ? "end" : "middle"} className="ds-line-value">
                       {s.display[i]}
                     </text>
                   )}

@@ -42,8 +42,10 @@ export function LineChart({
   const plotted = series.map((s, i) => ({ name: s.name, color: s.color ?? COLORS[i % COLORS.length]!, values: s.values, display: s.values.map((v) => (v === null ? null : format(v))) }));
 
   return (
-    <figure className={cn("ds-line", className)}>
-      <table className="sr-only">
+    <figure className={cn("ds-line relative", className)}>
+      {/* A table ignores the 1 px width of sr-only: its wrapper carries it. */}
+      <div className="sr-only">
+        <table>
         <caption>{label}</caption>
         <thead>
           <tr>
@@ -65,7 +67,8 @@ export function LineChart({
             </tr>
           ))}
         </tbody>
-      </table>
+        </table>
+      </div>
       <LineChartPlot
         labels={labels}
         series={plotted}
