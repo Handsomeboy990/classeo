@@ -1,14 +1,15 @@
-// Demonstration accounts shown on the sign in page so the jury can test every
-// role live. They exist only in seeded demo data. Accounts sign in with the
+// Demonstration accounts shown on the sign in page so a visitor can try every
+// role. They exist only in seeded demo data. Accounts sign in with the
 // identifier built from their names; the e-mail still works for those that
 // have one.
 export const DEMO_PASSWORD = "Classeo2026";
 
 export const DEMO_ACCOUNTS = [
-  { username: "adjoa.houngbedji", email: "ministre@classeo.bj", role: "Administratrice nationale", scope: "Ministère, tout le Bénin" },
+  { username: "adjoa.houngbedji", email: "ministre@classeo.bj", role: "Administratrice nationale", scope: "Ministères, tout le Bénin" },
   { username: "rodrigue.kpadonou", email: "analyste@classeo.bj", role: "Analyste national", scope: "Cellule statistique" },
-  { username: "aristide.gbaguidi", email: "ddemp.atlantique@classeo.bj", role: "Directeur départemental", scope: "Atlantique" },
-  { username: "benedicta.zannou", email: "cs.abomey-calavi@classeo.bj", role: "Cheffe de circonscription", scope: "Abomey-Calavi" },
+  { username: "aristide.gbaguidi", email: "ddestfp.atlantique@classeo.bj", role: "Directeur départemental (DDESTFP)", scope: "Atlantique, collèges et lycées" },
+  { username: "clarisse.akpovi", email: "ddemp.atlantique@classeo.bj", role: "Directrice départementale (DDEMP)", scope: "Atlantique, maternelle et primaire" },
+  { username: "benedicta.zannou", email: "cs.abomey-calavi@classeo.bj", role: "Cheffe de circonscription scolaire", scope: "Abomey-Calavi, écoles primaires" },
   { username: "florentin.agossou", email: "directeur@classeo.bj", role: "Chef d'établissement", scope: "CEG Godomey" },
   { username: "pelagie.tossou", email: "secretaire@classeo.bj", role: "Secrétaire", scope: "CEG Godomey" },
   { username: "gildas.sossou", email: "comptable@classeo.bj", role: "Comptable", scope: "CEG Godomey" },

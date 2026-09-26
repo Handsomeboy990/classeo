@@ -343,7 +343,7 @@ export const decideAsDestination = createAction({
     await notify([t.requestedById, ...(await familyAccounts(t.student.id))], {
       kind: "transfer",
       title: `Transfert de ${t.student.firstName} accepté`,
-      body: `${name} est accueilli(e) à ${t.toSchool.name}, en ${classroom.name}. Le certificat de scolarité est disponible dans Classéo.`,
+      body: `${name} est accueilli(e) à ${t.toSchool.name}, en ${classroom.name}. Le certificat de radiation (exeat) est disponible dans Classéo.`,
       link: link(t.id),
     });
     invalidate(tags.stats);

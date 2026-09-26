@@ -56,7 +56,7 @@ export function MenuSheet({ sections, open, onClose }: { sections: RenderedSecti
               placeholder="Rechercher une rubrique"
               enterKeyHint="search"
               autoComplete="off"
-              className="h-11 w-full rounded-lg border border-border-strong bg-surface-2 pr-3 pl-10 text-base text-text placeholder:text-muted focus-visible:bg-surface"
+              className="ds-field pl-10"
             />
           </label>
         </div>

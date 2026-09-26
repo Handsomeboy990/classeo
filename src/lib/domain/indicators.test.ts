@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { computeIndicators, emptyCounts, ratio, sortByIndicator, sumCounts, yearlyAverage } from "./indicators";
+import { computeIndicators, emptyCounts, ratio, sortByIndicator, sumCounts } from "./indicators";
 
 describe("ratio", () => {
   it("returns null on an empty denominator", () => {
@@ -46,13 +46,6 @@ describe("computeIndicators", () => {
     const total = computeIndicators(sumCounts([a, b]));
     expect(total.passRate).toBe(21 / 40);
     expect(total.meanAverage).toBe(10);
-  });
-});
-
-describe("yearlyAverage", () => {
-  it("averages the published terms and ignores missing ones", () => {
-    expect(yearlyAverage([9, 11, null])).toBe(10);
-    expect(yearlyAverage([null, undefined])).toBeNull();
   });
 });
 

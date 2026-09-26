@@ -12,7 +12,7 @@ import { NewConversation } from "@/features/messages/new-conversation";
 import { allowedContacts, institutionDirectory, institutionOf, listConversations } from "@/features/messages/queries";
 import { can, requirePermission } from "@/lib/auth/authorize";
 import { institutionName, receipt } from "@/lib/domain/institutions";
-import { excerpt } from "@/lib/domain/messaging";
+import { excerpt, voiceLabel } from "@/lib/domain/messaging";
 import { cn, formatDateTime, formatNumber } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Messagerie" };
@@ -34,14 +34,9 @@ export default async function MessagesPage({ searchParams }: PageProps<"/espace/
     <>
       <PageHeader
         title="Messagerie"
-        description={
-          unreadCount
-            ? `${unreadCount} conversation${unreadCount > 1 ? "s" : ""} avec un nouveau message.`
-            : acting
-              ? "Vos conversations et celles de votre établissement ou service avec les autres structures."
-              : "Conversations avec l'école, les enseignants et les familles."
-        }
-        actions={canWrite && <NewConversation contacts={contacts} institutions={institutions} sender={acting ? institutionName(acting.kind, user.scope.label) : null} showQuick={!!user.guardianId} />}
+        description={unreadCount ? `${unreadCount} conversation${unreadCount > 1 ? "s" : ""} avec un nouveau message` : undefined}
+        info={acting ? "Vos conversations et celles de votre établissement ou service avec les autres structures." : "Conversations avec l'école, les enseignants et les familles."}
+        actions={canWrite && <NewConversation contacts={contacts} institutions={institutions} sender={acting ? institutionName(acting.kind, user.scope.label, acting.chain) : null} showQuick={!!user.guardianId} family={user.scope.level === "SELF"} />}
       />
       {Number.isInteger(sent) && sent > 1 && (
         <Alert tone="success" className="mb-4">
@@ -90,7 +85,7 @@ export default async function MessagesPage({ searchParams }: PageProps<"/espace/
                       {c.last && (
                         <p className="mt-0.5 truncate text-sm text-muted">
                           {c.last.senderId === user.id ? "Vous : " : c.lastIsMine ? `${c.last.sender.firstName} ${c.last.sender.lastName} : ` : ""}
-                          {excerpt(c.last.body, 90)}
+                          {c.last.audioFileId ? voiceLabel(c.last.audioDurationMs) : excerpt(c.last.body, 90)}
                         </p>
                       )}
                     </div>

@@ -7,7 +7,7 @@ import { EmptyState } from "@/components/kit/states";
 import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
-import { getActiveYear, getCurrentPeriod } from "@/features/classes/academic";
+import { getActiveYear, getCurrentPeriod, userPeriodicity } from "@/features/classes/academic";
 import { can } from "@/lib/auth/authorize";
 import { classroomWhere } from "@/lib/auth/scope";
 import type { CurrentUser } from "@/lib/auth/session";
@@ -19,7 +19,7 @@ import { formatDate, formatNumber, formatPercent } from "@/lib/utils";
 // Dashboard for teachers. Owned by the pedagogy module: my classes, grade
 // sheets to complete with their progress, attendance to take today.
 export async function TeacherDashboard({ user }: { user: NonNullable<CurrentUser> }) {
-  const [year, period] = await Promise.all([getActiveYear(), getCurrentPeriod()]);
+  const [year, period] = await Promise.all([getActiveYear(), getCurrentPeriod(userPeriodicity(user))]);
   const header = <PageHeader title={`Bonjour, ${user.firstName}`} description={`${user.role.name} · ${user.scope.label}${period ? ` · ${period.name} ${year?.label ?? ""}` : ""}`} />;
   if (!user.teacherId || !year || !period) {
     return (

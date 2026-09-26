@@ -44,7 +44,7 @@ export function AccountFields({ values }: { values?: AccountValues }) {
           <Input defaultValue={values?.channel === "BANK" ? values.provider : ""} maxLength={80} />
         </FormField>
       )}
-      <FormField label="Titulaire du compte" name="accountName" required hint="Le nom que le parent verra lors du paiement.">
+      <FormField label="Titulaire du compte" name="accountName" required info="Le nom que le parent verra lors du paiement.">
         <Input defaultValue={values?.accountName ?? ""} maxLength={120} />
       </FormField>
       <FormField key={`number-${channel}`} label={mm ? "Numéro Mobile Money" : "IBAN ou RIB"} name="accountNumber" required hint={mm ? "10 chiffres, par exemple 01 97 12 34 56." : "BJ suivi de 26 caractères, ou le RIB complet."}>

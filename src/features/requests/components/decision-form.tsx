@@ -38,7 +38,7 @@ export function DecisionForm({ id, decided, extension }: { id: string; decided: 
               </FormField>
             </div>
           )}
-          <FormField label="Note de décision" name="note" required hint="Elle sera transmise à l'établissement.">
+          <FormField label="Note de décision" name="note" required info="Elle sera transmise à l'établissement.">
             <Textarea rows={4} maxLength={2000} />
           </FormField>
           <div className="grid grid-cols-2 gap-2 sm:flex sm:justify-end">

@@ -1,17 +1,14 @@
 import type { Page } from "@playwright/test";
 
 import { PARTNER_EMAIL, PASSWORD } from "./support/accounts";
-import { expect, passwordField, test, uniqueSuffix } from "./support/fixtures";
+import { chooseLanguage, expect, languageMenu, passwordField, test, uniqueSuffix } from "./support/fixtures";
 
 // Public pages for signed out visitors: the home page and the sign in page
 // in Fongbe or Yoruba, rendered on the server from the translations shipped
 // with the seed (no call to the translation service), and the photo
 // credits. The voice is not exercised here (slow, and quota bound).
 
-const FRENCH_TITLE = "L'école béninoise, du ministère à la maison.";
-
-// The language select, whatever its label reads in the current language.
-const languageSelect = (page: Page) => page.locator("header select[name=lang]");
+const FRENCH_TITLE = "Toute l'école, au même endroit.";
 
 async function expectNoHorizontalScroll(page: Page) {
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
@@ -24,16 +21,18 @@ test("a visitor reads the home page in Fongbe, then back in French @mobile", asy
   await expect(heading).toHaveText(FRENCH_TITLE);
   await expect(page.locator("#page-content")).toHaveAttribute("lang", "fr");
 
-  // A choice made before hydration is reset to the controlled value: pick
-  // again until the page answers.
-  await expect(async () => {
-    await languageSelect(page).selectOption("fon");
-    await expect(page).toHaveURL(/\?lang=fon$/, { timeout: 3_000 });
-  }).toPass({ timeout: 20_000 });
+  // The compact control of the header: the language code on the button,
+  // the choices one tap away.
+  await expect(languageMenu(page)).toHaveText(/FR/);
+  await chooseLanguage(page, "Fongbe", "Langue");
+  await expect(page).toHaveURL(/\?lang=fon$/);
   await expect(heading).not.toHaveText(FRENCH_TITLE);
   await expect(page.locator("#page-content")).toHaveAttribute("lang", "fon");
+  await expect(languageMenu(page)).toHaveText(/FON/);
   // The voice follows the page, and names stay as written.
-  await expect(page.locator("header select[name=voix]")).toHaveValue("fon");
+  await languageMenu(page).click();
+  await expect(page.getByRole("group").nth(1).getByRole("link", { name: "Fongbe", exact: true })).toHaveAttribute("aria-current", "true");
+  await page.keyboard.press("Escape");
   await expect(page.getByText("République du Bénin")).toBeVisible();
   await expect(page.getByText(/DEGAN Gabin, CC BY-SA 4\.0/)).toBeVisible();
   await expectNoHorizontalScroll(page);
@@ -41,7 +40,8 @@ test("a visitor reads the home page in Fongbe, then back in French @mobile", asy
   // The choice follows the visitor to the sign in page.
   await expect(page.locator("a[href='/connexion?lang=fon']").first()).toBeVisible();
 
-  await languageSelect(page).selectOption("fr");
+  await languageMenu(page).click();
+  await page.getByRole("group").first().getByRole("link", { name: "Français", exact: true }).click();
   await expect(page).toHaveURL(/\/$/);
   await expect(heading).toHaveText(FRENCH_TITLE);
   await expect(page.locator("#page-content")).toHaveAttribute("lang", "fr");
@@ -50,18 +50,16 @@ test("a visitor reads the home page in Fongbe, then back in French @mobile", asy
 test("the voice language is chosen apart from the page", async ({ page }) => {
   await page.goto("/?lang=yo&voix=fr");
   await expect(page.locator("#page-content")).toHaveAttribute("lang", "yo");
-  await expect(page.locator("header select[name=voix]")).toHaveValue("fr");
-  await expect(page.locator("header select[name=lang]")).toHaveValue("yo");
-  // The listen button names the voice it will use.
+  await expect(languageMenu(page)).toHaveText(/YO/);
+  // The listen button, a speaker only, names the voice it will use.
   const listen = page.locator("main button[aria-pressed]");
   await expect(listen).toBeVisible();
-  await expect(listen).not.toContainText("Fongbe");
+  await expect(listen).not.toHaveAccessibleName(/fongbe/i);
 
-  await expect(async () => {
-    await page.locator("header select[name=voix]").selectOption("fon");
-    await expect(page).toHaveURL(/\?lang=yo&voix=fon$/, { timeout: 3_000 });
-  }).toPass({ timeout: 20_000 });
-  await expect(listen).toContainText("Fongbe");
+  await languageMenu(page).click();
+  await page.getByRole("group").nth(1).getByRole("link", { name: "Fongbe", exact: true }).click();
+  await expect(page).toHaveURL(/\?lang=yo&voix=fon$/);
+  await expect(listen).toHaveAccessibleName(/fongbe/i);
 });
 
 test("the photo credits are reached from the footer, every photograph credited @mobile", async ({ page }) => {
@@ -120,11 +118,19 @@ test.describe("sign in page", () => {
 
   test("the identifier is explained, and the page offers the language and the voice @mobile", async ({ page }) => {
     await page.goto("/connexion");
-    await expect(page.getByText("Votre prénom et votre nom, séparés par un point.")).toBeVisible();
+    // The identifier format sits in an info bubble beside the label, and
+    // still describes the field for screen readers.
+    const hint = page.getByText("Votre prénom et votre nom, séparés par un point.");
+    await expect(hint).toBeHidden();
+    await expect(page.getByLabel("Identifiant")).toHaveAccessibleDescription(/Votre prénom et votre nom, séparés par un point/);
+    const info = page.getByRole("button", { name: "Plus d'informations sur ce champ" });
+    await info.click();
+    await expect(hint).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(hint).toBeHidden();
     await page.getByText("Où trouver mon identifiant ?").click();
     await expect(page.getByText("Aucune adresse e-mail n'est nécessaire.", { exact: false })).toBeVisible();
-    await expect(page.getByLabel("Langue", { exact: true })).toHaveValue("fr");
-    await expect(page.getByLabel("Voix", { exact: true })).toHaveValue("fr");
+    await expect(languageMenu(page)).toHaveAccessibleName("Langue : Français");
     await expect(page.getByRole("link", { name: "Crédits photos" })).toHaveAttribute("href", "/credits");
     await expectNoHorizontalScroll(page);
   });
@@ -149,7 +155,8 @@ test.describe("sign in page", () => {
     await expect(refusal).not.toContainText("Identifiant ou mot de passe incorrect.");
 
     // Back to French, keeping where to go after signing in.
-    await page.locator("main select[name=lang]").selectOption("fr");
+    await languageMenu(page).click();
+    await page.getByRole("group").first().getByRole("link", { name: "Français", exact: true }).click();
     await expect(page).toHaveURL(/\/connexion\?next=%2Fespace%2Fnotes$/);
     await expect(heading).toHaveText("Connexion");
   });

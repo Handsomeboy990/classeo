@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { InfoTip } from "@/components/kit/info-tip";
 import { ReadAloud } from "@/components/kit/read-aloud";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { ContentActions } from "@/features/contents/content-actions";
@@ -46,7 +47,7 @@ export default async function ContentPage({ params }: PageProps<"/espace/contenu
       </h1>
 
       <div className="mt-4 flex flex-wrap items-center gap-3">
-        <ReadAloud text={listenText(c)} label="Écouter ce contenu" className="h-12 px-4 text-base" />
+        <ReadAloud text={listenText(c)} label="Écouter ce contenu" />
         {manage && (
           <ContentActions
             id={c.id}
@@ -125,10 +126,12 @@ export default async function ContentPage({ params }: PageProps<"/espace/contenu
 
       {c.transcript && (
         <section aria-labelledby="transcript-title" className="mt-6 rounded-card border border-border bg-surface px-5 py-4">
-          <h2 id="transcript-title" className="flex items-center gap-2 text-lg font-bold">
-            <Captions className="size-5" aria-hidden /> Transcription
-          </h2>
-          <p className="mt-1 text-sm text-muted">Le texte de tout ce qui est dit dans le média, pour les personnes sourdes ou malentendantes.</p>
+          <div className="flex items-center gap-1.5">
+            <h2 id="transcript-title" className="flex items-center gap-2 text-lg font-bold">
+              <Captions className="size-5" aria-hidden /> Transcription
+            </h2>
+            <InfoTip>Le texte de tout ce qui est dit dans le média, pour les personnes sourdes ou malentendantes.</InfoTip>
+          </div>
           <p className="mt-3 leading-relaxed whitespace-pre-line">{c.transcript}</p>
           <ReadAloud text={c.transcript} label="Écouter la transcription" className="mt-3" />
         </section>

@@ -50,7 +50,7 @@ export function LoginForm({ next, showDemo, forgotHref }: { next?: string; showD
         <FormMessage title={t(S.failed)} />
         {next && <input type="hidden" name="next" value={next} />}
         <div className="flex flex-col gap-1">
-          <FormField label={t(S.identifier)} name="login" required hint={t(S.identifierHint)}>
+          <FormField label={t(S.identifier)} name="login" required info={t(S.identifierHint)}>
             <Input
               ref={loginRef}
               type="text"
@@ -90,8 +90,8 @@ export function LoginForm({ next, showDemo, forgotHref }: { next?: string; showD
       </ActionForm>
 
       {showDemo && (
-        // Closed by default: the form comes first, the jury opens the list.
-        // For the presentation only, in French.
+        // Closed by default: the form comes first. Demo data only, in
+        // French.
         <details lang="fr" className="group rounded-card border border-border bg-surface-2">
           <summary className="flex min-h-12 cursor-pointer list-none items-center gap-3 px-4 py-2 [&::-webkit-details-marker]:hidden">
             <span className="min-w-0 flex-1">

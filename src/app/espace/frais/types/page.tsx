@@ -5,6 +5,7 @@ import { ConfirmButton } from "@/components/kit/confirm-button";
 import { FormDialog } from "@/components/kit/form-dialog";
 import { PageHeader } from "@/components/kit/page-header";
 import { EmptyState } from "@/components/kit/states";
+import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
@@ -14,7 +15,7 @@ import { FeeTypeFields } from "@/features/fees/components/fee-type-form";
 import { FeesNav } from "@/features/fees/components/fees-nav";
 import { PlanFields } from "@/features/fees/components/plan-form";
 import { feesTabs } from "@/features/fees/nav";
-import { getFeeTypes, type FeeTypeRow } from "@/features/fees/queries";
+import { billingRestriction, getFeeTypes, type FeeTypeRow } from "@/features/fees/queries";
 import { can } from "@/lib/auth/authorize";
 import type { CurrentUser } from "@/lib/auth/session";
 import { splitByPlan } from "@/lib/domain/payments";
@@ -24,14 +25,15 @@ export const metadata: Metadata = { title: "Types de frais et échéanciers" };
 
 export default async function FeeTypesPage() {
   const user = await requireFeeStaff("fee:view");
-  const { year, feeTypes, levels } = await getFeeTypes(user);
-  const canCreate = can(user, "fee:create") && !!user.scope.schoolId;
+  const [{ year, feeTypes, levels }, freeSchooling] = await Promise.all([getFeeTypes(user), billingRestriction(user)]);
+  const canCreate = can(user, "fee:create") && !!user.scope.schoolId && !freeSchooling;
 
   return (
     <>
       <PageHeader
         title="Types de frais et échéanciers"
-        description={`Frais facturés par l'établissement${year ? ` en ${year.label}` : ""} et leurs tranches de paiement.`}
+        description={year ? `Année ${year.label}` : undefined}
+        info="Frais facturés par l'établissement et leurs tranches de paiement."
         actions={
           canCreate ? (
             <FormDialog
@@ -51,6 +53,11 @@ export default async function FeeTypesPage() {
         }
       />
       <FeesNav items={feesTabs(user)} />
+      {freeSchooling && (
+        <Alert tone="info" className="mb-4">
+          {freeSchooling}
+        </Alert>
+      )}
 
       {feeTypes.length === 0 ? (
         <Card>
@@ -159,7 +166,7 @@ function FeeTypeCard({ feeType: ft, levels, user }: { feeType: FeeTypeRow; level
                 }
                 title={`Modifier : ${ft.name}`}
               >
-                <FeeTypeFields levels={levels} initial={{ id: ft.id, name: ft.name, amount: ft.amount, levelId: ft.levelId, isActive: ft.isActive }} />
+                <FeeTypeFields levels={levels} initial={{ id: ft.id, name: ft.name, kind: ft.kind, amount: ft.amount, levelId: ft.levelId, isActive: ft.isActive }} />
               </FormDialog>
             </>
           )}

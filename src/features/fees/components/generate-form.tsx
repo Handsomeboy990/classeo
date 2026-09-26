@@ -26,7 +26,7 @@ export function GenerateForm({ feeTypeId, toCreate, total, needsDueDate, today }
     <ActionForm action={action} className="flex flex-col gap-4">
       <input type="hidden" name="feeTypeId" value={feeTypeId} />
       {needsDueDate && (
-        <FormField label="Date limite de paiement" name="dueDate" required hint="Ce type de frais n'a pas d'échéancier : il sera payable en une fois.">
+        <FormField label="Date limite de paiement" name="dueDate" required info="Ce type de frais n'a pas d'échéancier : il sera payable en une fois.">
           <Input type="date" min={today} value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
         </FormField>
       )}

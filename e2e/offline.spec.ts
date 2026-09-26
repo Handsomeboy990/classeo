@@ -74,7 +74,7 @@ test.describe("offline entry", () => {
     await page.goto("/espace/preferences");
     const available = page.getByRole("region", { name: "Hors ligne" });
     await expect(available.getByText(/Dernière mise à jour le/)).toBeVisible();
-    await expect(available.getByRole("link", { name: /Trimestre/ }).first()).toBeVisible();
+    await expect(available.getByRole("link", { name: /Semestre|Trimestre/ }).first()).toBeVisible();
     await shot(page, "01-preferences-offline-pages");
 
     // No network from here on: the sheet and the register were never opened.
@@ -82,7 +82,7 @@ test.describe("offline entry", () => {
     await page.goto(sheetUrl);
     await expect(page.getByText(/Vous êtes hors ligne/)).toBeVisible();
     const grid = page.getByRole("table", { name: /Grille de saisie des notes/ });
-    const cell = grid.getByRole("textbox", { name: /^Interrogation 1, / }).nth(2);
+    const cell = grid.getByRole("textbox", { name: /^Interrogation écrite 1, / }).nth(2);
     const label = (await cell.getAttribute("aria-label"))!;
     const original = await cell.inputValue();
     const value = original === "13" ? "12" : "13";
@@ -132,7 +132,7 @@ test.describe("offline entry", () => {
 
     await goOffline(context, page);
     await page.goto(sheetUrl);
-    const cell = page.getByRole("table", { name: /Grille de saisie des notes/ }).getByRole("textbox", { name: /^Interrogation 1, / }).nth(3);
+    const cell = page.getByRole("table", { name: /Grille de saisie des notes/ }).getByRole("textbox", { name: /^Interrogation écrite 1, / }).nth(3);
     const label = (await cell.getAttribute("aria-label"))!;
     const original = await cell.inputValue();
     const mine = original === "15" ? "16" : "15";

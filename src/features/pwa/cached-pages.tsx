@@ -10,7 +10,7 @@ const LABELS: [RegExp, string][] = [
   [/^\/espace$/, "Tableau de bord"],
   [/^\/espace\/aide$/, "Guide d'utilisation"],
   [/^\/espace\/suivi$/, "Mes enfants"],
-  [/^\/espace\/suivi\/[^/]+\/notes$/, "Notes du trimestre"],
+  [/^\/espace\/suivi\/[^/]+\/notes$/, "Notes de la période"],
   [/^\/espace\/suivi\/[^/]+\/presences$/, "Présences"],
   [/^\/espace\/suivi\/[^/]+\/emploi-du-temps$/, "Emploi du temps"],
   [/^\/espace\/suivi\/[^/]+\/frais$/, "Frais de scolarité"],

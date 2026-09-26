@@ -26,7 +26,7 @@ export async function listYears(user: User, now = new Date()) {
       endDate: true,
       isActive: true,
       closedAt: true,
-      periods: { orderBy: { order: "asc" }, select: { id: true, name: true, order: true, startDate: true, endDate: true, isClosed: true } },
+      periods: { orderBy: [{ periodicity: "asc" }, { order: "asc" }], select: { id: true, name: true, order: true, periodicity: true, startDate: true, endDate: true, isClosed: true } },
       extensions: {
         // An empty relation filter on the optional school matches no row, so
         // the ministry (whole country) reads every extension without one.

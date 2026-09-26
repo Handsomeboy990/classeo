@@ -18,14 +18,24 @@ type EntityOption = { id: string; label: string; group?: string };
 
 const ENTITY_LABEL: Record<"DEPARTMENT" | "COMMUNE" | "SCHOOL", string> = {
   DEPARTMENT: "Département",
-  COMMUNE: "Commune (circonscription)",
+  COMMUNE: "Circonscription scolaire (commune)",
   SCHOOL: "Établissement",
 };
 
 // Create an account. Only the roles the user may assign are offered, and the
 // scope select follows the level of the chosen role; the server checks both
 // again (lib/domain/rights.ts).
-export function CreateUserDialog({ roles, entities }: { roles: RoleOption[]; entities: Record<"DEPARTMENT" | "COMMUNE" | "SCHOOL", EntityOption[]> }) {
+// ownChain: the chain of the creator, when it is limited to one; its new
+// national and departmental accounts belong to that chain.
+export function CreateUserDialog({
+  roles,
+  entities,
+  ownChain = null,
+}: {
+  roles: RoleOption[];
+  entities: Record<"DEPARTMENT" | "COMMUNE" | "SCHOOL", EntityOption[]>;
+  ownChain?: "PRIMARY" | "SECONDARY" | null;
+}) {
   const [open, setOpen] = useState(false);
   const [roleId, setRoleId] = useState("");
   const [created, setCreated] = useState<IssuedPassword | null>(null);
@@ -71,7 +81,7 @@ export function CreateUserDialog({ roles, entities }: { roles: RoleOption[]; ent
                 <Input autoComplete="off" maxLength={80} />
               </FormField>
             </div>
-            <FormField label="Adresse e-mail" name="email" hint="Facultatif. La personne se connecte avec l'identifiant créé à partir de ses prénom et nom.">
+            <FormField label="Adresse e-mail" name="email" info="Facultatif. La personne se connecte avec l'identifiant créé à partir de ses prénom et nom.">
               <Input type="email" autoComplete="off" maxLength={200} />
             </FormField>
             <FormField label="Téléphone" name="phone">
@@ -108,6 +118,15 @@ export function CreateUserDialog({ roles, entities }: { roles: RoleOption[]; ent
                       ))
                     ),
                   )}
+                </Select>
+              </FormField>
+            )}
+            {(level === "DEPARTMENT" || level === "NATIONAL") && !ownChain && (
+              <FormField key={`chain-${level}`} label={level === "DEPARTMENT" ? "Direction" : "Ministère"} name="chain" required={level === "DEPARTMENT"}>
+                <Select defaultValue="">
+                  <option value="">{level === "DEPARTMENT" ? "Choisir" : "Les deux ministères"}</option>
+                  <option value="PRIMARY">{level === "DEPARTMENT" ? "DDEMP, maternel et primaire" : "MEMP, maternel et primaire"}</option>
+                  <option value="SECONDARY">{level === "DEPARTMENT" ? "DDESTFP, secondaire, technique et formation professionnelle" : "MESTFP, secondaire, technique et formation professionnelle"}</option>
                 </Select>
               </FormField>
             )}

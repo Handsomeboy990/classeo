@@ -43,6 +43,7 @@ export async function searchRegistry(q: RegistryQuery, schoolId: string) {
       npi: true,
       phone: true,
       userId: true,
+      stateStatus: true,
       teachers: { select: { schoolId: true, isActive: true, specialty: true, school: { select: { name: true, commune: { select: { name: true } } } } } },
     },
   });
@@ -57,6 +58,7 @@ export async function searchRegistry(q: RegistryQuery, schoolId: string) {
       npi: p.npi,
       phone: maskPhone(p.phone),
       hasAccount: !!p.userId,
+      stateStatus: p.stateStatus,
       specialty: p.teachers.find((t) => t.specialty)?.specialty ?? null,
       schools: p.teachers.filter((t) => t.isActive).map((t) => `${t.school.name} (${t.school.commune.name})`),
       // Appointed here already, active or not.
@@ -87,13 +89,19 @@ function appointmentWhere(user: User, f: RegistryFilters): Prisma.TeacherWhereIn
 }
 
 async function registryWhere(user: User, f: RegistryFilters): Promise<Prisma.TeacherProfileWhereInput> {
-  const and: Prisma.TeacherProfileWhereInput[] = [{ teachers: { some: appointmentWhere(user, f) } }];
+  // The ministry also sees the agents of the State it has recorded and who
+  // are not appointed anywhere yet.
+  const unappointed = user.scope.level === "NATIONAL" && !f.departmentId && !f.communeId && !f.multi;
+  const and: Prisma.TeacherProfileWhereInput[] = [
+    unappointed ? { OR: [{ teachers: { some: appointmentWhere(user, f) } }, { stateStatus: { not: null }, teachers: { none: { isActive: true } } }] } : { teachers: { some: appointmentWhere(user, f) } },
+  ];
   if (f.q)
     and.push({
       OR: [
         { lastName: { contains: f.q, mode: "insensitive" } },
         { firstName: { contains: f.q, mode: "insensitive" } },
         { npi: { contains: f.q } },
+        { stateMatricule: { contains: f.q.toUpperCase() } },
       ],
     });
   if (f.multi) {
@@ -116,6 +124,8 @@ function registrySelect(user: User, f: RegistryFilters) {
     gender: true,
     phone: true,
     userId: true,
+    stateStatus: true,
+    stateMatricule: true,
     teachers: {
       where: appointmentWhere(user, { ...f, departmentId: null, communeId: null }),
       select: { id: true, matricule: true, specialty: true, school: { select: { id: true, name: true, commune: { select: { name: true, department: { select: { name: true } } } } } } },

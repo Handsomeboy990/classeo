@@ -21,13 +21,14 @@ export type YearComparison = Comparison & {
 const MAX_YEARS = 6;
 
 function schoolFilter(scope: StatScope): Prisma.Sql {
+  const chain = scope.level !== "SCHOOL" && scope.cycles ? Prisma.sql` AND s.cycle::text IN (${Prisma.join([...scope.cycles])})` : Prisma.empty;
   switch (scope.level) {
     case "NATIONAL":
-      return Prisma.sql`TRUE`;
+      return Prisma.sql`TRUE${chain}`;
     case "DEPARTMENT":
-      return Prisma.sql`c."departmentId" = ${scope.id}`;
+      return Prisma.sql`c."departmentId" = ${scope.id}${chain}`;
     case "COMMUNE":
-      return Prisma.sql`s."communeId" = ${scope.id}`;
+      return Prisma.sql`s."communeId" = ${scope.id}${chain}`;
     case "SCHOOL":
       return Prisma.sql`s.id = ${scope.id}`;
   }
@@ -76,8 +77,8 @@ async function countRows(scope: StatScope, childLevel: CompareChildLevel, yearId
       FROM "StudentAttendance" a JOIN base b ON b.id = a."enrollmentId" GROUP BY 1, 2
     ),
     avgs AS (
-      SELECT b.y, b.cid, avg(rc."generalAverage")::float8 AS m
-      FROM "ReportCard" rc JOIN base b ON b.id = rc."enrollmentId"
+      SELECT b.y, b.cid, round((sum(rc."generalAverage" * CASE WHEN p."periodicity" = 'SEMESTER' AND p."order" >= 2 THEN 2 ELSE 1 END) / sum(CASE WHEN p."periodicity" = 'SEMESTER' AND p."order" >= 2 THEN 2 ELSE 1 END))::numeric, 2)::float8 AS m
+      FROM "ReportCard" rc JOIN base b ON b.id = rc."enrollmentId" JOIN "SchoolPeriod" p ON p.id = rc."periodId"
       WHERE rc."generalAverage" IS NOT NULL GROUP BY b.id, b.y, b.cid
     ),
     res AS (

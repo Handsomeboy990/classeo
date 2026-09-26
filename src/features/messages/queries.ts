@@ -9,6 +9,7 @@ import { db } from "@/lib/db";
 import {
   actingInstitution,
   canCorrespond,
+  departmentInstitution,
   INSTITUTION_GROUPS,
   institutionKey,
   institutionName,
@@ -18,23 +19,31 @@ import {
   MINISTRY,
   MINISTRY_ID,
   parseInstitutionKey,
+  parseDepartmentInstitutionId,
   parseMailboxUsername,
   partyOfAuthor,
   type Institution,
   type InstitutionKind,
 } from "@/lib/domain/institutions";
 
+import { chainOfCycle, DIRECTION_OF, type Chain } from "@/lib/domain/chains";
+
 import { activeYearId } from "../contents/queries";
+
+const CHAINS: Chain[] = ["PRIMARY", "SECONDARY"];
 import { roleLabel } from "./role-label";
 
 type User = NonNullable<CurrentUser>;
 
-export type Contact = { id: string; name: string; group: string; detail: string };
+// family: a parent or student account, never put in a shared conversation
+// with other people (see recipients.ts).
+export type Contact = { id: string; name: string; group: string; detail: string; family: boolean };
 
 const contactSelect = {
   id: true,
   firstName: true,
   lastName: true,
+  scopeLevel: true,
   role: { select: { name: true } },
   school: { select: { name: true } },
 } satisfies Prisma.UserSelect;
@@ -49,7 +58,7 @@ const LIMIT = 300;
 
 async function users(where: Prisma.UserWhereInput, group: (u: ContactRow) => string): Promise<Contact[]> {
   const rows = await db.user.findMany({ where: { AND: [where, { isActive: true }] }, select: contactSelect, orderBy: [{ lastName: "asc" }, { firstName: "asc" }], take: LIMIT });
-  return rows.map((u) => ({ id: u.id, name: `${u.firstName} ${u.lastName}`, group: group(u), detail: [u.role.name, u.school?.name].filter(Boolean).join(", ") }));
+  return rows.map((u) => ({ id: u.id, name: `${u.firstName} ${u.lastName}`, group: group(u), detail: [u.role.name, u.school?.name].filter(Boolean).join(", "), family: u.scopeLevel === "SELF" }));
 }
 
 // Who the user may start a conversation with, person to person.
@@ -108,6 +117,8 @@ export function institutionOf(user: User): Institution | null {
     departmentId: user.scope.departmentId,
     communeId: user.scope.communeId,
     schoolId: user.scope.schoolId,
+    chain: user.scope.chain,
+    schoolCycle: user.scope.cycle,
     isTeacher: isTeacherRole(user),
     canViewMessages: can(user, "message:view"),
   });
@@ -157,18 +168,33 @@ export type Party = {
 };
 
 const INSTITUTION_DETAIL: Record<InstitutionKind, string> = {
-  MINISTRY: "Administration centrale",
+  MINISTRY: "MEMP et MESTFP, administration centrale",
   DEPARTMENT: "Direction départementale",
-  COMMUNE: "Circonscription scolaire",
+  COMMUNE: "Circonscription scolaire, maternelle et primaire",
   SCHOOL: "Établissement",
 };
+
+function institutionDetail(kind: InstitutionKind, id: string) {
+  if (kind !== "DEPARTMENT") return INSTITUTION_DETAIL[kind];
+  const { chain } = parseDepartmentInstitutionId(id);
+  return chain ? DIRECTION_OF[chain].name : INSTITUTION_DETAIL.DEPARTMENT;
+}
 
 function toParty(p: ParticipantRow): Party {
   const u = p.user;
   const mailbox = parseMailboxUsername(u.username);
   if (mailbox) {
     const place = mailbox.kind === "SCHOOL" ? u.school?.name : mailbox.kind === "COMMUNE" ? u.commune?.name : u.department?.name;
-    return { userId: p.userId, kind: mailbox.kind, institutionId: mailbox.id, name: institutionName(mailbox.kind, place), detail: INSTITUTION_DETAIL[mailbox.kind], gender: null, lastReadAt: p.lastReadAt };
+    const chain = mailbox.kind === "DEPARTMENT" ? parseDepartmentInstitutionId(mailbox.id).chain : null;
+    return {
+      userId: p.userId,
+      kind: mailbox.kind,
+      institutionId: mailbox.id,
+      name: institutionName(mailbox.kind, place, chain),
+      detail: institutionDetail(mailbox.kind, mailbox.id),
+      gender: null,
+      lastReadAt: p.lastReadAt,
+    };
   }
   return {
     userId: p.userId,
@@ -197,6 +223,7 @@ const authorSelect = {
   departmentId: true,
   communeId: true,
   schoolId: true,
+  chain: true,
   commune: { select: { departmentId: true } },
   school: { select: { communeId: true, commune: { select: { departmentId: true } } } },
 } satisfies Prisma.UserSelect;
@@ -213,6 +240,7 @@ export function authorParty(author: AuthorRow, parties: Party[]) {
       departmentId: author.departmentId ?? author.commune?.departmentId ?? author.school?.commune.departmentId ?? null,
       communeId: author.communeId ?? author.school?.communeId ?? null,
       schoolId: author.schoolId,
+      chain: author.chain,
     },
     institutions,
   );
@@ -234,7 +262,7 @@ export async function listConversations(user: User) {
     take: 100,
     include: {
       participants: { select: partySelect },
-      messages: { orderBy: { createdAt: "desc" }, take: 1, select: { body: true, createdAt: true, senderId: true, sender: { select: authorSelect } } },
+      messages: { orderBy: { createdAt: "desc" }, take: 1, select: { body: true, audioFileId: true, audioDurationMs: true, createdAt: true, senderId: true, sender: { select: authorSelect } } },
     },
   });
   return rows.map((c) => {
@@ -260,7 +288,7 @@ export async function getThread(user: User, id: string) {
     where: { AND: [{ id }, conversationWhere(user)] },
     include: {
       participants: { select: partySelect },
-      messages: { orderBy: { createdAt: "desc" }, take: 200, select: { id: true, body: true, createdAt: true, senderId: true, sender: { select: authorSelect } } },
+      messages: { orderBy: { createdAt: "desc" }, take: 200, select: { id: true, body: true, audioFileId: true, audioDurationMs: true, createdAt: true, senderId: true, sender: { select: authorSelect } } },
     },
   });
   if (!c) return null;
@@ -269,6 +297,8 @@ export async function getThread(user: User, id: string) {
   const messages = [...c.messages].reverse().map((m) => ({
     id: m.id,
     body: m.body,
+    // A voice note: played from /api/files, which checks participation again.
+    audio: m.audioFileId ? { url: `/api/files/${m.audioFileId}`, durationMs: m.audioDurationMs ?? 0 } : null,
     createdAt: m.createdAt,
     mine: m.senderId === user.id,
     mySide: fromMySide(user, me, m, parties),
@@ -291,6 +321,7 @@ export async function markThreadRead(user: User, thread: { id: string; me: Party
 }
 
 // The institutions the user's institution may write to, for the picker.
+// Every department has two directions, a DDEMP and a DDESTFP.
 export async function institutionDirectory(user: User): Promise<PickerOption[]> {
   const me = institutionOf(user);
   if (!me) return [];
@@ -311,16 +342,18 @@ export async function institutionDirectory(user: User): Promise<PickerOption[]> 
         status: "ACTIVE",
         ...(me.kind === "DEPARTMENT" ? { commune: { departmentId: dep } } : me.kind === "COMMUNE" ? { communeId: me.communeId ?? "__none__" } : {}),
       },
-      select: { id: true, name: true, communeId: true, commune: { select: { name: true, departmentId: true } } },
+      select: { id: true, name: true, communeId: true, cycle: true, commune: { select: { name: true, departmentId: true } } },
       orderBy: [{ commune: { name: "asc" } }, { name: "asc" }],
       take: 3000,
     }),
   ]);
   const all: { i: Institution; label: string; detail?: string }[] = [
     { i: MINISTRY, label: institutionName("MINISTRY", null) },
-    ...departments.map((d) => ({ i: { kind: "DEPARTMENT" as const, id: d.id, departmentId: d.id, communeId: null }, label: institutionName("DEPARTMENT", d.name) })),
-    ...communes.map((c) => ({ i: { kind: "COMMUNE" as const, id: c.id, departmentId: c.departmentId, communeId: c.id }, label: institutionName("COMMUNE", c.name), detail: `Département ${c.department.name}` })),
-    ...schools.map((s) => ({ i: { kind: "SCHOOL" as const, id: s.id, departmentId: s.commune.departmentId, communeId: s.communeId }, label: s.name, detail: s.commune.name })),
+    ...departments.flatMap((d) =>
+      CHAINS.map((chain) => ({ i: departmentInstitution(d.id, chain), label: institutionName("DEPARTMENT", d.name, chain), detail: DIRECTION_OF[chain].name })),
+    ),
+    ...communes.map((c) => ({ i: { kind: "COMMUNE" as const, id: c.id, departmentId: c.departmentId, communeId: c.id, chain: "PRIMARY" as const }, label: institutionName("COMMUNE", c.name), detail: `Département ${c.department.name}` })),
+    ...schools.map((s) => ({ i: { kind: "SCHOOL" as const, id: s.id, departmentId: s.commune.departmentId, communeId: s.communeId, chain: chainOfCycle(s.cycle) }, label: s.name, detail: s.commune.name })),
   ];
   return all.filter((x) => canCorrespond(me, x.i)).map((x) => ({ value: institutionKey(x.i), label: x.label, group: INSTITUTION_GROUPS[x.i.kind], detail: x.detail }));
 }
@@ -339,26 +372,28 @@ export async function resolveInstitutions(user: User, keys: string[]): Promise<{
   const parsed = unique.map(parseInstitutionKey);
   if (parsed.some((p) => !p)) throw new ForbiddenError(NOT_ALLOWED);
   const ids = (k: InstitutionKind) => parsed.filter((p) => p!.kind === k).map((p) => p!.id);
+  const departmentIds = [...ids("DEPARTMENT"), ...(me.kind === "DEPARTMENT" ? [me.id] : [])].map((i) => parseDepartmentInstitutionId(i).departmentId);
   const [departments, communes, schools] = await Promise.all([
-    db.department.findMany({ where: { id: { in: [...ids("DEPARTMENT"), ...(me.kind === "DEPARTMENT" ? [me.id] : [])] } }, select: { id: true, name: true } }),
+    db.department.findMany({ where: { id: { in: departmentIds } }, select: { id: true, name: true } }),
     db.commune.findMany({ where: { id: { in: [...ids("COMMUNE"), ...(me.kind === "COMMUNE" ? [me.id] : [])] } }, select: { id: true, name: true, departmentId: true } }),
     db.school.findMany({
       where: { OR: [{ id: { in: ids("SCHOOL") }, isActive: true, status: "ACTIVE" }, ...(me.kind === "SCHOOL" ? [{ id: me.id }] : [])] },
-      select: { id: true, name: true, communeId: true, commune: { select: { departmentId: true } } },
+      select: { id: true, name: true, communeId: true, cycle: true, commune: { select: { departmentId: true } } },
     }),
   ]);
   const named = (i: { kind: InstitutionKind; id: string }): NamedInstitution | null => {
     if (i.kind === "MINISTRY") return i.id === MINISTRY_ID ? { ...MINISTRY, name: institutionName("MINISTRY", null) } : null;
     if (i.kind === "DEPARTMENT") {
-      const d = departments.find((x) => x.id === i.id);
-      return d ? { kind: "DEPARTMENT", id: d.id, departmentId: d.id, communeId: null, name: institutionName("DEPARTMENT", d.name) } : null;
+      const { departmentId, chain } = parseDepartmentInstitutionId(i.id);
+      const d = departments.find((x) => x.id === departmentId);
+      return d ? { ...departmentInstitution(d.id, chain), name: institutionName("DEPARTMENT", d.name, chain) } : null;
     }
     if (i.kind === "COMMUNE") {
       const c = communes.find((x) => x.id === i.id);
-      return c ? { kind: "COMMUNE", id: c.id, departmentId: c.departmentId, communeId: c.id, name: institutionName("COMMUNE", c.name) } : null;
+      return c ? { kind: "COMMUNE", id: c.id, departmentId: c.departmentId, communeId: c.id, chain: "PRIMARY", name: institutionName("COMMUNE", c.name) } : null;
     }
     const s = schools.find((x) => x.id === i.id);
-    return s ? { kind: "SCHOOL", id: s.id, departmentId: s.commune.departmentId, communeId: s.communeId, name: s.name } : null;
+    return s ? { kind: "SCHOOL", id: s.id, departmentId: s.commune.departmentId, communeId: s.communeId, chain: chainOfCycle(s.cycle), name: s.name } : null;
   };
   const from = named(me);
   const to = parsed.map((p) => named(p!));
@@ -385,7 +420,7 @@ export async function ensureMailbox(i: NamedInstitution): Promise<string> {
   const username = mailboxUsername(i);
   const place = {
     scopeLevel: i.kind === "MINISTRY" ? ("NATIONAL" as const) : i.kind,
-    departmentId: i.kind === "DEPARTMENT" ? i.id : null,
+    departmentId: i.kind === "DEPARTMENT" ? i.departmentId : null,
     communeId: i.kind === "COMMUNE" ? i.id : null,
     schoolId: i.kind === "SCHOOL" ? i.id : null,
   };
@@ -404,6 +439,12 @@ export async function ensureMailbox(i: NamedInstitution): Promise<string> {
   }
 }
 
+// The accounts of a direction: those of its chain, and those without one.
+function departmentStaffWhere(id: string): Prisma.UserWhereInput {
+  const { departmentId, chain } = parseDepartmentInstitutionId(id);
+  return { scopeLevel: "DEPARTMENT", departmentId, ...(chain ? { OR: [{ chain: null }, { chain }] } : {}) };
+}
+
 // The people who read an institution's mail: active accounts at its own
 // level whose role holds message:view (teachers write as themselves).
 export async function staffOf(i: Pick<Institution, "kind" | "id">): Promise<string[]> {
@@ -411,7 +452,7 @@ export async function staffOf(i: Pick<Institution, "kind" | "id">): Promise<stri
     i.kind === "MINISTRY"
       ? { scopeLevel: "NATIONAL" }
       : i.kind === "DEPARTMENT"
-        ? { scopeLevel: "DEPARTMENT", departmentId: i.id }
+        ? departmentStaffWhere(i.id)
         : i.kind === "COMMUNE"
           ? { scopeLevel: "COMMUNE", communeId: i.id }
           : { scopeLevel: "SCHOOL", schoolId: i.id, role: { code: { not: "TEACHER" } } };

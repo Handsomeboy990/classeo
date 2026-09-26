@@ -13,6 +13,8 @@ import { Dialog } from "@/components/ui/dialog";
 import { Checkbox, Input } from "@/components/ui/input";
 import { TemporaryPassword, type IssuedPassword } from "@/features/users/components/temporary-password";
 
+import { TEACHER_STATUS_LABELS, type TeacherStatus } from "@/lib/domain/teacher-status";
+
 import { appointTeacher, createTeacher, searchTeacherRegistry } from "../actions";
 import { TeacherFields } from "./teacher-forms";
 
@@ -26,12 +28,13 @@ type Match = {
   specialty: string | null;
   schools: string[];
   here: "active" | "inactive" | null;
+  stateStatus: TeacherStatus | null;
 };
 
 // Adding a teacher: the national registry first (NPI, phone or names), then
 // an appointment of the person found, or a new registry entry when nobody
 // matches. The server checks the registry again before creating anyone.
-export function AddTeacherDialog() {
+export function AddTeacherDialog({ statusOptions }: { statusOptions: TeacherStatus[] }) {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<"search" | "create">("search");
   const [matches, setMatches] = useState<Match[] | null>(null);
@@ -80,7 +83,7 @@ export function AddTeacherDialog() {
               onSuccess={(state) => setMatches(((state?.data as { matches?: Match[] } | undefined)?.matches ?? []) as Match[])}
               className="flex flex-col gap-3 sm:flex-row sm:items-end"
             >
-              <FormField label="NPI, téléphone ou nom et prénom" name="q" required hint="Les accents et l'ordre des noms ne comptent pas." className="flex-1">
+              <FormField label="NPI, téléphone ou nom et prénom" name="q" required info="Les accents et l'ordre des noms ne comptent pas." className="flex-1">
                 <Input autoComplete="off" maxLength={100} placeholder="Par exemple : 2000000123, 0197451230 ou Issifou Nafissatou" />
               </FormField>
               <SubmitButton pendingLabel="Recherche…" className="sm:mb-6">
@@ -106,6 +109,11 @@ export function AddTeacherDialog() {
                             {[m.npi ? `NPI ${m.npi}` : "Sans NPI", m.phone, m.specialty].filter(Boolean).join(" · ")}
                           </p>
                           <p className="text-sm text-muted">{m.schools.length ? `Enseigne à ${m.schools.join(", ")}` : "Sans établissement actuellement"}</p>
+                          {m.stateStatus && (
+                            <Badge tone="accent" className="mt-1 mr-1">
+                              {TEACHER_STATUS_LABELS[m.stateStatus]}
+                            </Badge>
+                          )}
                           {m.hasAccount && (
                             <Badge tone="info" className="mt-1">
                               A déjà un compte de connexion
@@ -148,7 +156,7 @@ export function AddTeacherDialog() {
             onReset={(e) => e.preventDefault()}
             className="flex flex-col gap-4"
           >
-            <TeacherFields />
+            <TeacherFields statusOptions={statusOptions} />
             <FormField label="Adresse e-mail" name="email" hint="Facultatif.">
               <Input type="email" autoComplete="off" maxLength={200} />
             </FormField>

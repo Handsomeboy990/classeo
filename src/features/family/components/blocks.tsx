@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { AudioLines, ChevronRight } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
 
@@ -10,23 +10,14 @@ import { spokenTime } from "../logic";
 
 // Building blocks of the family space: audio first, few words, big targets.
 
-// The sentence Kora speaks, also shown in full so that a deaf or hard of
-// hearing reader gets exactly the same information.
+// The sentence Kora speaks, behind a speaker button: the page already shows
+// the same facts in its cards, so the sentence itself is not displayed.
+// Screen readers still get it, once, as the summary of the section.
 export function SpokenSummary({ text, label = "Écouter le résumé", className }: { text: string; label?: string; className?: string }) {
   return (
-    <div className={cn("flex flex-col gap-3 rounded-card border border-primary/30 bg-primary-soft p-4 sm:flex-row sm:items-center sm:gap-4", className)}>
-      <ReadAloud
-        text={text}
-        label={label}
-        className="h-12 shrink-0 justify-center self-start border-primary bg-primary px-4 text-base text-on-primary hover:bg-primary-hover sm:self-center"
-      />
-      <p className="flex min-w-0 gap-2 text-base text-text">
-        <AudioLines className="mt-1 size-4 shrink-0 text-primary" aria-hidden />
-        <span>
-          <span className="sr-only">Résumé : </span>
-          {text}
-        </span>
-      </p>
+    <div className={cn("inline-flex shrink-0", className)}>
+      <ReadAloud text={text} label={label} />
+      <p className="sr-only">Résumé : {text}</p>
     </div>
   );
 }
@@ -71,10 +62,18 @@ export function PictoTile({
   href?: string;
   children: ReactNode;
   footer?: ReactNode;
-  layout?: "card" | "row";
+  // strip: a single line at every width (one figure beside the title).
+  layout?: "card" | "row" | "strip";
 }) {
   const row = layout === "row";
-  const body = row ? (
+  const body = layout === "strip" ? (
+    <div className="flex min-w-0 flex-1 items-center gap-3">
+      <Pictogram icon={icon} tone={tone} />
+      <h3 className="min-w-0 flex-1 font-sans text-base font-bold text-text">{title}</h3>
+      <div className="shrink-0 text-text">{children}</div>
+      {href && <ChevronRight className="size-5 shrink-0 text-muted" aria-hidden />}
+    </div>
+  ) : row ? (
     <>
       <div className="flex min-w-0 flex-1 items-center gap-3 lg:flex-none">
         <Pictogram icon={icon} tone={tone} />
@@ -95,9 +94,11 @@ export function PictoTile({
       {footer && <div className="mt-auto pt-2 text-xs text-muted sm:pt-3 sm:text-sm">{footer}</div>}
     </>
   );
-  const cls = row
-    ? "flex h-full items-center rounded-card border border-border bg-surface p-3 sm:p-4 lg:min-h-40 lg:flex-col lg:items-stretch"
-    : "flex h-full min-h-32 flex-col rounded-card border border-border bg-surface p-3 sm:min-h-40 sm:p-4";
+  const cls = {
+    strip: "flex items-center rounded-card border border-border bg-surface p-3 sm:p-4",
+    row: "flex h-full items-center rounded-card border border-border bg-surface p-3 sm:p-4 lg:min-h-40 lg:flex-col lg:items-stretch",
+    card: "flex h-full min-h-32 flex-col rounded-card border border-border bg-surface p-3 sm:min-h-40 sm:p-4",
+  }[layout];
   return href ? (
     <Link href={href} className={cn(cls, "transition-colors hover:border-primary hover:bg-surface-2")}>
       {body}

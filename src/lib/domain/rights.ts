@@ -4,6 +4,8 @@
 
 import { randomInt } from "node:crypto";
 
+import { cycleInScope, type CycleCode } from "./chains";
+
 export type ScopeLevel = "NATIONAL" | "DEPARTMENT" | "COMMUNE" | "SCHOOL" | "SELF";
 
 // Higher is wider. SELF (parents, students) sits below a school.
@@ -24,6 +26,10 @@ export type ScopeRef = {
   departmentId?: string | null;
   communeId?: string | null;
   schoolId?: string | null;
+  // Actor: school cycles its chain supervises (null or absent: all).
+  // Target school: its cycle.
+  cycles?: readonly CycleCode[] | null;
+  cycle?: CycleCode | null;
 };
 
 export type RuleResult = { ok: true } | { ok: false; reason: string };
@@ -39,6 +45,9 @@ export function isLevelAtOrBelow(level: ScopeLevel, reference: ScopeLevel) {
 // actor's level or below. Fails closed on an incomplete scope.
 export function isWithinScope(actor: ScopeRef, target: ScopeRef): boolean {
   if (!isLevelAtOrBelow(target.level, actor.level)) return false;
+  // A school outside the actor's chain is outside its territory, and so is
+  // a school of unknown cycle when the actor is limited to some cycles.
+  if (target.level === "SCHOOL" && actor.cycles && !cycleInScope(actor.cycles, target.cycle)) return false;
   switch (actor.level) {
     case "NATIONAL":
       return true;

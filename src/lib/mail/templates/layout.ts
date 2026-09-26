@@ -147,7 +147,7 @@ export function renderEmail(content: EmailContent): RenderedEmail {
 <td style="width:34px;height:34px;background:${BRAND.green};border-radius:9px;text-align:center;vertical-align:middle;font-size:18px;font-weight:800;color:${BRAND.yellow};">C</td>
 <td style="padding-left:12px;">
 <p style="margin:0;font-size:20px;font-weight:800;letter-spacing:-0.01em;color:#FFFFFF;">Classéo</p>
-<p style="margin:2px 0 0;font-size:12px;color:#A9C2B4;">Plateforme nationale de l'éducation</p>
+<p style="margin:2px 0 0;font-size:12px;color:#A9C2B4;">La plateforme de gestion scolaire pour le Bénin</p>
 </td>
 </tr></table>
 </td></tr>

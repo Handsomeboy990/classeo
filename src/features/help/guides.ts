@@ -50,7 +50,7 @@ export const GUIDES: Guide[] = [
     roles: ["STUDENT"],
     steps: [
       { icon: CalendarDays, title: "Ma journée", text: "Le tableau de bord montre tes cours d'aujourd'hui, dans l'ordre, avec la salle.", href: "/espace" },
-      { icon: NotebookPen, title: "Mes notes", text: "Dans « Ma scolarité », l'onglet « Notes » donne chaque note et ta moyenne provisoire du trimestre.", href: "/espace/suivi" },
+      { icon: NotebookPen, title: "Mes notes", text: "Dans « Ma scolarité », l'onglet « Notes » donne chaque note et ta moyenne provisoire du trimestre ou du semestre, selon ton établissement.", href: "/espace/suivi" },
       { icon: BookOpen, title: "Mes ressources", text: "Les fiches et vidéos de ta classe sont sur le tableau de bord. Chaque vidéo a sa transcription écrite." },
       { icon: Volume2, title: "Tout écouter", text: "Chaque carte a un bouton « Écouter ». La vitesse de la voix se règle dans « Préférences »." },
     ],

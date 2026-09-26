@@ -22,7 +22,7 @@ export default async function DepartmentPage({ params, searchParams }: PageProps
 
   return (
     <div className="flex flex-col gap-6">
-      <PageHeader title={`Département ${department.name}`} description="Indicateurs du département et comparaison de ses communes." />
+      <PageHeader title={`Département ${department.name}`} info="Indicateurs du département et comparaison de ses communes." />
       <ScopeBreadcrumb scope={{ level: "DEPARTMENT", id: department.id }} basePath="/espace/territoire" user={user} />
       <IndicatorCards stats={stats} requestsHref={can(user, "request:view") ? "/espace/demandes?statut=PENDING" : undefined} />
       <Breakdown

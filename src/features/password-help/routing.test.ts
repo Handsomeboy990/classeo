@@ -19,6 +19,13 @@ describe("helpRouteLevel", () => {
     expect(helpRouteLevel({ scopeLevel: "COMMUNE", managesUsers: true })).toBe("DEPARTMENT");
     expect(helpRouteLevel({ scopeLevel: "DEPARTMENT", managesUsers: true })).toBe("NATIONAL");
   });
+  it("sends the head of a college to the DDESTFP, since the secondary chain has no circonscription", () => {
+    expect(helpRouteLevel({ scopeLevel: "SCHOOL", managesUsers: true, schoolCycle: "SECONDARY" })).toBe("DEPARTMENT");
+    expect(helpRouteLevel({ scopeLevel: "SCHOOL", managesUsers: true, schoolCycle: "PRIMARY" })).toBe("COMMUNE");
+    const collegeHead = { ...account("SCHOOL_DIRECTOR"), schoolCycle: "SECONDARY" as const };
+    expect(canHandleHelp(account("DEPARTMENT_DIRECTOR"), collegeHead).ok).toBe(true);
+    expect(canHandleHelp(account("COMMUNE_INSPECTOR"), collegeHead).ok).toBe(false);
+  });
 });
 
 describe("canHandleHelp", () => {

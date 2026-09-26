@@ -8,6 +8,7 @@ import { Checkbox, Input, Radio } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
 import { useFormState } from "./action-form";
+import { InfoTip } from "./info-tip";
 
 export type PickerOption = { value: string; label: string; group: string; detail?: string };
 
@@ -25,6 +26,7 @@ export function MultiPicker({
   name,
   legend,
   hint,
+  info,
   options,
   selected,
   onChange,
@@ -35,6 +37,8 @@ export function MultiPicker({
   name: string;
   legend: string;
   hint?: string;
+  // Background text, in an info bubble after the legend.
+  info?: string;
   options: PickerOption[];
   selected: string[];
   onChange: (next: string[]) => void;
@@ -63,17 +67,22 @@ export function MultiPicker({
   }
 
   return (
-    <fieldset className="min-w-0" aria-describedby={[hint && `${id}-hint`, error && `${id}-error`].filter(Boolean).join(" ") || undefined}>
-      <legend className="text-sm font-semibold text-text">{legend}</legend>
+    <fieldset className="min-w-0" aria-describedby={[info && `${id}-info`, hint && `${id}-hint`, error && `${id}-error`].filter(Boolean).join(" ") || undefined}>
+      <legend className={cn("text-sm font-semibold text-text", info && "float-left mr-1.5")}>{legend}</legend>
+      {info && (
+        <InfoTip id={`${id}-info`} label="Plus d'informations sur ce choix">
+          {info}
+        </InfoTip>
+      )}
       {hint && (
-        <p id={`${id}-hint`} className="mt-0.5 text-sm text-muted">
+        <p id={`${id}-hint`} className="clear-left mt-0.5 text-sm text-muted">
           {hint}
         </p>
       )}
       {selected.map((v) => (
         <input key={v} type="hidden" name={single ? name : `${name}[]`} value={v} />
       ))}
-      <div className="mt-2 flex flex-col gap-2">
+      <div className="clear-left mt-2 flex flex-col gap-2">
         <label htmlFor={`${id}-q`} className="sr-only">
           {searchPlaceholder}
         </label>

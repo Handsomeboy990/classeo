@@ -5,15 +5,18 @@ import { forbidden, notFound } from "next/navigation";
 import { ForbiddenError } from "@/lib/auth/authorize";
 import type { CurrentUser } from "@/lib/auth/session";
 import { db } from "@/lib/db";
+import type { CycleCode } from "@/lib/domain/chains";
 import { isWithinScope, type ScopeRef } from "@/lib/domain/rights";
 
 type User = NonNullable<CurrentUser>;
 
-// A territorial position statistics are computed for.
+// A territorial position statistics are computed for. cycles: the school
+// cycles of the viewer's chain (a DDEMP counts nursery and primary schools
+// only), absent for every cycle.
 export type StatScope =
-  | { level: "NATIONAL" }
-  | { level: "DEPARTMENT"; id: string }
-  | { level: "COMMUNE"; id: string }
+  | { level: "NATIONAL"; cycles?: readonly CycleCode[] | null }
+  | { level: "DEPARTMENT"; id: string; cycles?: readonly CycleCode[] | null }
+  | { level: "COMMUNE"; id: string; cycles?: readonly CycleCode[] | null }
   | { level: "SCHOOL"; id: string };
 
 export function userScopeRef(user: User): ScopeRef {
@@ -22,6 +25,7 @@ export function userScopeRef(user: User): ScopeRef {
     departmentId: user.scope.departmentId,
     communeId: user.scope.communeId,
     schoolId: user.scope.schoolId,
+    cycles: user.scope.cycles,
   };
 }
 
@@ -29,13 +33,14 @@ export function userScopeRef(user: User): ScopeRef {
 // territorial statistics.
 export function userStatScope(user: User): StatScope | null {
   const s = user.scope;
+  const cycles = s.cycles ?? null;
   switch (s.level) {
     case "NATIONAL":
-      return { level: "NATIONAL" };
+      return cycles ? { level: "NATIONAL", cycles } : { level: "NATIONAL" };
     case "DEPARTMENT":
-      return s.departmentId ? { level: "DEPARTMENT", id: s.departmentId } : null;
+      return s.departmentId ? (cycles ? { level: "DEPARTMENT", id: s.departmentId, cycles } : { level: "DEPARTMENT", id: s.departmentId }) : null;
     case "COMMUNE":
-      return s.communeId ? { level: "COMMUNE", id: s.communeId } : null;
+      return s.communeId ? (cycles ? { level: "COMMUNE", id: s.communeId, cycles } : { level: "COMMUNE", id: s.communeId }) : null;
     case "SCHOOL":
       return s.schoolId ? { level: "SCHOOL", id: s.schoolId } : null;
     case "SELF":
@@ -46,13 +51,14 @@ export function userStatScope(user: User): StatScope | null {
 // Same format as scopeKey() in lib/auth/scope.ts, so a cache entry computed
 // for a scope is shared by every user of that scope and by drill downs.
 export function statScopeKey(scope: StatScope) {
+  const chain = scope.level !== "SCHOOL" && scope.cycles ? `:${[...scope.cycles].sort().join("+")}` : "";
   switch (scope.level) {
     case "NATIONAL":
-      return "nation";
+      return `nation${chain}`;
     case "DEPARTMENT":
-      return `dep:${scope.id}`;
+      return `dep:${scope.id}${chain}`;
     case "COMMUNE":
-      return `com:${scope.id}`;
+      return `com:${scope.id}${chain}`;
     case "SCHOOL":
       return `sch:${scope.id}`;
   }
@@ -80,10 +86,10 @@ export async function schoolRef(id: string) {
   if (!validId(id)) return null;
   const s = await db.school.findUnique({
     where: { id },
-    select: { id: true, name: true, communeId: true, commune: { select: { id: true, name: true, departmentId: true, department: { select: { id: true, name: true } } } } },
+    select: { id: true, name: true, communeId: true, cycle: true, commune: { select: { id: true, name: true, departmentId: true, department: { select: { id: true, name: true } } } } },
   });
   return s
-    ? { entity: s, ref: { level: "SCHOOL", departmentId: s.commune.departmentId, communeId: s.communeId, schoolId: s.id } satisfies ScopeRef }
+    ? { entity: s, ref: { level: "SCHOOL", departmentId: s.commune.departmentId, communeId: s.communeId, schoolId: s.id, cycle: s.cycle } satisfies ScopeRef }
     : null;
 }
 
@@ -140,7 +146,7 @@ export async function narrowStatScope(
       // A commune that does not belong to the chosen department is ignored,
       // which happens when the department filter changes.
       if (!filters.departmentId || filters.departmentId === c.entity.departmentId) {
-        scope = { level: "COMMUNE", id: c.entity.id };
+        scope = base.level !== "SCHOOL" && base.cycles ? { level: "COMMUNE", id: c.entity.id, cycles: base.cycles } : { level: "COMMUNE", id: c.entity.id };
         departmentId = c.entity.departmentId;
         communeId = c.entity.id;
         return { scope, departmentId, communeId, schoolId };
@@ -150,7 +156,7 @@ export async function narrowStatScope(
   if (filters.departmentId && user.scope.level === "NATIONAL") {
     const d = await departmentRef(filters.departmentId);
     if (d) {
-      scope = { level: "DEPARTMENT", id: d.entity.id };
+      scope = base.level !== "SCHOOL" && base.cycles ? { level: "DEPARTMENT", id: d.entity.id, cycles: base.cycles } : { level: "DEPARTMENT", id: d.entity.id };
       departmentId = d.entity.id;
     }
   }

@@ -72,3 +72,21 @@ export async function expectForbidden(page: Page) {
 export function uniqueSuffix() {
   return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
 }
+
+// The language control of the top bar (public header or private space):
+// the visible trigger, whatever its label reads in the current language.
+export function languageMenu(page: Page) {
+  return page.locator("button[data-language-menu]:visible").first();
+}
+
+// Opens the language control and picks a language by its name, in a group
+// ("Voix") when the panel holds several. Choices are links on the public
+// pages and buttons in the private space.
+export async function chooseLanguage(page: Page, name: string, group?: string) {
+  const trigger = languageMenu(page);
+  await trigger.click();
+  const panel = page.locator(`[id="${await trigger.getAttribute("aria-controls")}"]`);
+  await expect(panel).toBeVisible();
+  const scope = group ? panel.getByRole("group", { name: group }) : panel.getByRole("group").first();
+  await scope.getByRole("link", { name, exact: true }).or(scope.getByRole("button", { name, exact: true })).click();
+}

@@ -7,6 +7,7 @@ const FEMININE: Record<string, string> = {
   "Administrateur national": "Administratrice nationale",
   "Analyste national": "Analyste nationale",
   "Directeur départemental": "Directrice départementale",
+  "Chef de circonscription scolaire": "Cheffe de circonscription scolaire",
   Enseignant: "Enseignante",
   "Parent ou tuteur": "Parent ou tutrice",
 };

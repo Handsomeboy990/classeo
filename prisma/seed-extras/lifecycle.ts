@@ -171,8 +171,9 @@ export async function seedLifecycle(db: PrismaClient, ctx: SeedContext) {
   }
 
   // 3. A school change accepted, with the history shared ---------------------
-  // A 5e pupil of CEG Ouidah who joined CEG Godomey's 5e A on 21 September.
-  const ouidah = await schoolByName(db, "CEG Ouidah");
+  // A 5e pupil of the first college of Ouidah (a private school in the
+  // seed) who joined CEG Godomey's 5e A on 21 September.
+  const ouidah = await db.school.findFirstOrThrow({ where: { cycle: "SECONDARY", commune: { name: "Ouidah" }, classrooms: { some: { academicYearId: yearId, name: "5e A" } } }, orderBy: { code: "asc" }, select: { id: true, name: true } });
   const [moved] = await firstPupils(db, ouidah.id, yearId, "5e A", 1);
   const godomey5 = await db.classroom.findFirst({ where: { schoolId: ceg, academicYearId: yearId, name: "5e A" }, select: { id: true } });
   const ouidahDirector = await directorOf(db, ouidah.id);

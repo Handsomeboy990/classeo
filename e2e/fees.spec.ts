@@ -9,7 +9,14 @@ test.describe("accountant", () => {
     await page.goto("/espace/frais/factures");
     await expect(page.getByRole("heading", { level: 1, name: "Factures" })).toBeVisible();
 
-    const first = page.getByRole("link", { name: /^FAC-\d{4}-\d{4}$/ }).first();
+    // An invoice with the contribution scolaire (20 000 FCFA, three
+    // installments): the girls of CEG Godomey are exempt and owe the
+    // parents' association dues only.
+    const first = page
+      .getByRole("row")
+      .filter({ hasText: /20[\s\u202f\u00a0]000/ })
+      .first()
+      .getByRole("link", { name: /^FAC-\d{4}-\d{4}$/ });
     const number = (await first.textContent())!.trim();
     await first.click();
 

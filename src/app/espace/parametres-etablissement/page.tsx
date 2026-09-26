@@ -2,6 +2,7 @@ import { Landmark, Pencil, Plus, Smartphone, Trash2 } from "lucide-react";
 import type { Metadata } from "next";
 import { forbidden } from "next/navigation";
 
+import { InfoTip } from "@/components/kit/info-tip";
 import { ActionForm, SubmitButton } from "@/components/kit/action-form";
 import { ConfirmButton } from "@/components/kit/confirm-button";
 import { FormDialog } from "@/components/kit/form-dialog";
@@ -10,14 +11,15 @@ import { ImageUpload } from "@/components/kit/image-upload";
 import { PageHeader } from "@/components/kit/page-header";
 import { EmptyState } from "@/components/kit/states";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardBody, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox, Input } from "@/components/ui/input";
 import { SchoolStatusBanner } from "@/features/school-status/components/status-banner";
-import { deletePaymentAccount, savePaymentAccount, updateSchoolProfile } from "@/features/school-settings/actions";
+import { deletePaymentAccount, savePaymentAccount, updateEvaluationOptions, updateSchoolProfile } from "@/features/school-settings/actions";
 import { AccountFields } from "@/features/school-settings/components/account-fields";
 import { getOwnSchoolSettings } from "@/features/school-settings/queries";
 import { CHANNEL_LABELS, groupByFour, MAX_PAYMENT_ACCOUNTS } from "@/features/school-settings/rules";
 import { requirePermission } from "@/lib/auth/authorize";
+import { PERIODICITY_LABELS } from "@/lib/domain/periodicity";
 import { fileUrl } from "@/lib/files";
 
 export const metadata: Metadata = { title: "Paramètres de l'établissement" };
@@ -32,14 +34,16 @@ export default async function SchoolSettingsPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <PageHeader title="Paramètres de l'établissement" description={`Identité de ${school.name} (${school.code}) et comptes où les parents paient les frais.`} />
+      <PageHeader title="Paramètres de l'établissement" description={`${school.name} (${school.code})`} info="Identité de l'établissement, affichée sur les documents, et comptes où les parents paient les frais." />
       <SchoolStatusBanner user={user} />
 
       <Card aria-labelledby="identity-title">
         <CardHeader>
           <div>
-            <CardTitle id="identity-title">Identité</CardTitle>
-            <CardDescription>Le logo et le nom apparaissent en haut de l&apos;écran de votre personnel et sur vos documents.</CardDescription>
+            <div className="flex items-center gap-1.5">
+              <CardTitle id="identity-title">Identité</CardTitle>
+              <InfoTip>Le logo et le nom apparaissent en haut de l&apos;écran de votre personnel et sur vos documents.</InfoTip>
+            </div>
           </div>
         </CardHeader>
         <CardBody>
@@ -76,11 +80,41 @@ export default async function SchoolSettingsPage() {
         </CardBody>
       </Card>
 
+      <Card aria-labelledby="evaluation-title">
+        <CardHeader>
+          <div>
+            <div className="flex items-center gap-1.5">
+              <CardTitle id="evaluation-title">Évaluation</CardTitle>
+              <InfoTip>
+                {PERIODICITY_LABELS[school.periodicity]}, fixés par le ministère. Moyenne par matière selon l&apos;arrêté n° 029 du 6 mai 2024 : moyenne des interrogations écrites
+                et devoirs surveillés, sans coefficient double.
+              </InfoTip>
+            </div>
+          </div>
+        </CardHeader>
+        <CardBody>
+          <ActionForm action={updateEvaluationOptions} className="flex flex-col gap-4">
+            <label className="flex items-start gap-3 text-sm">
+              <Checkbox name="allowsComposition" defaultChecked={school.allowsComposition} disabled={locked} />
+              <span>
+                <span className="font-semibold">Proposer les compositions dans les fiches de notes</span>
+                <span className="block text-muted">Usage d&apos;établissement, surtout dans le privé. Les fiches déjà créées gardent leur formule.</span>
+              </span>
+            </label>
+            <div className="flex justify-end">
+              <SubmitButton disabled={locked}>Enregistrer</SubmitButton>
+            </div>
+          </ActionForm>
+        </CardBody>
+      </Card>
+
       <Card aria-labelledby="accounts-title">
         <CardHeader>
           <div>
-            <CardTitle id="accounts-title">Comptes de paiement</CardTitle>
-            <CardDescription>Mobile Money (MTN MoMo, Moov Money, Celtiis Cash) et comptes bancaires proposés aux parents pour payer les frais.</CardDescription>
+            <div className="flex items-center gap-1.5">
+              <CardTitle id="accounts-title">Comptes de paiement</CardTitle>
+              <InfoTip>Mobile Money (MTN MoMo, Moov Money, Celtiis Cash) et comptes bancaires proposés aux parents pour payer les frais.</InfoTip>
+            </div>
           </div>
           {!locked && school.paymentAccounts.length < MAX_PAYMENT_ACCOUNTS && (
             <FormDialog action={savePaymentAccount} trigger={<><Plus aria-hidden /> Ajouter un compte</>} triggerSize="sm" title="Nouveau compte de paiement" submitLabel="Ajouter le compte">

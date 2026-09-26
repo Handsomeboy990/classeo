@@ -134,10 +134,24 @@ export const OTHER_CREDITS = [
   },
 ] as const satisfies readonly OtherCredit[];
 
+// The translation and the voices in the local languages come from the
+// api229langues service. A service used by the platform, not a work
+// copied into it: no licence line, a thank you and its address.
+export type LanguageCredit = { id: string; subject: string; author: string; sourceUrl: string };
+
+export const LANGUAGE_CREDITS = [
+  {
+    id: "api229langues",
+    subject: "La traduction des pages en fongbe et en yoruba, et les voix en fongbe, yoruba et haoussa.",
+    author: "Finanfa Ronaldo (api229langues)",
+    sourceUrl: "https://api229langues.vercel.app",
+  },
+] as const satisfies readonly LanguageCredit[];
+
 // The French texts of the credits shown on the public pages, for the
 // translation list.
 export function photoTexts(): string[] {
-  return [...PHOTOS.flatMap((p) => [p.caption, p.subject, p.alt, p.changes]), ...OTHER_CREDITS.flatMap((c) => [c.subject, c.changes])];
+  return [...PHOTOS.flatMap((p) => [p.caption, p.subject, p.alt, p.changes]), ...OTHER_CREDITS.flatMap((c) => [c.subject, c.changes]), ...LANGUAGE_CREDITS.map((c) => c.subject)];
 }
 
 // public/images/CREDITS.md, written from the list above.
@@ -164,6 +178,12 @@ export function creditsMarkdown() {
     "| Voice | Use | Author | Source | Licence | Changes |",
     "|---|---|---|---|---|---|",
     ...OTHER_CREDITS.map((c) => `| \`${c.id}\` | ${c.subject} | ${c.author} | ${c.sourceUrl} | ${c.licence} | ${c.changes} |`),
+    "",
+    "## Local languages",
+    "",
+    "| Service | Use | Author | Source |",
+    "|---|---|---|---|",
+    ...LANGUAGE_CREDITS.map((c) => `| \`${c.id}\` | ${c.subject} | ${c.author} | ${c.sourceUrl} |`),
     "",
     "Licences: CC BY 4.0 https://creativecommons.org/licenses/by/4.0/ and",
     "CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0/.",

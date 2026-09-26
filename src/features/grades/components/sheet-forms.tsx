@@ -4,34 +4,48 @@ import { FormField } from "@/components/kit/form-field";
 import { Input, Select } from "@/components/ui/input";
 import { ConfirmButton } from "@/components/kit/confirm-button";
 import { FormDialog } from "@/components/kit/form-dialog";
-import { FORMULA_LABELS } from "@/lib/domain/grade-entry";
+import { defaultSheetConfig, FORMULA_LABELS, type SheetConfig } from "@/lib/domain/grade-entry";
 
 import { createSheet, setClassLock, setSheetLock, updateSheet } from "../actions";
 
-type Config = { formula: keyof typeof FORMULA_LABELS; interrogationCount: number; devoirCount: number; compositionCount: number };
+type Config = SheetConfig;
 
-function ConfigFields({ values }: { values?: Config }) {
+// A school without compositions applies the national formula only; the
+// others choose among every formula.
+function ConfigFields({ values, allowsComposition }: { values?: Config; allowsComposition: boolean }) {
+  const v = values ?? defaultSheetConfig({ allowsComposition });
   return (
     <>
-      <FormField label="Formule de calcul de la moyenne" name="formula" required>
-        <Select defaultValue={values?.formula ?? "WEIGHTED_STANDARD"}>
-          {Object.entries(FORMULA_LABELS).map(([k, label]) => (
-            <option key={k} value={k}>
-              {label}
-            </option>
-          ))}
-        </Select>
-      </FormField>
-      <div className="grid gap-4 sm:grid-cols-3">
-        <FormField label="Interrogations" name="interrogationCount" required hint="De 1 à 6">
-          <Input type="number" min={1} max={6} defaultValue={values?.interrogationCount ?? 2} inputMode="numeric" />
+      {allowsComposition ? (
+        <FormField label="Formule de calcul de la moyenne" name="formula" required>
+          <Select defaultValue={v.formula}>
+            {Object.entries(FORMULA_LABELS).map(([k, label]) => (
+              <option key={k} value={k}>
+                {label}
+              </option>
+            ))}
+          </Select>
         </FormField>
-        <FormField label="Devoirs" name="devoirCount" required hint="De 0 à 3">
-          <Input type="number" min={0} max={3} defaultValue={values?.devoirCount ?? 1} inputMode="numeric" />
+      ) : (
+        <div className="flex flex-col gap-1 text-sm">
+          <input type="hidden" name="formula" value="OFFICIAL_2024" />
+          <input type="hidden" name="compositionCount" value="0" />
+          <span className="font-semibold text-text">Formule de calcul de la moyenne</span>
+          <span className="text-muted">{FORMULA_LABELS.OFFICIAL_2024}.</span>
+        </div>
+      )}
+      <div className={allowsComposition ? "grid gap-4 sm:grid-cols-3" : "grid gap-4 sm:grid-cols-2"}>
+        <FormField label="Interrogations écrites" name="interrogationCount" required hint="De 1 à 6">
+          <Input type="number" min={1} max={6} defaultValue={v.interrogationCount} inputMode="numeric" />
         </FormField>
-        <FormField label="Compositions" name="compositionCount" required hint="De 0 à 2">
-          <Input type="number" min={0} max={2} defaultValue={values?.compositionCount ?? 1} inputMode="numeric" />
+        <FormField label="Devoirs surveillés" name="devoirCount" required hint="De 0 à 3">
+          <Input type="number" min={0} max={3} defaultValue={v.devoirCount} inputMode="numeric" />
         </FormField>
+        {allowsComposition && (
+          <FormField label="Compositions" name="compositionCount" required hint="De 0 à 2">
+            <Input type="number" min={0} max={2} defaultValue={v.compositionCount} inputMode="numeric" />
+          </FormField>
+        )}
       </div>
     </>
   );
@@ -41,10 +55,12 @@ export function CreateSheetDialog({
   assignments,
   periods,
   defaultPeriodId,
+  allowsComposition,
 }: {
   assignments: { id: string; subject: { name: string }; classroom: { name: string } }[];
   periods: { id: string; name: string }[];
   defaultPeriodId: string;
+  allowsComposition: boolean;
 }) {
   return (
     <FormDialog
@@ -79,12 +95,12 @@ export function CreateSheetDialog({
           ))}
         </Select>
       </FormField>
-      <ConfigFields />
+      <ConfigFields allowsComposition={allowsComposition} />
     </FormDialog>
   );
 }
 
-export function SheetSettingsDialog({ id, values }: { id: string; values: Config }) {
+export function SheetSettingsDialog({ id, values, allowsComposition }: { id: string; values: Config; allowsComposition: boolean }) {
   return (
     <FormDialog
       action={updateSheet}
@@ -98,7 +114,7 @@ export function SheetSettingsDialog({ id, values }: { id: string; values: Config
       }
     >
       <input type="hidden" name="id" value={id} />
-      <ConfigFields values={values} />
+      <ConfigFields values={values} allowsComposition={allowsComposition} />
     </FormDialog>
   );
 }

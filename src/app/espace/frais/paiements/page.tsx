@@ -61,7 +61,7 @@ export default async function PaymentsPage({ searchParams }: PageProps<"/espace/
 
   return (
     <>
-      <PageHeader title="Paiements" description={`Versements de l'année en cours. Total de la liste : ${formatFcfa(sum)}.`} />
+      <PageHeader title="Paiements" description={`Année en cours · total de la liste : ${formatFcfa(sum)}`} />
       <FeesNav items={feesTabs(user)} />
       <DataTable
         caption="Liste des paiements"

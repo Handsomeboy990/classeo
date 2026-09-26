@@ -7,6 +7,7 @@ import { cache } from "react";
 
 import { cached, tags } from "@/lib/cache";
 import { db } from "@/lib/db";
+import { scopeCycles } from "@/lib/domain/chains";
 
 import type { PermissionCode } from "./permissions";
 
@@ -85,13 +86,13 @@ const rolePermissions = cached(
 
 const userInclude = {
   role: { select: { id: true, code: true, name: true } },
-  school: { select: { id: true, name: true, logoFileId: true, communeId: true, commune: { select: { departmentId: true } } } },
+  school: { select: { id: true, name: true, logoFileId: true, communeId: true, cycle: true, periodicity: true, commune: { select: { departmentId: true } } } },
   commune: { select: { id: true, name: true, departmentId: true } },
   department: { select: { id: true, name: true } },
   // One appointment per school where the person teaches.
   teachers: {
     where: { isActive: true },
-    select: { id: true, school: { select: { id: true, name: true, logoFileId: true, communeId: true, commune: { select: { departmentId: true } } } } },
+    select: { id: true, school: { select: { id: true, name: true, logoFileId: true, communeId: true, cycle: true, periodicity: true, commune: { select: { departmentId: true } } } } },
   },
   student: { select: { id: true } },
   guardian: { select: { id: true } },
@@ -152,6 +153,13 @@ async function loadUser(sessionId: string) {
       label: u.scopeLevel === "SELF" ? await familyScopeLabel(u.id) : (active?.name ?? u.commune?.name ?? u.department?.name ?? "Bénin"),
       // Logo of the active school, shown in the top bar.
       logoFileId: u.scopeLevel === "SCHOOL" ? (active?.logoFileId ?? null) : null,
+      // Administrative chain of a national or departmental account, and the
+      // school cycles the territory is limited to (null: every cycle).
+      chain: u.chain,
+      cycles: scopeCycles(u.scopeLevel, u.chain),
+      // Cycle and evaluation periodicity of the school the session works in.
+      cycle: u.scopeLevel === "SCHOOL" ? (active?.cycle ?? null) : null,
+      periodicity: u.scopeLevel === "SCHOOL" ? (active?.periodicity ?? null) : null,
     },
     // Schools the account can switch between (several for a teacher).
     schools: schools.map((sc) => ({ id: sc.id, name: sc.name, logoFileId: sc.logoFileId })),

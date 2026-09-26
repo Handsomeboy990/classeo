@@ -8,6 +8,7 @@ export { ConfirmButton } from "./confirm-button";
 export { DataTable, type Column } from "./data-table";
 export { FormDialog, useCloseDialog } from "./form-dialog";
 export { FormField } from "./form-field";
+export { InfoTip } from "./info-tip";
 export { AverageLevel } from "./level";
 export { MoreActions } from "./more-actions";
 export { PageHeader } from "./page-header";

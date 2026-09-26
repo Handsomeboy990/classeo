@@ -67,6 +67,7 @@ export default async function SheetPage(props: PageProps<"/espace/notes/[sheetId
               <SheetSettingsDialog
                 id={sheet.id}
                 values={{ formula: sheet.formula, interrogationCount: sheet.interrogationCount, devoirCount: sheet.devoirCount, compositionCount: sheet.compositionCount }}
+                allowsComposition={sheet.assignment.classroom.school.allowsComposition}
               />
             )}
             {editable && can(user, "grade:delete") && !hasGrades && (

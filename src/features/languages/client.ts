@@ -19,9 +19,12 @@ export type LanguageState = {
   showOriginal: boolean;
   voices: string[];
   languages: string[];
+  // Where the translation of the page stands, in words ("Page traduite en
+  // fongbe."), shown in the language menu and announced by the layer.
+  status: string;
 };
 
-const INITIAL: LanguageState = { allowed: false, userId: null, lang: "fr", lastLocal: "fon", showOriginal: false, voices: [], languages: [] };
+const INITIAL: LanguageState = { allowed: false, userId: null, lang: "fr", lastLocal: "fon", showOriginal: false, voices: [], languages: [], status: "" };
 
 let state: LanguageState = INITIAL;
 const listeners = new Set<() => void>();
@@ -72,6 +75,12 @@ export function setLanguage(lang: LanguageCode) {
 
 export function setShowOriginal(showOriginal: boolean) {
   state = { ...state, showOriginal };
+  emit();
+}
+
+export function setTranslationStatus(status: string) {
+  if (state.status === status) return;
+  state = { ...state, status };
   emit();
 }
 

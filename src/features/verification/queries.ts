@@ -28,6 +28,9 @@ async function pupilInitials(kind: string, subjectId: string | null) {
     case "bulletin":
       s = (await db.reportCard.findUnique({ where: { id: subjectId }, select: { enrollment: { select: { student: { select: pupil } } } } }))?.enrollment.student ?? (await fromEnrollment(subjectId));
       break;
+    case "radiation":
+      s = (await db.studentTransfer.findUnique({ where: { id: subjectId }, select: { student: { select: pupil } } }))?.student ?? null;
+      break;
     case "recu":
       s = (await db.payment.findFirst({ where: { OR: [{ id: subjectId }, { reference: subjectId }] }, select: { invoice: { select: { enrollment: { select: { student: { select: pupil } } } } } } }))?.invoice.enrollment.student ?? null;
       break;

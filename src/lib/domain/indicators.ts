@@ -75,14 +75,6 @@ export function computeIndicators(c: RawCounts): Indicators {
   };
 }
 
-// Yearly average of a student: plain mean of the published term averages.
-// Returns null when no term has an average.
-export function yearlyAverage(termAverages: (number | null | undefined)[]): number | null {
-  const values = termAverages.filter((v): v is number => typeof v === "number" && Number.isFinite(v));
-  if (!values.length) return null;
-  return values.reduce((a, b) => a + b, 0) / values.length;
-}
-
 // Indicators offered for sorting and charting, with their display format and
 // whether a higher value is the better one.
 export type IndicatorKey =

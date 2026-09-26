@@ -10,6 +10,8 @@ import {
   ClipboardCheck,
   FileCheck2,
   FileText,
+  FileUp,
+  FolderCheck,
   GraduationCap,
   Home,
   FileStack,
@@ -33,6 +35,7 @@ import {
   Wallet,
   Baby,
   ArrowLeftRight,
+  Banknote,
 } from "lucide-react";
 
 import type { PermissionCode } from "@/lib/auth/permissions";
@@ -71,6 +74,9 @@ export const NAVIGATION: NavSection[] = [
       { label: "Tableau de bord", href: "/espace", icon: Home, short: "Accueil" },
       { label: "Mes enfants", href: "/espace/suivi", icon: Baby, scopes: ["SELF"], permission: ["student:view"], tab: { family: 1 } },
       { label: "Ma scolarité", href: "/espace/suivi", icon: GraduationCap, scopes: ["SELF"], permission: ["report_card:view"], tab: { family: 1 } },
+      // Enrollment pieces, absence justifications and medical certificates
+      // sent to the school.
+      { label: "Pièces et justificatifs", href: "/espace/pieces-justificatifs", icon: FileUp, scopes: ["SELF"], permission: ["family_document:create"], short: "Pièces" },
     ],
   },
   {
@@ -96,6 +102,8 @@ export const NAVIGATION: NavSection[] = [
       // A school sees its team, the territory the national registry.
       { label: "Enseignants", href: "/espace/enseignants", icon: UserSquare2, permission: ["teacher:view"], scopes: STAFF },
       { label: "Parents", href: "/espace/parents", icon: Users, permission: ["parent:view"], scopes: ["SCHOOL"] },
+      // The queue of pieces and justifications sent by families.
+      { label: "Pièces des familles", href: "/espace/pieces-familles", icon: FolderCheck, permission: ["family_document:approve", "health_document:approve"], scopes: ["SCHOOL"], short: "Pièces" },
       { label: "Emploi du temps", href: "/espace/emploi-du-temps", icon: CalendarDays, permission: ["timetable:view"], scopes: ["SCHOOL"], short: "Horaires", tab: { teacher: 4 } },
     ],
   },
@@ -112,6 +120,7 @@ export const NAVIGATION: NavSection[] = [
     title: "Finances",
     items: [
       { label: "Frais et paiements", href: "/espace/frais", icon: Wallet, permission: ["fee:view", "payment:view"], scopes: ["SCHOOL"], short: "Frais", tab: { school: 3 } },
+      { label: "Paie du personnel", href: "/espace/paie", icon: Banknote, permission: ["payroll:view"], scopes: ["SCHOOL"], short: "Paie" },
     ],
   },
   {
@@ -137,6 +146,8 @@ export const NAVIGATION: NavSection[] = [
     title: "Mon compte",
     items: [
       { label: "Signature électronique", href: "/espace/signature", icon: PenLine, permission: ["report_card:publish", "request:approve"], scopes: STAFF, short: "Signature" },
+      // Teachers only: who pays them, and their payslips.
+      { label: "Ma paie", href: "/espace/ma-paie", icon: Banknote, permission: ["payslip:view"], scopes: ["SCHOOL"] },
       { label: "Préférences", href: "/espace/preferences", icon: Settings2 },
       { label: "Guide d'utilisation", href: "/espace/aide", icon: BookOpen, short: "Aide" },
     ],
@@ -161,6 +172,7 @@ export function visibleNavigation(user: NavUser): NavSection[] {
       // Family entries: "Mes enfants" for parents, "Ma scolarité" for students.
       if (item.label === "Mes enfants" && !user.guardianId) return false;
       if (item.label === "Ma scolarité" && !user.studentId) return false;
+      if (item.href === "/espace/ma-paie" && !user.teacherId) return false;
       if (seen.has(item.href)) return false;
       seen.add(item.href);
       return true;

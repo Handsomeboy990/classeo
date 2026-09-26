@@ -15,7 +15,7 @@ export default function PreferencesPage() {
   const pushKey = pushPublicKey();
   return (
     <>
-      <PageHeader title="Préférences" description="Adaptez l'affichage, la voix et les notifications à vos besoins. Ces réglages valent pour cet appareil." />
+      <PageHeader title="Préférences" info="Adaptez l'affichage, la voix et les notifications à vos besoins. Ces réglages valent pour cet appareil." />
       <div className="flex max-w-2xl flex-col gap-5">
         <Card aria-labelledby="prefs-display">
           <CardHeader>

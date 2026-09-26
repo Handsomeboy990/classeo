@@ -53,32 +53,70 @@ enum SchoolCycle {
   TECHNICAL
 }
 
+// Faith of a private confessional school (decree n° 2007-279: private
+// schools are secular or confessional). Franco-Arabic schools are
+// recognised confessional schools.
+enum SchoolDenomination {
+  CATHOLIC
+  PROTESTANT
+  ISLAMIC
+  FRANCO_ARABIC
+  OTHER
+}
+
+// Marks and report cards by trimester or by semester (MESTFP order n° 029
+// of 2024, articles 53 and 59). The holidays stay the same for everyone.
+enum Periodicity {
+  TRIMESTER
+  SEMESTER
+}
+
+// Administrative chain: MEMP, DDEMP and circonscriptions for nursery and
+// primary schools; MESTFP and DDESTFP for secondary schools.
+enum EducationChain {
+  PRIMARY
+  SECONDARY
+}
+
 model School {
-  id              String       @id @default(cuid())
-  code            String       @unique
-  name            String
-  sector          SchoolSector
-  cycle           SchoolCycle
-  communeId       String
-  commune         Commune      @relation(fields: [communeId], references: [id])
-  address         String?
-  phone           String?
-  email           String?
-  latitude        Float?
-  longitude       Float?
-  postalBox       String?
-  website         String?
-  motto           String?
-  logoFileId      String?
-  logo            FileBlob?    @relation("schoolLogo", fields: [logoFileId], references: [id], onDelete: SetNull)
-  isActive        Boolean      @default(true)
+  id                String              @id @default(cuid())
+  code              String              @unique
+  name              String
+  sector            SchoolSector
+  cycle             SchoolCycle
+  // Private schools: faith of a confessional school, bilingual programme,
+  // opening authorisation (ministerial order) and promoter.
+  denomination      SchoolDenomination?
+  isBilingual       Boolean             @default(false)
+  authorizationRef  String?
+  authorizationDate DateTime?
+  promoter          String?
+  communeId         String
+  commune           Commune             @relation(fields: [communeId], references: [id])
+  address           String?
+  phone             String?
+  email             String?
+  latitude          Float?
+  longitude         Float?
+  postalBox         String?
+  website           String?
+  motto             String?
+  logoFileId        String?
+  logo              FileBlob?           @relation("schoolLogo", fields: [logoFileId], references: [id], onDelete: SetNull)
+  isActive          Boolean             @default(true)
+  // Set by the ministry: semesters for public secondary schools, trimesters
+  // elsewhere by default (lib/domain/periodicity.ts), overridable per school.
+  periodicity       Periodicity         @default(TRIMESTER)
+  // Compositions are a school practice, not the national rule: the grade
+  // sheets offer them only when the school enables them.
+  allowsComposition Boolean             @default(false)
   // Decided by the ministry chain: a suspended or closed school keeps its
   // history readable but accepts no new writes.
-  status          SchoolStatus @default(ACTIVE)
-  statusReason    String?
-  statusChangedAt DateTime?
-  createdAt       DateTime     @default(now())
-  updatedAt       DateTime     @updatedAt
+  status            SchoolStatus        @default(ACTIVE)
+  statusReason      String?
+  statusChangedAt   DateTime?
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
 
   users                  User[]
   teachers               Teacher[]
@@ -105,6 +143,8 @@ model School {
   subjectsRequested      Subject[]
   roles                  Role[]
   activeSessions         Session[]
+  requiredPieces         RequiredPiece[]
+  familyDocuments        FamilyDocument[]
 
   @@index([communeId])
 }
@@ -194,32 +234,35 @@ enum Gender {
 }
 
 model User {
-  id                 String      @id @default(cuid())
+  id                 String          @id @default(cuid())
   // Sign in identifier generated from first and last name ("afiavi.hounkpatin",
   // then "afiavi.hounkpatin2"...). The e-mail is optional.
-  username           String      @unique
-  email              String?     @unique
+  username           String          @unique
+  email              String?         @unique
   phone              String?
   passwordHash       String
   firstName          String
   lastName           String
   gender             Gender?
   roleId             String
-  role               Role        @relation(fields: [roleId], references: [id])
+  role               Role            @relation(fields: [roleId], references: [id])
   scopeLevel         ScopeLevel
   departmentId       String?
-  department         Department? @relation(fields: [departmentId], references: [id])
+  department         Department?     @relation(fields: [departmentId], references: [id])
   communeId          String?
-  commune            Commune?    @relation(fields: [communeId], references: [id])
+  commune            Commune?        @relation(fields: [communeId], references: [id])
   schoolId           String?
-  school             School?     @relation(fields: [schoolId], references: [id])
-  isActive           Boolean     @default(true)
-  mustChangePassword Boolean     @default(false)
-  failedLoginCount   Int         @default(0)
+  school             School?         @relation(fields: [schoolId], references: [id])
+  // For national and departmental accounts: the chain they belong to (a
+  // DDEMP or a DDESTFP). Null reaches both chains.
+  chain              EducationChain?
+  isActive           Boolean         @default(true)
+  mustChangePassword Boolean         @default(false)
+  failedLoginCount   Int             @default(0)
   lockedUntil        DateTime?
   lastLoginAt        DateTime?
-  createdAt          DateTime    @default(now())
-  updatedAt          DateTime    @updatedAt
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
 
   passwordResetTokens PasswordResetToken[]
   sessions            Session[]
@@ -246,6 +289,8 @@ model User {
   requestsFiled       SchoolRequest[]           @relation("requestAuthor")
   requestsDecided     SchoolRequest[]           @relation("requestDecider")
   paymentsRecorded    Payment[]
+  familyDocsSubmitted FamilyDocument[]          @relation("familyDocSubmitter")
+  familyDocsReviewed  FamilyDocument[]          @relation("familyDocReviewer")
 
   @@index([roleId])
   @@index([schoolId])
@@ -337,7 +382,10 @@ model SchoolPeriod {
   id             String       @id @default(cuid())
   academicYearId String
   academicYear   AcademicYear @relation(fields: [academicYearId], references: [id])
-  name           String // "Trimestre 1"
+  name           String // "Trimestre 1", "Semestre 2"
+  // Each year holds the three trimesters and the two semesters; a school
+  // uses the set of its own periodicity.
+  periodicity    Periodicity  @default(TRIMESTER)
   order          Int
   startDate      DateTime
   endDate        DateTime
@@ -345,17 +393,18 @@ model SchoolPeriod {
   gradeSheets    GradeSheet[]
   reportCards    ReportCard[]
 
-  @@unique([academicYearId, order])
+  @@unique([academicYearId, periodicity, order])
 }
 
 model AcademicLevel {
-  id         String      @id @default(cuid())
-  code       String      @unique // "CI", "6E", "TLE"
+  id         String          @id @default(cuid())
+  code       String          @unique // "CI", "6E", "TLE"
   name       String
   cycle      SchoolCycle
   order      Int
   classrooms Classroom[]
   feeTypes   FeeType[]
+  pieces     RequiredPiece[]
 }
 
 enum SubjectStatus {
@@ -377,6 +426,16 @@ model Subject {
   assignments         CourseAssignment[]
 }
 
+// Employment of a teacher: agents of the State (APE, ACE, AME), paid by the
+// Ministry of Finance; vacataires and private teachers, paid by the school.
+enum TeacherStatus {
+  APE
+  ACE
+  AME
+  VACATAIRE
+  PRIVATE
+}
+
 // A teacher's appointment in one school. The same person teaching in two
 // schools has two Teacher rows sharing one TeacherProfile and one account.
 model Teacher {
@@ -388,6 +447,10 @@ model Teacher {
   schoolId    String
   school      School              @relation(fields: [schoolId], references: [id])
   matricule   String              @unique
+  // Status in this school: an agent of the State keeps the status of the
+  // ministry registry; a school hires vacataires and, if private, its own
+  // teachers. Null: not yet recorded.
+  status      TeacherStatus?
   firstName   String
   lastName    String
   gender      Gender?
@@ -398,6 +461,7 @@ model Teacher {
   assignments CourseAssignment[]
   mainClasses Classroom[]
   attendances TeacherAttendance[]
+  payrolls    Payroll[]
 
   @@unique([userId, schoolId])
   @@index([schoolId])
@@ -407,17 +471,22 @@ model Teacher {
 // The person behind the appointments: found by NPI, phone or names before a
 // school creates a new teacher, so nobody is registered twice.
 model TeacherProfile {
-  id        String    @id @default(cuid())
-  userId    String?   @unique
-  user      User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
-  npi       String?   @unique
-  firstName String
-  lastName  String
-  gender    Gender?
-  phone     String?
-  email     String?
-  createdAt DateTime  @default(now())
-  teachers  Teacher[]
+  id             String         @id @default(cuid())
+  userId         String?        @unique
+  user           User?          @relation(fields: [userId], references: [id], onDelete: SetNull)
+  npi            String?        @unique
+  // The ministry's registry of State teachers: status (APE, ACE or AME) and
+  // State matricule, the one of the Ministry of Finance payslips. Recorded
+  // by the ministry only; schools appoint these teachers, never create them.
+  stateStatus    TeacherStatus?
+  stateMatricule String?        @unique
+  firstName      String
+  lastName       String
+  gender         Gender?
+  phone          String?
+  email          String?
+  createdAt      DateTime       @default(now())
+  teachers       Teacher[]
 
   @@index([phone])
   @@index([lastName, firstName])
@@ -491,6 +560,7 @@ model Student {
   recordAccess StudentRecordAccess[]
   guardians    StudentGuardian[]
   enrollments  Enrollment[]
+  documents    FamilyDocument[]
 }
 
 enum ContactChannel {
@@ -531,22 +601,24 @@ enum EnrollmentStatus {
 }
 
 model Enrollment {
-  id             String              @id @default(cuid())
-  studentId      String
-  student        Student             @relation(fields: [studentId], references: [id])
-  schoolId       String
-  school         School              @relation(fields: [schoolId], references: [id])
-  classroomId    String
-  classroom      Classroom           @relation(fields: [classroomId], references: [id])
-  academicYearId String
-  academicYear   AcademicYear        @relation(fields: [academicYearId], references: [id])
-  status         EnrollmentStatus    @default(ACTIVE)
-  isRepeating    Boolean             @default(false)
-  enrolledAt     DateTime            @default(now())
-  grades         Grade[]
-  reportCards    ReportCard[]
-  attendances    StudentAttendance[]
-  invoices       Invoice[]
+  id              String                @id @default(cuid())
+  studentId       String
+  student         Student               @relation(fields: [studentId], references: [id])
+  schoolId        String
+  school          School                @relation(fields: [schoolId], references: [id])
+  classroomId     String
+  classroom       Classroom             @relation(fields: [classroomId], references: [id])
+  academicYearId  String
+  academicYear    AcademicYear          @relation(fields: [academicYearId], references: [id])
+  status          EnrollmentStatus      @default(ACTIVE)
+  isRepeating     Boolean               @default(false)
+  enrolledAt      DateTime              @default(now())
+  grades          Grade[]
+  reportCards     ReportCard[]
+  attendances     StudentAttendance[]
+  invoices        Invoice[]
+  councilDecision ClassCouncilDecision?
+  documents       FamilyDocument[]
 
   @@unique([studentId, academicYearId])
   @@index([classroomId])
@@ -558,7 +630,8 @@ model Enrollment {
 // ---------------------------------------------------------------------------
 
 enum GradeFormula {
-  WEIGHTED_STANDARD // (interrogations average + devoir + 2 x composition) / 4
+  OFFICIAL_2024 // order n° 029 of 2024: (interrogations average + each devoir surveillé) / number of marks
+  WEIGHTED_STANDARD // school practice: (interrogations average + devoirs average + 2 x composition) / 4
   SIMPLE_AVERAGE
   COMPOSITION_ONLY
 }
@@ -575,10 +648,10 @@ model GradeSheet {
   assignment         CourseAssignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
   periodId           String
   period             SchoolPeriod     @relation(fields: [periodId], references: [id])
-  formula            GradeFormula     @default(WEIGHTED_STANDARD)
+  formula            GradeFormula     @default(OFFICIAL_2024)
   interrogationCount Int              @default(2)
-  devoirCount        Int              @default(1)
-  compositionCount   Int              @default(1)
+  devoirCount        Int              @default(2)
+  compositionCount   Int              @default(0)
   isLocked           Boolean          @default(false)
   lockedAt           DateTime?
   lockedById         String?
@@ -629,6 +702,28 @@ model ReportCard {
   @@unique([enrollmentId, periodId])
 }
 
+// End of year decision of the class council for a pupil (MESTFP order
+// n° 029 of 2024, articles 60 to 63): passage with a yearly average of at
+// least 10/20, repetition below; exclusion is decided by the council.
+enum CouncilDecision {
+  PROMOTED
+  REPEAT
+  EXCLUDED
+}
+
+model ClassCouncilDecision {
+  id            String          @id @default(cuid())
+  enrollmentId  String          @unique
+  enrollment    Enrollment      @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  decision      CouncilDecision
+  // The yearly average the council had before it, kept as decided.
+  yearlyAverage Decimal?        @db.Decimal(5, 2)
+  note          String?
+  decidedById   String
+  decidedAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+}
+
 // ---------------------------------------------------------------------------
 // Attendance
 // ---------------------------------------------------------------------------
@@ -646,16 +741,18 @@ enum DayHalf {
 }
 
 model StudentAttendance {
-  id           String           @id @default(cuid())
-  enrollmentId String
-  enrollment   Enrollment       @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
-  date         DateTime         @db.Date
-  half         DayHalf
-  status       AttendanceStatus
-  reason       String?
-  recordedById String
-  recordedBy   User             @relation(fields: [recordedById], references: [id])
-  createdAt    DateTime         @default(now())
+  id             String           @id @default(cuid())
+  enrollmentId   String
+  enrollment     Enrollment       @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  date           DateTime         @db.Date
+  half           DayHalf
+  status         AttendanceStatus
+  reason         String?
+  recordedById   String
+  recordedBy     User             @relation(fields: [recordedById], references: [id])
+  createdAt      DateTime         @default(now())
+  // Justifications a family sent for this absence.
+  justifications FamilyDocument[]
 
   @@unique([enrollmentId, date, half])
   @@index([date])
@@ -762,13 +859,19 @@ model ConversationParticipant {
 }
 
 model Message {
-  id             String       @id @default(cuid())
-  conversationId String
-  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
-  senderId       String
-  sender         User         @relation(fields: [senderId], references: [id])
-  body           String
-  createdAt      DateTime     @default(now())
+  id              String       @id @default(cuid())
+  conversationId  String
+  conversation    Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  senderId        String
+  sender          User         @relation(fields: [senderId], references: [id])
+  // Empty for a voice note.
+  body            String
+  // A voice note: the recording (FileBlob purpose "voice_note") and its
+  // length as measured by the recorder, which WebM files do not carry.
+  audioFileId     String?      @unique
+  audio           FileBlob?    @relation("voiceNote", fields: [audioFileId], references: [id], onDelete: SetNull)
+  audioDurationMs Int?
+  createdAt       DateTime     @default(now())
 
   @@index([conversationId, createdAt])
 }
@@ -842,8 +945,17 @@ model SchoolRequest {
 // W2: fees and payments
 // ---------------------------------------------------------------------------
 
+// What a fee is for: the rules of free schooling depend on it (the girls
+// of public secondary schools are exempt from the contribution scolaire).
+enum FeeKind {
+  SCHOOL_CONTRIBUTION
+  APE_DUES
+  OTHER
+}
+
 model FeeType {
   id             String         @id @default(cuid())
+  kind           FeeKind        @default(OTHER)
   schoolId       String
   school         School         @relation(fields: [schoolId], references: [id])
   academicYearId String
@@ -1009,17 +1121,36 @@ enum PayrollStatus {
   PAID
 }
 
+// A monthly payslip a school issues to a teacher it pays (a vacataire or a
+// private teacher). Agents of the State are paid by the Ministry of Finance
+// and never get one here. DRAFT while prepared; APPROVED once validated,
+// when the teacher sees it in "Ma paie"; PAID once the money is handed over.
 model Payroll {
-  id           String        @id @default(cuid())
-  schoolId     String
-  school       School        @relation(fields: [schoolId], references: [id])
-  salaryGridId String?
-  salaryGrid   SalaryGrid?   @relation(fields: [salaryGridId], references: [id])
-  employeeName String
-  month        String // "2026-01"
-  grossAmount  Int
-  netAmount    Int
-  status       PayrollStatus @default(DRAFT)
+  id             String        @id @default(cuid())
+  schoolId       String
+  school         School        @relation(fields: [schoolId], references: [id])
+  salaryGridId   String?
+  salaryGrid     SalaryGrid?   @relation(fields: [salaryGridId], references: [id])
+  teacherId      String?
+  teacher        Teacher?      @relation(fields: [teacherId], references: [id])
+  employeeName   String
+  month          String // "2026-01"
+  baseAmount     Int           @default(0)
+  allowances     Int           @default(0)
+  allowancesNote String?
+  deductions     Int           @default(0)
+  deductionsNote String?
+  grossAmount    Int
+  netAmount      Int
+  status         PayrollStatus @default(DRAFT)
+  approvedAt     DateTime?
+  paidAt         DateTime?
+  createdById    String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @default(now()) @updatedAt
+
+  @@unique([teacherId, month])
+  @@index([schoolId, month])
 }
 
 model Budget {
@@ -1054,7 +1185,7 @@ model FileBlob {
   id          String   @id @default(cuid())
   ownerUserId String?
   owner       User?    @relation("fileOwner", fields: [ownerUserId], references: [id], onDelete: SetNull)
-  purpose     String // "student_photo", "school_logo", "signature", "stamp", "document", "payment_proof"
+  purpose     String // see FilePurpose in src/lib/files.ts
   fileName    String
   mimeType    String
   size        Int
@@ -1068,6 +1199,8 @@ model FileBlob {
   stamps        UserSignature[]       @relation("stampImage")
   documentFiles DocumentRequestFile[]
   paymentProofs PaymentDeclaration[]
+  voiceNotes    Message[]             @relation("voiceNote")
+  familyDocs    FamilyDocument[]
 
   @@index([ownerUserId])
 }
@@ -1447,4 +1580,87 @@ model FeatureFlag {
   description String
   updatedById String?
   updatedAt   DateTime @updatedAt
+}
+
+// ---------------------------------------------------------------------------
+// Pieces and justifications sent by families
+// ---------------------------------------------------------------------------
+
+// A piece a school asks families for at enrollment (acte de naissance,
+// photos, bulletins...), for every level or for one level. A health piece
+// (livret de santé, carnet de vaccination) is checked, then its file is
+// deleted: only the decision is kept.
+model RequiredPiece {
+  id          String           @id @default(cuid())
+  schoolId    String
+  school      School           @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  levelId     String?
+  level       AcademicLevel?   @relation(fields: [levelId], references: [id], onDelete: SetNull)
+  label       String
+  description String?
+  isHealth    Boolean          @default(false)
+  sortOrder   Int              @default(0)
+  // Withdrawn from the list: kept for the pieces already sent.
+  archivedAt  DateTime?
+  createdAt   DateTime         @default(now())
+  documents   FamilyDocument[]
+
+  @@index([schoolId])
+}
+
+enum FamilyDocumentKind {
+  ENROLLMENT
+  ABSENCE
+  MEDICAL
+}
+
+enum FamilyDocumentStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+// One piece sent by a parent (or a student of 16 or more) and the school's
+// decision on it:
+// - ENROLLMENT: answers a RequiredPiece;
+// - ABSENCE: justifies one absence; accepted, the absence becomes excused;
+// - MEDICAL: a medical certificate for an EPS dispensation over a period.
+//   The file is deleted once decided; the row stays as the dispensation.
+// A refused piece stays as history; the family sends a new one.
+model FamilyDocument {
+  id              String               @id @default(cuid())
+  kind            FamilyDocumentKind
+  status          FamilyDocumentStatus @default(PENDING)
+  studentId       String
+  student         Student              @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  enrollmentId    String
+  enrollment      Enrollment           @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  schoolId        String
+  school          School               @relation(fields: [schoolId], references: [id])
+  requiredPieceId String?
+  requiredPiece   RequiredPiece?       @relation(fields: [requiredPieceId], references: [id], onDelete: SetNull)
+  attendanceId    String?
+  attendance      StudentAttendance?   @relation(fields: [attendanceId], references: [id], onDelete: SetNull)
+  // EPS dispensation period, both days included.
+  startsOn        DateTime?            @db.Date
+  endsOn          DateTime?            @db.Date
+  // What the family wrote (reason of the absence, a word for the school).
+  note            String?
+  fileId          String?              @unique
+  file            FileBlob?            @relation(fields: [fileId], references: [id], onDelete: SetNull)
+  // Set when the file was deleted after the decision (health pieces).
+  fileRemovedAt   DateTime?
+  submittedById   String
+  submittedBy     User                 @relation("familyDocSubmitter", fields: [submittedById], references: [id])
+  reviewedById    String?
+  reviewedBy      User?                @relation("familyDocReviewer", fields: [reviewedById], references: [id])
+  reviewedAt      DateTime?
+  reviewNote      String?
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+
+  @@index([schoolId, kind, status])
+  @@index([enrollmentId])
+  @@index([attendanceId])
+  @@index([requiredPieceId])
 }

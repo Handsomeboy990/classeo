@@ -15,15 +15,24 @@ type User = NonNullable<CurrentUser>;
 
 const NOTHING = { id: "__none__" } as const;
 
+// The administrative chain narrows a territory to the school cycles it
+// supervises: a DDEMP and a circonscription reach nursery and primary
+// schools, a DDESTFP secondary ones (lib/domain/chains.ts). No cycles, no
+// narrowing: the ministry, a school, or an account without a chain.
+export function chainWhere(user: User): Prisma.SchoolWhereInput {
+  const cycles = user.scope.cycles;
+  return cycles ? { cycle: { in: [...cycles] } } : {};
+}
+
 export function schoolWhere(user: User): Prisma.SchoolWhereInput {
   const s = user.scope;
   switch (s.level) {
     case "NATIONAL":
-      return {};
+      return chainWhere(user);
     case "DEPARTMENT":
-      return s.departmentId ? { commune: { departmentId: s.departmentId } } : NOTHING;
+      return s.departmentId ? { commune: { departmentId: s.departmentId }, ...chainWhere(user) } : NOTHING;
     case "COMMUNE":
-      return s.communeId ? { communeId: s.communeId } : NOTHING;
+      return s.communeId ? { communeId: s.communeId, ...chainWhere(user) } : NOTHING;
     case "SCHOOL":
       return s.schoolId ? { id: s.schoolId } : NOTHING;
     case "SELF":

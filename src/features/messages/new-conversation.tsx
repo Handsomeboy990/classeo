@@ -8,13 +8,14 @@ import { FormField } from "@/components/kit/form-field";
 import { MultiPicker, type PickerOption } from "@/components/kit/multi-picker";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
-import { Input, Textarea } from "@/components/ui/input";
+import { Input, Switch, Textarea } from "@/components/ui/input";
 import { MAX_INSTITUTION_RECIPIENTS } from "@/lib/domain/institutions";
 import { cn } from "@/lib/utils";
 
 import { FormRecovery } from "../contents/form-recovery";
 import { startConversation } from "./actions";
 import type { Contact } from "./queries";
+import { canShare, MAX_RECIPIENTS } from "./recipients";
 import { QUICK_MESSAGES } from "./templates";
 
 type Mode = "person" | "institution";
@@ -27,18 +28,25 @@ export function NewConversation({
   institutions,
   sender,
   showQuick,
+  family = false,
 }: {
   contacts: Contact[];
   institutions: PickerOption[];
   // Name of the institution the user writes for, if any.
   sender: string | null;
   showQuick: boolean;
+  // The user is a parent or a student: every group send is private.
+  family?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const canInstitution = !!sender && institutions.length > 0;
   const [mode, setMode] = useState<Mode>(contacts.length === 0 && canInstitution ? "institution" : "person");
   const [person, setPerson] = useState<string[]>([]);
+  const [shared, setShared] = useState(true);
   const [picked, setPicked] = useState<string[]>([]);
+  const familyOf = new Map(contacts.map((c) => [c.id, c.family]));
+  const shareable = canShare(family, person.map((id) => familyOf.get(id) ?? true));
+  const separate = person.length > 1 && !(shareable && shared);
   const [subject, setSubject] = useState("");
   const [body, setBody] = useState("");
   const people: PickerOption[] = contacts.map((c) => ({ value: c.id, label: c.name, group: c.group, detail: c.detail }));
@@ -95,7 +103,35 @@ export function NewConversation({
               </fieldset>
             )}
             {mode === "person" ? (
-              <MultiPicker name="recipientId" legend="Destinataire" options={people} selected={person} onChange={setPerson} single searchPlaceholder="Rechercher une personne…" />
+              <>
+                <MultiPicker
+                  name="recipientIds"
+                  legend="Destinataires"
+                  hint="Une personne, ou plusieurs pour leur envoyer le même message."
+                  options={people}
+                  selected={person}
+                  onChange={setPerson}
+                  max={MAX_RECIPIENTS}
+                  searchPlaceholder="Rechercher une personne…"
+                />
+                {shareable && (
+                  <Switch
+                    name="shared"
+                    value="on"
+                    checked={shared}
+                    onChange={(e) => setShared(e.target.checked)}
+                    label="Une seule conversation pour tout le groupe"
+                    description="Chacun voit les autres destinataires et lit toutes les réponses. Décochez pour écrire à chacun séparément."
+                  />
+                )}
+                {separate && (
+                  <p role="status" className="rounded-control border border-border bg-surface-2 px-3 py-2 text-sm">
+                    {family || person.some((id) => familyOf.get(id))
+                      ? `Chaque personne reçoit sa propre conversation : les ${person.length} destinataires ne se voient pas entre eux et chacun vous répond en privé.`
+                      : `Chaque personne reçoit sa propre conversation (${person.length} en tout).`}
+                  </p>
+                )}
+              </>
             ) : (
               <MultiPicker
                 name="institutions"
@@ -141,7 +177,8 @@ export function NewConversation({
                 Annuler
               </Button>
               <SubmitButton pendingLabel="Envoi…">
-                <SendHorizonal aria-hidden /> {mode === "institution" && picked.length > 1 ? `Envoyer à ${picked.length} destinataires` : "Envoyer"}
+                <SendHorizonal aria-hidden />{" "}
+                {mode === "institution" && picked.length > 1 ? `Envoyer à ${picked.length} destinataires` : mode === "person" && person.length > 1 ? `Envoyer à ${person.length} personnes` : "Envoyer"}
               </SubmitButton>
             </div>
           </ActionForm>

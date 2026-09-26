@@ -13,6 +13,8 @@ import type { CurrentUser } from "@/lib/auth/session";
 import { cn, formatAverage, formatDate } from "@/lib/utils";
 
 import { DateLeaf, formatEventDate, PictoTile, SectionTitle, SpokenSummary } from "./components/blocks";
+import { ofThePeriod, thisPeriod } from "@/lib/domain/periodicity";
+
 import { beninToday, countWord, spokenTime } from "./logic";
 import { childOverview, type ChildOverview } from "./overview";
 import { classResources, followedEnrollments, unreadMessageCount, upcomingEvents } from "./queries";
@@ -63,15 +65,15 @@ export async function FamilyDashboard({ user }: { user: User }) {
     <>
       <PageHeader
         title={`Bonjour, ${user.firstName}`}
-        description={isParent ? "Bulletins, présences et cours de vos enfants. « Écouter » lit ce résumé à voix haute." : "Vos cours, vos notes et vos présences. « Écouter » lit ce résumé à voix haute."}
-        readable={false}
+        description={isParent ? "Bulletins, présences et cours de vos enfants" : "Vos cours, vos notes et vos présences"}
+        info="Le bouton haut-parleur lit à voix haute le résumé de la journée : messages, événements et, pour chaque enfant, ses derniers résultats."
+        listen={{ text: household, label: "Écouter" }}
       />
       <GuardianTransferRequests user={user} />
 
-      <div className="grid grid-cols-1 gap-3 sm:gap-4 lg:grid-cols-[1fr_20rem]">
-        <SpokenSummary text={household} label="Écouter" />
-        <PictoTile icon={MessageCircle} tone={unread ? "danger" : "primary"} title="Messages" href="/espace/messages" layout="row">
-          <p className="font-display text-lg font-bold lg:text-2xl">{unread ? `${unread} non lu${unread > 1 ? "s" : ""}` : "À jour"}</p>
+      <div className="lg:max-w-md">
+        <PictoTile icon={MessageCircle} tone={unread ? "danger" : "primary"} title="Messages" href="/espace/messages" layout="strip">
+          <p className="font-display text-lg font-bold">{unread ? `${unread} non lu${unread > 1 ? "s" : ""}` : "À jour"}</p>
         </PictoTile>
       </div>
 
@@ -168,20 +170,20 @@ function ChildPanel({ overview: o, isParent }: { overview: ChildOverview; isPare
             {e.classroom.name} · {e.school.name}
           </p>
         </div>
+        <SpokenSummary text={o.summary} />
         <ButtonLink href={base} variant="secondary" className="max-sm:w-full">
           {isParent ? "Suivi complet" : "Ma scolarité"}
         </ButtonLink>
       </div>
-      <div className="p-4 sm:p-5">
-        <SpokenSummary text={o.summary} />
+      <div className="p-3 sm:p-5">
         {/* Two by two from the smallest phone: results first, then the week
             and the day. */}
-        <div className="mt-4 grid grid-cols-2 gap-2.5 sm:gap-3 2xl:grid-cols-4">
+        <div className="grid grid-cols-2 gap-2.5 sm:gap-3 2xl:grid-cols-4">
           <PictoTile icon={FileText} title="Dernier bulletin" href={base} footer={o.lastReport?.periodLabel}>
             {o.lastReport ? <AverageLevel average={o.lastReport.average} /> : <p className="text-sm text-muted">Pas encore de bulletin publié.</p>}
           </PictoTile>
-          <PictoTile icon={NotebookPen} tone="accent" title="Notes du trimestre" href={`${base}/notes`} footer={o.term.period ? `${o.term.period.name} · ${countWord(gradeCount, "note", "notes").toLowerCase()}` : undefined}>
-            {o.term.average !== null ? <AverageLevel average={o.term.average} /> : <p className="text-sm text-muted">Pas encore de note ce trimestre.</p>}
+          <PictoTile icon={NotebookPen} tone="accent" title={`Notes ${ofThePeriod(o.term.periodicity)}`} href={`${base}/notes`} footer={o.term.period ? `${o.term.period.name} · ${countWord(gradeCount, "note", "notes").toLowerCase()}` : undefined}>
+            {o.term.average !== null ? <AverageLevel average={o.term.average} /> : <p className="text-sm text-muted">Pas encore de note {thisPeriod(o.term.periodicity)}.</p>}
           </PictoTile>
           <PictoTile
             icon={CalendarCheck}
@@ -233,7 +235,7 @@ function TermGrades({ overview: o }: { overview: ChildOverview }) {
   return (
     <section aria-labelledby="my-grades-title">
       <SectionTitle icon={NotebookPen} action={<ButtonLink href={`/espace/suivi/${o.enrollment.student.id}/notes`} variant="ghost" size="sm">Tout voir</ButtonLink>}>
-        <span id="my-grades-title">Mes notes ce trimestre</span>
+        <span id="my-grades-title">Mes notes {thisPeriod(o.term.periodicity)}</span>
       </SectionTitle>
       {withGrades.length ? (
         <ul className="divide-y divide-border rounded-card border border-border bg-surface [&_.rounded-full]:flex-wrap">

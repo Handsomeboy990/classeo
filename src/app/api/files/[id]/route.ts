@@ -1,10 +1,14 @@
+import { canReadFamilyFile } from "@/features/family-documents/access";
+import { conversationWhere } from "@/features/messages/queries";
 import { enrollmentWhere, schoolWhere } from "@/lib/auth/scope";
 import { getCurrentUser } from "@/lib/auth/session";
 import { db } from "@/lib/db";
+import { contentDisposition, parseRange } from "@/lib/http-files";
 
 // Serves an uploaded file after checking the reader may see it. Unknown ids
-// and refused reads get the same 404, so ids cannot be probed.
-export async function GET(_request: Request, { params }: RouteContext<"/api/files/[id]">) {
+// and refused reads get the same 404, so ids cannot be probed. The type sent
+// is the one sniffed at upload, never what the uploader declared.
+export async function GET(request: Request, { params }: RouteContext<"/api/files/[id]">) {
   const { id } = await params;
   const user = await getCurrentUser();
   const notFound = () => new Response("Introuvable", { status: 404, headers: { "Cache-Control": "no-store" } });
@@ -14,6 +18,8 @@ export async function GET(_request: Request, { params }: RouteContext<"/api/file
   if (!file) return notFound();
 
   let allowed = false;
+  // Health pieces are never kept in a cache, even the browser's.
+  let sensitive = false;
   switch (file.purpose) {
     case "school_logo":
       allowed = true;
@@ -33,16 +39,39 @@ export async function GET(_request: Request, { params }: RouteContext<"/api/file
     case "payment_proof":
       allowed = (await db.paymentDeclaration.count({ where: { proofFileId: id, invoice: { enrollment: enrollmentWhere(user) } } })) > 0;
       break;
+    case "voice_note":
+      // The participants of the conversation, or the staff of a
+      // participating institution: the same filter as the thread.
+      allowed = (await db.message.count({ where: { audioFileId: id, conversation: conversationWhere(user) } })) > 0;
+      break;
+    case "family_document": {
+      const access = await canReadFamilyFile(user, id);
+      allowed = access.allowed;
+      sensitive = access.health;
+      break;
+    }
   }
   if (!allowed) return notFound();
 
   const headers: Record<string, string> = {
     "Content-Type": file.mimeType,
-    "Cache-Control": "private, max-age=300",
+    "Cache-Control": sensitive ? "private, no-store" : "private, max-age=300",
     "X-Content-Type-Options": "nosniff",
-    "Content-Disposition": `${file.mimeType === "application/pdf" ? "attachment" : "inline"}; filename="${encodeURIComponent(file.fileName)}"`,
+    "Content-Disposition": contentDisposition(file.fileName, file.mimeType === "application/pdf" ? "attachment" : "inline"),
+    // Audio players (Safari first) read media by byte ranges.
+    "Accept-Ranges": "bytes",
   };
   // An SVG is shown as an image, never run as a document.
   if (file.mimeType === "image/svg+xml") headers["Content-Security-Policy"] = "default-src 'none'; style-src 'unsafe-inline'; sandbox";
-  return new Response(new Uint8Array(file.data), { headers });
+
+  const bytes = new Uint8Array(file.data);
+  const range = parseRange(request.headers.get("range"), bytes.byteLength);
+  if (range === "invalid") return new Response(null, { status: 416, headers: { ...headers, "Content-Range": `bytes */${bytes.byteLength}` } });
+  if (range) {
+    return new Response(bytes.slice(range.start, range.end + 1), {
+      status: 206,
+      headers: { ...headers, "Content-Range": `bytes ${range.start}-${range.end}/${bytes.byteLength}`, "Content-Length": String(range.end - range.start + 1) },
+    });
+  }
+  return new Response(bytes, { headers: { ...headers, "Content-Length": String(bytes.byteLength) } });
 }

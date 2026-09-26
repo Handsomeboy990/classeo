@@ -96,7 +96,7 @@ export default async function TransfersPage(props: PageProps<"/espace/transferts
 
   return (
     <div className="flex flex-col gap-4">
-      <PageHeader title="Transferts" description={description} />
+      <PageHeader title="Transferts" info={description} />
       {isSchool && (
         <nav aria-label="Sens des transferts" className="flex flex-wrap gap-2">
           {tabs.map((t) => {

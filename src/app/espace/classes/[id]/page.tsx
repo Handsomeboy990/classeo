@@ -1,4 +1,4 @@
-import { CalendarCheck, ClipboardCheck, FileText, GraduationCap, NotebookPen, Percent, Trash2, TrendingUp, Users } from "lucide-react";
+import { CalendarCheck, ClipboardCheck, FileText, GraduationCap, HeartPulse, NotebookPen, Percent, Trash2, TrendingUp, Users } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -11,11 +11,12 @@ import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TD, TH, THead, TR } from "@/components/ui/table";
-import { getCurrentPeriod } from "@/features/classes/academic";
+import { getCurrentPeriod, schoolPeriodicity } from "@/features/classes/academic";
 import { deleteAssignment, deleteClassroom } from "@/features/classes/actions";
 import { AssignmentDialog, EditClassDialog } from "@/features/classes/components/class-forms";
 import { ConfirmButton } from "@/components/kit/confirm-button";
 import { classFormOptions, getClassroom } from "@/features/classes/queries";
+import { classDispensations } from "@/features/family-documents/queries";
 import { computeClassCards } from "@/features/report-cards/compute";
 import { DISABILITY_LABELS } from "@/features/students/labels";
 import { can, requirePermission } from "@/lib/auth/authorize";
@@ -33,7 +34,7 @@ export default async function ClassPage(props: PageProps<"/espace/classes/[id]">
   const classroom = await getClassroom(user, id);
   if (!classroom) notFound();
 
-  const period = await getCurrentPeriod();
+  const period = await getCurrentPeriod(await schoolPeriodicity(classroom.schoolId));
   const week = schoolWeek(todayIso());
   const canUpdate = can(user, "class:update");
   // Averages and attendance need their own rights: seeing a class (accountant,
@@ -52,6 +53,9 @@ export default async function ClassPage(props: PageProps<"/espace/classes/[id]">
     canUpdate ? classFormOptions(user) : null,
   ]);
   const active = classroom.academicYear.isActive;
+  // Everyone who opens the class, the EPS teacher first, sees who is
+  // dispensed and until when.
+  const dispensations = active ? await classDispensations(user, classroom.id) : [];
   const documents = [
     can(user, "student:view") && { href: `/api/pdf/liste-de-classe/${classroom.id}`, label: "Liste de classe", description: `élèves de la ${classroom.name}, en PDF` },
     can(user, "attendance:view") &&
@@ -86,6 +90,11 @@ export default async function ClassPage(props: PageProps<"/espace/classes/[id]">
         }`}
         actions={
           <>
+            {can(user, "report_card:view") && (
+              <ButtonLink href={`/espace/classes/${classroom.id}/conseil`} variant="secondary">
+                Conseil de classe
+              </ButtonLink>
+            )}
             {options && (
               <EditClassDialog
                 options={options}
@@ -157,6 +166,31 @@ export default async function ClassPage(props: PageProps<"/espace/classes/[id]">
       )}
 
       <div className="mt-6 flex flex-col gap-6">
+        {dispensations.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <HeartPulse className="size-5 text-primary" aria-hidden /> Dispenses d&apos;EPS ({dispensations.length})
+              </CardTitle>
+            </CardHeader>
+            <CardBody>
+              {/* The period only: the certificate stays with the head of
+                  school, and is deleted once checked. */}
+              <ul className="flex flex-col gap-1.5">
+                {dispensations.map((d) => (
+                  <li key={d.id} className="flex flex-wrap gap-x-2">
+                    <span className="font-semibold">
+                      {d.student.firstName} {d.student.lastName}
+                    </span>
+                    <span className="text-muted">
+                      du {formatDate(d.startsOn!)} au {formatDate(d.endsOn!)}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </CardBody>
+          </Card>
+        )}
         <Card>
           <CardHeader>
             <CardTitle>Matières et enseignants</CardTitle>
@@ -267,7 +301,7 @@ export default async function ClassPage(props: PageProps<"/espace/classes/[id]">
           )}
           {computed && computed.missingSheets.length > 0 && (
             <CardBody className="border-t border-border text-sm text-muted">
-              Matières sans fiche de notes ce trimestre : {computed.missingSheets.join(", ")}.
+              Matières sans fiche de notes en {period?.name.toLowerCase() ?? "cette période"} : {computed.missingSheets.join(", ")}.
             </CardBody>
           )}
         </Card>
