@@ -7,7 +7,7 @@ import { isPublicClip, publicClipUrl } from "./clip-token";
 import { PUBLIC_SPEECH_TEXTS } from "./public-texts";
 
 const LANDING =
-  "L'école béninoise, du ministère à la maison. Classéo réunit le ministère, les directions départementales, les écoles et les familles autour des mêmes informations sur chaque élève, pour que chacun voie ce qui le concerne, au bon moment.";
+  "Toute l'école, au même endroit. Inscriptions, notes, bulletins, présences, frais et messages : Classéo rassemble la vie de l'établissement, pour que l'équipe, les enseignants et les familles voient ce qui les concerne, au bon moment.";
 
 describe("isPublicSpeechText", () => {
   it("accepts the public texts, whatever their spacing", () => {
