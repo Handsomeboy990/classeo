@@ -204,7 +204,7 @@ export async function seedFamilyExchange(db: PrismaClient, ctx: SeedContext) {
       status: "REJECTED",
       reviewedById: secretary.id,
       reviewedAt: at("2026-09-22T11:00:00Z"),
-      reviewNote: "Il manque les bulletins du 1er et du 3e trimestre. Envoyez les trois, dans un seul PDF ou en photos.",
+      reviewNote: "Il manque les bulletins du premier et du troisième trimestre. Envoyez les trois, dans un seul PDF ou en photos.",
       createdAt: at("2026-09-21T18:00:00Z"),
     },
   });
@@ -262,7 +262,7 @@ export async function seedFamilyExchange(db: PrismaClient, ctx: SeedContext) {
     data: [
       { userId: secretary.id, kind: "family_document", title: "Pièce d'inscription à examiner", body: "Sènami Hounkpatin, 3e A : Deux photos d'identité.", link: `/espace/pieces-familles/${pendingPhoto.id}`, createdAt: at("2026-09-25T20:10:00Z") },
       { userId: director, kind: "family_document", title: "Pièce d'inscription à examiner", body: "Sènami Hounkpatin, 3e A : Deux photos d'identité.", link: `/espace/pieces-familles/${pendingPhoto.id}`, createdAt: at("2026-09-25T20:10:00Z") },
-      { userId: parent, kind: "family_document", title: "Bulletins de l'année précédente refusée", body: "Sènami Hounkpatin : il manque les bulletins du 1er et du 3e trimestre.", link: `/espace/pieces-justificatifs?enfant=${senami.studentId}`, createdAt: at("2026-09-22T11:00:00Z") },
+      { userId: parent, kind: "family_document", title: "Pièce refusée : Bulletins de l'année précédente", body: "Pour Sènami Hounkpatin. Motif : Il manque les bulletins du premier et du troisième trimestre. Envoyez les trois, dans un seul PDF ou en photos.", link: `/espace/pieces-justificatifs?enfant=${senami.studentId}`, createdAt: at("2026-09-22T11:00:00Z") },
     ],
   });
 }

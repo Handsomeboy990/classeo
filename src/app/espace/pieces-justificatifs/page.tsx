@@ -142,7 +142,7 @@ export default async function FamilyPiecesPage({ searchParams }: PageProps<"/esp
                           triggerVariant={latest ? "secondary" : "primary"}
                           triggerSize="sm"
                           title={p.label}
-                          description={`Pour ${current.student.firstName} ${current.student.lastName}, ${current.classroom.name}.`}
+                          description={`${current.student.firstName} ${current.student.lastName}, ${current.classroom.name}.`}
                           submitLabel="Envoyer"
                           pendingLabel="Envoi…"
                         >
