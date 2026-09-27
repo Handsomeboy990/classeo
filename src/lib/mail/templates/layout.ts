@@ -107,11 +107,11 @@ ${block.hint ? `<p class="t-muted" style="margin:8px 0 0;font-size:13px;color:${
 </table>`;
     case "button":
       return `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:8px 0 24px;">
-<tr><td style="border-radius:6px;background:${BRAND.navy};">
-<a href="${escapeHtml(safeHref(block.href))}" style="display:inline-block;padding:13px 26px;font-family:${TITLE_FONT};font-size:16px;font-weight:700;color:${BRAND.white};text-decoration:none;border-radius:6px;border:1px solid ${BRAND.navy};">${escapeHtml(block.label)}</a>
+<tr><td class="btn" style="border-radius:6px;background:${BRAND.navy};">
+<a class="btn" href="${escapeHtml(safeHref(block.href))}" style="display:inline-block;padding:13px 26px;font-family:${TITLE_FONT};font-size:16px;font-weight:700;color:${BRAND.white};text-decoration:none;border-radius:6px;border:1px solid ${BRAND.navy};">${escapeHtml(block.label)}</a>
 </td></tr>
 </table>
-<p class="t-muted" style="margin:-12px 0 20px;font-size:12px;line-height:1.5;color:${BRAND.muted};word-break:break-all;">Si le bouton ne fonctionne pas, copiez cette adresse dans votre navigateur : <a class="t-link" href="${escapeHtml(safeHref(block.href))}" style="color:${BRAND.link};text-decoration:underline;">${escapeHtml(block.href)}</a></p>`;
+<p class="t-muted" style="margin:-12px 0 20px;font-size:12px;line-height:1.5;color:${BRAND.muted};">Si le bouton ne fonctionne pas, copiez cette adresse dans votre navigateur : <a class="t-link" href="${escapeHtml(safeHref(block.href))}" style="color:${BRAND.link};text-decoration:underline;word-break:break-all;">${escapeHtml(block.href)}</a></p>`;
     case "notice": {
       // The flag yellow is a bar only, never a text colour on a light fill.
       const bar = block.tone === "warning" ? BRAND.yellow : BRAND.navy;
@@ -170,12 +170,15 @@ const STYLE = `
     .t-accent, .t-link { color: ${BRAND.darkLink} !important; }
     .s-soft, .s-warn { background: ${BRAND.darkSoft} !important; }
     .b-border { border-color: ${BRAND.darkBorder} !important; }
+    td.btn, a.btn { background: ${BRAND.darkLink} !important; border-color: ${BRAND.darkLink} !important; }
+    a.btn { color: ${BRAND.darkPage} !important; }
   }
   [data-ogsc] .t-text, [data-ogsc] .t-title { color: ${BRAND.darkText} !important; }
   [data-ogsc] .t-muted { color: ${BRAND.darkMuted} !important; }
   [data-ogsc] .t-accent, [data-ogsc] .t-link { color: ${BRAND.darkLink} !important; }
   [data-ogsb] .body { background: ${BRAND.darkSurface} !important; }
   [data-ogsb] .s-soft, [data-ogsb] .s-warn { background: ${BRAND.darkSoft} !important; }
+  [data-ogsb] .b-border { border-color: ${BRAND.darkBorder} !important; }
 `;
 
 export function renderEmail(content: EmailContent): RenderedEmail {
@@ -207,7 +210,7 @@ export function renderEmail(content: EmailContent): RenderedEmail {
 <p style="margin:4px 0 0;font-family:${FONT};font-size:13px;line-height:1.4;color:${BRAND.headerMuted};">Plateforme de gestion scolaire</p>
 </td></tr>
 <tr><td style="padding:0;font-size:0;line-height:0;">${TRICOLOUR}</td></tr>
-<tr><td class="pad body" style="padding:32px 36px 12px;background:${BRAND.white};border-left:1px solid ${BRAND.border};border-right:1px solid ${BRAND.border};">
+<tr><td class="pad body b-border" style="padding:32px 36px 12px;background:${BRAND.white};border-left:1px solid ${BRAND.border};border-right:1px solid ${BRAND.border};">
 <p class="t-accent" style="margin:0 0 8px;font-family:${TITLE_FONT};font-size:12px;letter-spacing:0.08em;text-transform:uppercase;font-weight:700;color:${BRAND.navy};">${escapeHtml(content.eyebrow)}</p>
 <h1 class="title t-title" style="margin:0 0 20px;font-family:${TITLE_FONT};font-size:26px;line-height:1.25;font-weight:700;color:${BRAND.navyDark};">${escapeHtml(content.title)}</h1>
 ${content.blocks.map(blockHtml).join("\n")}
