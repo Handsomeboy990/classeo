@@ -22,8 +22,11 @@ export default async function CommunePage({ params, searchParams }: PageProps<"/
 
   return (
     <div className="flex flex-col gap-6">
-      <PageHeader title={`Commune ${/^[AEIOUYÀÂÉÈÊÎÔ]/i.test(commune.name) ? "d’" : "de "}${commune.name}`} description={`Département ${commune.department.name}`} info="Indicateurs de la commune et de chacun de ses établissements." />
-      <ScopeBreadcrumb scope={{ level: "COMMUNE", id: commune.id }} basePath="/espace/territoire" user={user} />
+      {/* The territorial trail above the title (doc 4.8). */}
+      <div className="flex flex-col gap-2">
+        <ScopeBreadcrumb scope={{ level: "COMMUNE", id: commune.id }} basePath="/espace/territoire" user={user} />
+        <PageHeader title={`Commune ${/^[AEIOUYÀÂÉÈÊÎÔ]/i.test(commune.name) ? "d’" : "de "}${commune.name}`} description={`Département ${commune.department.name}`} info="Indicateurs de la commune et de chacun de ses établissements." />
+      </div>
       <IndicatorCards stats={stats} requestsHref={can(user, "request:view") ? "/espace/demandes?statut=PENDING" : undefined} />
       <Breakdown
         stats={stats}
