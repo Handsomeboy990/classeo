@@ -1,6 +1,5 @@
 import { Search, Share2 } from "lucide-react";
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { ActionForm, SubmitButton } from "@/components/kit/action-form";
@@ -39,17 +38,8 @@ export default async function StudentHistoryPage(props: PageProps<"/espace/eleve
 
   return (
     <>
-      <nav aria-label="Fil d'Ariane" className="mb-2 text-sm text-muted max-lg:hidden">
-        <Link href="/espace/eleves" className="hover:underline">
-          Élèves
-        </Link>{" "}
-        /{" "}
-        <Link href={`/espace/eleves/${s.id}`} className="hover:underline">
-          {name}
-        </Link>{" "}
-        / Parcours
-      </nav>
-      <PageHeader title={`Parcours de ${name}`} description={`Matricule ${s.matricule}`} info={`Toutes les années, tous les établissements${history.full ? "" : " de votre périmètre"}.`} />
+      <PageHeader
+        breadcrumbs={[{ label: "Élèves", href: "/espace/eleves" }, { label: name, href: `/espace/eleves/${s.id}` }, { label: "Parcours" }]} title={`Parcours de ${name}`} description={`Matricule ${s.matricule}`} info={`Toutes les années, tous les établissements${history.full ? "" : " de votre périmètre"}.`} />
       <div className="mb-6 flex items-center gap-3">
         <StudentAvatar name={name} photoFileId={s.photoFileId} className="size-14 text-lg" />
         {history.full ? <Badge tone="success">Dossier complet</Badge> : <Badge>Dossier limité à votre périmètre</Badge>}

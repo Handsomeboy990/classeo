@@ -1,6 +1,5 @@
 import { CalendarCheck, CalendarDays, UserX } from "lucide-react";
 import type { Metadata } from "next";
-import Link from "next/link";
 
 import { PageHeader } from "@/components/kit/page-header";
 import { StatCard, StatGrid } from "@/components/kit/stat-card";
@@ -29,13 +28,8 @@ export default async function TeacherAttendancePage(props: PageProps<"/espace/pr
 
   return (
     <>
-      <nav aria-label="Fil d'Ariane" className="mb-2 text-sm text-muted max-lg:hidden">
-        <Link href={`/espace/presences?date=${date}`} className="hover:underline">
-          Présences
-        </Link>{" "}
-        / Enseignants
-      </nav>
-      <PageHeader title="Présence des enseignants" description={`Journée du ${formatDate(date)}.`} />
+      <PageHeader
+        breadcrumbs={[{ label: "Présences", href: `/espace/presences?date=${date}` }, { label: "Enseignants" }]} title="Présence des enseignants" description={`Journée du ${formatDate(date)}.`} />
       <RegisterFilters action="/espace/presences/enseignants" date={date} maxDate={today} />
       <StatGrid>
         <StatCard label="Présence du jour" value={formatPercent(stats.dayRate)} icon={CalendarCheck} />

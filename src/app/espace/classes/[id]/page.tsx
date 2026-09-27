@@ -77,13 +77,8 @@ export default async function ClassPage(props: PageProps<"/espace/classes/[id]">
 
   return (
     <>
-      <nav aria-label="Fil d'Ariane" className="mb-2 text-sm text-muted max-lg:hidden">
-        <Link href="/espace/classes" className="hover:underline">
-          Classes
-        </Link>{" "}
-        / {classroom.name}
-      </nav>
       <PageHeader
+        breadcrumbs={[{ label: "Classes", href: "/espace/classes" }, { label: classroom.name }]}
         title={`Classe de ${classroom.name}`}
         description={`${classroom.school.name} · niveau ${classroom.level.name} · année ${classroom.academicYear.label} · professeur principal : ${
           classroom.mainTeacher ? `${classroom.mainTeacher.firstName} ${classroom.mainTeacher.lastName}` : "non désigné"

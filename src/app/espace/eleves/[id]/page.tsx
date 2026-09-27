@@ -83,13 +83,8 @@ export default async function StudentPage(props: PageProps<"/espace/eleves/[id]"
 
   return (
     <>
-      <nav aria-label="Fil d'Ariane" className="mb-2 text-sm text-muted max-lg:hidden">
-        <Link href="/espace/eleves" className="hover:underline">
-          Élèves
-        </Link>{" "}
-        / {name}
-      </nav>
       <PageHeader
+        breadcrumbs={[{ label: "Élèves", href: "/espace/eleves" }, { label: name }]}
         title={name}
         description={`Matricule ${student.matricule}${current ? ` · ${current.classroom.name}, ${current.school.name} · ${ENROLLMENT_STATUS_LABELS[current.status]}` : ""}`}
         actionsPlacement="below"
