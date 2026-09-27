@@ -300,4 +300,15 @@ test.describe("very large text on a phone", () => {
       });
     }
   }
+
+  test("text xxl on a large screen: the footer lockup fits its column", async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem("classeo:text", "xxl"));
+    await page.setViewportSize({ width: 1366, height: 900 });
+    for (const path of ["/", "/credits", "/verifier", "/une-page-qui-n-existe-pas"]) {
+      await page.goto(path);
+      const lockup = page.getByRole("contentinfo").locator("[data-brand-lockup]");
+      const overflow = await lockup.evaluate((el) => el.scrollWidth - el.clientWidth);
+      expect(overflow, `${path}: lockup overflow in pixels`).toBeLessThanOrEqual(0);
+    }
+  });
 });

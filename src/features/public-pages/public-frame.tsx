@@ -252,7 +252,9 @@ export async function PublicFooter({ tr, voice, languages = true }: { tr: Public
       <div className={cn(WRAP, "pt-10 pb-5 lg:pt-14 lg:pb-6")}>
         <div className="grid gap-x-8 gap-y-2 sm:grid-cols-2 sm:gap-y-8 lg:grid-cols-[1.4fr_1fr_1fr_1.25fr_0.8fr] lg:gap-10">
           <div className="max-sm:mb-4 sm:col-span-2 lg:col-span-1">
-            <BrandLockup brand={brand} tone="dark" size="footer" href={withChoice("/", lang, voice)} />
+            {/* The logo keeps its size at every text size: with a very large
+                text it would otherwise spill out of its column. */}
+            <BrandLockup brand={brand} tone="dark" size="footer" fixed href={withChoice("/", lang, voice)} />
             <p className="mt-4 max-w-[36ch] text-sm leading-relaxed text-footer-muted">{node(PUBLIC.common.footerNote)}</p>
             {brand.official && (
               <div className="mt-4 flex flex-col gap-2">
