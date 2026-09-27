@@ -46,7 +46,7 @@ export function StatCard({
             <Icon className="size-3.5 sm:size-5" />
           </span>
         )}
-        <p lang="fr" className="min-w-0 font-display text-[0.6875rem] leading-snug font-bold tracking-[0.08em] text-balance text-muted uppercase">
+        <p lang="fr" className="min-w-0 font-display text-[0.6875rem] leading-snug font-bold tracking-[0.08em] text-balance hyphens-auto text-muted uppercase">
           {label}
         </p>
       </div>

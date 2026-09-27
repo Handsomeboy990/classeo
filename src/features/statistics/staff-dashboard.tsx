@@ -1,4 +1,4 @@
-import { ArrowRight, BarChart3, Inbox, KeyRound, Landmark, Map, ScrollText, ShieldCheck } from "lucide-react";
+import { ArrowRight, BarChart3, ChevronRight, Inbox, KeyRound, Landmark, Map, ScrollText, ShieldCheck, type LucideIcon } from "lucide-react";
 import Link from "next/link";
 
 import { BarChart } from "@/components/kit/bar-chart";
@@ -40,14 +40,14 @@ export async function StaffDashboard({ user }: { user: User }) {
   ]);
 
   const links = [
-    { href: "/espace/territoire", label: "Territoire", icon: Map, show: can(user, "territory:view") && user.scope.level !== "SCHOOL" },
-    { href: "/espace/statistiques", label: "Statistiques détaillées", icon: BarChart3, show: showStats },
-    { href: "/espace/etablissements", label: "Établissements", icon: Landmark, show: can(user, "school:view") && user.scope.level !== "SCHOOL" },
-    { href: `/espace/etablissements/${user.scope.schoolId}`, label: "Fiche de l'établissement", icon: Landmark, show: can(user, "school:view") && user.scope.level === "SCHOOL" },
-    { href: "/espace/demandes", label: "Demandes", icon: Inbox, show: showRequests },
-    { href: "/espace/utilisateurs", label: "Comptes utilisateurs", icon: KeyRound, show: can(user, "user:view") },
-    { href: "/espace/droits", label: "Rôles et droits", icon: ShieldCheck, show: can(user, "role:view") },
-    { href: "/espace/journal", label: "Journal d'activité", icon: ScrollText, show: showActivity },
+    { href: "/espace/territoire", label: "Territoire", body: "Départements, communes et leurs indicateurs.", icon: Map, show: can(user, "territory:view") && user.scope.level !== "SCHOOL" },
+    { href: "/espace/statistiques", label: "Statistiques détaillées", body: "Chiffres clés, comparaisons et exports.", icon: BarChart3, show: showStats },
+    { href: "/espace/etablissements", label: "Établissements", body: "Écoles, collèges et lycées du périmètre.", icon: Landmark, show: can(user, "school:view") && user.scope.level !== "SCHOOL" },
+    { href: `/espace/etablissements/${user.scope.schoolId}`, label: "Fiche de l'établissement", body: "Identité, direction, classes et personnel.", icon: Landmark, show: can(user, "school:view") && user.scope.level === "SCHOOL" },
+    { href: "/espace/demandes", label: "Demandes", body: "Demandes adressées et leurs décisions.", icon: Inbox, show: showRequests },
+    { href: "/espace/utilisateurs", label: "Comptes utilisateurs", body: "Créer, suspendre et réinitialiser les comptes.", icon: KeyRound, show: can(user, "user:view") },
+    { href: "/espace/droits", label: "Rôles et droits", body: "Ce que chaque rôle peut voir et faire.", icon: ShieldCheck, show: can(user, "role:view") },
+    { href: "/espace/journal", label: "Journal d'activité", body: "Qui a fait quoi, et quand.", icon: ScrollText, show: showActivity },
   ].filter((l) => l.show);
 
   return (
@@ -150,21 +150,44 @@ export async function StaffDashboard({ user }: { user: User }) {
       </div>
 
       {links.length > 0 && (
-        <nav aria-label="Accès rapides">
-          {/* Two per row on a phone, one when the text is enlarged (a column never narrower than 11rem), four from lg. */}
-          <ul className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,11rem),1fr))] gap-3 *:min-w-0 lg:grid-cols-4">
+        <nav aria-labelledby="shortcuts-title" className="flex flex-col gap-3">
+          <h2 id="shortcuts-title" className="text-lg font-bold">
+            Accès rapides
+          </h2>
+          {/* One per row on a phone, two from 40rem, four on large screens;
+              a column never narrower than 15rem when the text is enlarged. */}
+          <ul className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,15rem),1fr))] gap-3 *:min-w-0 sm:gap-4 xl:grid-cols-4">
             {links.map((l) => (
-              <li key={l.href}>
-                <Link href={l.href} className="flex h-full min-h-14 items-center gap-3 rounded-card border border-border bg-surface p-3 text-sm leading-snug font-semibold hover:border-primary sm:p-4 sm:text-base break-words hyphens-auto">
-                  <l.icon className="size-5 shrink-0 text-primary" aria-hidden />
-                  {l.label}
-                </Link>
-              </li>
+              <ShortcutTile key={l.href} {...l} />
             ))}
           </ul>
         </nav>
       )}
     </div>
+  );
+}
+
+// Service tile (doc 4.4): the same soft navy pastille for every shortcut,
+// the title is the link and the whole tile answers the pointer.
+function ShortcutTile({ href, label, body, icon: Icon }: { href: string; label: string; body: string; icon: LucideIcon }) {
+  return (
+    <li className="relative flex gap-3.5 rounded-card border border-border bg-surface p-4 shadow-card transition-[border-color,box-shadow] hover:border-primary/40 hover:shadow-[var(--elevation-sm)] has-[a:focus-visible]:outline-3 has-[a:focus-visible]:outline-offset-2 has-[a:focus-visible]:outline-focus lg:p-5">
+      <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-primary-soft text-primary" aria-hidden>
+        <Icon className="size-6" />
+      </span>
+      <div className="flex min-w-0 flex-col">
+        <p className="font-display text-base leading-snug font-bold text-balance text-text [overflow-wrap:anywhere]">
+          <Link href={href} className="outline-none! after:absolute after:inset-0 after:rounded-card">
+            {label}
+          </Link>
+        </p>
+        <p className="mt-1 text-sm leading-snug text-pretty text-muted">{body}</p>
+        <span aria-hidden className="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-link">
+          Accéder
+          <ChevronRight className="size-4" />
+        </span>
+      </div>
+    </li>
   );
 }
 

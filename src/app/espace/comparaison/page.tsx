@@ -74,18 +74,25 @@ export default async function ComparisonPage({ searchParams }: PageProps<"/espac
   const meta = COMPARE_LABELS[indicator];
   const chartMax = indicator === "meanAverage" ? 20 : indicator === "absenceRate" ? 0.2 : indicator === "enrollments" ? undefined : 1;
 
+  const filtered = !!departments || communes.length > 0;
+
   return (
     <div className="flex flex-col gap-6">
-      <PageHeader
-        title="Comparaison des années"
-        info="Évolution des indicateurs clés d'une année scolaire à l'autre, pour votre périmètre et chacun de ses territoires. Les années closes restent comparables."
-      />
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-        <ScopeBreadcrumb scope={scope} basePath="/espace/comparaison" user={user} />
-        {(departments || communes.length > 0) && (
-          <ScopeFilter departments={departments?.map((d) => ({ id: d.id, name: d.name })) ?? null} communes={communes} departmentId={departmentId} communeId={communeId} keep={{ indicateur: indicator }} />
-        )}
+      {/* With filters, the scope and its filters share one panel, as on the
+          list pages; without, the territorial trail sits above the title. */}
+      <div className="flex flex-col gap-2">
+        {!filtered && <ScopeBreadcrumb scope={scope} basePath="/espace/comparaison" user={user} />}
+        <PageHeader
+          title="Comparaison des années"
+          info="Évolution des indicateurs clés d'une année scolaire à l'autre, pour votre périmètre et chacun de ses territoires. Les années closes restent comparables."
+        />
       </div>
+      {filtered && (
+        <div className="flex flex-col gap-4 rounded-card border border-border bg-surface p-3 shadow-card sm:p-4 lg:flex-row lg:items-end lg:justify-between">
+          <ScopeBreadcrumb scope={scope} basePath="/espace/comparaison" user={user} />
+          <ScopeFilter departments={departments?.map((d) => ({ id: d.id, name: d.name })) ?? null} communes={communes} departmentId={departmentId} communeId={communeId} keep={{ indicateur: indicator }} />
+        </div>
+      )}
 
       {years.length < 2 ? (
         <EmptyState title="Une seule année scolaire" description="La comparaison apparaîtra dès qu'une deuxième année aura commencé." />
