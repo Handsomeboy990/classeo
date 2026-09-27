@@ -1,7 +1,6 @@
 import { Filter, X } from "lucide-react";
-import Link from "next/link";
 
-import { Button } from "@/components/ui/button";
+import { Button, ButtonLink } from "@/components/ui/button";
 import { Input, Label, Select } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
@@ -59,9 +58,9 @@ export function FilterBar({ fields, basePath, keep = {} }: { fields: FilterField
           <Filter aria-hidden /> Filtrer
         </Button>
         {activeCount > 0 && (
-          <Link href={basePath} className="inline-flex h-11 items-center justify-center gap-1.5 rounded-lg px-3 text-sm font-semibold text-muted hover:bg-surface-2 hover:text-text">
-            <X className="size-4" aria-hidden /> Réinitialiser
-          </Link>
+          <ButtonLink href={basePath} variant="ghost" className="text-muted hover:text-text">
+            <X aria-hidden /> Réinitialiser
+          </ButtonLink>
         )}
       </div>
     </>

@@ -27,7 +27,26 @@ export const AUDIT_ACTION_LABELS: Record<string, string> = {
   seed: "Initialisation",
 };
 
-export const AUDIT_RESOURCE_LABELS: Record<string, string> = { ...RESOURCES, system: "Système", statistics: "Statistiques" };
+// Journal entries also name records that are not permission resources.
+export const AUDIT_RESOURCE_LABELS: Record<string, string> = {
+  ...RESOURCES,
+  system: "Système",
+  statistics: "Statistiques",
+  session: "Connexions",
+  academic_year: "Années scolaires",
+  council_decision: "Décisions de fin d'année",
+  transfer: "Transferts",
+  record_access: "Accès aux dossiers d'élèves",
+  required_piece: "Pièces à fournir",
+  document: "Documents délivrés",
+  signature: "Signature électronique",
+  conversation: "Messagerie",
+  fee_type: "Types de frais",
+  invoice: "Factures",
+  payment_account: "Comptes de paiement",
+  payment_declaration: "Paiements déclarés par les parents",
+  online_payment: "Paiements en ligne",
+};
 
 export const actionLabel = (a: string) => AUDIT_ACTION_LABELS[a] ?? a;
 export const resourceLabel = (r: string) => AUDIT_RESOURCE_LABELS[r] ?? r;

@@ -48,7 +48,7 @@ async function SchoolTeachers({ user, sp }: { user: User; sp: SearchParams }) {
           <Link href={`/espace/enseignants/${r.id}`} className="font-semibold text-primary hover:underline">
             {r.lastName} {r.firstName}
           </Link>
-          <span className="block font-mono text-xs text-muted">{r.matricule}</span>
+          <span className="block text-xs text-muted tabular-nums">{r.matricule}</span>
         </div>
       ),
     },
@@ -71,9 +71,9 @@ async function SchoolTeachers({ user, sp }: { user: User; sp: SearchParams }) {
         return (
           <span className="flex flex-wrap gap-1">
             <Badge tone={r.isActive ? "success" : "neutral"}>{r.isActive ? "En activité" : "Inactif"}</Badge>
-            {r.status && <Badge tone={isStateStatus(r.status) ? "accent" : "neutral"}>{TEACHER_STATUS_SHORT[r.status]}</Badge>}
-            {r.userId && <Badge tone="info">Compte</Badge>}
-            {elsewhere.length > 0 && <Badge tone="accent" title={elsewhere.map((t) => t.school.name).join(", ")}>Aussi à {elsewhere.map((t) => t.school.name).join(", ")}</Badge>}
+            {r.status && <Badge tone={isStateStatus(r.status) ? "primary" : "neutral"}>{TEACHER_STATUS_SHORT[r.status]}</Badge>}
+            {r.userId && <Badge tone="primary">Compte</Badge>}
+            {elsewhere.length > 0 && <Badge tone="primary" title={elsewhere.map((t) => t.school.name).join(", ")}>Aussi à {elsewhere.map((t) => t.school.name).join(", ")}</Badge>}
           </span>
         );
       },
@@ -136,7 +136,7 @@ async function Registry({ user, sp }: { user: User; sp: SearchParams }) {
           <Link href={`/espace/enseignants/registre/${r.id}`} className="font-semibold text-primary hover:underline">
             {r.lastName} {r.firstName}
           </Link>
-          <span className="block font-mono text-xs text-muted">{r.npi ? `NPI ${r.npi}` : "Sans NPI"}</span>
+          <span className="block text-xs text-muted tabular-nums">{r.npi ? `NPI ${r.npi}` : "Sans NPI"}</span>
         </div>
       ),
     },
@@ -170,13 +170,13 @@ async function Registry({ user, sp }: { user: User; sp: SearchParams }) {
       cell: (r) => (
         <span className="flex flex-wrap gap-1">
           {r.stateStatus && (
-            <Badge tone="accent" title={r.stateMatricule ? `Matricule de l'État ${r.stateMatricule}` : undefined}>
+            <Badge tone="primary" title={r.stateMatricule ? `Matricule de l'État ${r.stateMatricule}` : undefined}>
               {TEACHER_STATUS_SHORT[r.stateStatus]}
               {r.stateMatricule ? ` ${r.stateMatricule}` : ""}
             </Badge>
           )}
-          {r._count.teachers > 1 && <Badge tone="accent">{r._count.teachers} établissements</Badge>}
-          {r.userId && <Badge tone="info">Compte</Badge>}
+          {r._count.teachers > 1 && <Badge tone="primary">{r._count.teachers} établissements</Badge>}
+          {r.userId && <Badge tone="primary">Compte</Badge>}
         </span>
       ),
       hideBelow: "sm",

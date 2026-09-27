@@ -46,14 +46,14 @@ export function TemporaryPassword({ username, email, password, mail, onDone }: I
       <dl className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-4 gap-y-3 text-sm">
         <dt className="text-muted">Identifiant</dt>
         <dd className="flex flex-wrap items-center gap-2">
-          <code className="rounded-md bg-primary-soft px-2 py-1 font-mono text-base font-semibold break-all" data-testid="issued-username">
+          <code className="rounded-control bg-primary-soft px-2 py-1 font-mono text-base font-semibold break-all" data-testid="issued-username">
             {username}
           </code>
           <CopyButton value={username} label="Copier l'identifiant" />
         </dd>
         <dt className="text-muted">Mot de passe</dt>
         <dd className="flex flex-wrap items-center gap-2">
-          <code className="rounded-md bg-surface-2 px-2 py-1 font-mono text-base tracking-wider" data-testid="temporary-password">
+          <code className="rounded-control bg-surface-2 px-2 py-1 font-mono text-base tracking-wider" data-testid="temporary-password">
             {password}
           </code>
           <CopyButton value={password} label="Copier le mot de passe" />

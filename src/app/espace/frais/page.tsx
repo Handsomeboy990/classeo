@@ -59,14 +59,14 @@ export default async function FeesOverviewPage() {
         <div className="flex flex-col gap-6">
           <StatGrid>
             <StatCard label="Montant attendu" value={formatFcfa(overview.expected)} hint={`${formatNumber(overview.invoiceCount)} factures`} icon={Coins} />
-            <StatCard label="Montant encaissé" value={formatFcfa(overview.collected)} hint={`${formatNumber(overview.paidCount)} factures soldées`} icon={CheckCircle2} tone="info" />
-            <StatCard label="Reste à recouvrer" value={formatFcfa(overview.remaining)} icon={Wallet} tone="warning" />
+            <StatCard label="Montant encaissé" value={formatFcfa(overview.collected)} hint={`${formatNumber(overview.paidCount)} factures soldées`} icon={CheckCircle2} />
+            <StatCard label="Reste à recouvrer" value={formatFcfa(overview.remaining)} icon={Wallet} />
             <StatCard
               label="Taux de recouvrement"
               value={formatPercent(overview.rate)}
               hint={overview.overdueCount ? `${formatNumber(overview.overdueCount)} facture${overview.overdueCount > 1 ? "s" : ""} en retard` : "Aucune facture en retard"}
               icon={overview.overdueCount ? AlertTriangle : Percent}
-              tone={overview.overdueCount ? "danger" : "accent"}
+              tone={overview.overdueCount ? "danger" : "primary"}
               href={overview.overdueCount && can(user, "fee:view") ? "/espace/frais/factures?statut=OVERDUE" : undefined}
             />
           </StatGrid>

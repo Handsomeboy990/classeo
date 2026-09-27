@@ -86,7 +86,7 @@ export default async function PayrollPage(props: PageProps<"/espace/paie">) {
                       <span className="font-semibold">
                         {t.lastName} {t.firstName}
                       </span>
-                      <span className="block font-mono text-xs text-muted">{t.matricule}</span>
+                      <span className="block text-xs text-muted tabular-nums">{t.matricule}</span>
                     </TD>
                     <TD data-label="Statut">{t.status ? TEACHER_STATUS_SHORT[t.status] : "Non renseigné"}</TD>
                     <TD data-label="Net" className="text-right tabular-nums">
