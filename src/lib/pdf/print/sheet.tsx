@@ -189,7 +189,7 @@ export async function PrintSheet({
         </header>
         {headerExtra}
         <div className="mt-4">{children}</div>
-        <footer className="doc-footer doc-muted doc-keep mt-8 flex items-center gap-3 pt-2 text-[10px] leading-snug">
+        <footer className="doc-footer doc-muted doc-keep mt-8 print:mt-3 flex items-center gap-3 pt-2 text-[10px] leading-snug">
           {check && qr && (
             <svg viewBox={`0 0 ${qr.viewBox} ${qr.viewBox}`} className="size-16 shrink-0" role="img" aria-label={`QR code de vérification, ${check.shortUrl}`}>
               <rect width={qr.viewBox} height={qr.viewBox} fill={C.white} />
