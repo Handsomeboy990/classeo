@@ -13,6 +13,8 @@
  */
 
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+/* The two largest text sizes of the accessibility panel (xl, xxl). */
+@custom-variant text-large (&:where([data-text="xl"] *, [data-text="xxl"] *));
 
 :root {
   --bg: #f4f6fa;
@@ -1360,19 +1362,15 @@ html[data-lite="on"] img[data-decorative] {
  * Phone shell (below lg): a top app bar, a tab bar fixed at the bottom above
  * the home indicator, bottom sheets, and the accessibility button floating
  * above the tab bar. Sizes are in rem so they grow with the text size
- * preference, except the floating button: a fixed 40 px on phones and 44 px
- * from lg, so a larger text does not make it cover more of the page.
+ * preference, except the floating button: a fixed 44 px at every width (the
+ * touch target minimum of part 2.4 wins over "keeps its size" in 3.4), so a
+ * larger text does not make it cover more of the page.
  */
 :root {
   --app-bar-h: 3.5rem;
   --tab-bar-h: 4rem;
-  --fab-size: 40px;
+  --fab-size: 44px;
   --tab-bar-space: calc(var(--tab-bar-h) + env(safe-area-inset-bottom));
-}
-@media (min-width: 64rem) {
-  :root {
-    --fab-size: 44px;
-  }
 }
 
 /* Nothing may hide behind the tab bar or the floating button. */

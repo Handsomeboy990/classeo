@@ -32,6 +32,11 @@
   [data-shell] [data-app-footer] {
     padding-bottom: calc(var(--tab-bar-space) + var(--fab-size) + 1.5rem);
   }
+  /* One back control per page: where the app bar shows its back button, the
+     kit breadcrumb (kept for screen readers otherwise) goes away. */
+  [data-shell]:has([data-app-bar] [data-app-back]) nav[data-breadcrumbs] {
+    display: none;
+  }
   /* Full screen conversation: the footer steps aside; the notice stays in
      the Menu sheet. */
   [data-shell]:has([data-chat]) [data-app-footer] {

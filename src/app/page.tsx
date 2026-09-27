@@ -153,7 +153,10 @@ export default async function LandingPage({ searchParams }: PageProps<"/">) {
                   placeholder="blur"
                 />
               </div>
-              <figcaption className="mt-2 text-xs text-muted">
+              {/* Phones: the caption stops short of the floating
+                  accessibility button, which sits over its end on the first
+                  screen. */}
+              <figcaption className="mt-2 text-xs text-muted max-lg:pr-[calc(var(--fab-size)+0.5rem)]">
                 {fragment(t(hero.caption))}. {t(PUBLIC.common.photo)} : <span translate="no">{shortCredit(hero)}</span>.
               </figcaption>
             </figure>
@@ -242,7 +245,7 @@ export default async function LandingPage({ searchParams }: PageProps<"/">) {
 function SectionTitle({ id, children }: { id: string; children: ReactNode }) {
   return (
     <div>
-      <h2 id={id} className="text-[1.375rem] leading-tight font-bold text-balance text-text lg:text-[1.625rem]">
+      <h2 id={id} className="text-[1.25rem] leading-[1.3] font-bold text-balance text-text">
         {children}
       </h2>
       <FlagStripe className="mt-3 h-1 w-12" />
@@ -255,7 +258,9 @@ function SectionTitle({ id, children }: { id: string; children: ReactNode }) {
 function ServiceTile({ icon: Icon, title, body, href, tr }: { icon: LucideIcon; title: string; body: string; href: string; tr: PublicTranslator }) {
   const { node } = tr;
   return (
-    <li className="relative flex gap-4 rounded-card border border-border bg-surface p-5 shadow-xs transition-[border-color,box-shadow] hover:border-primary/40 hover:shadow-sm has-[a:focus-visible]:outline-3 has-[a:focus-visible]:outline-offset-2 has-[a:focus-visible]:outline-focus lg:p-6">
+    // min-w-0 and the breaks: with a very large text on a phone, a long word
+    // wraps instead of widening the tile, then the page.
+    <li className="relative flex min-w-0 gap-4 rounded-card border border-border bg-surface p-5 break-words hyphens-auto shadow-xs transition-[border-color,box-shadow] hover:border-primary/40 hover:shadow-sm has-[a:focus-visible]:outline-3 has-[a:focus-visible]:outline-offset-2 has-[a:focus-visible]:outline-focus lg:p-6">
       <span className="flex size-14 shrink-0 items-center justify-center rounded-full bg-primary-soft text-primary">
         <Icon className="size-6" aria-hidden />
       </span>
@@ -277,7 +282,7 @@ function ServiceTile({ icon: Icon, title, body, href, tr }: { icon: LucideIcon; 
 
 function Feature({ icon: Icon, title, children }: { icon: LucideIcon; title: ReactNode; children: ReactNode }) {
   return (
-    <li className="flex gap-4 rounded-card border border-border bg-surface p-5 shadow-xs lg:p-6">
+    <li className="flex min-w-0 gap-4 rounded-card border border-border bg-surface p-5 break-words hyphens-auto shadow-xs lg:p-6">
       <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-primary-soft text-primary">
         <Icon className="size-6" aria-hidden />
       </span>

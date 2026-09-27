@@ -3,7 +3,9 @@ import type { MetadataRoute } from "next";
 export default function manifest(): MetadataRoute.Manifest {
   return {
     id: "/",
-    name: "Classéo",
+    // Shown on the install prompt and on the Android splash screen: the
+    // product as decision D5 names it. The home screen keeps the short name.
+    name: "Classéo, plateforme de gestion scolaire",
     short_name: "Classéo",
     description: "La plateforme de gestion scolaire pour le Bénin. Lecture à voix haute, pictogrammes, consultation hors ligne.",
     lang: "fr",

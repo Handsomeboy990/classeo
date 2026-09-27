@@ -175,7 +175,11 @@ test.describe("official frame", () => {
     const lockup = banner.getByRole("link", { name: "Classéo, accueil" }).locator("visible=true");
     await expect(lockup).toHaveAttribute("data-brand-lockup", "official");
     await expect(lockup.locator("img[data-brand-arms]")).toBeVisible();
-    await expect(lockup).toContainText("Classéo");
+    // Decision D5: "République du Bénin" above, then Classéo as a product,
+    // in sentence case, and no ministry name.
+    await expect(lockup).toHaveText(/^République du Bénin\s*Classéo/);
+    await expect(lockup.getByText("Classéo", { exact: true })).toHaveCSS("text-transform", "none");
+    await expect(lockup).not.toContainText("Ministère");
 
     // The sign in button: flag yellow, navy text.
     const signIn = banner.getByRole("link", { name: mobile ? "Connexion" : "Se connecter" });
@@ -213,7 +217,9 @@ test.describe("official frame", () => {
     const links = footer.locator("a[href^='https://']:visible");
     await expect(links).toHaveCount(3);
     for (const href of ["https://memp.gouv.bj/", "https://enseignementsecondaire.gouv.bj/", "https://service-public.bj/"]) await expect(footer.locator(`a[href='${href}']:visible`)).toHaveAccessibleName(/\(site externe\)$/);
-    await expect(footer.getByText("Fraternité, Justice, Travail")).toBeVisible();
+    // The motto over the flag band, away from the brand column (D5).
+    await expect(footer.locator("[data-national-motto]").getByText("Fraternité, Justice, Travail")).toBeVisible();
+    await expect(footer.locator("div:has(> [data-brand-lockup])").getByText("Fraternité, Justice, Travail")).toHaveCount(0);
     await expect(footer.getByText(NOTICE, { exact: true })).toBeVisible();
 
     // "Accessibilité" opens the settings of the round button.
@@ -270,3 +276,78 @@ test.describe("official frame", () => {
 async function isInside(container: Locator) {
   return container.evaluate((el) => el.contains(document.activeElement));
 }
+
+// The floating accessibility button: a 44 px target, and at the end of a
+// public or sign in page no link or text lies under it.
+test("the accessibility button covers nothing at the end of a page @mobile", async ({ page }) => {
+  for (const path of ["/", "/credits", "/verifier", "/connexion", "/mot-de-passe-oublie"]) {
+    await page.goto(path);
+    const fab = page.getByRole("button", { name: "Réglages d'accessibilité", exact: true });
+    await expect(fab).toBeVisible();
+    await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+    // The button slides to the edge while the page scrolls and comes back
+    // 900 ms after the scroll stops: measure it back in place.
+    await page.waitForTimeout(1200);
+    await expect(fab).not.toHaveAttribute("data-edge", "");
+    const box = (await fab.boundingBox())!;
+    expect(Math.round(box.width), `${path}: button width`).toBe(44);
+    expect(Math.round(box.height), `${path}: button height`).toBe(44);
+    const covered = await fab.evaluate((button) => {
+      const f = button.getBoundingClientRect();
+      const hit = (r: DOMRect) => r.width > 0 && r.height > 0 && r.left < f.right && r.right > f.left && r.top < f.bottom && r.bottom > f.top;
+      const found: string[] = [];
+      const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+      for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+        const el = n.parentElement;
+        if (!n.textContent?.trim() || !el || button.contains(el) || !el.checkVisibility() || el.closest(".sr-only")) continue;
+        const range = document.createRange();
+        range.selectNodeContents(n);
+        if ([...range.getClientRects()].some(hit)) found.push(n.textContent.trim());
+      }
+      return found;
+    });
+    expect(covered, `${path}: text under the button`).toEqual([]);
+  }
+});
+
+// Reflow with the two largest text sizes of the accessibility panel (WCAG
+// 1.4.10, control 9 of the design source of truth): on a phone, no public
+// or sign in page scrolls sideways, and the menu and language buttons stay
+// whole on the screen.
+test.describe("very large text on a phone", () => {
+  const PAGES = ["/", "/credits", "/verifier", "/une-page-qui-n-existe-pas", "/connexion", "/mot-de-passe-oublie"];
+
+  for (const text of ["xl", "xxl"] as const) {
+    for (const width of [320, 390]) {
+      test(`text ${text} at ${width} px: no sideways scroll, the controls on screen`, async ({ page }) => {
+        await page.addInitScript((size) => localStorage.setItem("classeo:text", size), text);
+        await page.setViewportSize({ width, height: 800 });
+        for (const path of PAGES) {
+          await page.goto(path);
+          await expect(page.locator("html")).toHaveAttribute("data-text", text);
+          await expectNoHorizontalScroll(page);
+          const controls = page.locator("button[aria-label='Ouvrir le menu'], [data-language-menu]").locator("visible=true");
+          const count = await controls.count();
+          expect(count, `${path}: header controls`).toBeGreaterThan(0);
+          for (let i = 0; i < count; i++) {
+            const box = (await controls.nth(i).boundingBox())!;
+            expect(box.x, `${path}: control ${i}, left edge`).toBeGreaterThanOrEqual(0);
+            expect(box.x + box.width, `${path}: control ${i}, right edge`).toBeLessThanOrEqual(width);
+            expect(Math.round(box.height), `${path}: control ${i}, height`).toBeGreaterThanOrEqual(44);
+          }
+        }
+      });
+    }
+  }
+
+  test("text xxl on a large screen: the footer lockup fits its column", async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem("classeo:text", "xxl"));
+    await page.setViewportSize({ width: 1366, height: 900 });
+    for (const path of ["/", "/credits", "/verifier", "/une-page-qui-n-existe-pas"]) {
+      await page.goto(path);
+      const lockup = page.getByRole("contentinfo").locator("[data-brand-lockup]");
+      const overflow = await lockup.evaluate((el) => el.scrollWidth - el.clientWidth);
+      expect(overflow, `${path}: lockup overflow in pixels`).toBeLessThanOrEqual(0);
+    }
+  });
+});

@@ -10,12 +10,14 @@ const footer = (notice: boolean) => renderToStaticMarkup(createElement(AppFooter
 const text = (html: string) => html.replace(/<[^>]+>/g, "").replace(/&#x27;/g, "'");
 
 describe("app footer", () => {
-  it("carries the copyright, the whole independence notice and the tricolour band", () => {
+  it("carries the copyright and the whole independence notice under a 1 px border rule", () => {
     const html = footer(true);
     expect(text(html)).toContain("© 2026 Classéo");
     expect(text(html)).toContain(INDEPENDENCE_NOTICE.full);
     expect(html).toContain('lang="fr" translate="no"');
-    expect(html).toMatch(/bg-flag-green[\s\S]*bg-flag-yellow[\s\S]*bg-flag-red/);
+    // Part 3.5: a plain --border rule, not the tricolour band.
+    expect(html).toMatch(/data-app-footer-body[^>]*border-t border-border/);
+    expect(html).not.toContain("bg-flag-green");
   });
 
   it("links to the help, the document check and the credits, in a named navigation", () => {
