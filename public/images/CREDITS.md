@@ -23,11 +23,21 @@ Generated from src/features/public-pages/photos.ts by
 |---|---|---|---|---|---|
 | `voix-siwis` | La voix française qui lit les pages à voix haute. | Piper (Rhasspy), voix siwis entraînée sur la base SIWIS de Pierre-Edouard Honnet, Alexandros Lazaridis, Philip N. Garner et Junichi Yamagishi | https://huggingface.co/rhasspy/piper-voices/tree/main/fr/fr_FR/siwis | CC BY 4.0 | Aucune : la voix est utilisée telle quelle, sur le serveur de Classéo. |
 
+## Coat of arms
+
+Shown in the brand lockup from public/brand/armoiries-benin.svg, a copy
+shared under the licence of the original.
+
+| Work | Use | Author | Source | Licence | Changes |
+|---|---|---|---|---|---|
+| `armoiries` | Armoiries de la République du Bénin, dans le bloc-marque. | Tinynanorobots et Fenn-O-maniC (fichier « Coat of arms of Benin.svg », Wikimedia Commons) | https://commons.wikimedia.org/wiki/File:Coat_of_arms_of_Benin.svg | CC BY-SA 3.0 | Fichier allégé, dessin inchangé. La copie est partagée sous la même licence. |
+
 ## Local languages
 
 | Service | Use | Author | Source |
 |---|---|---|---|
 | `api229langues` | La traduction des pages en fongbe et en yoruba, et les voix en fongbe, yoruba et haoussa. | AWADEME Finanfa Ronaldo (api229langues) | https://api229langues.vercel.app |
 
-Licences: CC BY 4.0 https://creativecommons.org/licenses/by/4.0/ and
-CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0/.
+Licences: CC BY 4.0 https://creativecommons.org/licenses/by/4.0/,
+CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0/ and
+CC BY-SA 3.0 https://creativecommons.org/licenses/by-sa/3.0/.
