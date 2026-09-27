@@ -7,6 +7,8 @@
 //
 // Shared by server pages, client forms and scripts: no server import here.
 
+import { INDEPENDENCE_NOTICE } from "../../components/brand/settings";
+
 import { photoTexts } from "./photos";
 
 export const PUBLIC = {
@@ -26,10 +28,31 @@ export const PUBLIC = {
     offline: "Utiliser Classéo hors ligne",
     credits: "Crédits photos",
     machine: "Traduction automatique : en cas de doute, le texte français fait foi.",
+    // Public header and menu drawer.
+    band: "Plateforme de gestion scolaire pour les établissements du Bénin",
+    bandShort: "Gestion scolaire · Bénin",
+    navHome: "Accueil",
+    verify: "Vérifier un document",
+    mainNav: "Navigation principale",
+    menu: "Menu",
+    openMenu: "Ouvrir le menu",
+    closeMenu: "Fermer le menu",
+    signInShort: "Connexion",
+    // Public footer.
+    footerPlatform: "Plateforme",
+    footerHelp: "Aide",
+    footerLinks: "Liens utiles",
+    footerLanguages: "Langues",
+    external: "(site externe)",
+    accessibility: "Accessibilité",
+    // The exact notice of the brand settings, listed so that its translation
+    // is prepared: the French sentence stays first, the one that holds.
+    notice: INDEPENDENCE_NOTICE.full,
   },
   landing: {
     // A no-break space keeps "à" with "portée": no lone "à" at a line end.
     title: "Le système éducatif, à\u00a0portée de main.",
+    kicker: "Gestion scolaire en ligne",
     purpose:
       "Inscriptions, notes, bulletins, présences, frais et messages : Classéo rassemble la vie de l'établissement, pour que l'équipe, les enseignants et les familles voient ce qui les concerne, au bon moment.",
     enter: "Accéder à mon espace",
@@ -40,6 +63,24 @@ export const PUBLIC = {
     a11yBody:
       "Le texte s'agrandit, le contraste se renforce et tout se fait au clavier, avec un lecteur d'écran ou sur un petit téléphone. Les pages déjà ouvertes restent lisibles sans réseau.",
     a11ySettings: "Les réglages se trouvent sous le bouton rond, en bas à droite de chaque écran.",
+    servicesTitle: "Les services de Classéo",
+    access: "Accéder",
+    schoolTitle: "Gérer l'établissement",
+    schoolBody: "Inscriptions, classes, emplois du temps, frais et paie du personnel, au même endroit.",
+    teacherTitle: "Saisir les notes et les présences",
+    teacherBody: "Les enseignants font l'appel et saisissent les notes ; les moyennes et les bulletins se calculent.",
+    familyTitle: "Suivre la scolarité d'un enfant",
+    familyBody: "Les parents voient les notes, les bulletins, les absences et les frais, et écrivent à l'établissement.",
+    territoryTitle: "Piloter l'éducation d'un territoire",
+    territoryBody: "Les services de l'éducation suivent les effectifs et les résultats de leurs établissements.",
+    verifyBody: "Un bulletin, une attestation ou un reçu se vérifie avec son code, sans compte.",
+    accountTitle: "Retrouver l'accès à son compte",
+    accountBody: "Mot de passe perdu : la personne qui gère votre compte vous en remet un nouveau.",
+    voiceTitle: "Lecture à voix haute",
+    displayTitle: "Affichage adapté",
+    languagesTitle: "Français, fongbe, yoruba",
+    languagesBody: "Les pages publiques se lisent en français, en fongbe et en yoruba, et chaque texte s'écoute dans la langue choisie.",
+    openSettings: "Ouvrir les réglages d'accessibilité",
   },
   signIn: {
     title: "Connexion",
@@ -100,6 +141,7 @@ export const PUBLIC = {
     publicDomainNote: "Voir le statut sur la page source.",
     photos: "Photographies",
     voices: "Voix de lecture",
+    emblem: "Armoiries",
     voiceSource: "Voir la source",
     languages: "Langues locales",
     languagesThanks: "Merci à AWADEME Finanfa Ronaldo, grâce à qui Classéo se lit et s'écoute en langues locales.",

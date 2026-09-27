@@ -12,10 +12,10 @@ export default function manifest(): MetadataRoute.Manifest {
     scope: "/",
     display: "standalone",
     orientation: "any",
-    // Splash screen: the logo on the deep green of the sidebar, status bar in
+    // Splash screen: the logo on the navy of the header bar, status bar in
     // the same colour until the page sets its own (see ThemeColor).
-    background_color: "#0b3b2a",
-    theme_color: "#0b3b2a",
+    background_color: "#0a3764",
+    theme_color: "#0a3764",
     prefer_related_applications: false,
     categories: ["education", "productivity"],
     icons: [
