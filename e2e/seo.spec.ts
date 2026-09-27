@@ -55,6 +55,8 @@ test("the private space is never indexed", async ({ pageAs }) => {
 
 test("the manifest and the icons are served", async ({ request }) => {
   const manifest = await (await request.get("/manifest.webmanifest")).json();
-  expect(manifest).toMatchObject({ name: "Classéo", start_url: "/espace", display: "standalone", lang: "fr" });
+  // The product as decision D5 names it on the install prompt and the
+  // splash; the home screen keeps the short name.
+  expect(manifest).toMatchObject({ name: "Classéo, plateforme de gestion scolaire", short_name: "Classéo", start_url: "/espace", display: "standalone", lang: "fr" });
   for (const path of ["/icon.svg", "/apple-icon", "/icons/icon-192.png", "/favicon.ico"]) expect((await request.get(path)).status()).toBe(200);
 });
