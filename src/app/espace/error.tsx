@@ -1,6 +1,6 @@
 "use client";
 
-import { CloudOff, RotateCcw } from "lucide-react";
+import { CloudOff, LifeBuoy, RotateCcw } from "lucide-react";
 import { useEffect } from "react";
 
 import { StatusPage } from "@/components/kit/status-page";
@@ -16,8 +16,8 @@ export default function SpaceError({ error, reset }: { error: Error & { digest?:
         title="Cette page n'a pas pu s'afficher"
         actions={
           <>
-            <ButtonLink href="/espace" variant="secondary" size="lg">
-              Tableau de bord
+            <ButtonLink href="/espace/aide" variant="secondary" size="lg">
+              <LifeBuoy aria-hidden /> Aide
             </ButtonLink>
             <Button onClick={reset} size="lg">
               <RotateCcw aria-hidden /> Réessayer

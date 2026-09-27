@@ -24,6 +24,8 @@ export type ShellScope = {
   activeSchoolId: string | null;
 };
 
+type Tone = "light" | "dark";
+
 function SchoolLogo({ scope, className }: { scope: ShellScope; className?: string }) {
   const [broken, setBroken] = useState(false);
   if (scope.logoUrl && !broken)
@@ -31,10 +33,10 @@ function SchoolLogo({ scope, className }: { scope: ShellScope; className?: strin
       // A plain img: the logo is served by our authorized file route and
       // needs no resizing. Decorative, the school name follows.
       // eslint-disable-next-line @next/next/no-img-element
-      <img src={scope.logoUrl} alt="" onError={() => setBroken(true)} className={cn("size-9 shrink-0 rounded-lg border border-border bg-white object-contain p-0.5", className)} />
+      <img src={scope.logoUrl} alt="" onError={() => setBroken(true)} className={cn("size-9 shrink-0 rounded-control border border-border bg-white object-contain p-0.5", className)} />
     );
   return (
-    <span aria-hidden className={cn("inline-flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary text-sm font-bold text-on-primary", className)}>
+    <span aria-hidden className={cn("inline-flex size-9 shrink-0 items-center justify-center rounded-control bg-primary font-display text-sm font-bold text-on-primary ring-1 ring-white/30", className)}>
       {initials(scope.name)}
     </span>
   );
@@ -47,7 +49,8 @@ export function ScopeMark({ scope, className }: { scope: ShellScope; className?:
 
 // Accounts attached to several schools (a teacher appointed in two) pick the
 // one they work in. The whole space then follows that school.
-export function SchoolSwitcher({ scope, compact = false }: { scope: ShellScope; compact?: boolean }) {
+export function SchoolSwitcher({ scope, compact = false, tone = "light" }: { scope: ShellScope; compact?: boolean; tone?: Tone }) {
+  const dark = tone === "dark";
   const router = useRouter();
   const [pending, start] = useTransition();
   return (
@@ -61,12 +64,17 @@ export function SchoolSwitcher({ scope, compact = false }: { scope: ShellScope; 
           type="button"
           {...props}
           className={cn(
-            "group flex min-w-0 items-center gap-2.5 rounded-lg text-left hover:bg-surface-2",
+            "group flex min-w-0 items-center gap-2.5 rounded-control text-left",
+            dark ? "hover:bg-white/10" : "hover:bg-surface-2",
             compact ? "-ml-1 min-h-11 px-1" : "-ml-2 min-h-12 px-2",
           )}
         >
-          <IdentityText scope={scope} compact={compact} />
-          {pending ? <Loader2 className="size-4 shrink-0 animate-spin text-muted" aria-hidden /> : <ChevronsUpDown className="size-4 shrink-0 text-muted group-hover:text-text" aria-hidden />}
+          <IdentityText scope={scope} compact={compact} tone={tone} />
+          {pending ? (
+            <Loader2 className={cn("size-4 shrink-0 animate-spin", dark ? "text-header-muted" : "text-muted")} aria-hidden />
+          ) : (
+            <ChevronsUpDown className={cn("size-4 shrink-0", dark ? "text-header-muted group-hover:text-header-text" : "text-muted group-hover:text-text")} aria-hidden />
+          )}
           <span className="sr-only">, changer d&apos;établissement</span>
         </button>
       )}
@@ -94,7 +102,7 @@ export function SchoolSwitcher({ scope, compact = false }: { scope: ShellScope; 
                         if (result?.ok) router.refresh();
                       });
                     }}
-                    className={cn("flex min-h-11 w-full items-center gap-3 rounded-md px-2.5 text-left text-sm font-medium hover:bg-surface-2", current && "text-primary")}
+                    className={cn("flex min-h-11 w-full items-center gap-3 rounded-control px-2.5 text-left text-sm font-medium hover:bg-surface-2", current && "text-primary")}
                   >
                     <span className="min-w-0 flex-1">{s.name}</span>
                     {current && <Check className="size-4 shrink-0" aria-hidden />}
@@ -109,24 +117,26 @@ export function SchoolSwitcher({ scope, compact = false }: { scope: ShellScope; 
   );
 }
 
-function IdentityText({ scope, compact }: { scope: ShellScope; compact: boolean }) {
+function IdentityText({ scope, compact, tone }: { scope: ShellScope; compact: boolean; tone: Tone }) {
+  const dark = tone === "dark";
   return (
     <>
       <ScopeMark scope={scope} className={compact && scope.kind === "school" ? "size-8" : undefined} />
       <span className="min-w-0">
-        <span className={cn("block truncate leading-tight font-bold text-text", compact ? "text-[0.9375rem]" : "font-display text-[1.0625rem]")}>{scope.name}</span>
-        <span className={cn("block truncate text-xs leading-tight text-muted", compact && "sr-only")}>{scope.caption}</span>
+        <span className={cn("block truncate font-display leading-tight font-bold", dark ? "text-header-text" : "text-text", compact ? "text-[0.9375rem]" : "text-base")}>{scope.name}</span>
+        <span className={cn("mt-0.5 block truncate text-xs leading-tight", dark ? "text-header-muted" : "text-muted", compact && "sr-only")}>{scope.caption}</span>
       </span>
     </>
   );
 }
 
 // The identity block at the start of the top bar.
-export function ScopeIdentity({ scope, compact = false }: { scope: ShellScope; compact?: boolean }) {
-  if (scope.kind === "school" && scope.schools.length > 1) return <SchoolSwitcher scope={scope} compact={compact} />;
+// tone "dark": on the navy top bar.
+export function ScopeIdentity({ scope, compact = false, tone = "light" }: { scope: ShellScope; compact?: boolean; tone?: Tone }) {
+  if (scope.kind === "school" && scope.schools.length > 1) return <SchoolSwitcher scope={scope} compact={compact} tone={tone} />;
   return (
     <div className="flex min-w-0 items-center gap-2.5">
-      <IdentityText scope={scope} compact={compact} />
+      <IdentityText scope={scope} compact={compact} tone={tone} />
     </div>
   );
 }

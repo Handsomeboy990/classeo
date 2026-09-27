@@ -17,7 +17,8 @@ export function languageCode(code: string) {
 // private space: a compact button (the translate icon and the current
 // language code) opening a small panel with the choices. Language names are
 // written in their own language and never translated (data-no-translate).
-// tone "inverse" is for the button drawn over a photograph.
+// tone "inverse" is for the button drawn over a photograph, "header" for the
+// navy bars.
 export function LanguageMenu({
   code,
   current,
@@ -31,7 +32,7 @@ export function LanguageMenu({
   // Name of the current language, for the accessible name of the button.
   current: string;
   title?: string;
-  tone?: "default" | "inverse";
+  tone?: "default" | "inverse" | "header";
   width?: number;
   className?: string;
   children: ReactNode | ((close: () => void) => ReactNode);
@@ -53,11 +54,16 @@ export function LanguageMenu({
             "group inline-flex h-10 items-center gap-1.5 rounded-full border px-2.5 text-sm font-bold tracking-wide transition-colors max-lg:h-11 max-sm:px-2.5",
             tone === "inverse"
               ? "border-white/40 bg-black/25 text-white backdrop-blur-sm hover:bg-black/40"
-              : "border-border-strong bg-surface text-text hover:border-primary hover:bg-surface-2",
+              : tone === "header"
+                ? // The phone bar also holds the brand: below 360 px the button keeps only its icon.
+                  "border-white/30 bg-white/10 text-header-text hover:border-white/50 hover:bg-white/15 max-[359px]:w-11 max-[359px]:justify-center max-[359px]:px-0"
+                : "border-border-strong bg-surface text-text hover:border-primary hover:bg-surface-2",
           )}
         >
-          <Languages className={cn("size-[1.125rem] shrink-0", tone === "inverse" ? "text-white" : "text-primary")} aria-hidden />
-          <span aria-hidden>{code}</span>
+          <Languages className={cn("size-[1.125rem] shrink-0", tone === "default" ? "text-primary" : "text-white")} aria-hidden />
+          <span aria-hidden className={cn(tone === "header" && "max-[359px]:hidden")}>
+            {code}
+          </span>
           <ChevronDown className="size-3.5 shrink-0 opacity-70 transition-transform group-aria-expanded:rotate-180 max-sm:hidden" aria-hidden />
         </button>
       )}

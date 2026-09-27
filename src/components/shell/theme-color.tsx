@@ -4,15 +4,15 @@ import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 
 // The browser bar and, in the installed app, the status bar take the colour
-// of what is right under them: the app bar in the private space, the deep
-// green header of the home page, the page background elsewhere. Follows the theme
-// and contrast chosen in Classéo, not only the system setting.
+// of what is right under them: the navy app bar in the private space, the
+// navy band of the home page, the page background elsewhere. Follows the
+// theme and contrast chosen in Classéo, never the system setting.
 export function ThemeColor() {
   const pathname = usePathname();
 
   useEffect(() => {
     const root = document.documentElement;
-    const token = pathname === "/" ? "--sidebar" : pathname.startsWith("/espace") ? "--surface" : "--bg";
+    const token = pathname === "/" ? "--sidebar" : pathname.startsWith("/espace") ? "--header" : "--bg";
     const apply = () => {
       const color = getComputedStyle(root).getPropertyValue(token).trim();
       if (!color) return;
