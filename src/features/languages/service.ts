@@ -163,11 +163,29 @@ export async function translateNow(lang: TargetLanguage, texts: string[], maxWai
   return { translations, complete: complete && refused === 0, personal: plan.personal || fromMessages.size > 0, refused };
 }
 
+// Whether the translation service is configured: without it nothing is
+// queued at all.
+export function serviceConfigured() {
+  return apiConfig() !== null;
+}
+
+// How many of these strings may be queued, from the names known to the
+// platform only (one cached read): the answer to the page, which then
+// asks again later. queueInterface makes the full decision after it.
+export async function queueableCount(texts: string[]) {
+  if (!texts.length || !serviceConfigured()) return 0;
+  const index = await knownNameIndex();
+  return new Set(texts.flatMap((t) => {
+    const d = interfaceDecision(t, index);
+    return d.ok ? [d.send] : [];
+  })).size;
+}
+
 // Interface strings missing from the cache, queued for the background
 // translation once checked here (privacy.ts): each is queued as itself or
 // as its template, or not at all. Returns the number queued.
 export async function queueInterface(lang: TargetLanguage, texts: string[], context: { userId: string; names?: readonly string[] }) {
-  if (!texts.length) return 0;
+  if (!texts.length || !serviceConfigured()) return 0;
   const index = await knownNameIndex();
   const decided = texts.map((t) => ({ text: t, decision: interfaceDecision(t, index, context.names ?? []) }));
   const candidates = decided.flatMap((d) => (d.decision.ok ? [d.text, d.decision.send] : []));

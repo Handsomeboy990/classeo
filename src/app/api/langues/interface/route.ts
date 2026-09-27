@@ -3,7 +3,7 @@ import { z } from "zod";
 
 import { guard, json } from "@/features/languages/guard";
 import { namesFor } from "@/features/languages/names";
-import { drain, lookup, queueInterface } from "@/features/languages/service";
+import { drain, lookup, queueableCount, queueInterface } from "@/features/languages/service";
 import { isCandidate, MAX_UI_LENGTH, normalise } from "@/features/languages/text";
 import { getCurrentUser } from "@/lib/auth/session";
 
@@ -34,11 +34,19 @@ export async function POST(request: Request) {
   const texts = [...new Set(parsed.data.texts.map(normalise).filter(isCandidate))];
   const found = await lookup(check.lang, texts);
   const missing = texts.filter((t) => !found.has(t));
-  const user = missing.length ? await getCurrentUser() : null;
-  const queued = user ? await queueInterface(check.lang, missing, { userId: user.id, names: await namesFor(user) }) : 0;
-  if (queued) after(() => drain());
+  // The answer waits for the cache only: the full decision (the reader's
+  // names, the messages they can read) and the queueing run after it.
+  const pending = await queueableCount(missing);
+  if (pending) {
+    const user = await getCurrentUser();
+    const lang = check.lang;
+    if (user)
+      after(async () => {
+        if (await queueInterface(lang, missing, { userId: user.id, names: await namesFor(user) })) await drain();
+      });
+  }
   // A string cached as its own French text (the service could not translate
   // it) is not sent back.
   const translations = Object.fromEntries([...found].filter(([source, text]) => source !== text));
-  return json({ lang: check.lang, translations, pending: queued });
+  return json({ lang: check.lang, translations, pending });
 }
