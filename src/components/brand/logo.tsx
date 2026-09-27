@@ -23,8 +23,8 @@ export function LogoMark({ className, title, tone = "light" }: { className?: str
         <path d="M17.5 20l3.5 3.5" />
         <path d="M46.5 20L43 23.5" />
       </g>
-      <path d="M8 38c8-4 16-4 24 2v14c-8-6-16-6-24-2z" fill="#FFFFFF" />
-      <path d="M56 38c-8-4-16-4-24 2v14c8-6 16-6 24-2z" fill="#FFFFFF" fillOpacity="0.86" />
+      <path d="M8 38c8-4 16-4 24 2v14c-8-6-16-6-24-2z" fill="var(--header-text)" />
+      <path d="M56 38c-8-4-16-4-24 2v14c8-6 16-6 24-2z" fill="var(--header-text)" fillOpacity="0.86" />
       <path d="M30.5 40h3v17l-1.5-2-1.5 2z" fill="var(--flag-red)" />
     </svg>
   );
