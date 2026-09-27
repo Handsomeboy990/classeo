@@ -68,7 +68,7 @@ export function MultiPicker({
 
   return (
     <fieldset className="min-w-0" aria-describedby={[info && `${id}-info`, hint && `${id}-hint`, error && `${id}-error`].filter(Boolean).join(" ") || undefined}>
-      <legend className={cn("text-sm font-semibold text-text", info && "float-left mr-1.5")}>{legend}</legend>
+      <legend className={cn("font-display text-sm font-semibold text-text", info && "float-left mr-1.5")}>{legend}</legend>
       {info && (
         <InfoTip id={`${id}-info`} label="Plus d'informations sur ce choix">
           {info}
@@ -131,13 +131,13 @@ export function MultiPicker({
             {selected.map((v) => labelOf.get(v) ?? v).join(", ")}
           </p>
         )}
-        <div id={`${id}-list`} className="max-h-72 overflow-y-auto rounded-lg border border-border-strong bg-surface p-2">
+        <div id={`${id}-list`} className="max-h-72 overflow-y-auto rounded-card border border-border-strong bg-surface p-2">
           {visible.length === 0 ? (
             <p className="p-2 text-sm text-muted">Aucun résultat pour « {query} ».</p>
           ) : (
             groups.map((g) => (
               <div key={g} role="group" aria-label={g} className="py-1">
-                <p aria-hidden className="px-2 pb-1 text-xs font-bold tracking-wide text-muted uppercase">
+                <p aria-hidden className="px-2 pb-1 font-display text-[0.6875rem] font-bold tracking-[0.08em] text-muted uppercase">
                   {g}
                 </p>
                 {visible
@@ -153,7 +153,7 @@ export function MultiPicker({
                         onChange={(e) => toggle(o.value, e.target.checked)}
                         label={o.label}
                         description={o.detail}
-                        labelClassName={cn("rounded-md px-2 py-1.5 hover:bg-surface-2", on && "bg-primary-soft")}
+                        labelClassName={cn("rounded-control px-2 py-1.5 hover:bg-surface-2", on && "bg-primary-soft")}
                       />
                     );
                   })}
@@ -163,8 +163,8 @@ export function MultiPicker({
         </div>
       </div>
       {error && (
-        <p id={`${id}-error`} className="mt-1.5 flex items-start gap-1.5 text-sm leading-snug font-semibold text-danger">
-          <CircleAlert className="mt-px size-4 shrink-0" aria-hidden />
+        <p id={`${id}-error`} className="mt-1.5 flex items-start gap-1.5 text-[0.8125rem] leading-snug font-semibold text-danger">
+          <CircleAlert className="mt-0.5 size-3.5 shrink-0" aria-hidden />
           <span>{error}</span>
         </p>
       )}

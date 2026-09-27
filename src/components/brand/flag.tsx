@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 // Flag of the Republic of Benin, 3:2: a green vertical band on the hoist
 // side (two fifths of the width), yellow over red horizontal bands on the
 // rest. Decorative: the name written next to it carries the meaning.
+// The one component allowed to write the flag colours in full.
 export function BeninFlag({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 15 10" className={cn("h-5 w-auto shrink-0 rounded-[2px]", className)} aria-hidden focusable="false">
@@ -15,13 +16,15 @@ export function BeninFlag({ className }: { className?: string }) {
   );
 }
 
-// Thin band in the flag colours, used at the top of public pages.
+// Tricolour rule: three equal thirds, green, yellow, red, left to right.
+// 6 px by default; pass a height (h-0.5, h-1) for the thinner rules of the
+// lockup, the headers and the status pages.
 export function FlagStripe({ className }: { className?: string }) {
   return (
     <div className={cn("flex h-1.5", className)} aria-hidden>
-      <span className="w-2/5 bg-[#008751]" />
-      <span className="w-2/5 bg-accent" />
-      <span className="w-1/5 bg-[#e8112d]" />
+      <span className="flex-1 bg-flag-green" />
+      <span className="flex-1 bg-flag-yellow" />
+      <span className="flex-1 bg-flag-red" />
     </div>
   );
 }

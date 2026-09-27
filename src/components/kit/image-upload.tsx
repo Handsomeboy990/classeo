@@ -82,7 +82,7 @@ export function ImageUpload({
         )}
       </div>
       <div className="flex min-w-0 flex-1 flex-col gap-1.5">
-        <label htmlFor={id} className="text-sm font-semibold text-text">
+        <label htmlFor={id} className="font-display text-sm font-semibold text-text">
           {label}
         </label>
         <div className="flex flex-wrap items-center gap-2">

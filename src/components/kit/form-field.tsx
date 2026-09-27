@@ -70,8 +70,8 @@ export function FormField({
         </p>
       )}
       {error && (
-        <p id={`${id}-error`} className="flex items-start gap-1.5 text-sm leading-snug font-semibold text-danger">
-          <CircleAlert className="mt-px size-4 shrink-0" aria-hidden />
+        <p id={`${id}-error`} className="flex items-start gap-1.5 text-[0.8125rem] leading-snug font-semibold text-danger">
+          <CircleAlert className="mt-0.5 size-3.5 shrink-0" aria-hidden />
           <span>{t(error)}</span>
         </p>
       )}

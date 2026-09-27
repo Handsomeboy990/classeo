@@ -6,6 +6,7 @@ import { Table, TD, TH, THead, TR } from "@/components/ui/table";
 import type { SearchParams } from "@/lib/list";
 import { cn, formatNumber } from "@/lib/utils";
 
+import { pageWindow, rangeLabel } from "./pagination";
 import { RowLinks } from "./row-links";
 import { SearchInput } from "./search-input";
 import { EmptyState } from "./states";
@@ -163,22 +164,55 @@ export function DataTable<T>({
       )}
       {rowHref && rows.length > 0 && <RowLinks />}
       {count > 0 && (
-        <nav aria-label="Pagination" className="flex items-center justify-between gap-3 border-t border-border px-4 py-3 text-sm text-muted">
-          <p className="min-w-0">
-            <span className="font-semibold text-text tabular-nums">{formatNumber(count)}</span> résultat{count > 1 ? "s" : ""}
-            {pages > 1 && (
-              <span className="tabular-nums">
-                {" "}
-                · page {page} sur {pages}
-              </span>
+        <nav aria-label="Pagination" className="flex flex-wrap items-center justify-between gap-3 border-t border-border px-4 py-3 text-sm text-muted">
+          <p className="min-w-0 tabular-nums">
+            {pages > 1 ? (
+              <>
+                <span className="max-sm:hidden">{rangeLabel(page, pageSize, count, formatNumber)}</span>
+                <span className="sm:hidden">
+                  <span className="font-semibold text-text">{formatNumber(count)}</span> résultat{count > 1 ? "s" : ""} · page {page} sur {pages}
+                </span>
+              </>
+            ) : (
+              <>
+                <span className="font-semibold text-text">{formatNumber(count)}</span> résultat{count > 1 ? "s" : ""}
+              </>
             )}
           </p>
           {pages > 1 && (
-            <div className="flex shrink-0 gap-2">
+            <div className="flex shrink-0 items-center gap-1">
               <PageLink href={pageHref(page - 1)} disabled={page <= 1} label="Page précédente">
                 <ChevronLeft className="size-4" aria-hidden />
+                <span className="max-[399px]:hidden" aria-hidden>
+                  Précédent
+                </span>
               </PageLink>
+              {/* Phones keep the two arrows and the "page 2 sur 18" line. */}
+              <ol className="flex items-center gap-1 max-sm:hidden">
+                {pageWindow(page, pages).map((p, i) =>
+                  p === "gap" ? (
+                    <li key={`gap-${i}`} className="inline-flex size-10 items-center justify-center" aria-hidden>
+                      …
+                    </li>
+                  ) : (
+                    <li key={p}>
+                      {p === page ? (
+                        <span aria-current="page" aria-label={`Page ${p}`} className={cn(PAGE_CLS, "bg-primary text-on-primary")}>
+                          {p}
+                        </span>
+                      ) : (
+                        <Link href={pageHref(p)} aria-label={`Page ${p}`} scroll={false} className={cn(PAGE_CLS, "border border-border text-text hover:bg-surface-2")}>
+                          {p}
+                        </Link>
+                      )}
+                    </li>
+                  ),
+                )}
+              </ol>
               <PageLink href={pageHref(page + 1)} disabled={page >= pages} label="Page suivante">
+                <span className="max-[399px]:hidden" aria-hidden>
+                  Suivant
+                </span>
                 <ChevronRight className="size-4" aria-hidden />
               </PageLink>
             </div>
@@ -189,8 +223,13 @@ export function DataTable<T>({
   );
 }
 
+// Page buttons: 44 px on a phone, 40 px from 40rem, Montserrat 600.
+const PAGE_CLS = "inline-flex min-w-11 h-11 items-center justify-center rounded-control px-2 font-display text-sm font-semibold tabular-nums sm:h-10 sm:min-w-10";
+
+// "Précédent" and "Suivant": arrow and word, the word hidden under 400 px;
+// the name stays in aria-label.
 function PageLink({ href, disabled, label, children }: { href: string; disabled: boolean; label: string; children: ReactNode }) {
-  const cls = "inline-flex size-11 items-center justify-center rounded-control border border-border-strong bg-surface text-text sm:size-9";
+  const cls = cn(PAGE_CLS, "gap-1.5 border border-border px-3 text-text");
   if (disabled)
     return (
       <span className={cn(cls, "opacity-40")} aria-disabled="true" aria-label={label} role="link">
@@ -198,7 +237,7 @@ function PageLink({ href, disabled, label, children }: { href: string; disabled:
       </span>
     );
   return (
-    <Link href={href} className={cn(cls, "shadow-xs transition-colors hover:border-field-border hover:bg-surface-2")} aria-label={label} scroll={false}>
+    <Link href={href} className={cn(cls, "transition-colors hover:bg-surface-2")} aria-label={label} scroll={false}>
       {children}
     </Link>
   );

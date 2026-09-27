@@ -178,7 +178,7 @@ export function DateField({ className, fieldSize = "md", id, ref, ...props }: Pr
               aria-haspopup="dialog"
               aria-expanded={open}
               aria-label={value ? `Changer la date, ${spokenDate(value)}` : "Choisir une date dans le calendrier"}
-              className="-mr-2 inline-flex size-9 items-center justify-center rounded-md text-muted hover:bg-surface-2 hover:text-text"
+              className="-mr-2 inline-flex size-9 items-center justify-center rounded-control text-muted hover:bg-surface-2 hover:text-text"
             >
               <CalendarDays className="size-[1.125rem]" aria-hidden />
             </button>
@@ -219,7 +219,7 @@ export function DateField({ className, fieldSize = "md", id, ref, ...props }: Pr
         </div>
       )}
       {enhanced && error && (
-        <p id={errorId} className="text-sm leading-snug font-semibold text-danger" role="alert">
+        <p id={errorId} className="text-[0.8125rem] leading-snug font-semibold text-danger" role="alert">
           {error}
         </p>
       )}
@@ -291,7 +291,7 @@ function Calendar({
   }
 
   const monthLabel = `${MONTHS[f.m]} ${f.y}`;
-  const nav = "inline-flex size-9 items-center justify-center rounded-md text-text hover:bg-surface-2 disabled:opacity-40";
+  const nav = "inline-flex size-9 items-center justify-center rounded-control text-text hover:bg-surface-2 disabled:opacity-40";
   const prevDisabled = !!min && addMonths(focus, -1).slice(0, 7) < min.slice(0, 7);
   const nextDisabled = !!max && addMonths(focus, 1).slice(0, 7) > max.slice(0, 7);
 
@@ -389,14 +389,14 @@ function Calendar({
       <div className="mt-2 flex items-center justify-between gap-2 border-t border-border pt-2">
         <button
           type="button"
-          className="inline-flex min-h-9 items-center rounded-md px-2.5 text-sm font-semibold text-primary hover:bg-primary-soft disabled:opacity-40"
+          className="inline-flex min-h-9 items-center rounded-control px-2.5 text-sm font-semibold text-primary hover:bg-primary-soft disabled:opacity-40"
           disabled={!inRange(today, min, max)}
           onClick={() => onPick(today)}
         >
           Aujourd&apos;hui
         </button>
         {allowClear && value && (
-          <button type="button" className="inline-flex min-h-9 items-center rounded-md px-2.5 text-sm font-semibold text-muted hover:bg-surface-2 hover:text-text" onClick={() => onPick("")}>
+          <button type="button" className="inline-flex min-h-9 items-center rounded-control px-2.5 text-sm font-semibold text-muted hover:bg-surface-2 hover:text-text" onClick={() => onPick("")}>
             Effacer
           </button>
         )}

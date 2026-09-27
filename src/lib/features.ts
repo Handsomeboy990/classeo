@@ -1,5 +1,6 @@
 import "server-only";
 
+import { BRAND_DEFAULTS } from "@/components/brand/settings";
 import { cached } from "@/lib/cache";
 import { db } from "@/lib/db";
 
@@ -17,6 +18,20 @@ export const FEATURES = {
   "students.transfers": { enabled: true, description: "Transferts d'élèves entre classes et établissements", config: {} },
   "documents.signature": { enabled: true, description: "Signature électronique des documents", config: {} },
   "contents.ticker": { enabled: true, description: "Bandeau défilant des annonces importantes", config: {} },
+  // Official lockup (coat of arms, authority, tricolour rule, "République du
+  // Bénin"). authority: the institution named in the lockup, empty for
+  // Classéo itself; decisionReference: the written authorisation, once it
+  // exists. Read through loadBrand() (components/brand/load-brand.ts).
+  "brand.official": {
+    enabled: BRAND_DEFAULTS.official,
+    description: "Bloc-marque officiel : armoiries et mention République du Bénin",
+    config: { authority: BRAND_DEFAULTS.authority, decisionReference: BRAND_DEFAULTS.decisionReference },
+  },
+  "brand.independenceNotice": {
+    enabled: BRAND_DEFAULTS.notice,
+    description: "Mention « Plateforme indépendante, non officielle » sur chaque page",
+    config: {},
+  },
 } as const satisfies Record<string, { enabled: boolean; description: string; config: Record<string, unknown> }>;
 
 export type FeatureKey = keyof typeof FEATURES;
