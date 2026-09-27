@@ -124,8 +124,8 @@ export function DateLeaf({ date, className }: { date: Date; className?: string }
   const day = new Intl.DateTimeFormat("fr-FR", { day: "numeric", timeZone: "Africa/Porto-Novo" }).format(date);
   const month = new Intl.DateTimeFormat("fr-FR", { month: "short", timeZone: "Africa/Porto-Novo" }).format(date).replace(".", "");
   return (
-    <span className={cn("flex w-14 shrink-0 flex-col items-center overflow-hidden rounded-lg border border-border-strong bg-surface text-center", className)} aria-hidden>
-      <span className="w-full bg-primary py-0.5 text-xs font-bold text-on-primary uppercase">{month}</span>
+    <span className={cn("flex w-14 shrink-0 flex-col items-center self-start overflow-hidden rounded-control border border-border-strong bg-surface text-center", className)} aria-hidden>
+      <span className="w-full bg-primary py-0.5 font-display text-[0.6875rem] font-bold tracking-[0.08em] text-on-primary uppercase">{month}</span>
       <span className="py-1 font-display text-2xl leading-none font-bold text-text">{day}</span>
     </span>
   );
