@@ -6,6 +6,7 @@ import { createElement, type FC } from "react";
 
 import { renderToBuffer } from "@react-pdf/renderer";
 
+import { BRAND_DEFAULTS } from "@/components/brand/settings";
 import { encodeQr } from "@/lib/qr";
 
 import { Signatures } from "./components";
@@ -69,5 +70,17 @@ describe("document rendering", () => {
     expect(buffer.subarray(0, 5).toString()).toBe("%PDF-");
     // The scope reaches the footer and the signature block.
     expect(buffer.length).toBeGreaterThan(8000);
+
+    // The coat of arms follows the official option: the same document
+    // without it is lighter by the embedded image.
+    const plain = await withDocumentScope({ verification: null, signed: null, brand: { ...BRAND_DEFAULTS, official: false } }, () =>
+      renderToBuffer(doc as unknown as Parameters<typeof renderToBuffer>[0]),
+    );
+    const withArms = await withDocumentScope({ verification: null, signed: null, brand: { ...BRAND_DEFAULTS, official: true } }, () =>
+      renderToBuffer(doc as unknown as Parameters<typeof renderToBuffer>[0]),
+    );
+    expect(withArms.length - plain.length).toBeGreaterThan(20_000);
+    expect(plain.includes("/Subtype /Image")).toBe(false);
+    expect(withArms.includes("/Subtype /Image")).toBe(true);
   }, 30_000);
 });

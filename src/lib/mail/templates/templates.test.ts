@@ -69,3 +69,34 @@ describe("passwordChangedEmail after a change while signed in", () => {
     expect(mail.text).not.toContain("Reconnectez-vous");
   });
 });
+
+describe("the e-mail frame", () => {
+  const mail = credentialsEmail(credentials);
+  const FULL = "Plateforme indépendante, non officielle. Non affiliée au Gouvernement du Bénin.";
+
+  it("carries the full independence notice in both versions", () => {
+    expect(mail.html).toContain(escapeHtml(FULL));
+    expect(mail.text).toContain(FULL);
+  });
+
+  it("names Classéo as a school management platform, never as an institution", () => {
+    expect(mail.html).toContain("République du Bénin");
+    expect(mail.html).toContain("Plateforme de gestion scolaire");
+    expect(mail.text.startsWith("RÉPUBLIQUE DU BÉNIN\nClasséo, plateforme de gestion scolaire")).toBe(true);
+    for (const part of [mail.html, mail.text]) expect(part).not.toMatch(/plateforme nationale|ministère de l'éducation/i);
+  });
+
+  it("uses the official palette: navy band and button, tricolour rule, navy footer", () => {
+    for (const colour of ["#0A3764", "#008751", "#FCD116", "#E8112D", "#072747"]) expect(mail.html).toContain(`background:${colour}`);
+    // The old green frame is gone.
+    expect(mail.html).not.toContain("#006B40");
+  });
+
+  it("is readable by assistive technology and in dark mode", () => {
+    expect(mail.html).toContain('<html lang="fr"');
+    expect(mail.html).toContain('role="article"');
+    expect(mail.html).toContain("prefers-color-scheme: dark");
+    // Every layout table is announced as presentation only.
+    expect(mail.html.match(/<table(?![^>]*role="presentation")/g)).toBeNull();
+  });
+});
