@@ -237,7 +237,7 @@ export default async function LandingPage({ searchParams }: PageProps<"/">) {
 function SectionTitle({ id, children }: { id: string; children: ReactNode }) {
   return (
     <div>
-      <h2 id={id} className="text-[1.375rem] leading-tight font-bold text-balance text-text lg:text-[1.625rem]">
+      <h2 id={id} className="text-[1.25rem] leading-[1.3] font-bold text-balance text-text">
         {children}
       </h2>
       <FlagStripe className="mt-3 h-1 w-12" />

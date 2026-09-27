@@ -47,7 +47,7 @@ export default async function CreditsPage({ searchParams }: PageProps<"/credits"
           </div>
 
           <section aria-labelledby="photos-title" className="mt-10">
-            <h2 id="photos-title" className="text-xl font-bold">
+            <h2 id="photos-title" className="text-[1.25rem] leading-[1.3] font-bold">
               {node(c.photos)}
             </h2>
             <ol className="mt-4 flex flex-col gap-5">
@@ -65,7 +65,7 @@ export default async function CreditsPage({ searchParams }: PageProps<"/credits"
                       />
                     </div>
                     <div className="p-4 sm:p-5">
-                      <h3 id={`photo-${p.file}`} className="text-lg leading-snug font-bold text-balance">
+                      <h3 id={`photo-${p.file}`} className="text-[1.0625rem] leading-[1.35] font-bold text-balance">
                         {node(p.subject)}
                       </h3>
                       <CreditDetails credit={p} sourceLabel={c.sourceLink} tr={tr} />
@@ -77,14 +77,14 @@ export default async function CreditsPage({ searchParams }: PageProps<"/credits"
           </section>
 
           <section aria-labelledby="voices-title" className="mt-12">
-            <h2 id="voices-title" className="text-xl font-bold">
+            <h2 id="voices-title" className="text-[1.25rem] leading-[1.3] font-bold">
               {node(c.voices)}
             </h2>
             <ul className="mt-4 flex flex-col gap-5">
               {OTHER_CREDITS.filter((c) => c.kind === "voice").map((v) => (
                 <li key={v.id} className="rounded-card border border-border bg-surface p-4 shadow-xs sm:p-5">
                   <article aria-labelledby={`credit-${v.id}`}>
-                    <h3 id={`credit-${v.id}`} className="flex items-start gap-2.5 text-lg leading-snug font-bold text-balance">
+                    <h3 id={`credit-${v.id}`} className="flex items-start gap-2.5 text-[1.0625rem] leading-[1.35] font-bold text-balance">
                       <AudioLines className="mt-1 size-5 shrink-0 text-primary" aria-hidden />
                       {node(v.subject)}
                     </h3>
@@ -96,7 +96,7 @@ export default async function CreditsPage({ searchParams }: PageProps<"/credits"
           </section>
 
           <section aria-labelledby="emblem-title" className="mt-12">
-            <h2 id="emblem-title" className="text-xl font-bold">
+            <h2 id="emblem-title" className="text-[1.25rem] leading-[1.3] font-bold">
               {node(c.emblem)}
             </h2>
             <ul className="mt-4 flex flex-col gap-5">
@@ -106,7 +106,7 @@ export default async function CreditsPage({ searchParams }: PageProps<"/credits"
                     {/* eslint-disable-next-line @next/next/no-img-element -- the static SVG credited here, shown as is */}
                     <img src={ARMS_SRC} alt="" width={96} height={Math.round(96 / ARMS_RATIO)} className="h-auto w-24" />
                     <div className="min-w-0">
-                      <h3 id={`credit-${e.id}`} className="text-lg leading-snug font-bold text-balance">
+                      <h3 id={`credit-${e.id}`} className="text-[1.0625rem] leading-[1.35] font-bold text-balance">
                         {node(e.subject)}
                       </h3>
                       <CreditDetails credit={e} sourceLabel={c.sourceLink} tr={tr} />
@@ -118,7 +118,7 @@ export default async function CreditsPage({ searchParams }: PageProps<"/credits"
           </section>
 
           <section aria-labelledby="languages-title" className="mt-12">
-            <h2 id="languages-title" className="text-xl font-bold">
+            <h2 id="languages-title" className="text-[1.25rem] leading-[1.3] font-bold">
               {node(c.languages)}
             </h2>
             <p className="mt-2 text-muted">{node(c.languagesThanks)}</p>
@@ -126,7 +126,7 @@ export default async function CreditsPage({ searchParams }: PageProps<"/credits"
               {LANGUAGE_CREDITS.map((l) => (
                 <li key={l.id} className="rounded-card border border-border bg-surface p-4 shadow-xs sm:p-5">
                   <article aria-labelledby={`credit-${l.id}`}>
-                    <h3 id={`credit-${l.id}`} className="flex items-start gap-2.5 text-lg leading-snug font-bold text-balance">
+                    <h3 id={`credit-${l.id}`} className="flex items-start gap-2.5 text-[1.0625rem] leading-[1.35] font-bold text-balance">
                       <Languages className="mt-1 size-5 shrink-0 text-primary" aria-hidden />
                       {node(l.subject)}
                     </h3>
