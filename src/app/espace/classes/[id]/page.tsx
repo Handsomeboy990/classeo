@@ -120,9 +120,8 @@ export default async function ClassPage(props: PageProps<"/espace/classes/[id]">
               value={computed?.summary.classAverage != null ? `${computed.summary.classAverage.toFixed(2).replace(".", ",")}/20` : "–"}
               hint={computed ? `${computed.summary.ranked} élèves classés` : undefined}
               icon={TrendingUp}
-              tone="info"
             />
-            <StatCard label="Taux de réussite" value={formatPercent(computed?.summary.passRate ?? null)} hint="Moyenne générale au moins égale à 10" icon={Percent} tone="accent" />
+            <StatCard label="Taux de réussite" value={formatPercent(computed?.summary.passRate ?? null)} hint="Moyenne générale au moins égale à 10" icon={Percent} />
           </>
         )}
         {showAttendance && (

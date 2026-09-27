@@ -137,18 +137,18 @@ export default async function StudentPage(props: PageProps<"/espace/eleves/[id]"
                   </span>
                 </div>
               </div>
-              <StatCard label="Rang dans la classe" value={general?.rank ? formatRank(general.rank) : "–"} hint={general ? `sur ${general.classSize} élèves` : undefined} icon={Trophy} tone="accent" />
+              <StatCard label="Rang dans la classe" value={general?.rank ? formatRank(general.rank) : "–"} hint={general ? `sur ${general.classSize} élèves` : undefined} icon={Trophy} />
             </>
           )}
           {rights.attendance && (
             <>
-              <StatCard label="Taux de présence" value={formatPercent(attendanceRate)} hint="Depuis la rentrée" icon={CalendarCheck} tone="info" />
+              <StatCard label="Taux de présence" value={formatPercent(attendanceRate)} hint="Depuis la rentrée" icon={CalendarCheck} />
               <StatCard
                 label="Absences"
                 value={formatNumber(attendanceCounts.ABSENT ?? 0)}
                 hint={`${plural(attendanceCounts.LATE ?? 0, "retard", "retards")}, ${plural(attendanceCounts.EXCUSED ?? 0, "excusée", "excusées")}, en demi-journées`}
                 icon={UserX}
-                tone="danger"
+                tone={attendanceCounts.ABSENT ? "danger" : "primary"}
               />
             </>
           )}

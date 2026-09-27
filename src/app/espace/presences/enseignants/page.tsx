@@ -33,9 +33,9 @@ export default async function TeacherAttendancePage(props: PageProps<"/espace/pr
       <RegisterFilters action="/espace/presences/enseignants" date={date} maxDate={today} />
       <StatGrid>
         <StatCard label="Présence du jour" value={formatPercent(stats.dayRate)} icon={CalendarCheck} />
-        <StatCard label="Présence de la semaine" value={formatPercent(stats.weekRate)} icon={CalendarDays} tone="info" hint={`Du ${formatDate(stats.week.from)} au ${formatDate(stats.week.to)}`} />
-        <StatCard label="Absents du jour" value={formatNumber(stats.absentToday)} icon={UserX} tone="danger" />
-        <StatCard label="Enseignants" value={formatNumber(rows.length)} tone="accent" />
+        <StatCard label="Présence de la semaine" value={formatPercent(stats.weekRate)} icon={CalendarDays} hint={`Du ${formatDate(stats.week.from)} au ${formatDate(stats.week.to)}`} />
+        <StatCard label="Absents du jour" value={formatNumber(stats.absentToday)} icon={UserX} tone={stats.absentToday ? "danger" : "primary"} />
+        <StatCard label="Enseignants" value={formatNumber(rows.length)} />
       </StatGrid>
       <div className="mt-6">
         {rows.length ? (
