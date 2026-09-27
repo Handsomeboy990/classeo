@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { NORMAL_RATE, storedRate } from "@/lib/voice/kora";
 
 type Prefs = { theme: string; contrast: string; text: string; lite: string; rate: string };
-const DEFAULTS: Prefs = { theme: "system", contrast: "normal", text: "md", lite: "off", rate: NORMAL_RATE };
+const DEFAULTS: Prefs = { theme: "light", contrast: "normal", text: "md", lite: "off", rate: NORMAL_RATE };
 
 const listeners = new Set<() => void>();
 let cache: { key: string; value: Prefs } | null = null;
@@ -26,7 +26,7 @@ function subscribe(listener: () => void) {
 function read(): Prefs {
   try {
     return {
-      theme: localStorage.getItem("classeo:theme") ?? DEFAULTS.theme,
+      theme: localStorage.getItem("classeo:theme") === "dark" ? "dark" : "light",
       contrast: localStorage.getItem("classeo:contrast") ?? DEFAULTS.contrast,
       text: localStorage.getItem("classeo:text") ?? DEFAULTS.text,
       lite: localStorage.getItem("classeo:lite") ?? DEFAULTS.lite,
@@ -39,7 +39,9 @@ function read(): Prefs {
 
 function apply(p: Prefs) {
   const d = document.documentElement;
-  d.dataset.theme = p.theme === "system" ? (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light") : p.theme;
+  // Light unless the dark theme was chosen here: never from the system
+  // setting (an older "system" value reads as light).
+  d.dataset.theme = p.theme === "dark" ? "dark" : "light";
   d.dataset.contrast = p.contrast;
   d.dataset.text = p.text;
   d.dataset.lite = p.lite;
@@ -117,7 +119,6 @@ export function AccessibilityControls() {
         value={prefs.theme}
         onChange={(theme) => update({ theme })}
         options={[
-          ["system", "Automatique"],
           ["light", "Clair"],
           ["dark", "Sombre"],
         ]}
