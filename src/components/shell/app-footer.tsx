@@ -7,7 +7,9 @@ import { IndependenceNotice } from "@/components/brand/independence-notice";
 import { INDEPENDENCE_NOTICE, type BrandSettings } from "@/components/brand/settings";
 import { useLanguageState } from "@/features/languages/client";
 
-// Links of the app footer and of the Menu sheet's closing lines.
+// Links of the app footer and of the Menu sheet's closing lines. Seldom
+// followed and present on every page: never prefetched, so they cost no
+// data on a phone plan.
 export const FOOTER_LINKS = [
   { href: "/espace/aide", label: "Aide" },
   { href: "/verifier", label: "Vérifier un document" },
@@ -63,6 +65,7 @@ export function AppFooter({ brand, year }: { brand: BrandSettings; year: number 
                   )}
                   <Link
                     href={l.href}
+                    prefetch={false}
                     className="inline-flex min-h-11 items-center rounded-control px-2 font-semibold text-link underline-offset-[3px] hover:underline lg:min-h-8"
                   >
                     {l.label}

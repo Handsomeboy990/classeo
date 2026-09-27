@@ -142,7 +142,7 @@ export function MenuSheet({ sections, brand, open, onClose }: { sections: Render
                       ·
                     </span>
                   )}
-                  <Link href={l.href} onClick={close} className="inline-flex min-h-11 items-center rounded-control px-2 font-semibold text-link underline-offset-[3px] hover:underline">
+                  <Link href={l.href} prefetch={false} onClick={close} className="inline-flex min-h-11 items-center rounded-control px-2 font-semibold text-link underline-offset-[3px] hover:underline">
                     {l.label}
                   </Link>
                 </li>
