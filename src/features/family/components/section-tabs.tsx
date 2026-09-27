@@ -15,7 +15,7 @@ export type SectionKey = keyof typeof ICONS;
 export function SectionTabs({ base, sections }: { base: string; sections: { key: SectionKey; label: string }[] }) {
   const pathname = usePathname();
   return (
-    <nav aria-label="Sections du suivi" className="ds-tabs -mx-5 px-3 sm:mx-0 sm:px-0" data-print-hide>
+    <nav aria-label="Sections du suivi" className="ds-tabs -mx-4 px-1 sm:mx-0 sm:px-0" data-print-hide>
       {sections.map(({ key, label }) => {
         const href = key === "bulletins" ? base : `${base}/${key}`;
         const active = pathname === href;

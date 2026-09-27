@@ -1,4 +1,4 @@
-import { Baby, CalendarCheck, FileText } from "lucide-react";
+import { Baby, CalendarCheck, ChevronRight, FileText } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { forbidden, redirect } from "next/navigation";
@@ -52,18 +52,18 @@ export default async function FollowUpPage() {
               <li key={e.id}>
                 <Link
                   href={`/espace/suivi/${e.student.id}`}
-                  className="flex h-full flex-col gap-4 rounded-card border border-border bg-surface p-5 transition-colors hover:border-primary hover:bg-surface-2"
+                  className="flex h-full flex-col gap-4 rounded-card border border-border bg-surface p-5 shadow-card transition-[border-color,box-shadow] duration-150 hover:border-primary/40 hover:shadow-[var(--elevation-sm)] lg:p-6"
                 >
-                  <div className="flex flex-wrap items-center gap-4">
-                    <StudentAvatar name={name} photoFileId={e.student.photoFileId} className="size-16 text-xl" />
+                  <div className="flex items-center gap-4">
+                    <StudentAvatar name={name} photoFileId={e.student.photoFileId} className="size-14 text-lg" />
                     <div className="min-w-0 break-words hyphens-auto">
-                      <h2 className="text-2xl font-bold">{name}</h2>
-                      <p className="text-muted">
+                      <h2 className="text-xl font-bold text-text">{name}</h2>
+                      <p className="text-sm text-muted">
                         {e.classroom.name} · {e.school.name}
                       </p>
                     </div>
                   </div>
-                  <dl className="grid grid-cols-1 gap-3 min-[420px]:grid-cols-2">
+                  <dl className="grid grid-cols-1 gap-3 border-t border-border pt-4 min-[420px]:grid-cols-2">
                     <div className="flex items-start gap-2">
                       <FileText className="mt-1 size-5 shrink-0 text-primary" aria-hidden />
                       <div>
@@ -79,7 +79,10 @@ export default async function FollowUpPage() {
                       </div>
                     </div>
                   </dl>
-                  <span className="mt-auto text-sm font-semibold text-primary">Ouvrir le suivi de {e.student.firstName}</span>
+                  <span className="mt-auto inline-flex items-center gap-1 font-display text-sm font-semibold text-link">
+                    Ouvrir le suivi de {e.student.firstName}
+                    <ChevronRight className="size-4 shrink-0" aria-hidden />
+                  </span>
                 </Link>
               </li>
             );

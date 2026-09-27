@@ -17,7 +17,6 @@ import { COUNCIL_DECISION_LABELS, COUNCIL_DECISION_TONES } from "@/lib/domain/co
 import { ofThePeriod } from "@/lib/domain/periodicity";
 import { documentReference } from "@/lib/pdf/format";
 import { PrintReportCard } from "@/lib/pdf/print/report-card";
-import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Bulletins" };
 
@@ -73,29 +72,24 @@ export default async function ReportCardsPage({ params, searchParams }: PageProp
       </div>
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between" data-print-hide>
-        <nav aria-label="Choisir un bulletin" className="flex flex-col gap-2">
+        <nav aria-label="Choisir un bulletin" className="flex flex-col gap-4">
           {[...byYear.entries()].map(([year, list]) => (
-            <div key={year} className="flex flex-wrap items-center gap-2">
-              <span className="w-24 text-sm font-semibold text-muted">{year}</span>
-              {list[0]?.decision && (
-                <Badge tone={COUNCIL_DECISION_TONES[list[0].decision.decision]} title={list[0].decision.note ?? undefined}>
-                  Conseil de classe : {COUNCIL_DECISION_LABELS[list[0].decision.decision].toLowerCase()}
-                </Badge>
-              )}
-              {[...list].reverse().map((c) => (
-                <Link
-                  key={c.id}
-                  href={`/espace/suivi/${studentId}?b=${c.id}`}
-                  aria-current={c.id === card.id ? "page" : undefined}
-                  scroll={false}
-                  className={cn(
-                    "inline-flex min-h-11 items-center rounded-lg border px-3 text-sm font-semibold",
-                    c.id === card.id ? "border-primary bg-primary-soft text-primary" : "border-border-strong bg-surface hover:bg-surface-2",
-                  )}
-                >
-                  {c.periodName}
-                </Link>
-              ))}
+            <div key={year} className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
+              <span className="flex flex-wrap items-center gap-2">
+                <span className="font-display text-[0.6875rem] font-bold tracking-[0.08em] text-muted uppercase">{year}</span>
+                {list[0]?.decision && (
+                  <Badge tone={COUNCIL_DECISION_TONES[list[0].decision.decision]} title={list[0].decision.note ?? undefined} className="whitespace-normal">
+                    Conseil de classe : {COUNCIL_DECISION_LABELS[list[0].decision.decision].toLowerCase()}
+                  </Badge>
+                )}
+              </span>
+              <span className="ds-segmented self-start">
+                {[...list].reverse().map((c) => (
+                  <Link key={c.id} href={`/espace/suivi/${studentId}?b=${c.id}`} aria-current={c.id === card.id ? "page" : undefined} scroll={false}>
+                    {c.periodName}
+                  </Link>
+                ))}
+              </span>
             </div>
           ))}
         </nav>
