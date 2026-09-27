@@ -87,8 +87,10 @@ export function Select(props: ComponentProps<"select"> & { fieldSize?: FieldSize
   return <SelectField {...props} />;
 }
 
+// Field label: Montserrat 600, 0.875rem, 6 px above the field (the gap of
+// FormField).
 export function Label({ className, ...props }: ComponentProps<"label">) {
-  return <label className={cn("text-sm font-semibold text-text", className)} {...props} />;
+  return <label className={cn("font-display text-sm font-semibold text-text", className)} {...props} />;
 }
 
 type ChoiceProps = Omit<ComponentProps<"input">, "type"> & {
@@ -146,7 +148,7 @@ export function ChoiceGroup({
 }) {
   return (
     <fieldset className={cn("min-w-0", className)}>
-      <legend className={cn("text-sm font-semibold text-text", info && "float-left mr-1.5")}>{legend}</legend>
+      <legend className={cn("font-display text-sm font-semibold text-text", info && "float-left mr-1.5")}>{legend}</legend>
       {info && <InfoTip label="Plus d'informations sur ce choix">{info}</InfoTip>}
       {hint && <p className="clear-left mt-0.5 text-sm text-muted">{hint}</p>}
       <div className={cn("clear-left mt-1.5 flex", orientation === "horizontal" ? "flex-wrap gap-x-6" : "flex-col")}>{children}</div>
