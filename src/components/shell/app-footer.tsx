@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 
-import { FlagStripe } from "@/components/brand/flag";
 import { IndependenceNotice } from "@/components/brand/independence-notice";
 import { INDEPENDENCE_NOTICE, type BrandSettings } from "@/components/brand/settings";
 import { useLanguageState } from "@/features/languages/client";
@@ -40,15 +39,16 @@ export function SpaceNotice({ brand, tone = "light", className }: { brand: Brand
 }
 
 // Footer of the private space (design source of truth, part 3.5): a working
-// tool, so a light and compact one. A tricolour band opens it, then the
-// copyright, the independence notice and three links. Placed after the
-// main region by the layout; below lg it keeps the room of the tab bar and
-// of the floating button at its end (shell.css), so it is never covered.
+// tool, so a light and compact one: 48 px under the content (the end of
+// .app-main, 3rem, plus 0.5rem below lg), a 1 px --border rule,
+// then the copyright, the independence notice and the links, 20 px above
+// and below. Placed after the main region by the layout; below lg it keeps
+// the room of the tab bar and of the floating button at its end
+// (shell.css), so it is never covered.
 export function AppFooter({ brand, year }: { brand: BrandSettings; year: number }) {
   return (
-    <footer data-app-footer className="mt-auto w-full">
-      <FlagStripe className="h-1" />
-      <div data-app-footer-body className="mx-auto w-full max-w-7xl px-4 pt-5 pb-6 text-xs leading-normal text-muted sm:px-6">
+    <footer data-app-footer className="mt-auto w-full max-lg:pt-2">
+      <div data-app-footer-body className="mx-auto w-full max-w-7xl border-t border-border px-4 py-5 text-xs leading-normal text-muted sm:px-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-start sm:gap-x-6 sm:gap-y-2">
           <p className="shrink-0 font-display font-semibold text-text">
             © {year} <span translate="no">Classéo</span>
