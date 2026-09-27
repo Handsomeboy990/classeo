@@ -6,7 +6,8 @@ import { DataTable, Figure, FigureRow, InfoGrid, Notice, Pill, SectionTitle, Sig
 import { FONT_TITLE } from "../fonts";
 import { amountSentence, beninDate, calendarDate, officialName, pdfFcfa } from "../format";
 import { DocumentPage, PdfDocument, T, type DocumentMeta } from "../layout";
-import { COLORS, styles } from "../theme";
+import { styles } from "../styles";
+import { COLORS } from "../theme";
 
 type Student = { firstName: string; lastName: string; matricule: string };
 

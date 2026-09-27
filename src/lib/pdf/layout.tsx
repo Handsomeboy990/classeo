@@ -9,7 +9,8 @@ import { currentVerification, type DocumentVerification, type PdfImage } from ".
 import { FONT_TITLE } from "./fonts";
 import { beninDate, beninDateTime, pageLabel, pdfText } from "./format";
 import { contactLine, ministriesFor, REPUBLIC, type SchoolCycleCode } from "./letterhead";
-import { COLORS, PAGE, styles } from "./theme";
+import { styles } from "./styles";
+import { COLORS, PAGE } from "./theme";
 
 type StyleProp = Style | Style[];
 
@@ -72,7 +73,7 @@ export function Mark({ size = 34 }: { size?: number }) {
         <Path d="M46.5 20L43 23.5" />
       </G>
       <Path d="M8 38c8-4 16-4 24 2v14c-8-6-16-6-24-2z" fill={COLORS.white} />
-      <Path d="M56 38c-8-4-16-4-24 2v14c8-6 16-6 24-2z" fill="#F0F1EA" />
+      <Path d="M56 38c-8-4-16-4-24 2v14c8-6 16-6 24-2z" fill={COLORS.white} fillOpacity={0.86} />
       <Path d="M30.5 40h3v17l-1.5-2-1.5 2z" fill={COLORS.red} />
     </Svg>
   );

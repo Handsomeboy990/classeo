@@ -7,7 +7,8 @@ import { currentSigned } from "./context";
 import { FONT_TITLE } from "./fonts";
 import { beninDateTime } from "./format";
 import { T } from "./layout";
-import { COLORS, styles } from "./theme";
+import { styles } from "./styles";
+import { COLORS } from "./theme";
 
 export type Column<R> = {
   header: string;
@@ -220,7 +221,7 @@ export function Signatures({ items, marginTop = 18 }: { items: { role: string; n
 export function Pill({ children, tone = "neutral" }: { children: string; tone?: "neutral" | "success" | "warning" | "danger" }) {
   const map = {
     neutral: [COLORS.soft, COLORS.muted],
-    success: [COLORS.primarySoft, COLORS.primaryDark],
+    success: [COLORS.successSoft, COLORS.success],
     warning: [COLORS.warningSoft, COLORS.warning],
     danger: [COLORS.dangerSoft, COLORS.danger],
   } as const;

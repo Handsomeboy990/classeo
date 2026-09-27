@@ -9,7 +9,8 @@ import { DataTable, Figure, FigureRow, InfoGrid, Notice, Signatures } from "../c
 import type { PdfPhoto } from "../data/photo";
 import { beninDate, calendarDate, officialName, ordinal } from "../format";
 import { DocumentPage, PdfDocument, T, type DocumentMeta, type Issuer } from "../layout";
-import { COLORS, styles } from "../theme";
+import { styles } from "../styles";
+import { COLORS } from "../theme";
 
 import { PhotoFrame } from "./attestation";
 

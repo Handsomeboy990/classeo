@@ -8,7 +8,8 @@ import type { PdfPhoto } from "../data/photo";
 import { FONT_TITLE } from "../fonts";
 import { beninDate, calendarDate, officialName } from "../format";
 import { DocumentPage, PdfDocument, T, type DocumentMeta } from "../layout";
-import { COLORS, styles } from "../theme";
+import { styles } from "../styles";
+import { COLORS } from "../theme";
 
 // The pupil's photo on an official document: a framed identity picture, or
 // nothing at all when the school has not added one (never a placeholder on
@@ -16,7 +17,7 @@ import { COLORS, styles } from "../theme";
 export function PhotoFrame({ photo, width = 64 }: { photo: PdfPhoto | null | undefined; width?: number }) {
   if (!photo) return null;
   return (
-    <View style={{ width, height: width * 1.25, borderWidth: 0.75, borderColor: COLORS.border, borderRadius: 3, padding: 2, backgroundColor: "#ffffff" }}>
+    <View style={{ width, height: width * 1.25, borderWidth: 0.75, borderColor: COLORS.border, borderRadius: 3, padding: 2, backgroundColor: COLORS.white }}>
       <Image src={photo} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
     </View>
   );
