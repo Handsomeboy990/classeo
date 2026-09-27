@@ -141,6 +141,7 @@ export const PUBLIC = {
     publicDomainNote: "Voir le statut sur la page source.",
     photos: "Photographies",
     voices: "Voix de lecture",
+    emblem: "Armoiries",
     voiceSource: "Voir la source",
     languages: "Langues locales",
     languagesThanks: "Merci à AWADEME Finanfa Ronaldo, grâce à qui Classéo se lit et s'écoute en langues locales.",
