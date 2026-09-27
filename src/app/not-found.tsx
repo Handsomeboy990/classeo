@@ -1,6 +1,7 @@
 import { Compass } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { connection } from "next/server";
 
 import { BackButton, StatusPage } from "@/components/kit/status-page";
 import { ButtonLink } from "@/components/ui/button";
@@ -8,7 +9,9 @@ import { ButtonLink } from "@/components/ui/button";
 export const metadata: Metadata = { title: "Page introuvable" };
 
 // Any address that matches no page, signed in or not: outside the app shell.
-export default function NotFound() {
+// Rendered per request, so its scripts carry the nonce of the strict CSP.
+export default async function NotFound() {
+  await connection();
   return (
     <StatusPage
       standalone

@@ -7,8 +7,6 @@ import { ThemeColor } from "@/components/shell/theme-color";
 import { VisitBeacon } from "@/features/connections/visit-beacon";
 import { OfflineBanner } from "@/features/pwa/offline-banner";
 import { ServiceWorkerRegistration } from "@/features/pwa/service-worker";
-import { PREFERENCES_SCRIPT } from "@/lib/security/csp";
-import { siteUrl } from "@/lib/seo";
 
 import "./globals.css";
 
@@ -18,9 +16,7 @@ const body = Atkinson_Hyperlegible_Next({ subsets: ["latin"], variable: "--font-
 const display = Bricolage_Grotesque({ subsets: ["latin"], variable: "--font-display", display: "swap", weight: ["600", "700", "800"] });
 
 export const metadata: Metadata = {
-  // APP_URL, NEXT_PUBLIC_APP_URL or the Vercel production address
-  // (lib/seo.ts): canonical and share addresses are absolute.
-  metadataBase: new URL(siteUrl()),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"),
   title: { default: "Classéo · Le système éducatif, à portée de main", template: "%s · Classéo" },
   description:
     "Classéo, la plateforme de gestion scolaire pour le Bénin : inscriptions, notes, bulletins, présences, frais et messages, accessibles à tous, même hors ligne.",
@@ -45,12 +41,15 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
+// Applied before the first paint so the chosen theme, contrast and text size
+// never flash. Values come from this device only.
+const preferencesScript = `(function(){try{var d=document.documentElement,s=localStorage;var t=s.getItem("classeo:theme")||"system";if(t==="system"){t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}d.dataset.theme=t;d.dataset.contrast=s.getItem("classeo:contrast")||"normal";d.dataset.text=s.getItem("classeo:text")||"md";d.dataset.lite=s.getItem("classeo:lite")||"off"}catch(e){}})();`;
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="fr" className={`${body.variable} ${display.variable}`} suppressHydrationWarning>
       <head>
-        {/* Allowed by its hash in the strict CSP (lib/security/csp.ts). */}
-        <script dangerouslySetInnerHTML={{ __html: PREFERENCES_SCRIPT }} />
+        <script dangerouslySetInnerHTML={{ __html: preferencesScript }} />
       </head>
       <body className="min-h-dvh antialiased">
         <a

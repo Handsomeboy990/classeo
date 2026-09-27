@@ -61,6 +61,9 @@ export function publicMetadata(page: { path: string; title: string; description:
   const lang: SeoLang = page.languages !== false && isSeoLang(page.lang) ? page.lang : "fr";
   const canonical = withLang(page.path, lang);
   return {
+    // APP_URL, NEXT_PUBLIC_APP_URL or the Vercel production address, so the
+    // canonical and share addresses are absolute.
+    metadataBase: new URL(siteUrl()),
     title: page.absoluteTitle ? { absolute: page.title } : page.title,
     description: page.description,
     alternates: { canonical, ...(page.languages !== false ? { languages: languageAlternates(page.path) } : {}) },

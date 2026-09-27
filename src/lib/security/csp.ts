@@ -16,9 +16,9 @@
 
 import { createHash } from "node:crypto";
 
-// Applied before the first paint so the chosen theme, contrast and text size
-// never flash. Values come from this device only. Its hash is in the strict
-// policy: any change here changes the hash automatically.
+// The pre paint preferences script of the root layout (src/app/layout.tsx),
+// copied here for its hash in the strict policy. csp.test.ts checks that the
+// two copies are the same: change both together.
 export const PREFERENCES_SCRIPT = `(function(){try{var d=document.documentElement,s=localStorage;var t=s.getItem("classeo:theme")||"system";if(t==="system"){t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}d.dataset.theme=t;d.dataset.contrast=s.getItem("classeo:contrast")||"normal";d.dataset.text=s.getItem("classeo:text")||"md";d.dataset.lite=s.getItem("classeo:lite")||"off"}catch(e){}})();`;
 
 export const PREFERENCES_HASH = `'sha256-${createHash("sha256").update(PREFERENCES_SCRIPT, "utf8").digest("base64")}'`;

@@ -1,4 +1,6 @@
 import { createHash } from "node:crypto";
+import { readFileSync } from "node:fs";
+import path from "node:path";
 
 import { describe, expect, it } from "vitest";
 
@@ -46,6 +48,24 @@ describe("strict policy", () => {
     const a = newNonce();
     expect(Buffer.from(a, "base64")).toHaveLength(16);
     expect(newNonce()).not.toBe(a);
+  });
+});
+
+describe("the root layout", () => {
+  it("runs the very preferences script whose hash the strict policy allows", () => {
+    const layout = readFileSync(path.resolve(__dirname, "../../app/layout.tsx"), "utf8");
+    const inline = layout.match(/const preferencesScript = `([^`]*)`;/)?.[1];
+    expect(inline).toBe(PREFERENCES_SCRIPT);
+  });
+});
+
+describe("self hosted fonts and same origin images", () => {
+  it("are allowed by both policies", () => {
+    for (const policy of [baselinePolicy(prod), strictPolicy({ ...prod, nonce: "n" })]) {
+      const d = directives(policy);
+      expect(d["font-src"]).toContain("'self'");
+      expect(d["img-src"]).toContain("'self'");
+    }
   });
 });
 
