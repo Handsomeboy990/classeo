@@ -1,102 +1,137 @@
 @import "tailwindcss";
 
 /*
- * Classeo design tokens.
- * Palette drawn from the Benin flag, tuned for contrast: text and filled
- * buttons use the deep green (6.6:1 on white), the flag yellow only sits on
- * dark surfaces, red is reserved for danger. High contrast mode reaches AAA.
+ * Classeo design tokens (design source of truth, docs 2.2 and 2.5).
+ * The grammar of the Beninese State sites: an institutional navy, the three
+ * flag colours in thin rules and bands, Montserrat for headings and
+ * Atkinson Hyperlegible Next for reading. Contrast rules:
+ * - text in green uses --success (#006b40, 6.6:1), never the flag green;
+ * - text in red uses --danger (#c8102e, 5.9:1), never the flag red;
+ * - the flag yellow is never text on a light surface and never carries
+ *   white text: it sits on navy (8.2:1) or carries navy text (--on-accent).
+ * High contrast mode reaches AAA.
  */
 
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
 :root {
-  --bg: #f7f7f2;
+  --bg: #f4f6fa;
   --surface: #ffffff;
-  --surface-2: #f0f1ea;
-  --border: #dddcd3;
-  --border-strong: #b9b8ad;
-  --text: #1a1d1a;
-  --text-muted: #545a52;
-  --primary: #006b40;
-  --primary-hover: #005532;
-  --primary-soft: #e3f1e9;
+  --surface-2: #edf1f7;
+  --border: #dce3ec;
+  --border-strong: #b4c0d0;
+  --text: #0f1b2d;
+  --text-muted: #475569;
+  --primary: #0a3764;
+  --primary-hover: #082c50;
+  --primary-soft: #e8eef6;
   --on-primary: #ffffff;
   --accent: #fcd116;
   --accent-soft: #fff6cc;
-  --on-accent: #1a1d1a;
+  --on-accent: #0a3764;
   --danger: #c8102e;
   --danger-soft: #fde8eb;
   --warning: #8a5a00;
   --warning-soft: #fff1d1;
-  --info: #1d4ed8;
-  --info-soft: #e5edff;
+  --info: #1b5fb0;
+  --info-soft: #e6f0fb;
   --success: #006b40;
   --success-soft: #e3f1e9;
-  --sidebar: #0b3b2a;
-  --sidebar-hover: #134d38;
-  --sidebar-text: #e7efe9;
-  --sidebar-muted: #a9c2b4;
-  --focus: #1d4ed8;
-  --radius: 0.75rem;
+  --sidebar: #072747;
+  --sidebar-hover: #0e355f;
+  --sidebar-text: #e8eef6;
+  --sidebar-muted: #a9b8cc;
+  --focus: #1b5fb0;
+  --radius: 0.5rem;
+
+  /* National identity. Flag colours never carry text on a light surface. */
+  --flag-green: #008751;
+  --flag-yellow: #fcd116;
+  --flag-red: #e8112d;
+  --band: #072747;
+  --band-text: #e8eef6;
+  --header: #0a3764;
+  --header-text: #ffffff;
+  --header-muted: #c9d3e0;
+  --footer: #072747;
+  --footer-text: #e8eef6;
+  --footer-muted: #a9b8cc;
+  --footer-rule: rgb(255 255 255 / 0.12);
+  --link: #1b5fb0;
+
   /*
-   * Design system tokens (additive). Field borders reach 3:1 against the
-   * surface and the page (WCAG 1.4.11), which the decorative border does not.
+   * Form controls. Field borders reach 3:1 against the surface and the page
+   * (WCAG 1.4.11), which the decorative border does not.
    */
   --field-bg: #ffffff;
-  --field-border: #8a8d84;
-  --field-border-hover: #5f635b;
-  --field-disabled: #f0f1ea;
+  --field-border: #6b778c;
+  --field-border-hover: #475569;
+  --field-disabled: #edf1f7;
   --field-ring: color-mix(in srgb, var(--primary) 22%, transparent);
   --field-ring-danger: color-mix(in srgb, var(--danger) 20%, transparent);
   --on-danger: #ffffff;
-  --overlay: rgb(9 22 15 / 0.52);
-  --radius-sm: 0.375rem;
-  --control-radius: 0.75rem;
-  --sheet-radius: 1.25rem;
+  --overlay: rgb(6 20 38 / 0.55);
+  --radius-sm: 0.25rem;
+  --control-radius: 0.375rem;
+  --sheet-radius: 1rem;
   --control-h: 2.75rem;
-  --elevation-xs: 0 1px 2px rgb(20 32 24 / 0.06);
-  --elevation-sm: 0 1px 2px rgb(20 32 24 / 0.05), 0 2px 6px -1px rgb(20 32 24 / 0.07);
-  --elevation-md: 0 2px 4px -1px rgb(20 32 24 / 0.06), 0 8px 20px -4px rgb(20 32 24 / 0.1);
-  --elevation-lg: 0 4px 10px -2px rgb(20 32 24 / 0.08), 0 20px 44px -10px rgb(20 32 24 / 0.22);
+  --elevation-xs: 0 1px 2px rgb(10 30 60 / 0.06);
+  --elevation-sm: 0 1px 2px rgb(10 30 60 / 0.05), 0 2px 6px -1px rgb(10 30 60 / 0.08);
+  --elevation-md: 0 2px 4px -1px rgb(10 30 60 / 0.06), 0 8px 20px -4px rgb(10 30 60 / 0.12);
+  --elevation-lg: 0 4px 10px -2px rgb(10 30 60 / 0.08), 0 20px 44px -10px rgb(10 30 60 / 0.24);
   --ease-emphasis: cubic-bezier(0.2, 0.7, 0.2, 1);
   --duration-fast: 120ms;
   --duration-base: 200ms;
-  /* Glyphs drawn inside native controls: check, dash, select chevron. */
-  --chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%23545a52' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 8 4 4 4-4'/%3E%3C/svg%3E");
+  /* Glyphs drawn inside native controls: select chevron, check, dash. */
+  --chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%23475569' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 8 4 4 4-4'/%3E%3C/svg%3E");
   --check: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%23ffffff' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 10.5 3.2 3L15 6.5'/%3E%3C/svg%3E");
   --dash: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%23ffffff' stroke-width='2.6' stroke-linecap='round'%3E%3Cpath d='M5.5 10h9'/%3E%3C/svg%3E");
   --switch-thumb: #ffffff;
   color-scheme: light;
 }
 
+/*
+ * Dark theme. The official sites have none; Classéo keeps one for the app
+ * (reading at night, low vision), with the navy grammar kept: navy surfaces,
+ * a light blue primary, the flag yellow as the focus ring.
+ */
 [data-theme="dark"] {
-  --bg: #0f1411;
-  --surface: #161d19;
-  --surface-2: #1d2621;
-  --border: #2c3831;
-  --border-strong: #46564c;
-  --text: #eef2ee;
-  --text-muted: #a8b3ab;
-  --primary: #3fbf7f;
-  --primary-hover: #5cd394;
-  --primary-soft: #16382a;
-  --on-primary: #06140d;
+  --bg: #0b1422;
+  --surface: #121d2e;
+  --surface-2: #18253a;
+  --border: #25344a;
+  --border-strong: #3a4d68;
+  --text: #e6ecf4;
+  --text-muted: #9fb0c6;
+  --primary: #8db8ff;
+  --primary-hover: #a9caff;
+  --primary-soft: #16294a;
+  --on-primary: #0b1422;
   --accent-soft: #3a3208;
   --danger: #ff6b7f;
   --danger-soft: #3d1419;
   --warning: #f0b43c;
   --warning-soft: #3a2a08;
-  --info: #7aa2ff;
+  --info: #7fb0ff;
   --info-soft: #17223d;
   --success: #3fbf7f;
   --success-soft: #16382a;
-  --sidebar: #0a1510;
-  --sidebar-hover: #14261d;
-  --focus: #7aa2ff;
-  --field-bg: #121815;
-  --field-border: #6b7d71;
-  --field-border-hover: #8fa196;
-  --field-disabled: #1d2621;
+  --sidebar: #081120;
+  --sidebar-hover: #12213a;
+  --sidebar-text: #e6ecf4;
+  --sidebar-muted: #9fb0c6;
+  --focus: #fcd116;
+  --band: #081120;
+  --band-text: #e6ecf4;
+  --header: #0d2440;
+  --footer: #081120;
+  --footer-text: #e6ecf4;
+  --footer-muted: #9fb0c6;
+  --link: #8db8ff;
+  --field-bg: #0f1928;
+  --field-border: #6e82a0;
+  --field-border-hover: #8fa3bf;
+  --field-disabled: #18253a;
   --field-ring: color-mix(in srgb, var(--primary) 28%, transparent);
   --field-ring-danger: color-mix(in srgb, var(--danger) 26%, transparent);
   --on-danger: #1a0508;
@@ -105,10 +140,10 @@
   --elevation-sm: 0 1px 2px rgb(0 0 0 / 0.3), 0 2px 6px -1px rgb(0 0 0 / 0.3);
   --elevation-md: 0 2px 4px -1px rgb(0 0 0 / 0.35), 0 8px 20px -4px rgb(0 0 0 / 0.45);
   --elevation-lg: 0 4px 10px -2px rgb(0 0 0 / 0.4), 0 24px 48px -12px rgb(0 0 0 / 0.65);
-  --chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%23a8b3ab' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 8 4 4 4-4'/%3E%3C/svg%3E");
-  --check: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%2306140d' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 10.5 3.2 3L15 6.5'/%3E%3C/svg%3E");
-  --dash: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%2306140d' stroke-width='2.6' stroke-linecap='round'%3E%3Cpath d='M5.5 10h9'/%3E%3C/svg%3E");
-  --switch-thumb: #eef2ee;
+  --chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%239fb0c6' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 8 4 4 4-4'/%3E%3C/svg%3E");
+  --check: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%230b1422' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 10.5 3.2 3L15 6.5'/%3E%3C/svg%3E");
+  --dash: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%230b1422' stroke-width='2.6' stroke-linecap='round'%3E%3Cpath d='M5.5 10h9'/%3E%3C/svg%3E");
+  --switch-thumb: #e6ecf4;
   color-scheme: dark;
 }
 
@@ -120,12 +155,13 @@
   --border-strong: #000000;
   --text: #000000;
   --text-muted: #1a1a1a;
-  --primary: #00391f;
+  --primary: #00224a;
   --primary-hover: #000000;
   --primary-soft: #ffffff;
   --danger: #8b0000;
   --warning: #4a3000;
   --info: #002a8a;
+  --link: #002a8a;
   --sidebar: #000000;
   --sidebar-hover: #1a1a1a;
   --sidebar-text: #ffffff;
@@ -152,12 +188,13 @@
   --border-strong: #ffffff;
   --text: #ffffff;
   --text-muted: #f0f0f0;
-  --primary: #7dffb4;
+  --primary: #a9caff;
   --on-primary: #000000;
   --primary-soft: #000000;
   --danger: #ff9aa8;
   --warning: #ffd479;
   --info: #a9c4ff;
+  --link: #a9c4ff;
   --focus: #ffff00;
   --on-danger: #000000;
   --field-bg: #000000;
@@ -168,6 +205,16 @@
   --chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%23ffffff' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 8 4 4 4-4'/%3E%3C/svg%3E");
   --check: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%23000000' stroke-width='2.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 10.5 3.2 3L15 6.5'/%3E%3C/svg%3E");
   --dash: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%23000000' stroke-width='2.8' stroke-linecap='round'%3E%3Cpath d='M5.5 10h9'/%3E%3C/svg%3E");
+}
+
+/* Inner padding of cards (ui/card.tsx): 20 px, 24 px from 64rem. */
+:root {
+  --card-pad: 1.25rem;
+}
+@media (min-width: 64rem) {
+  :root {
+    --card-pad: 1.5rem;
+  }
 }
 
 /* Text size preference, applied to the root so rem based layouts scale. */
@@ -223,6 +270,20 @@ html[data-text="xxl"] {
   --text-hint--line-height: 1.4;
   --font-sans: var(--font-body);
   --font-display: var(--font-display);
+  --color-flag-green: var(--flag-green);
+  --color-flag-yellow: var(--flag-yellow);
+  --color-flag-red: var(--flag-red);
+  --color-band: var(--band);
+  --color-band-text: var(--band-text);
+  --color-header: var(--header);
+  --color-header-text: var(--header-text);
+  --color-header-muted: var(--header-muted);
+  --color-footer: var(--footer);
+  --color-footer-text: var(--footer-text);
+  --color-footer-muted: var(--footer-muted);
+  --color-footer-rule: var(--footer-rule);
+  --color-link: var(--link);
+  --radius-sm: var(--radius-sm);
 }
 
 html {
@@ -239,11 +300,33 @@ body {
   overflow-wrap: break-word;
 }
 
+/* Headings in Montserrat, the typeface of every official site; the body
+   stays in Atkinson Hyperlegible Next for reading. A translated heading
+   whose letters Montserrat lacks falls back on Atkinson. */
 h1,
 h2,
-h3 {
+h3,
+h4 {
   font-family: var(--font-display), var(--font-body), system-ui, sans-serif;
+}
+h1,
+h2 {
   letter-spacing: -0.01em;
+}
+
+/*
+ * Links inside long texts (help, public pages): the link blue, underlined.
+ * .ds-link for a single link, .ds-prose for a block of text.
+ */
+.ds-link,
+.ds-prose a:not([class*="bg-"]) {
+  color: var(--link);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.ds-link:hover,
+.ds-prose a:not([class*="bg-"]):hover {
+  text-decoration-thickness: 2px;
 }
 
 /* A visible focus on every interactive element, keyboard users first. */
@@ -281,7 +364,7 @@ button:disabled {
     width: 100%;
     min-width: 0;
     height: var(--control-h);
-    padding-inline: 0.875rem;
+    padding-inline: 0.75rem;
     border: 1px solid var(--field-border);
     border-radius: var(--control-radius);
     background-color: var(--field-bg);
@@ -364,7 +447,7 @@ button:disabled {
   select.ds-field[size]:not([size="1"]) {
     height: auto;
     padding-block: 0.375rem;
-    padding-inline-end: 0.875rem;
+    padding-inline-end: 0.75rem;
     background-image: none;
   }
   select.ds-field option {
@@ -418,16 +501,16 @@ button:disabled {
     height: 1.125rem;
   }
   .ds-adorned > .ds-adornment[data-side="start"] {
-    inset-inline-start: 0.875rem;
+    inset-inline-start: 0.75rem;
   }
   .ds-adorned > .ds-adornment[data-side="end"] {
-    inset-inline-end: 0.875rem;
+    inset-inline-end: 0.75rem;
   }
   .ds-adorned > .ds-adornment[data-interactive] {
     pointer-events: auto;
   }
   .ds-adorned[data-start] > .ds-field {
-    padding-inline-start: 2.625rem;
+    padding-inline-start: 2.5rem;
   }
   .ds-adorned[data-end] > .ds-field {
     padding-inline-end: var(--end-pad, 3.75rem);
@@ -444,7 +527,7 @@ button:disabled {
     height: 1.25rem;
     margin: 0;
     border: 1.5px solid var(--field-border);
-    border-radius: 0.375rem;
+    border-radius: var(--radius-sm);
     background-color: var(--field-bg);
     background-position: center;
     background-repeat: no-repeat;
@@ -720,7 +803,7 @@ html[data-lite="on"] img[data-decorative] {
 
 /* Loading placeholder: a slow, low contrast sweep, calm on long waits. */
 .skeleton {
-  background: linear-gradient(90deg, var(--surface-2) 25%, color-mix(in srgb, var(--border) 60%, var(--surface-2)) 37%, var(--surface-2) 63%);
+  background: linear-gradient(90deg, var(--surface-2) 25%, var(--border) 37%, var(--surface-2) 63%);
   background-size: 400% 100%;
   animation: skeleton 1.8s ease-in-out infinite;
   border-radius: var(--radius-sm);
@@ -903,11 +986,11 @@ html[data-lite="on"] img[data-decorative] {
 }
 
 /*
- * Focus on dark surfaces (sidebar, landing bands): the blue focus ring falls
- * under 3:1 on deep green, the flag yellow reaches 10:1.
+ * Focus on navy surfaces (sidebar, public header, band and footer): the blue
+ * focus ring falls under 3:1 on navy, the flag yellow reaches 8:1 and more.
  */
-.bg-sidebar :focus-visible {
-  outline-color: var(--accent);
+:is(.bg-sidebar, .bg-header, .bg-band, .bg-footer) :focus-visible {
+  outline-color: var(--flag-yellow);
 }
 
 /*
@@ -954,7 +1037,7 @@ html[data-lite="on"] img[data-decorative] {
     max-height: min(88dvh, 52rem);
     padding: 0;
     border: 1px solid var(--border);
-    border-radius: calc(var(--radius) + 0.25rem);
+    border-radius: var(--radius);
     background: var(--surface);
     color: var(--text);
     box-shadow: var(--elevation-lg);
@@ -1084,8 +1167,10 @@ html[data-lite="on"] img[data-decorative] {
 }
 
 /*
- * Tables. Sentence case headers on a quiet band, 1 px row dividers, a hover
- * tint. Compact density for long lists. From 64rem the header sticks under
+ * Tables. The header band of printed official tables: small capitals in
+ * Montserrat over a 2 px navy rule; rows of 48 px with 1 px dividers, no
+ * zebra on screen, a hover tint; a total row (tfoot) in the soft navy.
+ * Compact density for long lists. From 64rem the header sticks under
  * the app bar; on a phone, a table marked data-cards shows each row as a
  * card: the primary cell as title, then label and value pairs, then the
  * row actions.
@@ -1095,15 +1180,23 @@ html[data-lite="on"] img[data-decorative] {
     padding: 0.75rem 1rem;
     vertical-align: middle;
   }
+  .ds-table tbody :where(th, td) {
+    height: 3rem;
+  }
   .ds-table thead th {
+    height: 2.75rem;
+    padding-block: 0.25rem;
     background: var(--surface-2);
     color: var(--text-muted);
-    font-size: 0.8125rem;
-    font-weight: 600;
+    font-family: var(--font-display), var(--font-body), system-ui, sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
     line-height: 1.25rem;
+    letter-spacing: 0.04em;
     text-align: start;
+    text-transform: uppercase;
     white-space: nowrap;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 2px solid var(--primary);
   }
   .ds-table tbody tr {
     border-top: 1px solid var(--border);
@@ -1113,13 +1206,22 @@ html[data-lite="on"] img[data-decorative] {
     border-top: 0;
   }
   .ds-table tbody tr:hover {
-    background: color-mix(in srgb, var(--surface-2) 70%, transparent);
+    background: var(--surface-2);
+  }
+  .ds-table tfoot :where(th, td) {
+    border-top: 1px solid var(--primary);
+    background: var(--primary-soft);
+    color: var(--primary);
+    font-weight: 700;
   }
   .ds-table[data-striped] tbody tr:nth-child(even) {
     background: color-mix(in srgb, var(--surface-2) 45%, transparent);
   }
   .ds-table[data-density="compact"] :where(th, td) {
     padding: 0.5rem 0.75rem;
+  }
+  .ds-table[data-density="compact"] tbody :where(th, td) {
+    height: 2.5rem;
   }
   .ds-table-scroll:first-child .ds-table thead th:first-child {
     border-top-left-radius: calc(var(--radius) - 1px);
@@ -1164,6 +1266,7 @@ html[data-lite="on"] img[data-decorative] {
       align-items: flex-start;
       gap: 0.125rem;
       min-width: 0;
+      height: auto;
       padding: 0;
       text-align: start;
       overflow-wrap: anywhere;
@@ -1222,6 +1325,10 @@ html[data-lite="on"] img[data-decorative] {
     opacity: 0;
     transform: translateY(0.5rem);
   }
+}
+/* The light theme's toast is dark: the focus ring turns to the flag yellow. */
+:root:not([data-theme="dark"]) .ds-toast :focus-visible {
+  outline-color: var(--flag-yellow);
 }
 [data-contrast="high"] .ds-toast {
   border-width: 2px;
@@ -1413,15 +1520,15 @@ dialog.sheet {
   background: var(--surface);
   border: 1px solid var(--border);
   border-bottom: 0;
-  border-radius: 1.25rem 1.25rem 0 0;
-  box-shadow: 0 -8px 32px rgb(0 0 0 / 0.16);
+  border-radius: var(--sheet-radius) var(--sheet-radius) 0 0;
+  box-shadow: 0 -8px 32px rgb(10 30 60 / 0.16);
   transition: transform 200ms cubic-bezier(0.32, 0.72, 0, 1);
 }
 .sheet-full .sheet-panel {
   height: calc(100dvh - env(safe-area-inset-top) - 0.75rem);
 }
 dialog.sheet::backdrop {
-  background: rgb(8 20 14 / 0.45);
+  background: var(--overlay);
   animation: sheet-fade 200ms ease-out;
 }
 dialog.sheet[open] .sheet-panel {
@@ -1534,11 +1641,11 @@ dialog.sheet[data-closing]::backdrop {
     inset: auto;
     margin: 0;
     padding: 0;
-    border: 1px solid var(--border-strong);
+    border: 1px solid var(--border);
     border-radius: var(--radius);
     background: var(--surface);
     color: var(--text);
-    box-shadow: var(--elevation-lg);
+    box-shadow: var(--elevation-md);
     overflow: hidden;
   }
   .ds-popover:popover-open {
@@ -1561,15 +1668,19 @@ dialog.sheet[data-closing]::backdrop {
   }
   @media (min-width: 40rem) {
     .ds-option {
-      min-height: 2.375rem;
+      min-height: 2.5rem;
     }
   }
   .ds-option[data-active] {
     background: var(--surface-2);
   }
   .ds-option[aria-selected="true"] {
+    background: var(--primary-soft);
     color: var(--primary);
     font-weight: 600;
+  }
+  .ds-option[aria-selected="true"][data-active] {
+    background: color-mix(in srgb, var(--primary) 14%, var(--surface));
   }
   .ds-option[aria-disabled="true"] {
     color: var(--text-muted);
@@ -1579,9 +1690,11 @@ dialog.sheet[data-closing]::backdrop {
   .ds-option-group {
     padding: 0.625rem 0.75rem 0.25rem;
     color: var(--text-muted);
-    font-size: 0.75rem;
+    font-family: var(--font-display), var(--font-body), system-ui, sans-serif;
+    font-size: 0.6875rem;
     font-weight: 700;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
   }
   [data-contrast="high"] .ds-option[data-active] {
     outline: 2px solid currentColor;
@@ -1789,6 +1902,7 @@ dialog.sheet[data-closing]::backdrop {
   justify-content: center;
   min-width: 1.25rem;
   height: 1.25rem;
+  font-family: var(--font-display), var(--font-body), system-ui, sans-serif;
   padding-inline: 0.3125rem;
   border-radius: 999px;
   background: var(--danger);
@@ -1801,6 +1915,8 @@ dialog.sheet[data-closing]::backdrop {
   flex-shrink: 0;
 }
 .bg-sidebar .nav-badge {
+  background: var(--flag-yellow);
+  color: var(--on-accent);
   box-shadow: none;
 }
 .nav-dot {
@@ -1849,8 +1965,9 @@ dialog.sheet[data-closing]::backdrop {
 }
 
 /*
- * Announcement band (shell/news-ticker.tsx), under the top bar: deep green
- * with the flag yellow label, light text (12:1). The track holds the list
+ * Announcement band (shell/news-ticker.tsx), under the top bar: the soft
+ * navy, a navy "À la une" label in white capitals, the text in the body
+ * colour (15:1). The track holds the list
  * twice and moves by half its width, linear, so the loop has no seam; it
  * stops on hover, on keyboard focus and with the pause button. Reduced
  * motion never animates it (the component then shows one item at a time).
@@ -1859,8 +1976,8 @@ dialog.sheet[data-closing]::backdrop {
   display: flex;
   align-items: center;
   min-height: 2.5rem;
-  background: var(--sidebar);
-  color: var(--sidebar-text);
+  background: var(--primary-soft);
+  color: var(--text);
   font-size: 0.9375rem;
 }
 .ticker-label {
@@ -1870,12 +1987,13 @@ dialog.sheet[data-closing]::backdrop {
   align-self: stretch;
   flex-shrink: 0;
   padding-inline: 0.75rem 1rem;
-  background: var(--accent);
-  color: #1a1d1a;
-  font-family: var(--font-body), system-ui, sans-serif;
-  font-size: 0.8125rem;
+  background: var(--primary);
+  color: var(--on-primary);
+  font-family: var(--font-display), var(--font-body), system-ui, sans-serif;
+  font-size: 0.75rem;
   font-weight: 700;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   clip-path: polygon(0 0, 100% 0, calc(100% - 0.5rem) 100%, 0 100%);
 }
 .ticker-viewport {
@@ -1909,7 +2027,7 @@ dialog.sheet[data-closing]::backdrop {
   height: 0.375rem;
   margin-inline: 1.5rem;
   border-radius: 999px;
-  background: var(--accent);
+  background: var(--primary);
 }
 .ticker-link {
   display: inline-block;
@@ -1921,11 +2039,10 @@ dialog.sheet[data-closing]::backdrop {
   text-underline-offset: 3px;
 }
 .ticker-link:focus-visible {
-  outline-color: var(--accent);
   outline-offset: -3px;
 }
 .ticker-summary {
-  color: var(--sidebar-muted);
+  color: var(--text-muted);
 }
 .ticker-btn {
   display: inline-flex;
@@ -1935,13 +2052,10 @@ dialog.sheet[data-closing]::backdrop {
   width: 2.25rem;
   height: 2.25rem;
   border-radius: 999px;
-  color: var(--sidebar-text);
+  color: var(--primary);
 }
 .ticker-btn:hover {
-  background: var(--sidebar-hover);
-}
-.ticker :focus-visible {
-  outline-color: var(--accent);
+  background: color-mix(in srgb, var(--primary) 10%, transparent);
 }
 @media (max-width: 39.999rem) {
   .ticker-summary {
@@ -1994,26 +2108,27 @@ dialog.sheet[data-closing]::backdrop {
 }
 
 /*
- * Charts (kit/bar-chart.tsx, line-chart.tsx, donut-chart.tsx). One colour
- * scale from the tokens: the flag green first, then a calm blue, an amber
- * and two quiet greys; danger only for values past an alert threshold.
- * Every colour holds 3:1 against the card in both themes.
+ * Charts (kit/bar-chart.tsx, line-chart.tsx, donut-chart.tsx). Navy first,
+ * then the flag green, an amber and two quiet greys; danger only past an
+ * alert threshold. The flag yellow and red are never series colours (the
+ * yellow fails 3:1 on white, the red reads as danger). Each holds 3:1
+ * against the card.
  */
 :root {
-  --chart-1: #0f7a4d;
-  --chart-2: #2f6fb3;
-  --chart-3: #b7791f;
-  --chart-4: #7c8a80;
-  --chart-5: #b9c2bb;
+  --chart-1: #0a3764;
+  --chart-2: #008751;
+  --chart-3: #a06a00;
+  --chart-4: #6b778c;
+  --chart-5: #8792a2;
   --chart-danger: #c8102e;
   --chart-grid: color-mix(in srgb, var(--text-muted) 16%, transparent);
 }
 [data-theme="dark"] {
-  --chart-1: #3fbf7f;
-  --chart-2: #6ea8ff;
-  --chart-3: #f0b43c;
-  --chart-4: #8fa196;
-  --chart-5: #4d5c53;
+  --chart-1: #8db8ff;
+  --chart-2: #3fbf7f;
+  --chart-3: #e0a43a;
+  --chart-4: #9aa8bc;
+  --chart-5: #5b7090;
   --chart-danger: #ff6b7f;
 }
 [data-contrast="high"] {
@@ -2217,7 +2332,7 @@ html:is([data-text="xl"], [data-text="xxl"]) .ds-bars-grid {
   stroke: var(--surface);
   stroke-width: 3;
 }
-/* Tooltip of a chart: a small dark card above the pointed value. */
+/* Tooltip of a chart: a small navy card above the pointed value. */
 .ds-chart-tip {
   position: absolute;
   z-index: 5;
@@ -2225,8 +2340,8 @@ html:is([data-text="xl"], [data-text="xxl"]) .ds-bars-grid {
   max-width: 14rem;
   padding: 0.5rem 0.625rem;
   border-radius: var(--control-radius);
-  background: #1f2621;
-  color: #f3f6f3;
+  background: var(--primary);
+  color: var(--on-primary);
   box-shadow: var(--elevation-lg);
   font-size: 0.8125rem;
   line-height: 1.35;
@@ -2320,11 +2435,11 @@ html:is([data-text="xl"], [data-text="xxl"]) .ds-bars-grid {
 }
 
 /*
- * Info bubble (kit/info-tip.tsx). A 24 px "i" in a circle, muted until
- * hovered or focused, with a 44 px touch target drawn around it by a
- * transparent halo, so it never pushes the line it sits in. The bubble is
- * a small dark card in light mode and a raised surface in dark mode, at most
- * 20rem wide, in rem so it grows with the text size setting and the zoom.
+ * Info bubble (kit/info-tip.tsx). A 24 px "i" in a circle, in the primary
+ * colour, with a 44 px touch target drawn around it by a transparent halo,
+ * so it never pushes the line it sits in. The bubble is a raised surface
+ * with a strong hairline, at most 20rem wide, in rem so it grows with the
+ * text size setting and the zoom.
  */
 .ds-tip-wrap {
   display: inline-flex;
@@ -2339,7 +2454,7 @@ html:is([data-text="xl"], [data-text="xxl"]) .ds-bars-grid {
   width: 1.5rem;
   height: 1.5rem;
   border-radius: 999px;
-  color: var(--text-muted);
+  color: var(--primary);
   transition:
     color var(--duration-fast) ease,
     background-color var(--duration-fast) ease;
@@ -2350,8 +2465,8 @@ html:is([data-text="xl"], [data-text="xxl"]) .ds-bars-grid {
   inset: -0.625rem;
 }
 .ds-tip-btn svg {
-  width: 1.125rem;
-  height: 1.125rem;
+  width: 1rem;
+  height: 1rem;
 }
 .ds-tip-btn:hover,
 .ds-tip-btn[aria-expanded="true"] {
@@ -2365,12 +2480,12 @@ html:is([data-text="xl"], [data-text="xxl"]) .ds-bars-grid {
   margin: 0;
   width: max-content;
   max-width: min(20rem, calc(100vw - 1rem));
-  padding: 0.625rem 0.75rem;
-  border: 1px solid transparent;
-  border-radius: var(--control-radius);
-  background: #1f2621;
-  color: #f3f6f3;
-  box-shadow: var(--elevation-lg);
+  padding: 0.75rem 0.875rem;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--elevation-md);
   font-family: var(--font-body), system-ui, sans-serif;
   font-size: 0.875rem;
   font-weight: 400;
@@ -2402,13 +2517,10 @@ html:is([data-text="xl"], [data-text="xxl"]) .ds-bars-grid {
   animation-name: ds-pop-in;
 }
 .ds-tip a {
-  color: inherit;
+  color: var(--link);
   font-weight: 600;
   text-decoration: underline;
   text-underline-offset: 3px;
-}
-.ds-tip :focus-visible {
-  outline-color: var(--accent);
 }
 /* The arrow, pointing at the button whichever side the bubble opened on. */
 .ds-tip::after {
@@ -2432,9 +2544,7 @@ html:is([data-text="xl"], [data-text="xxl"]) .ds-bars-grid {
   border-right-color: transparent;
 }
 [data-theme="dark"] .ds-tip {
-  border-color: var(--border-strong);
   background: var(--surface-2);
-  color: var(--text);
 }
 [data-contrast="high"] .ds-tip {
   border: 2px solid var(--text);
@@ -2538,9 +2648,9 @@ html:is([data-text="xl"], [data-text="xxl"]) .ds-bars-grid {
 }
 
 /*
- * Status pages (kit/status-page.tsx): the code in a soft green to surface
+ * Status pages (kit/status-page.tsx): the code in a soft navy to surface
  * gradient, decorative (the title carries the meaning), and a short stripe
- * in the flag colours under it.
+ * in the flag colours under it, in three equal thirds.
  */
 .ds-status-code {
   background: linear-gradient(180deg, color-mix(in srgb, var(--primary) 34%, var(--surface)) 0%, color-mix(in srgb, var(--primary) 8%, var(--bg)) 100%);
@@ -2550,7 +2660,7 @@ html:is([data-text="xl"], [data-text="xxl"]) .ds-bars-grid {
   user-select: none;
 }
 .ds-flag-stripe {
-  background: linear-gradient(90deg, #008751 0 40%, #fcd116 40% 80%, #e8112d 80% 100%);
+  background: linear-gradient(90deg, var(--flag-green) 0 33.333%, var(--flag-yellow) 33.333% 66.667%, var(--flag-red) 66.667% 100%);
 }
 [data-contrast="high"] .ds-status-code {
   background: none;
@@ -2564,4 +2674,102 @@ html:is([data-text="xl"], [data-text="xxl"]) .ds-bars-grid {
  */
 :is(.flex-col, .grid)[class*="gap-"] > .ds-page-header {
   margin-bottom: 0;
+}
+
+/*
+ * Page tabs (doc 4.7), for the navigation between the sections of a page:
+ * a row of links or tab buttons over a 1 px rule. The current one (a link
+ * with aria-current="page", or a tab with aria-selected="true") is navy with
+ * a 3 px underline. On a phone the row scrolls sideways without a visible
+ * scrollbar, its end fading out.
+ *   <nav aria-label="…"><div class="ds-tabs"><a aria-current="page">…
+ * Segmented control (.ds-segmented), for a small group of filters: a quiet
+ * track, the active segment raised on the surface.
+ */
+@layer components {
+  .ds-tabs {
+    display: flex;
+    gap: 0.25rem;
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .ds-tabs::-webkit-scrollbar {
+    display: none;
+  }
+  @media (max-width: 39.999rem) {
+    .ds-tabs {
+      mask-image: linear-gradient(90deg, #000 calc(100% - 1.5rem), transparent);
+    }
+  }
+  .ds-tabs > :is(a, button) {
+    position: relative;
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 2.75rem;
+    padding-inline: 1rem;
+    color: var(--text-muted);
+    font-family: var(--font-display), var(--font-body), system-ui, sans-serif;
+    font-size: 0.875rem;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: color var(--duration-fast) ease;
+  }
+  .ds-tabs > :is(a, button):hover {
+    color: var(--text);
+  }
+  .ds-tabs > :is([aria-current="page"], [aria-selected="true"]) {
+    color: var(--primary);
+  }
+  .ds-tabs > :is([aria-current="page"], [aria-selected="true"])::after {
+    content: "";
+    position: absolute;
+    inset: auto 0 0;
+    height: 3px;
+    background: var(--primary);
+  }
+  .ds-tabs > :is(a, button):focus-visible {
+    outline-offset: -3px;
+  }
+
+  .ds-segmented {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    padding: 0.25rem;
+    border-radius: var(--radius);
+    background: var(--surface-2);
+  }
+  .ds-segmented > :is(a, button) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.375rem;
+    min-height: 2.25rem;
+    padding-inline: 0.875rem;
+    border-radius: var(--control-radius);
+    color: var(--text-muted);
+    font-family: var(--font-display), var(--font-body), system-ui, sans-serif;
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+  @media (max-width: 63.999rem) {
+    .ds-segmented > :is(a, button) {
+      min-height: 2.75rem;
+    }
+  }
+  .ds-segmented > :is(a, button):hover {
+    color: var(--text);
+  }
+  .ds-segmented > :is([aria-current="page"], [aria-selected="true"], [aria-pressed="true"]) {
+    background: var(--surface);
+    color: var(--primary);
+    box-shadow: var(--elevation-xs);
+  }
+}
+[data-contrast="high"] .ds-segmented > :is([aria-current="page"], [aria-selected="true"], [aria-pressed="true"]) {
+  outline: 2px solid currentColor;
+  outline-offset: -2px;
 }

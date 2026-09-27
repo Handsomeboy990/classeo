@@ -13,6 +13,7 @@ export type Licence = { name: string; url: string | null };
 export const LICENCES = {
   "CC BY 4.0": { name: "CC BY 4.0", url: "https://creativecommons.org/licenses/by/4.0/deed.fr" },
   "CC BY-SA 4.0": { name: "CC BY-SA 4.0", url: "https://creativecommons.org/licenses/by-sa/4.0/deed.fr" },
+  "CC BY-SA 3.0": { name: "CC BY-SA 3.0", url: "https://creativecommons.org/licenses/by-sa/3.0/deed.fr" },
   // Work of a United States federal agency (Peace Corps): the source page
   // states the public domain status.
   "Public domain": { name: "Domaine public", url: null },
@@ -111,10 +112,11 @@ export function shortCredit(p: Photo) {
 }
 
 // Other works used by the platform that call for a credit: the French
-// reading voice (Piper, self-hosted, trained on the SIWIS database).
+// reading voice (Piper, self-hosted, trained on the SIWIS database) and the
+// coat of arms of the brand lockup (public/brand/armoiries-benin.svg).
 export type OtherCredit = {
   id: string;
-  kind: "voice";
+  kind: "voice" | "emblem";
   subject: string;
   author: string;
   sourceUrl: string;
@@ -131,6 +133,15 @@ export const OTHER_CREDITS = [
     sourceUrl: "https://huggingface.co/rhasspy/piper-voices/tree/main/fr/fr_FR/siwis",
     licence: "CC BY 4.0",
     changes: "Aucune : la voix est utilisée telle quelle, sur le serveur de Classéo.",
+  },
+  {
+    id: "armoiries",
+    kind: "emblem",
+    subject: "Armoiries de la République du Bénin, dans le bloc-marque.",
+    author: "Tinynanorobots et Fenn-O-maniC (fichier « Coat of arms of Benin.svg », Wikimedia Commons)",
+    sourceUrl: "https://commons.wikimedia.org/wiki/File:Coat_of_arms_of_Benin.svg",
+    licence: "CC BY-SA 3.0",
+    changes: "Fichier allégé, dessin inchangé. La copie est partagée sous la même licence.",
   },
 ] as const satisfies readonly OtherCredit[];
 
@@ -152,6 +163,10 @@ export const LANGUAGE_CREDITS = [
 // translation list.
 export function photoTexts(): string[] {
   return [...PHOTOS.flatMap((p) => [p.caption, p.subject, p.alt, p.changes]), ...OTHER_CREDITS.flatMap((c) => [c.subject, c.changes]), ...LANGUAGE_CREDITS.map((c) => c.subject)];
+}
+
+function otherRows(kind: OtherCredit["kind"]) {
+  return OTHER_CREDITS.filter((c) => c.kind === kind).map((c) => `| \`${c.id}\` | ${c.subject} | ${c.author} | ${c.sourceUrl} | ${c.licence} | ${c.changes} |`);
 }
 
 // public/images/CREDITS.md, written from the list above.
@@ -177,7 +192,16 @@ export function creditsMarkdown() {
     "",
     "| Voice | Use | Author | Source | Licence | Changes |",
     "|---|---|---|---|---|---|",
-    ...OTHER_CREDITS.map((c) => `| \`${c.id}\` | ${c.subject} | ${c.author} | ${c.sourceUrl} | ${c.licence} | ${c.changes} |`),
+    ...otherRows("voice"),
+    "",
+    "## Coat of arms",
+    "",
+    "Shown in the brand lockup from public/brand/armoiries-benin.svg, a copy",
+    "shared under the licence of the original.",
+    "",
+    "| Work | Use | Author | Source | Licence | Changes |",
+    "|---|---|---|---|---|---|",
+    ...otherRows("emblem"),
     "",
     "## Local languages",
     "",
@@ -185,8 +209,9 @@ export function creditsMarkdown() {
     "|---|---|---|---|",
     ...LANGUAGE_CREDITS.map((c) => `| \`${c.id}\` | ${c.subject} | ${c.author} | ${c.sourceUrl} |`),
     "",
-    "Licences: CC BY 4.0 https://creativecommons.org/licenses/by/4.0/ and",
-    "CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0/.",
+    "Licences: CC BY 4.0 https://creativecommons.org/licenses/by/4.0/,",
+    "CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0/ and",
+    "CC BY-SA 3.0 https://creativecommons.org/licenses/by-sa/3.0/.",
     "",
   ].join("\n");
 }
