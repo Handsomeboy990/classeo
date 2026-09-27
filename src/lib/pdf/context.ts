@@ -1,5 +1,6 @@
 import { AsyncLocalStorage } from "node:async_hooks";
 
+import { BRAND_DEFAULTS, type BrandSettings } from "@/components/brand/settings";
 import type { QrMatrix } from "@/lib/qr";
 
 // Set by exportPdf() around the render of a document, so every page footer
@@ -26,7 +27,10 @@ export type DocumentSigned = {
   stamp: PdfImage | null;
 };
 
-type Scope = { verification: DocumentVerification | null; signed: DocumentSigned | null };
+// brand: the two brand options (coat of arms on the letterhead,
+// independence notice in the footer), read once per export; the defaults
+// when absent.
+type Scope = { verification: DocumentVerification | null; signed: DocumentSigned | null; brand?: BrandSettings };
 
 const store = new AsyncLocalStorage<Scope>();
 
@@ -36,3 +40,4 @@ export function withDocumentScope<T>(scope: Scope, render: () => T): T {
 
 export const currentVerification = () => store.getStore()?.verification ?? null;
 export const currentSigned = () => store.getStore()?.signed ?? null;
+export const currentBrand = () => store.getStore()?.brand ?? BRAND_DEFAULTS;

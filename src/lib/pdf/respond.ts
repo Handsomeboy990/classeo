@@ -4,6 +4,7 @@ import type { ReactElement } from "react";
 
 import { renderToBuffer, type DocumentProps } from "@react-pdf/renderer";
 
+import { loadBrand } from "@/components/brand/load-brand";
 import { recordIssued, signedIssuance, verificationOf } from "@/features/verification/registry";
 import { contentHash, newVerificationCode, sha256, type DocumentKind } from "@/features/verification/reference";
 import { audit } from "@/lib/audit";
@@ -80,14 +81,14 @@ export async function exportPdf<D>(options: {
     holder.issuer = await completeIssuer(holder.issuer);
   }
   const built = await options.build(data, ctx);
-  await prepareFonts();
+  const [brand] = await Promise.all([loadBrand(), prepareFonts()]);
 
   // A signed copy reuses the code of its signature; any other copy gets a
   // code of its own, printed with its QR code and registered with the hash
   // of the exact file sent.
   const subjectId = built.subjectId ?? built.resourceId ?? null;
   const signed = built.signable && subjectId ? await signedIssuance(built.kind, subjectId, contentHash(built.signable.content)) : null;
-  const render = (code: string, signedBy: DocumentSigned | null) => withDocumentScope({ verification: verificationOf(code), signed: signedBy }, () => renderToBuffer(built.element));
+  const render = (code: string, signedBy: DocumentSigned | null) => withDocumentScope({ verification: verificationOf(code), signed: signedBy, brand }, () => renderToBuffer(built.element));
 
   let code = signed?.code ?? newVerificationCode();
   let buffer = await render(code, signed?.signed ?? null);
