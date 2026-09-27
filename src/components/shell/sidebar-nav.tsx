@@ -39,6 +39,11 @@ export function badgeId(menu: string, href: string) {
   return `${menu}-badge-${href.replace(/[^\w-]/g, "-")}`;
 }
 
+// The navy side menu (design source of truth, part 3.4): section titles in
+// small spaced capitals, entries of 44 px. The current entry reads white on
+// a light veil, its icon turns flag yellow and a yellow bar marks its left
+// edge, so it never depends on colour alone. Focus rings are yellow on navy
+// (globals.css, .bg-sidebar).
 export function SidebarNav({ sections, onNavigate }: { sections: RenderedSection[]; onNavigate?: () => void }) {
   const pathname = usePathname();
   const isActive = (href: string) => isActiveHref(pathname, href);
@@ -47,7 +52,7 @@ export function SidebarNav({ sections, onNavigate }: { sections: RenderedSection
     <nav aria-label="Menu principal" className="flex flex-col gap-6">
       {sections.map((section) => (
         <div key={section.title}>
-          <p className="mb-2 px-3 text-xs font-semibold tracking-wider text-sidebar-muted uppercase">{section.title}</p>
+          <p className="mb-2 px-3 font-display text-[0.6875rem] leading-[1.3] font-bold tracking-[0.08em] text-sidebar-muted uppercase">{section.title}</p>
           <ul className="flex flex-col gap-0.5">
             {section.items.map((item) => {
               const active = isActive(item.href);
@@ -59,8 +64,10 @@ export function SidebarNav({ sections, onNavigate }: { sections: RenderedSection
                     aria-current={active ? "page" : undefined}
                     aria-describedby={item.badge ? badgeId("side", item.href) : undefined}
                     className={cn(
-                      "flex min-h-11 items-center gap-3 rounded-lg px-3 text-sm font-medium text-sidebar-text [&_svg]:size-5 [&_svg]:shrink-0",
-                      active ? "bg-accent text-on-accent" : "hover:bg-sidebar-hover",
+                      "relative flex min-h-11 items-center gap-3 rounded-control px-3 py-1.5 font-display text-sm leading-snug transition-[background-color,color] duration-150 [&_svg]:size-[1.125rem] [&_svg]:shrink-0",
+                      active
+                        ? "bg-white/10 font-semibold text-white before:absolute before:inset-y-1.5 before:left-0 before:w-0.75 before:rounded-r-control before:bg-flag-yellow [&_svg]:text-flag-yellow"
+                        : "font-medium text-sidebar-text hover:bg-sidebar-hover [&_svg]:text-sidebar-muted",
                     )}
                   >
                     {item.icon}

@@ -1,0 +1,55 @@
+/*
+ * Private space shell (design source of truth, parts 3.4 to 3.6), loaded by
+ * src/app/espace/layout.tsx only. Rules the utility classes cannot express
+ * because the base rules they adjust (.nav-badge, .app-main) are unlayered in
+ * globals.css; every selector here is scoped to the shell ([data-shell]).
+ */
+
+/* Count badges on the navy bars: flag yellow with navy figures (8.19:1). */
+[data-shell] .bg-header .nav-badge {
+  background: var(--flag-yellow);
+  color: var(--on-accent);
+  box-shadow: 0 0 0 2px var(--header);
+}
+
+/*
+ * The app footer closes every page of the space, after the main region.
+ * The room kept for the tab bar and the floating button moves from the end
+ * of main to the end of the footer, so the footer is never hidden behind
+ * them; on large screens its text keeps clear of the floating button.
+ */
+@media (max-width: 63.999rem) {
+  [data-shell] {
+    /* The phone header: safe area, app bar and its 3 px tricolour rule. */
+    --chat-h: calc(100dvh - env(safe-area-inset-top) - var(--app-bar-h) - 3px - var(--tab-bar-space) - 2rem);
+  }
+  [data-shell] .app-main {
+    padding-bottom: 2.5rem;
+  }
+  [data-shell] .app-main:has([data-chat]) {
+    padding-bottom: 0.75rem;
+  }
+  [data-shell] [data-app-footer] {
+    padding-bottom: calc(var(--tab-bar-space) + var(--fab-size) + 1.5rem);
+  }
+  /* Full screen conversation: the footer steps aside; the notice stays in
+     the Menu sheet. */
+  [data-shell]:has([data-chat]) [data-app-footer] {
+    display: none;
+  }
+}
+@media (min-width: 64rem) {
+  [data-shell] .app-main {
+    padding-bottom: 3rem;
+  }
+  [data-shell] [data-app-footer-body] {
+    padding-right: calc(var(--fab-size) + 3rem);
+  }
+}
+
+@media print {
+  [data-shell] [data-app-footer],
+  [data-shell] [data-top-rule] {
+    display: none !important;
+  }
+}
