@@ -50,6 +50,10 @@ describe("appUrl and absoluteUrl", () => {
     expect(appUrl({ APP_URL: "classeo.gouv.bj", VERCEL_URL: "classeo.vercel.app" })).toBe("https://classeo.vercel.app");
     expect(appUrl({})).toBe("http://localhost:3000");
   });
+  it("reads NEXT_PUBLIC_APP_URL after APP_URL", () => {
+    expect(appUrl({ NEXT_PUBLIC_APP_URL: "https://classeo.bj/", VERCEL_URL: "x.vercel.app" })).toBe("https://classeo.bj");
+    expect(appUrl({ APP_URL: "https://a.bj", NEXT_PUBLIC_APP_URL: "https://b.bj" })).toBe("https://a.bj");
+  });
   it("only joins same site paths", () => {
     expect(absoluteUrl("https://a.bj", "/espace/messages/1")).toBe("https://a.bj/espace/messages/1");
     expect(absoluteUrl("https://a.bj", "//evil.example")).toBe("https://a.bj/espace");

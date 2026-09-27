@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 import { FlagStripe } from "@/components/brand/flag";
@@ -24,8 +25,13 @@ import { isEnabled } from "@/lib/features";
 import { fileUrl } from "@/lib/files";
 import { mobileTabs, navigationBadges, tabAudience, visibleNavigation, type NavItem } from "@/lib/navigation";
 import { SchoolStatusBanner } from "@/features/school-status/components/status-banner";
+import { NO_INDEX } from "@/lib/seo";
 
 import "@/components/shell/shell.css";
+
+// The private space is never indexed (robots.txt and the X-Robots-Tag header
+// of next.config.ts say so too).
+export const metadata: Metadata = { robots: NO_INDEX };
 
 const CAPTIONS = { NATIONAL: "République du Bénin", DEPARTMENT: "Département", COMMUNE: "Commune", SCHOOL: "Établissement", SELF: "Espace famille" } as const;
 

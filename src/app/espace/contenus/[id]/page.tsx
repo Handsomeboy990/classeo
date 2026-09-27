@@ -1,4 +1,4 @@
-import { ArrowLeft, CalendarClock, Captions, ExternalLink, MapPin, UserRound, Users } from "lucide-react";
+import { CalendarClock, ChevronLeft, Captions, ExternalLink, MapPin, UserRound, Users } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -33,8 +33,8 @@ export default async function ContentPage({ params }: PageProps<"/espace/contenu
 
   return (
     <article aria-labelledby="content-title" className="max-w-3xl">
-      <Link href="/espace/contenus" className="mb-4 inline-flex h-11 max-lg:hidden items-center gap-2 text-sm font-semibold text-primary hover:underline">
-        <ArrowLeft className="size-4" aria-hidden /> Toutes les annonces et ressources
+      <Link href="/espace/contenus" className="-ml-1 mb-2 inline-flex min-h-11 items-center gap-1 px-1 text-[0.8125rem] font-semibold text-muted underline-offset-3 hover:text-text hover:underline max-lg:hidden">
+        <ChevronLeft className="size-4 shrink-0" aria-hidden /> Toutes les annonces et ressources
       </Link>
 
       <div className="flex flex-wrap items-center gap-2">
@@ -42,12 +42,12 @@ export default async function ContentPage({ params }: PageProps<"/espace/contenu
         {c.status !== "PUBLISHED" && <StatusBadge status={c.status} />}
         {c.subjectLabel && <span className="text-sm text-muted">{c.subjectLabel}</span>}
       </div>
-      <h1 id="content-title" className="mt-3 text-2xl font-bold sm:text-3xl">
+      <h1 id="content-title" className="mt-3 text-2xl leading-[1.25] font-bold text-balance text-text lg:text-[1.75rem] lg:leading-[1.2]">
         {c.title}
       </h1>
 
       <div className="mt-4 flex flex-wrap items-center gap-3">
-        <ReadAloud text={listenText(c)} label="Écouter ce contenu" />
+        <ReadAloud text={listenText(c)} contentId={c.status === "PUBLISHED" ? c.id : undefined} label="Écouter ce contenu" />
         {manage && (
           <ContentActions
             id={c.id}
@@ -62,8 +62,8 @@ export default async function ContentPage({ params }: PageProps<"/espace/contenu
       </div>
 
       {c.easyRead && (
-        <section aria-labelledby="easy-read-title" className="mt-6 rounded-card border-l-4 border-primary bg-primary-soft px-5 py-4">
-          <h2 id="easy-read-title" className="text-sm font-bold tracking-wide text-primary uppercase">
+        <section aria-labelledby="easy-read-title" className="mt-6 rounded-control border border-l-4 border-primary/20 border-l-primary bg-primary-soft px-4 py-3 sm:px-5 sm:py-4">
+          <h2 id="easy-read-title" className="font-display text-[0.6875rem] font-bold tracking-[0.08em] text-primary uppercase">
             En bref, facile à lire
           </h2>
           <p className="mt-1 text-lg">{c.easyRead}</p>
@@ -98,7 +98,7 @@ export default async function ContentPage({ params }: PageProps<"/espace/contenu
               </audio>
             )}
             {sameOrigin && c.mediaType === "VIDEO" && (
-              <video controls preload="none" src={c.mediaUrl!} className="w-full rounded-lg bg-black" aria-describedby={c.transcript ? "transcript-title" : undefined}>
+              <video controls preload="none" src={c.mediaUrl!} className="w-full rounded-control bg-sidebar" aria-describedby={c.transcript ? "transcript-title" : undefined}>
                 <a href={c.mediaUrl!}>Télécharger la vidéo</a>
               </video>
             )}
@@ -133,7 +133,7 @@ export default async function ContentPage({ params }: PageProps<"/espace/contenu
             <InfoTip>Le texte de tout ce qui est dit dans le média, pour les personnes sourdes ou malentendantes.</InfoTip>
           </div>
           <p className="mt-3 leading-relaxed whitespace-pre-line">{c.transcript}</p>
-          <ReadAloud text={c.transcript} label="Écouter la transcription" className="mt-3" />
+          <ReadAloud text={c.transcript} contentId={c.status === "PUBLISHED" ? c.id : undefined} contentPart="transcript" label="Écouter la transcription" className="mt-3" />
         </section>
       )}
 

@@ -87,7 +87,7 @@ export async function TeacherDashboard({ user }: { user: NonNullable<CurrentUser
       <StatGrid>
         <StatCard label="Mes classes" value={formatNumber(classes.length)} icon={LayoutGrid} href="/espace/classes" />
         <StatCard label="Élèves suivis" value={formatNumber([...studentCount.values()].reduce((a, b) => a + b, 0))} icon={Users} tone="info" />
-        <StatCard label="Fiches à compléter" value={formatNumber(toComplete.length)} hint={period.name} icon={NotebookPen} tone="accent" href="/espace/notes" />
+        <StatCard label="Fiches à compléter" value={formatNumber(toComplete.length)} hint={period.name} icon={NotebookPen} href="/espace/notes" />
         <StatCard label="Appels à faire aujourd'hui" value={formatNumber(toTake)} hint={formatDate(today)} icon={ClipboardCheck} tone={toTake ? "danger" : "primary"} href="/espace/presences" />
       </StatGrid>
 

@@ -6,6 +6,7 @@ import { BeninFlag, FlagStripe } from "@/components/brand/flag";
 import { IndependenceNotice } from "@/components/brand/independence-notice";
 import { loadBrand } from "@/components/brand/load-brand";
 import { BrandLockup } from "@/components/brand/lockup";
+import { AnalyticsSlot } from "@/features/analytics/analytics-slot";
 import { cn } from "@/lib/utils";
 
 import { AccessibilityLink, FooterLanguages } from "./footer-controls";
@@ -308,6 +309,7 @@ export async function PublicFooter({ tr, voice, languages = true }: { tr: Public
         )}
       </div>
       <FlagStripe className="h-1.5" />
+      <AnalyticsSlot tr={tr} />
     </footer>
   );
 }

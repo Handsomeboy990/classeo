@@ -52,17 +52,8 @@ export default async function NewTransferPage(props: PageProps<"/espace/transfer
 
   return (
     <>
-      <nav aria-label="Fil d'Ariane" className="mb-2 text-sm text-muted max-lg:hidden">
-        <Link href="/espace/eleves" className="hover:underline">
-          Élèves
-        </Link>{" "}
-        /{" "}
-        <Link href={`/espace/eleves/${s.id}`} className="hover:underline">
-          {name}
-        </Link>{" "}
-        / Transférer
-      </nav>
-      <PageHeader title={`Transférer ${name}`} description={`Actuellement en ${e.classroom.name}, ${e.school.name}.`} readable={false} />
+      <PageHeader
+        breadcrumbs={[{ label: "Élèves", href: "/espace/eleves" }, { label: name, href: `/espace/eleves/${s.id}` }, { label: "Transférer" }]} title={`Transférer ${name}`} description={`Actuellement en ${e.classroom.name}, ${e.school.name}.`} readable={false} />
 
       <div className="mb-6 flex items-center gap-3">
         <StudentAvatar name={name} photoFileId={s.photoFileId} className="size-12 text-base" />
@@ -95,8 +86,8 @@ export default async function NewTransferPage(props: PageProps<"/espace/transfer
                 href={o.href}
                 aria-current={kind === o.key ? "page" : undefined}
                 className={cn(
-                  "flex items-start gap-3 rounded-card border p-4 transition-colors",
-                  kind === o.key ? "border-primary bg-primary-soft" : "border-border bg-surface hover:border-primary",
+                  "flex items-start gap-3 rounded-card border p-4 shadow-card transition-[border-color,box-shadow] duration-150",
+                  kind === o.key ? "border-primary bg-primary-soft shadow-[inset_3px_0_0_var(--primary)]" : "border-border bg-surface hover:border-primary/40 hover:shadow-[var(--elevation-sm)]",
                 )}
               >
                 <o.icon className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden />

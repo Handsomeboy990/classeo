@@ -5,14 +5,17 @@ import { redirect } from "next/navigation";
 import { after } from "next/server";
 import { z } from "zod";
 
+import { recordConnection } from "@/features/connections/record";
+import { runRetention } from "@/features/connections/retention-run";
 import type { ActionState } from "@/lib/action";
 import { audit } from "@/lib/audit";
 import { dummyVerify, hashPassword, verifyPassword } from "@/lib/auth/password";
 import { accountSchoolCount, clientIp, createSession, destroySession, getCurrentUser } from "@/lib/auth/session";
 import { db } from "@/lib/db";
+import { isDemoAccessToken } from "@/lib/demo/access";
 import { platformUrl, sendMail } from "@/lib/mail";
 import { passwordChangedEmail } from "@/lib/mail/templates";
-import { hitRateLimit, resetRateLimit } from "@/lib/rate-limit";
+import { hitRateLimit, isRateLimited, resetRateLimit } from "@/lib/rate-limit";
 import { de } from "@/lib/utils";
 
 const MAX_FAILED = 5;
@@ -26,6 +29,9 @@ const loginSchema = z.object({
   login: z.string().trim().toLowerCase().min(2, "Saisissez votre identifiant.").max(200),
   password: z.string().min(1, "Saisissez votre mot de passe.").max(200),
   next: z.string().optional(),
+  // Set by the secret demonstration page (src/app/acces/[token]): the
+  // token of its address, checked again here.
+  demoAccess: z.string().max(256).optional(),
 });
 
 function safeNext(next: string | undefined) {
@@ -39,6 +45,7 @@ export async function login(_prev: ActionState, formData: FormData): Promise<Act
     return { ok: false, message: "Vérifiez les champs du formulaire.", fieldErrors: z.flattenError(parsed.error).fieldErrors };
   }
   const { login: identifier, password, next } = parsed.data;
+  const demo = !!parsed.data.demoAccess && isDemoAccessToken(parsed.data.demoAccess);
   const ip = clientIp(await headers());
 
   // Without a trusted proxy the address is unknown ("direct"): the per account
@@ -47,6 +54,7 @@ export async function login(_prev: ActionState, formData: FormData): Promise<Act
   const byEmail = await hitRateLimit(`login:account:${identifier}`, 10, LOCK_MS);
   if (!byIp.allowed || !byEmail.allowed) {
     const minutes = Math.ceil(Math.max(byIp.retryAfterMs, byEmail.retryAfterMs) / 60000);
+    await recordConnection("RATE_LIMITED", { demo });
     return { ok: false, message: `Trop de tentatives. Réessayez dans ${minutes} minute${minutes > 1 ? "s" : ""}.` };
   }
 
@@ -56,12 +64,16 @@ export async function login(_prev: ActionState, formData: FormData): Promise<Act
   // password.
   const user = await db.user.findUnique({ where: identifier.includes("@") ? { email: identifier } : { username: identifier } });
   if (!user) {
+    await recordConnection("UNKNOWN_ACCOUNT", { demo });
     if (byEmail.count > MAX_FAILED) return { ok: false, message: LOCKED };
     await dummyVerify(password);
     return { ok: false, message: GENERIC };
   }
   const now = new Date();
-  if (user.lockedUntil && user.lockedUntil > now) return { ok: false, message: LOCKED };
+  if (user.lockedUntil && user.lockedUntil > now) {
+    await recordConnection("LOCKED", { userId: user.id, demo });
+    return { ok: false, message: LOCKED };
+  }
 
   const valid = await verifyPassword(user.passwordHash, password);
   if (!valid) {
@@ -73,14 +85,21 @@ export async function login(_prev: ActionState, formData: FormData): Promise<Act
       data: { failedLoginCount: failed, lockedUntil: failed >= MAX_FAILED ? new Date(now.getTime() + LOCK_MS) : null },
     });
     await audit(null, { action: "login_failed", resource: "user", resourceId: user.id, summary: `Échec de connexion pour ${identifier}` });
+    await recordConnection("WRONG_PASSWORD", { userId: user.id, demo });
     return { ok: false, message: GENERIC };
   }
-  if (!user.isActive) return { ok: false, message: "Ce compte est désactivé. Contactez votre administrateur." };
+  if (!user.isActive) {
+    await recordConnection("DISABLED", { userId: user.id, demo });
+    return { ok: false, message: "Ce compte est désactivé. Contactez votre administrateur." };
+  }
 
   await db.user.update({ where: { id: user.id }, data: { failedLoginCount: 0, lockedUntil: null, lastLoginAt: new Date() } });
   await resetRateLimit(`login:account:${identifier}`);
   await createSession(user.id);
   await audit(null, { action: "login", resource: "user", resourceId: user.id, summary: `Connexion ${de(`${user.firstName} ${user.lastName}`)}`, schoolId: user.schoolId });
+  await recordConnection("SUCCESS", { userId: user.id, demo, firstTime: !user.lastLoginAt });
+  // Retention of the connection data, at most once a day, after the answer.
+  after(() => runRetention());
 
   if (user.mustChangePassword) redirect("/changer-mot-de-passe");
   // An account working in several schools first chooses one.
@@ -92,7 +111,9 @@ export async function login(_prev: ActionState, formData: FormData): Promise<Act
 }
 
 export async function logout() {
+  const user = await getCurrentUser();
   await destroySession();
+  if (user) await recordConnection("SIGN_OUT", { userId: user.id });
   redirect("/connexion");
 }
 
@@ -117,8 +138,13 @@ export async function changePassword(_prev: ActionState, formData: FormData): Pr
   if (!parsed.success) {
     return { ok: false, message: "Vérifiez les champs du formulaire.", fieldErrors: z.flattenError(parsed.error).fieldErrors };
   }
+  // A stolen session must not become a way to guess the password: five
+  // wrong current passwords per account and 15 minutes.
+  const key = `password-change:${current.id}`;
+  if (await isRateLimited(key, MAX_FAILED, LOCK_MS)) return { ok: false, message: "Trop de tentatives. Réessayez dans 15 minutes." };
   const user = await db.user.findUniqueOrThrow({ where: { id: current.id } });
   if (!(await verifyPassword(user.passwordHash, parsed.data.current))) {
+    await hitRateLimit(key, MAX_FAILED, LOCK_MS);
     return { ok: false, message: "Mot de passe actuel incorrect.", fieldErrors: { current: ["Mot de passe actuel incorrect."] } };
   }
   await db.$transaction([

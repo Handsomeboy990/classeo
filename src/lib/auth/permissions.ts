@@ -43,6 +43,8 @@ export const RESOURCES = {
   health_document: "Certificats médicaux et pièces de santé",
   payroll: "Paie du personnel payé par l'établissement",
   payslip: "Ma paie (bulletins de paie personnels)",
+  connection: "Statistiques de connexion et de fréquentation",
+  connection_ip: "Adresses IP complètes des connexions",
 } as const;
 export type Resource = keyof typeof RESOURCES;
 
@@ -110,6 +112,13 @@ const APPLICABLE: Record<Resource, Action[]> = {
   payroll: ["view", "create", "update", "delete", "export", "approve"],
   // A teacher's own payslips, in "Ma paie".
   payslip: ["view"],
+  // Sign ins, failures, devices and page views of the territory (view),
+  // and the CSV of the recent connections (export). IP addresses are shown
+  // truncated (196.47.x.x) without connection_ip:view.
+  connection: ["view", "export"],
+  // Full IP addresses in the connection statistics and the activity log:
+  // the national administration only, by default.
+  connection_ip: ["view"],
 };
 
 export const PERMISSIONS: { code: PermissionCode; resource: Resource; action: Action; description: string }[] =
@@ -177,6 +186,7 @@ export const DEFAULT_ROLES: {
       ...only("subject", "view"),
       ...only("document_request", "view"),
       ...only("mock_exam", "view", "export"),
+      ...all("connection"),
     ],
   },
   {
@@ -205,6 +215,8 @@ export const DEFAULT_ROLES: {
       ...only("role", "view", "update"),
       ...only("audit", "view"),
       ...only("mock_exam", "view", "create", "approve", "export"),
+      // Connections of its territory and chain, IP addresses truncated.
+      ...all("connection"),
     ],
   },
   {

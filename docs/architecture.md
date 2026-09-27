@@ -253,8 +253,15 @@ Rules:
     filters (no IDOR).
   - Server actions carry the built in origin check of Next.js; the offline
     replay route checks the origin itself.
-  - Security headers: CSP without third party origins, HSTS where TLS is
-    guaranteed, frame-ancestors, Referrer-Policy, Permissions-Policy.
+  - Security headers: a baseline CSP without third party origins on every
+    response, and on pages a strict CSP with a per request nonce
+    (`src/proxy.ts`, `src/lib/security/csp.ts`), report only until
+    `CSP_STRICT=enforce`; HSTS where TLS is guaranteed, frame-ancestors,
+    Referrer-Policy, Permissions-Policy, COOP; `X-Robots-Tag: noindex` on
+    private paths.
+  - Rate limits in PostgreSQL on sign in, reset, password help, password
+    change, exports, PDF documents, translation, voice, visits and CSP
+    reports.
   - No secret in the repository; `npm audit` in CI.
   - An audit log of every sensitive action.
 - **UI states.**
@@ -267,3 +274,49 @@ Rules:
   - Tokens are declared once in CSS variables, with light and dark themes.
   - The SVG logo is a book whose pages form a rising sun, also produced as
     favicon, PWA icons and Open Graph image.
+
+## 9. Connection statistics, visits and search engines
+
+- **Connection events** (`src/features/connections`, model
+  `ConnectionEvent`): the sign in action records every attempt (success,
+  wrong password, locked, disabled, unknown identifier, rate limited) and
+  every sign out, with a copy of the account's role, department, commune,
+  school and chain, a summarised user agent (`user-agent.ts`, no library),
+  the IP address from `clientIp` (so `TRUST_PROXY` applies) and whether the
+  secret demonstration page was used (its token is checked again by the
+  server). The identifier typed for an unknown account is never stored.
+- **Page** `/espace/statistiques/connexions` (`connection:view`): scope from
+  `scope.ts`, the same rule for the Prisma queries and the SQL aggregates;
+  national accounts see everything or their chain, departmental accounts
+  their department and chain, a circonscription its commune. Full IP
+  addresses need `connection_ip:view`; everyone else gets truncated ones,
+  also in the activity log and both CSV exports.
+- **Visits**: `VisitBeacon` in the root layout posts the normalised path
+  (identifiers become `[id]`), the referrer host and the language with
+  `navigator.sendBeacon`, unless Do Not Track or Global Privacy Control is
+  on. `/api/stats/visite` checks the origin, rate limits per address,
+  derives the device and the signed in role on the server and adds one to
+  `PageViewDaily` counters (day, dimension, key). No visit is stored as a row.
+- **Retention** (`retention.ts`): full IP addresses 90 days, then truncated
+  (connection events and activity log); expired sessions deleted after 90
+  days; connection events and page view counters after 13 months; rate limit
+  windows after two days. Run at most once a day, claimed through a
+  `MaintenanceMarker` row, after a successful sign in and by the Vercel cron
+  `/api/cron/retention` (bearer `CRON_SECRET`).
+- **Google Analytics** (`src/features/analytics`): only with
+  `NEXT_PUBLIC_GA_ID`, on the public pages, after consent kept in
+  `localStorage`, loaded with `next/script`; the CSP opens Google's hosts
+  only in that case.
+- **Search engines** (`src/lib/seo.ts`): `app/robots.ts`, `app/sitemap.ts`
+  with the Fongbe and Yoruba versions, canonical and hreflang alternates,
+  Open Graph and Twitter cards on the public pages, Organization and WebSite
+  JSON-LD on the home page, `noindex` on the private space, the password
+  flows and the demonstration page.
+- **Translation privacy** (`src/features/languages/privacy.ts`,
+  `personal-data.ts`): the server templates known names (every first and
+  last name of the platform and the reader's page) and figures before
+  anything reaches api229langues, refuses e-mail addresses, phone numbers,
+  identifiers, long strings and any piece of a message the user can read,
+  and checks the queue again before each batch. Announcements are translated
+  from the database by id; the voice refuses a free text holding personal
+  data, and the device reads it in French.

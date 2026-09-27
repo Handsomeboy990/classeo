@@ -199,7 +199,10 @@ off when its variables are empty, and the platform still works.
 | `DATABASE_URL` | PostgreSQL connection string (Neon: the pooled string) |
 | `SESSION_SECRET` | signs session cookies and keys the reset codes; at least 32 random characters |
 | `APP_URL` | public address used in e-mail and QR links; on Vercel falls back to the project URL |
-| `NEXT_PUBLIC_APP_URL` | base URL of page metadata (Open Graph) |
+| `NEXT_PUBLIC_APP_URL` | public address read after `APP_URL`: canonical addresses, sitemap, robots.txt and Open Graph |
+| `CRON_SECRET` | protects the daily retention route `/api/cron/retention` (Vercel sends it as a bearer token); at least 16 characters; empty: the route answers 503 and the purge still runs after sign ins |
+| `NEXT_PUBLIC_GA_ID` | optional Google Analytics measurement id (`G-...`) for the public pages, loaded only after the visitor accepts the consent banner; empty: nothing of Google is loaded |
+| `CSP_STRICT` | `enforce` enforces the strict nonce based Content Security Policy of the pages; empty: it is sent report only and violations are logged by `/api/csp-report` |
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_SECURE`, `MAIL_FROM` | e-mail relay; without `SMTP_HOST` each e-mail is only summarised in the log |
 | `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT` | web push; generate with `npx web-push generate-vapid-keys` |
 | `FEDAPAY_ENV`, `FEDAPAY_SECRET_KEY`, `FEDAPAY_PUBLIC_KEY`, `FEDAPAY_WEBHOOK_SECRET` | online payment; without the secret key only declarations are offered. Webhook: `<APP_URL>/api/paiements/fedapay/webhook` |
@@ -370,6 +373,13 @@ already caused an incident or a doubt:
   `SESSION_SECRET`; previews behind Vercel protection also need
   `VERCEL_AUTOMATION_BYPASS_SECRET`.
 - **Reseed** (`SEED_RESET=true`) destroys all data: demo environments only.
+- **Retention cron**: `vercel.json` schedules `/api/cron/retention` daily at
+  02:30 UTC. Set `CRON_SECRET` in the Vercel project (Sensitive); the purge
+  also runs after a sign in, at most once a day, so a missing secret delays
+  nothing by more than a day of activity.
+- **Strict CSP**: sent report only at first. Once the server log shows no
+  `csp violation` line for a few days of real use, set `CSP_STRICT=enforce`
+  and redeploy.
 
 ## Security and data protection
 
@@ -379,6 +389,23 @@ permission and the territorial scope on the server, inputs are validated with
 zod, security headers include a CSP without third party scripts, and sensitive
 actions are written to an audit log. Detailed security notes, audit findings
 and accepted advisories are kept outside the repository.
+
+Connections and page views are measured for the ministry
+(`/espace/statistiques/connexions`, permission `connection:view`, limited to
+the viewer's territory and chain). Each sign in attempt keeps the account,
+its role and territory, a browser, system and device summary (never the raw
+user agent) and the IP address; the full address is shown only with
+`connection_ip:view` (national administration by default), kept 90 days and
+then truncated (196.47.x.x), in the activity log too; connection rows and
+daily page view counters are deleted after 13 months. Page views are counted
+first party, without cookie or identifier, in daily counters only, and not
+at all for browsers sending Do Not Track or Global Privacy Control. Google
+Analytics exists only when `NEXT_PUBLIC_GA_ID` is set, on the public pages,
+after consent.
+
+The translation service receives interface text only: the server replaces
+names and figures by slots, and never sends contact details, identifiers or
+messages between people.
 
 Personal data of minors is processed, including health documents, which are
 deleted once the school has decided on them. Processing in Benin falls under

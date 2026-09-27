@@ -24,11 +24,13 @@ export function readMailConfig(env: Env): MailConfig {
   return { enabled: true, from, host, port, secure, user, password: user ? (env.SMTP_PASSWORD ?? null) : null };
 }
 
-// Public address of the platform, used for the links inside e-mails. It is
-// never taken from the request Host header, which the client controls.
+// Public address of the platform, used for the links inside e-mails and the
+// canonical addresses of the public pages (src/lib/seo.ts). It is never
+// taken from the request Host header, which the client controls.
 export function appUrl(env: Env): string {
-  const explicit = env.APP_URL?.trim();
-  if (explicit && /^https?:\/\//.test(explicit)) return explicit.replace(/\/+$/, "");
+  for (const explicit of [env.APP_URL?.trim(), env.NEXT_PUBLIC_APP_URL?.trim()]) {
+    if (explicit && /^https?:\/\//.test(explicit)) return explicit.replace(/\/+$/, "");
+  }
   const vercel = env.VERCEL_PROJECT_PRODUCTION_URL?.trim() || env.VERCEL_URL?.trim();
   if (vercel) return `https://${vercel.replace(/\/+$/, "")}`;
   return "http://localhost:3000";

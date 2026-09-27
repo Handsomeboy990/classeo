@@ -79,9 +79,9 @@ export default async function AttendancePage(props: PageProps<"/espace/presences
 
       <StatGrid>
         <StatCard label={`Présence de la classe, ${formatDate(date)}`} value={formatPercent(stats.classDayRate)} icon={CalendarCheck} hint="Matin et après-midi" />
-        <StatCard label="Présence de la classe, semaine" value={formatPercent(stats.classWeekRate)} icon={CalendarDays} tone="info" hint={`Du ${formatDate(stats.week.from)} au ${formatDate(stats.week.to)}`} />
-        <StatCard label="Présence de l'établissement" value={formatPercent(stats.scopeDayRate)} icon={School} tone="accent" hint={formatDate(date)} />
-        <StatCard label="Absences du jour" value={formatNumber(stats.absentToday)} icon={UserX} tone="danger" hint="Toutes classes de votre périmètre" />
+        <StatCard label="Présence de la classe, semaine" value={formatPercent(stats.classWeekRate)} icon={CalendarDays} hint={`Du ${formatDate(stats.week.from)} au ${formatDate(stats.week.to)}`} />
+        <StatCard label="Présence de l'établissement" value={formatPercent(stats.scopeDayRate)} icon={School} hint={formatDate(date)} />
+        <StatCard label="Absences du jour" value={formatNumber(stats.absentToday)} icon={UserX} tone={stats.absentToday ? "danger" : "primary"} hint="Toutes classes de votre périmètre" />
       </StatGrid>
 
       <div className="mt-6 flex flex-col gap-3">

@@ -1,3 +1,4 @@
+import { ChevronLeft } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -59,7 +60,8 @@ export default async function ReportCardPage(props: PageProps<"/espace/bulletins
     <>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3" data-print-hide>
         {/* Below lg the app bar has the back button. */}
-        <Link href={back} className="text-sm font-semibold text-primary hover:underline max-lg:hidden">
+        <Link href={back} className="-ml-1 inline-flex min-h-11 items-center gap-1 px-1 text-[0.8125rem] font-semibold text-muted underline-offset-3 hover:text-text hover:underline max-lg:hidden">
+          <ChevronLeft className="size-4 shrink-0" aria-hidden />
           Retour
         </Link>
         <div className="flex flex-wrap gap-2">

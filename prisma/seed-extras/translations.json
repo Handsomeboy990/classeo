@@ -768,6 +768,12 @@
 "text": "Abomey-Calavi wemaxɔmɛ gbɛ́ta (Azɔmɛxwé gbɛ́ta"
 },
 {
+"key": "0a4a5ec7a5404f78db017b75df7b6783c7510bcb936ec9bdca2c2ccd8d10fa12",
+"lang": "fon",
+"source": "Classéo souhaite mesurer la fréquentation de ses pages publiques avec Google Analytics. Aucun cookie n'est déposé sans votre accord, et l'espace connecté n'est jamais mesuré.",
+"text": "Classéo jló na jlɛ mɛ e nɔ gbɔn wema tɔn lɛ jí lɛ é kpo Google Analytics kpo. È nɔ sɔ́ cookies ɖebǔ ɖó tɛn e mɛ a ma yí gbè na ǎ é ǎ, bɔ è nɔ lɛ́ jlɛ́ fí e è cá é gbeɖé ǎ."
+},
+{
 "key": "0a60815f0c28efe8b33f3dd998e30cac1f7762db629ab9316069bb257ab745f3",
 "lang": "fon",
 "source": "Suivi complet",
@@ -9876,6 +9882,12 @@
 "text": "Xwè elɔ mɛ"
 },
 {
+"key": "8393b7bd1e85c13e5193ec388929b5263bd844f9a9ce69a49f50b620146e7d30",
+"lang": "fon",
+"source": "Accepter",
+"text": "Yigbé"
+},
+{
 "key": "839c12544ca2d9c3059ddef9baf1ada7ffc9c6bdc754dbd49e9e725e364fb4cd",
 "lang": "fon",
 "source": "Le sujet est trop long (120 caractères au plus).",
@@ -16770,6 +16782,12 @@
 "text": "Azɔ̌xwé ɔ ɖè facture ɖebǔ tɔ́n nú vǐ mitɔn lɛ ɖò xwè elɔ mɛ ǎ."
 },
 {
+"key": "e0b7d10302331e0f491d178865fac2c6e585128d830cb99898adfa37e00c44f7",
+"lang": "fon",
+"source": "Retirer mon accord à la mesure d'audience",
+"text": "Retirer mon accord à la mesure d'audience"
+},
+{
 "key": "e0b9b68a6bd1a3ae05f492da4a009b31ce1c5005834ebc9342b473d58feaf541",
 "lang": "fon",
 "source": "Déclarations Mobile Money et virements à vérifier, et paiements en ligne.",
@@ -19786,6 +19804,12 @@
 "lang": "yo",
 "source": "Page",
 "text": "Oju-iwe"
+},
+{
+"key": "0a4a5ec7a5404f78db017b75df7b6783c7510bcb936ec9bdca2c2ccd8d10fa12",
+"lang": "yo",
+"source": "Classéo souhaite mesurer la fréquentation de ses pages publiques avec Google Analytics. Aucun cookie n'est déposé sans votre accord, et l'espace connecté n'est jamais mesuré.",
+"text": "Classéo yoo fẹ lati wiwọn ijabọ lori awọn oju-iwe ti gbogbo eniyan pẹlu Awọn atupale Google. Ko si awọn kuki ti a gbe laisi aṣẹ rẹ, ati pe aaye ti o sopọ ko ni iwọn rara."
 },
 {
 "key": "0a60815f0c28efe8b33f3dd998e30cac1f7762db629ab9316069bb257ab745f3",
@@ -28566,6 +28590,12 @@
 "text": "Odun lọwọlọwọ"
 },
 {
+"key": "8393b7bd1e85c13e5193ec388929b5263bd844f9a9ce69a49f50b620146e7d30",
+"lang": "yo",
+"source": "Accepter",
+"text": "Gba"
+},
+{
 "key": "839c12544ca2d9c3059ddef9baf1ada7ffc9c6bdc754dbd49e9e725e364fb4cd",
 "lang": "yo",
 "source": "Le sujet est trop long (120 caractères au plus).",
@@ -35218,6 +35248,12 @@
 "lang": "yo",
 "source": "L'établissement n'a émis aucune facture pour vos enfants cette année.",
 "text": "Awọn idasile ti ko ti oniṣowo eyikeyi invoices fun awọn ọmọ rẹ odun yi."
+},
+{
+"key": "e0b7d10302331e0f491d178865fac2c6e585128d830cb99898adfa37e00c44f7",
+"lang": "yo",
+"source": "Retirer mon accord à la mesure d'audience",
+"text": "Fa igbanilaaye mi kuro si wiwọn olugbo"
 },
 {
 "key": "e0b9b68a6bd1a3ae05f492da4a009b31ce1c5005834ebc9342b473d58feaf541",

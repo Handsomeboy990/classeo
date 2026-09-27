@@ -2,7 +2,6 @@ import Link from "next/link";
 
 import { EmptyState } from "@/components/kit/states";
 import { addDays, DAYS } from "@/lib/domain/timetable";
-import { cn } from "@/lib/utils";
 
 import { overlapCount } from "../layout";
 import type { SlotView } from "../queries";
@@ -34,17 +33,14 @@ export function DayList({
   const sessionDate = addDays(monday, day - 1).toISOString().slice(0, 10);
   return (
     <div className={className}>
-      <nav aria-label="Jour affiché" className="mb-3 grid grid-cols-6 gap-1">
+      <nav aria-label="Jour affiché" className="ds-segmented mb-3 grid w-full grid-cols-6">
         {DAYS.map((d) => (
           <Link
             key={d.value}
             href={dayHref(d.value)}
             scroll={false}
             aria-current={d.value === day ? "page" : undefined}
-            className={cn(
-              "flex h-11 items-center justify-center rounded-lg border text-sm font-semibold",
-              d.value === day ? "border-primary bg-primary text-on-primary" : "border-border-strong bg-surface text-text",
-            )}
+            className="px-1"
           >
             <span aria-hidden>{d.short}</span>
             <span className="sr-only">{d.label}</span>

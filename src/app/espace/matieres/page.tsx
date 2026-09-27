@@ -14,7 +14,7 @@ import { SUBJECT_STATUS_LABELS, SUBJECT_STATUS_TONES, SUBJECT_STATUSES } from "@
 import { listSubjects, subjectFilters } from "@/features/subjects/queries";
 import { can, requirePermission } from "@/lib/auth/authorize";
 import { listParams } from "@/lib/list";
-import { cn, formatNumber } from "@/lib/utils";
+import { formatNumber } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Matières" };
 
@@ -128,17 +128,12 @@ export default async function SubjectsPage({ searchParams }: PageProps<"/espace/
           </>
         }
       />
-      <nav aria-label="Filtrer les matières" className="relative -mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">
+      <nav aria-label="Filtrer les matières" className="ds-tabs">
         {SUBJECT_STATUSES.map((s) => {
           const current = filters.status === s;
           return (
-            <Link
-              key={s}
-              href={s === "APPROVED" ? "/espace/matieres" : `/espace/matieres?statut=${s}`}
-              aria-current={current ? "page" : undefined}
-              className={cn("inline-flex min-h-11 shrink-0 items-center rounded-full border px-3 text-sm font-semibold whitespace-nowrap sm:min-h-9", current ? "border-primary bg-primary text-on-primary" : "border-border-strong hover:bg-surface-2")}
-            >
-              {TAB_LABELS[s]} <span className="ml-1 tabular-nums opacity-80">({formatNumber(byStatus[s])})</span>
+            <Link key={s} href={s === "APPROVED" ? "/espace/matieres" : `/espace/matieres?statut=${s}`} aria-current={current ? "page" : undefined}>
+              {TAB_LABELS[s]} <span className="font-body font-normal tabular-nums">({formatNumber(byStatus[s])})</span>
             </Link>
           );
         })}

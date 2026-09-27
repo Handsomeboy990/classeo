@@ -17,7 +17,7 @@ import { requirePermission } from "@/lib/auth/authorize";
 import { todayIso } from "@/lib/domain/attendance";
 import { fileUrl } from "@/lib/files";
 import { param } from "@/lib/list";
-import { cn, formatDate } from "@/lib/utils";
+import { formatDate } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Pièces et justificatifs" };
 
@@ -74,18 +74,13 @@ export default async function FamilyPiecesPage({ searchParams }: PageProps<"/esp
       />
 
       {children.length > 1 && (
-        <nav aria-label="Choisir l'enfant" className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:px-0">
+        <nav aria-label="Choisir l'enfant" className="ds-segmented self-start">
           {children.map((c) => {
             const on = c.id === current.id;
             return (
-              <Link
-                key={c.id}
-                href={`/espace/pieces-justificatifs?enfant=${c.student.id}`}
-                aria-current={on ? "page" : undefined}
-                className={cn("inline-flex min-h-11 shrink-0 items-center rounded-full border px-4 text-sm font-semibold whitespace-nowrap", on ? "border-primary bg-primary text-on-primary" : "border-border-strong hover:bg-surface-2")}
-              >
+              <Link key={c.id} href={`/espace/pieces-justificatifs?enfant=${c.student.id}`} aria-current={on ? "page" : undefined} className="gap-0 text-left">
                 {c.student.firstName} {c.student.lastName}
-                <span className="ml-1 font-normal opacity-80">, {c.classroom.name}</span>
+                <span className="font-body font-normal">, {c.classroom.name}</span>
               </Link>
             );
           })}

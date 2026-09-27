@@ -36,7 +36,7 @@ export function ContentCard({
             </span>
           )}
         </div>
-        <ReadAloud text={listenText(c)} compact label={`Écouter « ${c.title} »`} className="size-11 shrink-0" />
+        <ReadAloud text={listenText(c)} contentId={c.status === "PUBLISHED" ? c.id : undefined} compact label={`Écouter « ${c.title} »`} className="size-11 shrink-0" />
       </div>
       <h2 id={titleId} className="text-lg leading-snug font-bold">
         <Link href={`/espace/contenus/${c.id}`} className="hover:underline focus-visible:underline">
