@@ -145,7 +145,10 @@ export default async function LandingPage({ searchParams }: PageProps<"/">) {
                   placeholder="blur"
                 />
               </div>
-              <figcaption className="mt-2 text-xs text-muted">
+              {/* Phones: the caption stops short of the floating
+                  accessibility button, which sits over its end on the first
+                  screen. */}
+              <figcaption className="mt-2 text-xs text-muted max-lg:pr-[calc(var(--fab-size)+0.5rem)]">
                 {fragment(t(hero.caption))}. {t(PUBLIC.common.photo)} : <span translate="no">{shortCredit(hero)}</span>.
               </figcaption>
             </figure>

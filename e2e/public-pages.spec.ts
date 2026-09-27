@@ -271,6 +271,39 @@ async function isInside(container: Locator) {
   return container.evaluate((el) => el.contains(document.activeElement));
 }
 
+// The floating accessibility button: a 44 px target, and at the end of a
+// public or sign in page no link or text lies under it.
+test("the accessibility button covers nothing at the end of a page @mobile", async ({ page }) => {
+  for (const path of ["/", "/credits", "/verifier", "/connexion", "/mot-de-passe-oublie"]) {
+    await page.goto(path);
+    const fab = page.getByRole("button", { name: "Réglages d'accessibilité" });
+    await expect(fab).toBeVisible();
+    await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+    // The button slides to the edge while the page scrolls and comes back
+    // 900 ms after the scroll stops: measure it back in place.
+    await page.waitForTimeout(1200);
+    await expect(fab).not.toHaveAttribute("data-edge", "");
+    const box = (await fab.boundingBox())!;
+    expect(Math.round(box.width), `${path}: button width`).toBe(44);
+    expect(Math.round(box.height), `${path}: button height`).toBe(44);
+    const covered = await fab.evaluate((button) => {
+      const f = button.getBoundingClientRect();
+      const hit = (r: DOMRect) => r.width > 0 && r.height > 0 && r.left < f.right && r.right > f.left && r.top < f.bottom && r.bottom > f.top;
+      const found: string[] = [];
+      const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+      for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+        const el = n.parentElement;
+        if (!n.textContent?.trim() || !el || button.contains(el) || !el.checkVisibility() || el.closest(".sr-only")) continue;
+        const range = document.createRange();
+        range.selectNodeContents(n);
+        if ([...range.getClientRects()].some(hit)) found.push(n.textContent.trim());
+      }
+      return found;
+    });
+    expect(covered, `${path}: text under the button`).toEqual([]);
+  }
+});
+
 // Reflow with the two largest text sizes of the accessibility panel (WCAG
 // 1.4.10, control 9 of the design source of truth): on a phone, no public
 // or sign in page scrolls sideways, and the menu and language buttons stay

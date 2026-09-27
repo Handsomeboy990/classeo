@@ -109,7 +109,9 @@ export async function AuthShell({
           </div>
         </div>
 
-        <section className="relative z-10 -mt-4 flex flex-1 flex-col rounded-t-sheet bg-surface px-5 pt-7 pb-[max(1.5rem,env(safe-area-inset-bottom))] shadow-[0_-8px_24px_-12px_rgb(0_0_0/0.25)] min-[400px]:px-6 sm:px-10 lg:mt-0 lg:rounded-none lg:bg-bg lg:px-8 lg:pt-8 lg:shadow-none">
+        {/* The column ends with room for the floating accessibility button,
+            so it never covers the notice or the credits link. */}
+        <section className="relative z-10 -mt-4 flex flex-1 flex-col rounded-t-sheet bg-surface px-5 pt-7 pb-[calc(var(--fab-size)+1.5rem+env(safe-area-inset-bottom))] shadow-[0_-8px_24px_-12px_rgb(0_0_0/0.25)] min-[400px]:px-6 sm:px-10 lg:mt-0 lg:rounded-none lg:bg-bg lg:px-8 lg:pt-8 lg:shadow-none">
           <div className="hidden justify-end lg:flex">
             <LanguageControls lang={lang} voice={voice} extra={extra} labels={labels} />
           </div>

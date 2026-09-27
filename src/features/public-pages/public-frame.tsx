@@ -283,7 +283,9 @@ export async function PublicFooter({ tr, voice, languages = true }: { tr: Public
           ))}
         </div>
 
-        <div className="mt-10 flex flex-col gap-4 border-t border-footer-rule pt-5 sm:flex-row sm:items-start sm:justify-between">
+        {/* The end of the page keeps the room of the floating
+            accessibility button on its right, so it never covers a link. */}
+        <div className="mt-10 flex flex-col gap-4 border-t border-footer-rule pt-5 pr-[calc(var(--fab-size)+1rem)] sm:flex-row sm:items-start sm:justify-between">
           <div className="flex flex-col gap-1.5">
             <p className="text-[0.8125rem] text-footer-muted">
               © {year} <span translate="no">Classéo</span>
