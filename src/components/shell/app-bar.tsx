@@ -138,7 +138,7 @@ export function AppBar({
           aria-haspopup="dialog"
           aria-expanded={account}
         >
-          <Avatar name={user.fullName} className="size-8 bg-white text-xs text-primary" />
+          <Avatar name={user.fullName} className="size-8 bg-header-text text-xs text-header" />
         </button>
         <AccountSheet open={account} onClose={() => setAccount(false)} user={user} pushKey={pushKey} />
       </div>

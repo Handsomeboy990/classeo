@@ -26,7 +26,7 @@ export function AccountMenu({ user, pushKey, tone = "light" }: { user: ShellUser
       width={300}
       trigger={(props) => (
         <button type="button" {...props} aria-label={`Mon compte, ${user.fullName}`} className={cn("group flex min-h-11 items-center gap-2.5 rounded-full py-1 pr-2.5 pl-1", dark ? "hover:bg-white/10" : "hover:bg-surface-2")}>
-          <Avatar name={user.fullName} className={cn("size-9", dark && "bg-white text-primary")} />
+          <Avatar name={user.fullName} className={cn("size-9", dark && "bg-header-text text-header")} />
           <span className="hidden max-w-44 min-w-0 text-left leading-tight xl:block">
             <span className={cn("block truncate font-display text-sm font-semibold", dark ? "text-header-text" : "text-text")}>{user.fullName}</span>
             <span className={cn("block truncate text-xs", dark ? "text-header-muted" : "text-muted")}>{user.roleName}</span>
