@@ -47,9 +47,10 @@ const SIZES: Record<LockupSize, { arms: string; mark: string; word: string; auth
   auth: { arms: "h-[3.5em]", mark: "size-[2.5em]", word: "text-[1.25em]", authority: "max-w-[22.4em]" },
 };
 
-// The app bar has no room for the product line ("Gestion scolaire" in the
+// The app bar and the 64 px brand zone of the sidebar have no room for the
+// product line ("Gestion scolaire" in the
 // independent mode, "Plateforme de gestion scolaire" in the official one).
-const NO_SUBTITLE: LockupSize[] = ["bar"];
+const NO_SUBTITLE: LockupSize[] = ["bar", "sidebar"];
 
 export const PRODUCT_LINE = "Plateforme de gestion scolaire";
 

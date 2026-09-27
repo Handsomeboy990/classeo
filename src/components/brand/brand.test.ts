@@ -89,12 +89,12 @@ describe("BrandLockup", () => {
     }
   });
 
-  it("official mode: the product line, except in the app bar, and the part that goes under 360 px", () => {
-    for (const size of SIZES.filter((s) => s !== "bar")) {
+  it("official mode: the product line, except in the app bar and the sidebar, and the part that goes under 360 px", () => {
+    for (const size of SIZES.filter((s) => s !== "bar" && s !== "sidebar")) {
       const html = lockup({ brand: OFFICIAL, size });
       expect(html).toMatch(/max-\[359px\]:hidden[^>]*>Plateforme de gestion scolaire</);
     }
-    expect(text(lockup({ brand: OFFICIAL, size: "bar" }))).not.toContain("Plateforme de gestion scolaire");
+    for (const size of ["bar", "sidebar"] as const) expect(text(lockup({ brand: OFFICIAL, size }))).not.toContain("Plateforme de gestion scolaire");
   });
 
   it("keeps the px sizes of part 3.1 when fixed, and follows the text size otherwise", () => {
