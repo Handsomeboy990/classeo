@@ -1,6 +1,5 @@
 import { Download, Lock, Trash2 } from "lucide-react";
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { PageHeader } from "@/components/kit/page-header";
@@ -38,17 +37,8 @@ export default async function SheetPage(props: PageProps<"/espace/notes/[sheetId
 
   return (
     <>
-      <nav aria-label="Fil d'Ariane" className="mb-2 text-sm text-muted max-lg:hidden">
-        <Link href="/espace/notes" className="hover:underline">
-          Notes
-        </Link>{" "}
-        /{" "}
-        <Link href={`/espace/notes?classe=${a.classroom.id}&periode=${sheet.period.id}`} className="hover:underline">
-          {a.classroom.name}
-        </Link>{" "}
-        / {a.subject.name}
-      </nav>
       <PageHeader
+        breadcrumbs={[{ label: "Notes", href: "/espace/notes" }, { label: a.classroom.name, href: `/espace/notes?classe=${a.classroom.id}&periode=${sheet.period.id}` }, { label: a.subject.name }]}
         title={`${a.subject.name} · ${a.classroom.name}`}
         description={`${sheet.period.name}, ${sheet.period.academicYear.label} · coefficient ${a.coefficient} · ${a.teacher ? `${a.teacher.firstName} ${a.teacher.lastName}` : "enseignant non désigné"}`}
         actions={

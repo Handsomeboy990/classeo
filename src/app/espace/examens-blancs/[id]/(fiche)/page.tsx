@@ -356,9 +356,9 @@ function Consolidated({ exam, results }: { exam: ExamDetail; results: ExamResult
     <>
       <StatGrid>
         <StatCard label="Candidats" value={formatNumber(o.candidates)} icon={Users} />
-        <StatCard label="Résultats complets" value={formatNumber(o.complete)} icon={ClipboardList} tone="info" />
-        <StatCard label="Moyenne générale" value={o.average === null ? "–" : `${formatAverage(o.average)}/20`} icon={Award} tone="accent" />
-        <StatCard label="Moyenne atteinte (10/20)" value={formatPercent(o.passRate)} icon={Percent} tone="warning" />
+        <StatCard label="Résultats complets" value={formatNumber(o.complete)} icon={ClipboardList} />
+        <StatCard label="Moyenne générale" value={o.average === null ? "–" : `${formatAverage(o.average)}/20`} icon={Award} />
+        <StatCard label="Moyenne atteinte (10/20)" value={formatPercent(o.passRate)} icon={Percent} />
       </StatGrid>
       <div className="grid grid-cols-1 gap-6 *:min-w-0 lg:grid-cols-2">
         <Card>

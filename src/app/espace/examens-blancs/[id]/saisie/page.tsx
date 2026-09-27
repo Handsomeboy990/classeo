@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { PageHeader } from "@/components/kit/page-header";
@@ -30,17 +29,8 @@ export default async function MockExamEntryPage({ params, searchParams }: PagePr
 
   return (
     <>
-      <nav aria-label="Fil d'Ariane" className="mb-2 text-sm text-muted max-lg:hidden">
-        <Link href="/espace/examens-blancs" className="hover:underline">
-          Examens blancs
-        </Link>{" "}
-        /{" "}
-        <Link href={`/espace/examens-blancs/${exam.id}`} className="hover:underline">
-          {exam.title}
-        </Link>{" "}
-        / {room.name}
-      </nav>
       <PageHeader
+        breadcrumbs={[{ label: "Examens blancs", href: "/espace/examens-blancs" }, { label: exam.title, href: `/espace/examens-blancs/${exam.id}` }, { label: room.name }]}
         title={`Saisie des notes · ${room.name}`}
         description={`${exam.title}, ${exam.level?.name ?? ""}. Vous saisissez : ${exam.subjectList
           .filter((s) => room.subjects.includes(s.code))
