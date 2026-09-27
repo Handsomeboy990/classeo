@@ -17,11 +17,16 @@
 import { createHash } from "node:crypto";
 
 // The pre paint preferences script of the root layout (src/app/layout.tsx),
-// copied here for its hash in the strict policy. csp.test.ts checks that the
-// two copies are the same: change both together.
-export const PREFERENCES_SCRIPT = `(function(){try{var d=document.documentElement,s=localStorage;var t=s.getItem("classeo:theme")||"system";if(t==="system"){t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}d.dataset.theme=t;d.dataset.contrast=s.getItem("classeo:contrast")||"normal";d.dataset.text=s.getItem("classeo:text")||"md";d.dataset.lite=s.getItem("classeo:lite")||"off"}catch(e){}})();`;
+// copied here for its hash in the strict policy. Every version in use is
+// listed: the current one and the light theme only one of the redesign
+// (design/wp0-foundation), so either layout passes. csp.test.ts fails when
+// the layout runs a script missing from this list: add it here.
+export const PREFERENCES_SCRIPTS = [
+  `(function(){try{var d=document.documentElement,s=localStorage;var t=s.getItem("classeo:theme")||"system";if(t==="system"){t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}d.dataset.theme=t;d.dataset.contrast=s.getItem("classeo:contrast")||"normal";d.dataset.text=s.getItem("classeo:text")||"md";d.dataset.lite=s.getItem("classeo:lite")||"off"}catch(e){}})();`,
+  `(function(){try{var d=document.documentElement,s=localStorage;d.dataset.theme=s.getItem("classeo:theme")==="dark"?"dark":"light";d.dataset.contrast=s.getItem("classeo:contrast")||"normal";d.dataset.text=s.getItem("classeo:text")||"md";d.dataset.lite=s.getItem("classeo:lite")||"off"}catch(e){}})();`,
+] as const;
 
-export const PREFERENCES_HASH = `'sha256-${createHash("sha256").update(PREFERENCES_SCRIPT, "utf8").digest("base64")}'`;
+export const PREFERENCES_HASHES = PREFERENCES_SCRIPTS.map((script) => `'sha256-${createHash("sha256").update(script, "utf8").digest("base64")}'`);
 
 export const CSP_REPORT_PATH = "/api/csp-report";
 
@@ -63,7 +68,7 @@ export function strictPolicy(o: CspOptions & { nonce: string }) {
   // 'strict-dynamic': scripts loaded by a trusted script are trusted, host
   // lists are ignored by the browsers that support it; 'self' stays for the
   // older ones. React needs eval only in development.
-  const script = `script-src 'self' 'nonce-${o.nonce}' 'strict-dynamic' ${PREFERENCES_HASH}${o.dev ? " 'unsafe-eval'" : ""}${o.analytics ? ` ${GA_SCRIPT.join(" ")}` : ""}`;
+  const script = `script-src 'self' 'nonce-${o.nonce}' 'strict-dynamic' ${PREFERENCES_HASHES.join(" ")}${o.dev ? " 'unsafe-eval'" : ""}${o.analytics ? ` ${GA_SCRIPT.join(" ")}` : ""}`;
   return [common(o)[0], script, ...common(o).slice(1), `report-uri ${CSP_REPORT_PATH}`].join("; ");
 }
 

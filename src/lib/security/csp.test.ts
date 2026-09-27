@@ -4,7 +4,7 @@ import path from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import { baselinePolicy, newNonce, PREFERENCES_HASH, PREFERENCES_SCRIPT, strictHeaderName, strictPolicy } from "./csp";
+import { baselinePolicy, newNonce, PREFERENCES_HASHES, PREFERENCES_SCRIPTS, strictHeaderName, strictPolicy } from "./csp";
 
 const prod = { dev: false, httpsOnly: true, analytics: false };
 const directives = (policy: string) => Object.fromEntries(policy.split("; ").map((d) => [d.split(" ")[0], d.slice(d.indexOf(" ") + 1)]));
@@ -12,10 +12,10 @@ const directives = (policy: string) => Object.fromEntries(policy.split("; ").map
 describe("strict policy", () => {
   it("runs no inline script without the nonce, except the preferences script by its hash", () => {
     const d = directives(strictPolicy({ ...prod, nonce: "abc123==" }));
-    expect(d["script-src"]).toBe(`'self' 'nonce-abc123==' 'strict-dynamic' ${PREFERENCES_HASH}`);
+    expect(d["script-src"]).toBe(`'self' 'nonce-abc123==' 'strict-dynamic' ${PREFERENCES_HASHES.join(" ")}`);
     expect(d["script-src"]).not.toContain("unsafe-inline");
     expect(d["script-src"]).not.toContain("unsafe-eval");
-    expect(PREFERENCES_HASH).toBe(`'sha256-${createHash("sha256").update(PREFERENCES_SCRIPT).digest("base64")}'`);
+    expect(PREFERENCES_HASHES).toEqual(PREFERENCES_SCRIPTS.map((s) => `'sha256-${createHash("sha256").update(s).digest("base64")}'`));
   });
 
   it("forbids framing, plugins, foreign forms and base tags, and reports violations", () => {
@@ -55,7 +55,7 @@ describe("the root layout", () => {
   it("runs the very preferences script whose hash the strict policy allows", () => {
     const layout = readFileSync(path.resolve(__dirname, "../../app/layout.tsx"), "utf8");
     const inline = layout.match(/const preferencesScript = `([^`]*)`;/)?.[1];
-    expect(inline).toBe(PREFERENCES_SCRIPT);
+    expect(PREFERENCES_SCRIPTS).toContain(inline);
   });
 });
 
