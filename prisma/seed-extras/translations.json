@@ -1560,6 +1560,12 @@
 "text": "Tɛnkpɔn e è jlaɖó é kɛɖɛ wɛ è sixu byɔ mɛ, kaka jɛ hwenu e è na sú é."
 },
 {
+"key": "1693b9173ab6497928c7c047051f62204400b729a205faf4df19737c997013dc",
+"lang": "fon",
+"source": "Armoiries",
+"text": "Akɔta ɔ sín wuntun"
+},
+{
 "key": "16a97fa6d86ea8c75aeb0999d4c6fe0180dcf919b02750a49f22016deb3abdd4",
 "lang": "fon",
 "source": "Après-midi",
@@ -2094,6 +2100,12 @@
 "text": "È jì i ɖò"
 },
 {
+"key": "1f7641cab540d4a50314891d17828c9f51b2f4a1ff45197fbf92a115a1421f32",
+"lang": "fon",
+"source": "Gestion scolaire en ligne",
+"text": "Azɔmɛxwe ɔ sin nukplɔnmɛ ɖo ɛntɛnɛti ji"
+},
+{
 "key": "1f85f436dab4910744996f22f2d91195ba959a7c4b289ca83d102c61e835cdb4",
 "lang": "fon",
 "source": "Ouvrir : Nouveau message de 2",
@@ -2314,6 +2326,12 @@
 "lang": "fon",
 "source": "Position dans le",
 "text": "Tɛn e mɛ è ɖè ɖò."
+},
+{
+"key": "2243278416647bb08f5e991931dfda8816e1cc56e5c221e4830ec432390d0865",
+"lang": "fon",
+"source": "Piloter l'éducation d'un territoire",
+"text": "Nukplɔnmɛ tokpɔn ɖé tɔn jijlaɖó."
 },
 {
 "key": "224dcdb1956db334b1c955c126b22ec4e47ef737a0a227d5f9b1b9c51c0236c8",
@@ -3192,6 +3210,12 @@
 "text": "(Bénin sín hwenu) akpá"
 },
 {
+"key": "2d259f09bf53e3d23c21f7f62db57456ff46cbb3adc027541fb1ef8295bb0f00",
+"lang": "fon",
+"source": "Langues",
+"text": "GBE LƐ"
+},
+{
 "key": "2d2844cad33e54bb3bafbd7c46b71ecab1ae17ed45379a2db6b77cd653507560",
 "lang": "fon",
 "source": "Cours modifié",
@@ -3472,6 +3496,12 @@
 "lang": "fon",
 "source": "1 non lue",
 "text": "1 è ma xà ǎ"
+},
+{
+"key": "30949a232cec5d01ba60736581e6eda5b49ef4555f0032d0eeefb3bed124711b",
+"lang": "fon",
+"source": "Les services de l'éducation suivent les effectifs et les résultats de leurs établissements.",
+"text": "Azɔ̌xwé e nɔ kpé nukún dó nǔkplɔnmɛ wu lɛ é nɔ kpɔ́n kɛ́n kpo nǔ e è nɔ mɔ ɖò azɔ̌xwé yetɔn lɛ mɛ é kpo jí."
 },
 {
 "key": "30a8b7846961bb6395e2739897db801f50d02c72c0ffea10595fdd01718757be",
@@ -4164,6 +4194,12 @@
 "text": "Nùjlɛ́n"
 },
 {
+"key": "3940c683c333de186c5c97f455d9d206183987d2a63a93e846880684c9ba4026",
+"lang": "fon",
+"source": "Retrouver l'accès à son compte",
+"text": "Mi lɛ vɔ mɔ akɔnta mitɔn."
+},
+{
 "key": "394c9623432421e496afe2c4c724b473224a08c5aeed28fe07bd24d07a8579a6",
 "lang": "fon",
 "source": "Échéance",
@@ -4174,6 +4210,12 @@
 "lang": "fon",
 "source": "Banque de démonstration",
 "text": "Banki xlɛ tɔn"
+},
+{
+"key": "395b2571628de42229c3dd70b96cd554dfb668930d3162fd53f82897eafb005f",
+"lang": "fon",
+"source": "Gestion scolaire · Bénin",
+"text": "Gestion de l'école · Bénin"
 },
 {
 "key": "395fa4e7172e448a0386f9dd5a84d9471e521aa1fc29a4c1c9a5e29afe268400",
@@ -4348,6 +4390,12 @@
 "lang": "fon",
 "source": "Moy. atteinte",
 "text": "Avg. nǔwiwa"
+},
+{
+"key": "3b196921d0cf1379d49cc5490931afc0647f7a6d8a4331f847a44cfa3312efc0",
+"lang": "fon",
+"source": "Suivre la scolarité d'un enfant",
+"text": "Kpɔ́n vǐ ɖé sín wemaxɔmɛ yiyi jí."
 },
 {
 "key": "3b282b3722e14be31ba973cb2bc4a528b183a12151db6679630788bf1cfb9d9d",
@@ -4698,6 +4746,12 @@
 "text": "Azan"
 },
 {
+"key": "3eb508e9d8d1f222e35e3a434767d5a4a8bc05a27bff00d3b0a0907b9e8ea384",
+"lang": "fon",
+"source": "Un bulletin, une attestation ou un reçu se vérifie avec son code, sans compte.",
+"text": "È sixu gbéjé xójlawema ɖé, kúnnuɖewema ɖé alǒ wěɖexámɛ ɖé kpɔ́n kpo kodɛ tɔn kpo, akwɛzinzan mɛvo."
+},
+{
 "key": "3ebbf04d95eea96978e466ba58932be059333b1edb215a60e5b74a1edf8208b1",
 "lang": "fon",
 "source": "Suivre",
@@ -4858,6 +4912,12 @@
 "lang": "fon",
 "source": "Informations",
 "text": "Dɔnùesè"
+},
+{
+"key": "4180b202f09c27490e41e7418dc9c223bc66db010a1ecd2aee10a797b370d224",
+"lang": "fon",
+"source": "Fermer le menu",
+"text": "Sú nǔ e ɖò wěma ɔ mɛ lɛ é"
 },
 {
 "key": "419efbb513e30428006debdc6cc2be0b4149ab3139d065806f2d685eea6b6af0",
@@ -5790,6 +5850,12 @@
 "text": "Ði kpɔ́ndéwú ɔ: 01 97 12 34 56"
 },
 {
+"key": "4ea15f9a0d372b3ed7cc35513369d10b4bfb004b2c3982728cc93f12e02a5da7",
+"lang": "fon",
+"source": "Navigation principale",
+"text": "Alixlɛ́mɛ taji ɔ"
+},
+{
 "key": "4eb8907c55cf1b3384ea8b8ccbbe2ceb39b2a9c8a1638117779b8dabd386c867",
 "lang": "fon",
 "source": "Dans « Bulletins », verrouillez les notes, vérifiez puis publiez.",
@@ -6654,6 +6720,12 @@
 "text": "Vuvɔ"
 },
 {
+"key": "5a3204966c58e099ef779b56c82669c1f234dd325e8cfa194934a7a363e85208",
+"lang": "fon",
+"source": "Les enseignants font l'appel et saisissent les notes ; les moyennes et les bulletins se calculent.",
+"text": "Mɛsi lɛ wɛ nɔ ylɔ mɛ ɔ bo nɔ wlan linlin lɛ; è nɔ lɛ́n linlin e ɖò tɛntin lɛ é kpo kati e jí è nɔ wlan nǔ dó lɛ é kpo."
+},
+{
 "key": "5a4664372d73ee59891e39cc4eaa90cd8ff9fe92d4e6cbfd7d39fa21d4814d78",
 "lang": "fon",
 "source": "Aucune modification à enregistrer.",
@@ -7008,6 +7080,12 @@
 "text": "Mi ba kpodo nyikɔ kpo..."
 },
 {
+"key": "5ee2ea8e63ba3870653856d9db7ee325ab001223fa6da8bcc18e3d79bb22e0b3",
+"lang": "fon",
+"source": "Plateforme",
+"text": "Aligbɔn"
+},
+{
 "key": "5eee5f86c7dad2b86bb018996864465b9f075095b17a2037141e585f46e65e8f",
 "lang": "fon",
 "source": ", Abomey-Calavi",
@@ -7270,6 +7348,12 @@
 "lang": "fon",
 "source": "Finances",
 "text": "Akwɛ́"
+},
+{
+"key": "61ab4648ac556fcbdc34c6e1e740f6386e9d5bf46ba19a521a5872658208e24b",
+"lang": "fon",
+"source": "Français, fongbe, yoruba",
+"text": "Flansé‚ Fɔngbe‚ Yoluba‚ Yoruba‚"
 },
 {
 "key": "61b43cca96a2bbf64a38c0ed518eef8c1f7fe9ac9bec3b796adb79877a70b576",
@@ -7728,6 +7812,12 @@
 "text": "2 é cá kàn tlɔlɔ xá API e mɛ e nɔ zán Mobile Money lɛ é nɔ zán lɛ é ǎ; mɛ e nɔ sú akwɛ é wɛ nɔ kpé nukún dó nǔ enɛ wu."
 },
 {
+"key": "68657b443bc51bc86dde8c84f1e0fb0a1f0c61ccada835bb72beb596477292ae",
+"lang": "fon",
+"source": "(site externe)",
+"text": "(tɛnmɛ hɛnnu tɔn)"
+},
+{
 "key": "68759545a0a87ee31072dfb105e8aa78de4997e9086b8f6eb47ac1614618f8f4",
 "lang": "fon",
 "source": "2, compte des frais scolaires",
@@ -7930,6 +8020,12 @@
 "lang": "fon",
 "source": "2 3 FCFA.",
 "text": "2 3 FCFA sín xó."
+},
+{
+"key": "6b4af8cfe265a23c69492d94ef72ad408a24088519df7efede8ed91e0e8766ef",
+"lang": "fon",
+"source": "Vérifier un document",
+"text": "Kpɔ́n wema ɖé."
 },
 {
 "key": "6b60bcff0d38eab79062362ab52ea72e7e5a2ad20a17b43c76170e4fed49c6e1",
@@ -8200,6 +8296,12 @@
 "lang": "fon",
 "source": "Créer et envoyer les invitations",
 "text": "Mi bló mɛylɔwema lɛ bo sɛ́ dó."
+},
+{
+"key": "6ea528b18c7c7bf744833dcc9a113425c3fea773a5a99b5205170619c2583095",
+"lang": "fon",
+"source": "Ouvrir le menu",
+"text": "Hùn menu"
 },
 {
 "key": "6ec4255a456157debbe21bf186fab94096a0e6418ffcf8285348c2388cb8b639",
@@ -9430,6 +9532,12 @@
 "lang": "fon",
 "source": "Dans « Ma scolarité », l'onglet « Notes » donne chaque note et ta moyenne provisoire du trimestre ou du semestre, selon ton établissement.",
 "text": "Ðò “Azɔmɛyiyi ce” mɛ ɔ, xójlawema “Kplékplé” ɔ nɔ na akpàkpà sɔ́ mɛ ɖokpo ɖokpo kpo akpàkpà sɔ́ mɛ nú táan klewun ɖé kpo nú sun atɔn alǒ sun ayizɛ́n, sɔgbe xá azɔ̌ e a nɔ wà é."
+},
+{
+"key": "7dc7311b470d22f59df9d26c21ee4ddad19965ca3855718be14999deacb3a072",
+"lang": "fon",
+"source": "Inscriptions, classes, emplois du temps, frais et paie du personnel, au même endroit.",
+"text": "Mɛwlanwlan, wemaxɔmɛ, tuto, akwɛ kpo azɔ̌watɔ́ lɛ sín akwɛ kpo, bǐ ɖò fí ɖokpo."
 },
 {
 "key": "7e30105bb70d3c11eab6017e1b0e98545877a29f246ae7f86b0808f5bc0809bd",
@@ -11460,6 +11568,12 @@
 "text": "Azɔ̌xwé ɖebǔ ɖò xá elɔ mɛ bo ɖó klasi ɖò tɛn enɛ mɛ ǎ."
 },
 {
+"key": "98550b67110709bdd54fa1178959e454d100613c4878dd725596bbfb6297ff96",
+"lang": "fon",
+"source": "Liens utiles",
+"text": "Link e nɔ hɛn lè wá lɛ é"
+},
+{
 "key": "986139168047a323fb2dddf52cb455ce41afac47d31e1dc60329096411c9d636",
 "lang": "fon",
 "source": "Français : voix de cet appareil",
@@ -12654,6 +12768,12 @@
 "text": "Ðǒtó mɛ e wá lɛ é ."
 },
 {
+"key": "a99e84fad3c6186bad2ff4b284d222af6781765e9c99398647d98d04547da2a6",
+"lang": "fon",
+"source": "Les parents voient les notes, les bulletins, les absences et les frais, et écrivent à l'établissement.",
+"text": "Mɛjitɔ́ lɛ nɔ kpɔ́n linlin e mɛ lɛ ɖó é, wema e jí è nɔ wlan nǔ dó lɛ é, mɛ e ma wá wemaxɔmɛ ǎ lɛ é kpo akwɛ e è nɔ sú lɛ é kpo, lobo nɔ wlan nǔ sɛ́dó azɔ̌xwé ɔ."
+},
+{
 "key": "a9bb16252392a586983b48b1d316d73c4b0fb2d083486d81caeced2e24935d60",
 "lang": "fon",
 "source": "Aucun examen blanc",
@@ -13686,6 +13806,12 @@
 "text": "Gbè e mɛ è nɔ zán é"
 },
 {
+"key": "b79e17390792ebe802dda98032ef5fcf21ca99860adeb2f04c78ba547e6393f9",
+"lang": "fon",
+"source": "Les pages publiques se lisent en français, en fongbe et en yoruba, et chaque texte s'écoute dans la langue choisie.",
+"text": "È sixu xà wema mɛ bǐ tɔn lɛ ɖò Flanségbe, Fongbe kpo Yoruba kpo mɛ, bo sixu ɖótó wemafɔ ɖokpo ɖokpo ɖò gbè e è sɔ́ é mɛ."
+},
+{
 "key": "b7c42542900919f9c7c1d8c8f57767a99ed800b360c43bd16dd993b6cc5dedbe",
 "lang": "fon",
 "source": "Voir le bulletin du Semestre 2 3-4",
@@ -14104,6 +14230,12 @@
 "lang": "fon",
 "source": "Marquer comme lu : Paiement confirmé",
 "text": "Mark ɖi lee è xà gbɔn é: È yí gbè nú akwɛ e è sú é"
+},
+{
+"key": "be081a5f1deeecd0a191075cefda82e94367aeaffa96e0ceb792195075d2f2ec",
+"lang": "fon",
+"source": "Plateforme de gestion scolaire pour les établissements du Bénin",
+"text": "Azɔmɛxwe nukplɔnmɛtɛn nu azɔxwe lɛ ɖo Benin"
 },
 {
 "key": "be1a7ff141bf0cf435daa5e287993dab8936f0e0756a3faa7b40ce8d933fb71d",
@@ -14568,10 +14700,22 @@
 "text": "kpo kúnnuɖenú lɛ kpo enyi a ɖó ɖé hǔn. Wemaxɔmɛ ɔ nɔ yí gbè nú we."
 },
 {
+"key": "c589c48d906dc480846662d8e23241f88b3af31227266dcd30c748f83d39c3d6",
+"lang": "fon",
+"source": "Mot de passe perdu : la personne qui gère votre compte vous en remet un nouveau.",
+"text": "Password e bú é: mɛ e nɔ kpé nukún dó akɔnta towe wu é na na we yɔyɔ̌ ɖé."
+},
+{
 "key": "c5a1c673f97b86e63ebe5090458fb56cb5111a47703a54590df2c7342f01613d",
 "lang": "fon",
 "source": "Réf. 2",
 "text": "Kpɔ́n. 2"
+},
+{
+"key": "c5ae126850c1f3a13395259eeb05b68fbaec686d7ff5d4907ed102bfa141e4a1",
+"lang": "fon",
+"source": "Les services de Classéo",
+"text": "Azɔ̌xwé Classeo tɔn lɛ"
 },
 {
 "key": "c5ce265a5c6d92d04b0c496a5bd3a56c0f57304f1a6a5f6c779b92e83cd394a1",
@@ -14728,6 +14872,12 @@
 "lang": "fon",
 "source": "Puis-je tout faire au clavier ou avec un lecteur d'écran ?",
 "text": "Un ka sixu wà nǔ lɛ bǐ ɖò klavié jí alǒ kpo nǔ e nɔ xà nǔ ɖò écran jí é ɖé kpo à?"
+},
+{
+"key": "c7ed1bf0bad8ae38c7fcd63d2319cf7358239298d8fa4406dff4845572f4bb9e",
+"lang": "fon",
+"source": "Accéder",
+"text": "Avivɔ́zɔ́n"
 },
 {
 "key": "c7fe677c1648f2d92620a23aaabdb8122eddaeb1ca3e5749d7cb45aa34a009ca",
@@ -16332,6 +16482,12 @@
 "text": "Direction départementale 2 (Direction départementale"
 },
 {
+"key": "dce34de0bb4eea7c73cfa7e51b6c9774a5abf2c4c1ee0243c2503811508acd84",
+"lang": "fon",
+"source": "Lecture à voix haute",
+"text": "Nǔxixa dó gbè ɖaxó mɛ."
+},
+{
 "key": "dd057a7ceab6ce7fd58405a16478468a88952b0e1c6fb5217eb02ec418e9157e",
 "lang": "fon",
 "source": "Envoyez les trois",
@@ -17370,6 +17526,12 @@
 "text": "Mɛjitɔ́ ɔ mɔ hwɛjijɔ ɔ bo sixu lɛ́vɔ na gbeɖiɖó ɔ kpo wema e sɔgbe é kpo."
 },
 {
+"key": "ec1a4a92b628baa2320653051b2593595730bfed40cff6504508e6d7aa819433",
+"lang": "fon",
+"source": "Plateforme indépendante, non officielle. Non affiliée au Gouvernement du Bénin.",
+"text": "Atɛjijɛ mɛɖesunɔ tɔn, e ma nyí acɛkpikpa tɔn ǎ é. É ɖò bǔ xá Acɛkpikpa Benin tɔn ǎ."
+},
+{
 "key": "ec458dd68f9fb601c089457cc9f99495c08ea955dead4af75f3b98f394df48f2",
 "lang": "fon",
 "source": "Ce paiement a déjà été annulé.",
@@ -17464,6 +17626,12 @@
 "lang": "fon",
 "source": "L'école vérifie la pièce, puis le fichier est supprimé.",
 "text": "Wemaxɔmɛ ɔ nɔ gbéjé akpáxwé ɔ kpɔ́n, enɛ gudo ɔ, è nɔ súnsún wema ɔ."
+},
+{
+"key": "edba5d31f4346627081ec2a83801ec0994596c864b3d83bbd279105c85dcf1bc",
+"lang": "fon",
+"source": "Saisir les notes et les présences",
+"text": "Wlan kɛ́n lɛ kpo mɛ e wá lɛ é kpo"
 },
 {
 "key": "ede2583fe6268f0b0273d8fd3c57dffe2d775f0f2a94d44339cd16e6988af3dc",
@@ -17602,6 +17770,12 @@
 "lang": "fon",
 "source": "Résumé lu à voix haute",
 "text": "Xà xóta ɔ dó gbè ɖaxó mɛ"
+},
+{
+"key": "ef2906869b94dce0be97c3955f3290091609e2f86e910b50b3198d140f78f413",
+"lang": "fon",
+"source": "Ouvrir les réglages d'accessibilité",
+"text": "Hùn nǔ e nɔ zɔ́n bɔ è nɔ mɔ nǔ lɛ é"
 },
 {
 "key": "ef358c7deca6918e57027f4ae230a74c031081dfda6678da51f07f72449a18b3",
@@ -17860,6 +18034,12 @@
 "lang": "fon",
 "source": "Notes de 2, trimestre 1. Moyenne provisoire : 3 sur 4, Passable. 5 matières notées sur 5. Meilleure matière : Éducation physique et sportive. À travailler : Histoire-Géographie.",
 "text": "Kplékplé 2gɔ́ ɔ, Akpáxwé 1gɔ́ ɔ. Akpáxwé hwenu klewun tɔn: 3 ɖò 4 jí, Fair. 5 sujets notés sur 5. Nǔkplɔnmɛ ɖagbe hugǎn ɔ: Agbazazɔ́wiwa kpo ayihundida lɛ kpo. Bo na w’azɔ̌ d’eji: Tan-Ayikúngban."
+},
+{
+"key": "f2a9283629e002a3e43673fa333152f5279ee03430dd45853472fdcc9ffaaa88",
+"lang": "fon",
+"source": "Gérer l'établissement",
+"text": "Kpé nukún dó azɔ̌xwé ɔ wu."
 },
 {
 "key": "f2d0d4101c47b8d4f02abe848cab719aa6765bb0b6a1dc03f9de34087db6f3c4",
@@ -18298,6 +18478,12 @@
 "lang": "fon",
 "source": "Vos établissements",
 "text": "Azɔ̌xwé mitɔn lɛ."
+},
+{
+"key": "f9154e08b4a186b818af7aee841aab7e0147d315e11f81f07f63c7a9ece46f8c",
+"lang": "fon",
+"source": "Affichage adapté",
+"text": "Nǔxlɛ́mɛ e è ɖyɔ é"
 },
 {
 "key": "f91a826d8024e11f45e8ae353199183416bcfb818bb99d081c0f2fda0bd5bb9c",
@@ -20364,6 +20550,12 @@
 "text": "Titẹ sii ṣee ṣe nikan fun idanwo ti a fọwọsi, titi ti o fi pa."
 },
 {
+"key": "1693b9173ab6497928c7c047051f62204400b729a205faf4df19737c997013dc",
+"lang": "yo",
+"source": "Armoiries",
+"text": "Aso ti apá"
+},
+{
 "key": "16a97fa6d86ea8c75aeb0999d4c6fe0180dcf919b02750a49f22016deb3abdd4",
 "lang": "yo",
 "source": "Après-midi",
@@ -20880,6 +21072,12 @@
 "text": "Bi lori"
 },
 {
+"key": "1f7641cab540d4a50314891d17828c9f51b2f4a1ff45197fbf92a115a1421f32",
+"lang": "yo",
+"source": "Gestion scolaire en ligne",
+"text": "Online ile-iwe isakoso"
+},
+{
 "key": "1f85f436dab4910744996f22f2d91195ba959a7c4b289ca83d102c61e835cdb4",
 "lang": "yo",
 "source": "Ouvrir : Nouveau message de 2",
@@ -21100,6 +21298,12 @@
 "lang": "yo",
 "source": "Position dans le",
 "text": "Ipo ninu awọn"
+},
+{
+"key": "2243278416647bb08f5e991931dfda8816e1cc56e5c221e4830ec432390d0865",
+"lang": "yo",
+"source": "Piloter l'éducation d'un territoire",
+"text": "Ṣiṣakoso ẹkọ ti agbegbe kan"
 },
 {
 "key": "224dcdb1956db334b1c955c126b22ec4e47ef737a0a227d5f9b1b9c51c0236c8",
@@ -21942,6 +22146,12 @@
 "text": "(Benin akoko) nipasẹ"
 },
 {
+"key": "2d259f09bf53e3d23c21f7f62db57456ff46cbb3adc027541fb1ef8295bb0f00",
+"lang": "yo",
+"source": "Langues",
+"text": "EDE"
+},
+{
 "key": "2d2844cad33e54bb3bafbd7c46b71ecab1ae17ed45379a2db6b77cd653507560",
 "lang": "yo",
 "source": "Cours modifié",
@@ -22210,6 +22420,12 @@
 "lang": "yo",
 "source": "1 non lue",
 "text": "1 ai ka"
+},
+{
+"key": "30949a232cec5d01ba60736581e6eda5b49ef4555f0032d0eeefb3bed124711b",
+"lang": "yo",
+"source": "Les services de l'éducation suivent les effectifs et les résultats de leurs établissements.",
+"text": "Awọn iṣẹ eto-ẹkọ ṣe atẹle awọn nọmba ati awọn abajade ti awọn idasile wọn."
 },
 {
 "key": "30a8b7846961bb6395e2739897db801f50d02c72c0ffea10595fdd01718757be",
@@ -22878,6 +23094,12 @@
 "text": "Itọkasi"
 },
 {
+"key": "3940c683c333de186c5c97f455d9d206183987d2a63a93e846880684c9ba4026",
+"lang": "yo",
+"source": "Retrouver l'accès à son compte",
+"text": "Tun wiwọle si àkọọlẹ rẹ"
+},
+{
 "key": "394c9623432421e496afe2c4c724b473224a08c5aeed28fe07bd24d07a8579a6",
 "lang": "yo",
 "source": "Échéance",
@@ -22888,6 +23110,12 @@
 "lang": "yo",
 "source": "Banque de démonstration",
 "text": "Bank ifihan"
+},
+{
+"key": "395b2571628de42229c3dd70b96cd554dfb668930d3162fd53f82897eafb005f",
+"lang": "yo",
+"source": "Gestion scolaire · Bénin",
+"text": "Isakoso ile-iwe · Benin"
 },
 {
 "key": "395fa4e7172e448a0386f9dd5a84d9471e521aa1fc29a4c1c9a5e29afe268400",
@@ -23056,6 +23284,12 @@
 "lang": "yo",
 "source": "Moy. atteinte",
 "text": "Apapọ aseyori"
+},
+{
+"key": "3b196921d0cf1379d49cc5490931afc0647f7a6d8a4331f847a44cfa3312efc0",
+"lang": "yo",
+"source": "Suivre la scolarité d'un enfant",
+"text": "Bojuto eko ọmọ"
 },
 {
 "key": "3b282b3722e14be31ba973cb2bc4a528b183a12151db6679630788bf1cfb9d9d",
@@ -23400,6 +23634,12 @@
 "text": "Ojo"
 },
 {
+"key": "3eb508e9d8d1f222e35e3a434767d5a4a8bc05a27bff00d3b0a0907b9e8ea384",
+"lang": "yo",
+"source": "Un bulletin, une attestation ou un reçu se vérifie avec son code, sans compte.",
+"text": "Iwe itẹjade kan, ijẹrisi tabi iwe-ẹri le jẹ ijẹrisi pẹlu koodu rẹ, laisi akọọlẹ kan."
+},
+{
 "key": "3ebbf04d95eea96978e466ba58932be059333b1edb215a60e5b74a1edf8208b1",
 "lang": "yo",
 "source": "Suivre",
@@ -23554,6 +23794,12 @@
 "lang": "yo",
 "source": "Informations",
 "text": "Alaye"
+},
+{
+"key": "4180b202f09c27490e41e7418dc9c223bc66db010a1ecd2aee10a797b370d224",
+"lang": "yo",
+"source": "Fermer le menu",
+"text": "Pa akojọ aṣayan"
 },
 {
 "key": "419efbb513e30428006debdc6cc2be0b4149ab3139d065806f2d685eea6b6af0",
@@ -24456,6 +24702,12 @@
 "text": "Fun apẹẹrẹ: 01 97 12 34 56"
 },
 {
+"key": "4ea15f9a0d372b3ed7cc35513369d10b4bfb004b2c3982728cc93f12e02a5da7",
+"lang": "yo",
+"source": "Navigation principale",
+"text": "Lilọ kiri akọkọ"
+},
+{
 "key": "4eb8907c55cf1b3384ea8b8ccbbe2ceb39b2a9c8a1638117779b8dabd386c867",
 "lang": "yo",
 "source": "Dans « Bulletins », verrouillez les notes, vérifiez puis publiez.",
@@ -25296,6 +25548,12 @@
 "text": "OPIN"
 },
 {
+"key": "5a3204966c58e099ef779b56c82669c1f234dd325e8cfa194934a7a363e85208",
+"lang": "yo",
+"source": "Les enseignants font l'appel et saisissent les notes ; les moyennes et les bulletins se calculent.",
+"text": "Awọn olukọ ṣe ipe ati tẹ awọn ipele; awọn apapọ ati awọn kaadi iroyin ti wa ni iṣiro."
+},
+{
 "key": "5a4664372d73ee59891e39cc4eaa90cd8ff9fe92d4e6cbfd7d39fa21d4814d78",
 "lang": "yo",
 "source": "Aucune modification à enregistrer.",
@@ -25626,6 +25884,12 @@
 "text": "Ṣewadii pẹlu orukọ…"
 },
 {
+"key": "5ee2ea8e63ba3870653856d9db7ee325ab001223fa6da8bcc18e3d79bb22e0b3",
+"lang": "yo",
+"source": "Plateforme",
+"text": "Platform"
+},
+{
 "key": "5f00733ad0e58d45919b3eced48c25209958722295a221bc21c8a62972df5293",
 "lang": "yo",
 "source": "Aucune information n'est donnée seulement par le son : chaque résumé parlé est aussi écrit à côté du bouton, les vidéos ont leur transcription et les alertes sont des notifications écrites.",
@@ -25870,6 +26134,12 @@
 "lang": "yo",
 "source": "Finances",
 "text": "Isuna"
+},
+{
+"key": "61ab4648ac556fcbdc34c6e1e740f6386e9d5bf46ba19a521a5872658208e24b",
+"lang": "yo",
+"source": "Français, fongbe, yoruba",
+"text": "Faranse, Fongbe, Yoruba"
 },
 {
 "key": "61b43cca96a2bbf64a38c0ed518eef8c1f7fe9ac9bec3b796adb79877a70b576",
@@ -26316,6 +26586,12 @@
 "text": "2 ko ni asopọ taara si awọn API ti awọn oniṣẹ Owo Alagbeka; Olupese owo sisan ni o tọju eyi."
 },
 {
+"key": "68657b443bc51bc86dde8c84f1e0fb0a1f0c61ccada835bb72beb596477292ae",
+"lang": "yo",
+"source": "(site externe)",
+"text": "(ojula ita)"
+},
+{
 "key": "68759545a0a87ee31072dfb105e8aa78de4997e9086b8f6eb47ac1614618f8f4",
 "lang": "yo",
 "source": "2, compte des frais scolaires",
@@ -26500,6 +26776,12 @@
 "lang": "yo",
 "source": "Cet enseignant est un agent de l'État : son salaire est versé par le ministère de l'Économie et des Finances, pas par l'établissement.",
 "text": "Olukọni yii jẹ aṣoju ipinle: owo-osu rẹ jẹ nipasẹ Ile-iṣẹ ti Aje ati Isuna, kii ṣe nipasẹ idasile."
+},
+{
+"key": "6b4af8cfe265a23c69492d94ef72ad408a24088519df7efede8ed91e0e8766ef",
+"lang": "yo",
+"source": "Vérifier un document",
+"text": "Ṣayẹwo iwe-ipamọ kan"
 },
 {
 "key": "6b60bcff0d38eab79062362ab52ea72e7e5a2ad20a17b43c76170e4fed49c6e1",
@@ -26764,6 +27046,12 @@
 "lang": "yo",
 "source": "Créer et envoyer les invitations",
 "text": "Ṣẹda ati firanṣẹ awọn ifiwepe"
+},
+{
+"key": "6ea528b18c7c7bf744833dcc9a113425c3fea773a5a99b5205170619c2583095",
+"lang": "yo",
+"source": "Ouvrir le menu",
+"text": "Ṣii akojọ aṣayan"
 },
 {
 "key": "6ec4255a456157debbe21bf186fab94096a0e6418ffcf8285348c2388cb8b639",
@@ -27946,6 +28234,12 @@
 "lang": "yo",
 "source": "Dans « Ma scolarité », l'onglet « Notes » donne chaque note et ta moyenne provisoire du trimestre ou du semestre, selon ton établissement.",
 "text": "Ninu “Ẹkọ mi”, taabu “Awọn giredi” funni ni ipele kọọkan ati aropin ipese rẹ fun mẹẹdogun tabi igba ikawe, da lori idasile rẹ."
+},
+{
+"key": "7dc7311b470d22f59df9d26c21ee4ddad19965ca3855718be14999deacb3a072",
+"lang": "yo",
+"source": "Inscriptions, classes, emplois du temps, frais et paie du personnel, au même endroit.",
+"text": "Awọn iforukọsilẹ, awọn kilasi, awọn iṣeto, awọn idiyele ati isanwo oṣiṣẹ, gbogbo ni aaye kan."
 },
 {
 "key": "7e30105bb70d3c11eab6017e1b0e98545877a29f246ae7f86b0808f5bc0809bd",
@@ -29886,6 +30180,12 @@
 "text": "Ko si idasile ni agbegbe yii ti o ni kilasi ni ipele yii."
 },
 {
+"key": "98550b67110709bdd54fa1178959e454d100613c4878dd725596bbfb6297ff96",
+"lang": "yo",
+"source": "Liens utiles",
+"text": "Awọn ọna asopọ to wulo"
+},
+{
 "key": "986139168047a323fb2dddf52cb455ce41afac47d31e1dc60329096411c9d636",
 "lang": "yo",
 "source": "Français : voix de cet appareil",
@@ -31026,6 +31326,12 @@
 "text": "Gbọ wiwa"
 },
 {
+"key": "a99e84fad3c6186bad2ff4b284d222af6781765e9c99398647d98d04547da2a6",
+"lang": "yo",
+"source": "Les parents voient les notes, les bulletins, les absences et les frais, et écrivent à l'établissement.",
+"text": "Awọn obi wo awọn onipò, awọn kaadi ijabọ, awọn isansa ati awọn idiyele, ati kọ si idasile."
+},
+{
 "key": "a9bb16252392a586983b48b1d316d73c4b0fb2d083486d81caeced2e24935d60",
 "lang": "yo",
 "source": "Aucun examen blanc",
@@ -32034,6 +32340,12 @@
 "text": "Ede atọkun"
 },
 {
+"key": "b79e17390792ebe802dda98032ef5fcf21ca99860adeb2f04c78ba547e6393f9",
+"lang": "yo",
+"source": "Les pages publiques se lisent en français, en fongbe et en yoruba, et chaque texte s'écoute dans la langue choisie.",
+"text": "Awọn oju-iwe ti gbogbo eniyan ni a le ka ni Faranse, Fongbe ati Yoruba, ati pe ọrọ kọọkan ni a le tẹtisi ni ede ti a yan."
+},
+{
 "key": "b7c42542900919f9c7c1d8c8f57767a99ed800b360c43bd16dd993b6cc5dedbe",
 "lang": "yo",
 "source": "Voir le bulletin du Semestre 2 3-4",
@@ -32446,6 +32758,12 @@
 "lang": "yo",
 "source": "Marquer comme lu : Paiement confirmé",
 "text": "Samisi bi kika: Owo timo"
+},
+{
+"key": "be081a5f1deeecd0a191075cefda82e94367aeaffa96e0ceb792195075d2f2ec",
+"lang": "yo",
+"source": "Plateforme de gestion scolaire pour les établissements du Bénin",
+"text": "Syeed iṣakoso ile-iwe fun awọn idasile ni Benin"
 },
 {
 "key": "be1a7ff141bf0cf435daa5e287993dab8936f0e0756a3faa7b40ce8d933fb71d",
@@ -32886,10 +33204,22 @@
 "text": "Iwe itẹjade ti a tẹjade lori"
 },
 {
+"key": "c589c48d906dc480846662d8e23241f88b3af31227266dcd30c748f83d39c3d6",
+"lang": "yo",
+"source": "Mot de passe perdu : la personne qui gère votre compte vous en remet un nouveau.",
+"text": "Ọrọigbaniwọle ti o padanu: eniyan ti o ṣakoso akọọlẹ rẹ yoo fun ọ ni ọkan tuntun."
+},
+{
 "key": "c5a1c673f97b86e63ebe5090458fb56cb5111a47703a54590df2c7342f01613d",
 "lang": "yo",
 "source": "Réf. 2",
 "text": "Ref. 2"
+},
+{
+"key": "c5ae126850c1f3a13395259eeb05b68fbaec686d7ff5d4907ed102bfa141e4a1",
+"lang": "yo",
+"source": "Les services de Classéo",
+"text": "Awọn iṣẹ Classeo"
 },
 {
 "key": "c5ce265a5c6d92d04b0c496a5bd3a56c0f57304f1a6a5f6c779b92e83cd394a1",
@@ -33046,6 +33376,12 @@
 "lang": "yo",
 "source": "Puis-je tout faire au clavier ou avec un lecteur d'écran ?",
 "text": "Ṣe Mo le ṣe ohun gbogbo lori keyboard tabi pẹlu oluka iboju?"
+},
+{
+"key": "c7ed1bf0bad8ae38c7fcd63d2319cf7358239298d8fa4406dff4845572f4bb9e",
+"lang": "yo",
+"source": "Accéder",
+"text": "Wiwọle"
 },
 {
 "key": "c7fe677c1648f2d92620a23aaabdb8122eddaeb1ca3e5749d7cb45aa34a009ca",
@@ -34602,6 +34938,12 @@
 "text": "Oludari Ẹka 2 (Itọsọna Ẹka"
 },
 {
+"key": "dce34de0bb4eea7c73cfa7e51b6c9774a5abf2c4c1ee0243c2503811508acd84",
+"lang": "yo",
+"source": "Lecture à voix haute",
+"text": "Kika soke"
+},
+{
 "key": "dd057a7ceab6ce7fd58405a16478468a88952b0e1c6fb5217eb02ec418e9157e",
 "lang": "yo",
 "source": "Envoyez les trois",
@@ -35580,6 +35922,12 @@
 "text": "Obi gba idi naa ati pe o le ṣe ijabọ lẹẹkansii pẹlu itọkasi to tọ."
 },
 {
+"key": "ec1a4a92b628baa2320653051b2593595730bfed40cff6504508e6d7aa819433",
+"lang": "yo",
+"source": "Plateforme indépendante, non officielle. Non affiliée au Gouvernement du Bénin.",
+"text": "Independent, laigba aṣẹ Syeed. Ko ṣe ajọṣepọ pẹlu ijọba ti Benin."
+},
+{
 "key": "ec458dd68f9fb601c089457cc9f99495c08ea955dead4af75f3b98f394df48f2",
 "lang": "yo",
 "source": "Ce paiement a déjà été annulé.",
@@ -35674,6 +36022,12 @@
 "lang": "yo",
 "source": "L'école vérifie la pièce, puis le fichier est supprimé.",
 "text": "Ile-iwe naa jẹrisi apakan naa, lẹhinna faili ti paarẹ."
+},
+{
+"key": "edba5d31f4346627081ec2a83801ec0994596c864b3d83bbd279105c85dcf1bc",
+"lang": "yo",
+"source": "Saisir les notes et les présences",
+"text": "Tẹ awọn onipò ati wiwa"
 },
 {
 "key": "ede2583fe6268f0b0273d8fd3c57dffe2d775f0f2a94d44339cd16e6988af3dc",
@@ -35806,6 +36160,12 @@
 "lang": "yo",
 "source": "Résumé lu à voix haute",
 "text": "Lakotan ka soke"
+},
+{
+"key": "ef2906869b94dce0be97c3955f3290091609e2f86e910b50b3198d140f78f413",
+"lang": "yo",
+"source": "Ouvrir les réglages d'accessibilité",
+"text": "Ṣii awọn eto iraye si"
 },
 {
 "key": "ef358c7deca6918e57027f4ae230a74c031081dfda6678da51f07f72449a18b3",
@@ -36040,6 +36400,12 @@
 "lang": "yo",
 "source": "Notes de 2, trimestre 1. Moyenne provisoire : 3 sur 4, Passable. 5 matières notées sur 5. Meilleure matière : Éducation physique et sportive. À travailler : Histoire-Géographie.",
 "text": "Awọn ipele 2, mẹẹdogun 1. Apapọ igba diẹ: 3 ninu 4, Fair. Awọn koko-ọrọ 5 ti o wa ninu 5. Koko-ọrọ ti o dara julọ: Ẹkọ ti ara ati awọn ere idaraya. Lati ṣiṣẹ lori: History-Geography."
+},
+{
+"key": "f2a9283629e002a3e43673fa333152f5279ee03430dd45853472fdcc9ffaaa88",
+"lang": "yo",
+"source": "Gérer l'établissement",
+"text": "Ṣakoso awọn idasile"
 },
 {
 "key": "f2d0d4101c47b8d4f02abe848cab719aa6765bb0b6a1dc03f9de34087db6f3c4",
@@ -36460,6 +36826,12 @@
 "lang": "yo",
 "source": "Vos établissements",
 "text": "Awọn idasile rẹ"
+},
+{
+"key": "f9154e08b4a186b818af7aee841aab7e0147d315e11f81f07f63c7a9ece46f8c",
+"lang": "yo",
+"source": "Affichage adapté",
+"text": "Ifihan ti o baamu"
 },
 {
 "key": "f91a826d8024e11f45e8ae353199183416bcfb818bb99d081c0f2fda0bd5bb9c",
