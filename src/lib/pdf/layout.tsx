@@ -127,11 +127,11 @@ function IssuerBlock({ issuer }: { issuer: Issuer }) {
         ) : null}
         <View style={{ flexShrink: 1 }}>
           <View style={{ alignSelf: "flex-start" }}>
-            <T style={{ fontFamily: FONT_TITLE, fontSize: 7, fontWeight: 600, letterSpacing: 1.1, color: COLORS.muted, textTransform: "uppercase" }}>{REPUBLIC}</T>
-            <TricolourRule height={1.5} style={{ marginTop: 2.5 }} />
+            <T style={{ fontFamily: FONT_TITLE, fontSize: 7, fontWeight: 600, lineHeight: 1.1, letterSpacing: 1.1, color: COLORS.muted, textTransform: "uppercase" }}>{REPUBLIC}</T>
+            <TricolourRule height={1.5} style={{ marginTop: 2 }} />
           </View>
-          <T style={{ fontFamily: FONT_TITLE, fontSize: 15, fontWeight: 800, lineHeight: 1.1, color: COLORS.primary, marginTop: 4 }}>{PRODUCT}</T>
-          <T style={{ fontFamily: FONT_TITLE, fontSize: 7.5, fontWeight: 600, color: COLORS.muted, marginTop: 1.5 }}>{PRODUCT_LINE}</T>
+          <T style={{ fontFamily: FONT_TITLE, fontSize: 13, fontWeight: 800, lineHeight: 1, color: COLORS.primary, marginTop: 3.5 }}>{PRODUCT}</T>
+          <T style={{ fontFamily: FONT_TITLE, fontSize: 7, fontWeight: 600, lineHeight: 1.2, color: COLORS.muted, marginTop: 2 }}>{PRODUCT_LINE}</T>
         </View>
       </View>
       <View style={{ height: 6 }} />

@@ -78,7 +78,7 @@ function IssuerBlock({ issuer, official }: { issuer: Issuer; official: boolean }
       <div className="flex items-center gap-3">
         {official && (
           // eslint-disable-next-line @next/next/no-img-element -- a static SVG, served as is
-          <img src={ARMS_SRC} alt="" aria-hidden width={Math.round(56 * ARMS_RATIO)} height={56} className="h-14 w-auto shrink-0" decoding="async" data-doc-arms="" />
+          <img src={ARMS_SRC} alt="" aria-hidden width={Math.round(56 * ARMS_RATIO)} height={56} className="h-14 w-auto shrink-0 print:h-11" decoding="async" data-doc-arms="" />
         )}
         <div className="min-w-0">
           <span className="inline-flex flex-col gap-1">
@@ -91,7 +91,7 @@ function IssuerBlock({ issuer, official }: { issuer: Issuer; official: boolean }
               <span />
             </span>
           </span>
-          <p className="doc-product mt-1.5 text-xl leading-none font-extrabold" translate="no">
+          <p className="doc-product mt-1.5 text-xl print:text-lg leading-none font-extrabold" translate="no">
             {PRODUCT}
           </p>
           <p className="doc-overline doc-display mt-1 text-[11px] font-semibold">{PRODUCT_LINE}</p>
@@ -195,7 +195,7 @@ export async function PrintSheet({
         <div className="mt-4">{children}</div>
         <footer className="doc-footer doc-muted doc-keep mt-8 print:mt-3 flex items-center gap-3 pt-2 text-[10px] leading-snug">
           {check && qr && (
-            <svg viewBox={`0 0 ${qr.viewBox} ${qr.viewBox}`} className="size-16 shrink-0" role="img" aria-label={`QR code de vérification, ${check.shortUrl}`}>
+            <svg viewBox={`0 0 ${qr.viewBox} ${qr.viewBox}`} className="size-16 shrink-0 print:size-14" role="img" aria-label={`QR code de vérification, ${check.shortUrl}`}>
               <rect width={qr.viewBox} height={qr.viewBox} fill={C.white} />
               <path d={qr.d} fill={C.text} />
             </svg>
