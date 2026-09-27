@@ -112,7 +112,7 @@ export function Composer({ conversationId, showQuick }: { conversationId: string
       {showQuick && (
         <section aria-labelledby="quick-title">
           {/* The full title names the region; a phone shows its short form. */}
-          <h2 id="quick-title" className="text-xs font-bold sm:text-sm">
+          <h2 id="quick-title" className="font-display text-[0.6875rem] font-bold tracking-[0.08em] text-muted uppercase">
             <span className="max-lg:sr-only">Messages rapides, un appui pour envoyer</span>
             <span className="lg:hidden" aria-hidden>
               Un appui pour envoyer
@@ -124,7 +124,7 @@ export function Composer({ conversationId, showQuick }: { conversationId: string
                 <ActionForm action={sendOrKeep}>
                   <input type="hidden" name="conversationId" value={conversationId} />
                   <input type="hidden" name="body" value={q.text} />
-                  <SubmitButton variant="secondary" size="sm" pendingLabel="Envoi…" className="rounded-full whitespace-nowrap [&_svg]:size-5">
+                  <SubmitButton variant="soft" size="sm" pendingLabel="Envoi…" className="whitespace-nowrap text-text [&_svg]:size-5">
                     <q.Icon aria-hidden className="text-primary" /> {q.text}
                   </SubmitButton>
                 </ActionForm>
@@ -160,7 +160,7 @@ export function Composer({ conversationId, showQuick }: { conversationId: string
             />
           </FormField>
           <VoiceRecorder conversationId={conversationId} onActiveChange={setVoice} onError={setVoiceError} />
-          <SubmitButton pendingLabel="" size="icon" aria-label="Envoyer" title="Envoyer" className={cn("size-12 shrink-0 rounded-full lg:hidden [&_svg]:size-5", voice && "hidden")}>
+          <SubmitButton pendingLabel="" size="icon" aria-label="Envoyer" title="Envoyer" className={cn("size-12 shrink-0 lg:hidden [&_svg]:size-5", voice && "hidden")}>
             <SendHorizonal aria-hidden />
           </SubmitButton>
         </div>
