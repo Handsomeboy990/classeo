@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { BarChart } from "@/components/kit/bar-chart";
 import { EmptyState } from "@/components/kit/states";
+import { ButtonLink } from "@/components/ui/button";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TD, TH, THead, TR } from "@/components/ui/table";
 import { INDICATORS, sortByIndicator, type IndicatorKey } from "@/lib/domain/indicators";
@@ -96,31 +97,28 @@ export function Breakdown({
             {rows.length} {rows.length > 1 ? labels.plural.toLowerCase() : labels.singular.toLowerCase()}, {stats.childLevel === "COMMUNE" || stats.childLevel === "CLASS" ? "triées" : "triés"} par {meta.label.toLowerCase()} ({direction === "desc" ? "décroissant" : "croissant"})
           </p>
         </div>
-        <Link
-          href={hrefWith(basePath, searchParams, { tri: activeSort, ordre: flip })}
-          scroll={false}
-          className="inline-flex h-11 items-center gap-1.5 rounded-lg border border-border-strong px-3 text-sm font-semibold hover:bg-surface-2 sm:h-9"
-        >
-          {direction === "desc" ? <ArrowDown className="size-4" aria-hidden /> : <ArrowUp className="size-4" aria-hidden />}
+        <ButtonLink href={hrefWith(basePath, searchParams, { tri: activeSort, ordre: flip })} scroll={false} variant="secondary" size="sm">
+          {direction === "desc" ? <ArrowDown aria-hidden /> : <ArrowUp aria-hidden />}
           {direction === "desc" ? "Ordre décroissant" : "Ordre croissant"}
-        </Link>
+        </ButtonLink>
       </CardHeader>
       <CardBody className="flex flex-col gap-6">
-        <nav aria-label="Indicateur de tri" className="relative -mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">
-          {keys.map((k) => (
-            <Link
-              key={k}
-              href={hrefWith(basePath, searchParams, { tri: k, ordre: k === activeSort ? direction : INDICATORS[k].higherIsBetter === false ? "asc" : "desc" })}
-              scroll={false}
-              aria-current={k === activeSort ? "true" : undefined}
-              className={cn(
-                "inline-flex min-h-11 shrink-0 items-center rounded-full border px-3 text-sm font-medium whitespace-nowrap sm:min-h-8",
-                k === activeSort ? "border-primary bg-primary text-on-primary" : "border-border-strong hover:bg-surface-2",
-              )}
-            >
-              {INDICATORS[k].short}
-            </Link>
-          ))}
+        {/* A segmented filter: it wraps from 40rem, and scrolls sideways on
+            a phone so the chart stays on the first screen. */}
+        <nav aria-label="Indicateur de tri" className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
+          <div className="ds-segmented max-sm:flex-nowrap">
+            {keys.map((k) => (
+              <Link
+                key={k}
+                href={hrefWith(basePath, searchParams, { tri: k, ordre: k === activeSort ? direction : INDICATORS[k].higherIsBetter === false ? "asc" : "desc" })}
+                scroll={false}
+                aria-current={k === activeSort ? "true" : undefined}
+                className="shrink-0 whitespace-nowrap"
+              >
+                {INDICATORS[k].short}
+              </Link>
+            ))}
+          </div>
         </nav>
 
         {rows.length === 0 ? (
