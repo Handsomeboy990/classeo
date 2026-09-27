@@ -1,6 +1,6 @@
-import { Compass } from "lucide-react";
+import { Compass, Home, LifeBuoy } from "lucide-react";
 
-import { BackButton, StatusPage } from "@/components/kit/status-page";
+import { StatusPage } from "@/components/kit/status-page";
 import { ButtonLink } from "@/components/ui/button";
 
 // A record that does not exist or is outside the account's scope (notFound()
@@ -13,9 +13,11 @@ export default function SpaceNotFound() {
       title="Cette page est introuvable"
       actions={
         <>
-          <BackButton fallback="/espace" />
+          <ButtonLink href="/espace/aide" variant="secondary" size="lg">
+            <LifeBuoy aria-hidden /> Aide
+          </ButtonLink>
           <ButtonLink href="/espace" size="lg">
-            Retour au tableau de bord
+            <Home aria-hidden /> Retour à l&apos;accueil
           </ButtonLink>
         </>
       }

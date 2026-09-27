@@ -22,8 +22,9 @@ export default async function VerifyHomePage({ searchParams }: PageProps<"/verif
 
   return (
     <PublicShell>
-      <h1 className="text-2xl font-bold sm:text-3xl">Vérifier un document</h1>
-      <p className="mt-2 mb-6 text-muted">
+      <p className="font-display text-[0.6875rem] font-bold tracking-[0.08em] text-primary uppercase">Contrôle d&apos;authenticité, sans compte</p>
+      <h1 className="mt-2 text-[1.5rem] leading-tight font-bold lg:text-[1.75rem]">Vérifier un document</h1>
+      <p className="mt-3 mb-6 max-w-2xl leading-relaxed text-muted">
         Bulletins, attestations, certificats, reçus et factures délivrés sur Classéo portent un code de vérification et un QR code. Scannez le QR code, ou saisissez le
         code ci-dessous.
       </p>
@@ -32,7 +33,9 @@ export default async function VerifyHomePage({ searchParams }: PageProps<"/verif
           Ce code n&apos;a pas la bonne forme : il compte 10 caractères, par exemple K7QD4-M2XPH.
         </p>
       )}
-      <CodeSearch defaultValue={typed} />
+      <div className="rounded-card border border-border bg-surface p-5 shadow-xs sm:p-6">
+        <CodeSearch defaultValue={typed} />
+      </div>
     </PublicShell>
   );
 }

@@ -1,28 +1,17 @@
-import Link from "next/link";
 import type { ReactNode } from "react";
 
-import { Logo } from "@/components/brand/logo";
-import { FlagStripe } from "@/components/brand/flag";
 import { Button } from "@/components/ui/button";
-import { AnalyticsSlot } from "@/features/analytics/analytics-slot";
+import { FrenchPublicPage } from "@/features/public-pages/public-frame";
 
-// Frame of the public check pages: reachable without an account, from the
-// QR code printed on any document.
+// Frame of the public check pages, reachable without an account from the QR
+// code printed on any document: the public header and footer around a
+// column of the light page. The optional analytics banner comes with the
+// public footer.
 export function PublicShell({ children }: { children: ReactNode }) {
   return (
-    <div className="flex min-h-dvh flex-col bg-bg">
-      <FlagStripe className="shrink-0" />
-      <header className="mx-auto flex w-full max-w-2xl items-center justify-between gap-3 px-4 py-5">
-        <Link href="/" aria-label="Classéo, accueil">
-          <Logo />
-        </Link>
-        <p className="text-right text-xs font-bold tracking-[0.12em] text-muted uppercase">République du Bénin</p>
-      </header>
-      <main id="page-content" className="mx-auto w-full max-w-2xl flex-1 px-4 pb-12">
-        {children}
-      </main>
-      <AnalyticsSlot />
-    </div>
+    <FrenchPublicPage current="verify">
+      <div className="mx-auto w-full max-w-3xl px-5 py-10 sm:px-6 lg:py-14">{children}</div>
+    </FrenchPublicPage>
   );
 }
 

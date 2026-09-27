@@ -130,7 +130,7 @@ export function Sheet({
     >
       <div ref={panel} className={cn("sheet-panel", className)}>
         <div
-          className="shrink-0 touch-none select-none"
+          className="shrink-0 touch-none border-b border-border select-none"
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
           onPointerUp={onPointerUp}
@@ -142,7 +142,7 @@ export function Sheet({
           <div className="flex items-center gap-3 px-4 pb-2">
             {lead && <div className="min-w-0 flex-1">{lead}</div>}
             <div className={cn("min-w-0 flex-1", lead && "sr-only")}>
-              <h2 id={titleId} className="truncate text-lg font-bold">
+              <h2 id={titleId} className="truncate text-[1.125rem] font-bold">
                 {title}
               </h2>
               {description && (
@@ -162,7 +162,7 @@ export function Sheet({
           </div>
           {header}
         </div>
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-[max(1rem,env(safe-area-inset-bottom))]">{children}</div>
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))]">{children}</div>
       </div>
     </dialog>,
     document.body,

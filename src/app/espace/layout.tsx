@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 
-import { Logo } from "@/components/brand/logo";
+import { FlagStripe } from "@/components/brand/flag";
+import { loadBrand } from "@/components/brand/load-brand";
+import { BrandLockup } from "@/components/brand/lockup";
+import { AppFooter } from "@/components/shell/app-footer";
 import { AppBar } from "@/components/shell/app-bar";
 import { NewsTicker } from "@/components/shell/news-ticker";
 import type { ShellScope } from "@/components/shell/scope-identity";
@@ -24,6 +26,8 @@ import { fileUrl } from "@/lib/files";
 import { mobileTabs, navigationBadges, tabAudience, visibleNavigation, type NavItem } from "@/lib/navigation";
 import { SchoolStatusBanner } from "@/features/school-status/components/status-banner";
 import { NO_INDEX } from "@/lib/seo";
+
+import "@/components/shell/shell.css";
 
 // The private space is never indexed (robots.txt and the X-Robots-Tag header
 // of next.config.ts say so too).
@@ -51,11 +55,12 @@ export default async function SpaceLayout({ children }: LayoutProps<"/espace">) 
   const user = await requireUser();
   if (user.mustChangePassword) redirect("/changer-mot-de-passe");
 
-  const [unreadRows, ticker, pages, translation] = await Promise.all([
+  const [unreadRows, ticker, pages, translation, brand] = await Promise.all([
     db.notification.findMany({ where: { userId: user.id, readAt: null }, select: { link: true, createdAt: true }, orderBy: { createdAt: "desc" }, take: 200 }),
     isEnabled("contents.ticker").then((on) => (on ? tickerContents(user).catch(() => []) : [])),
     offlinePages(user),
     translationAccess(user),
+    loadBrand(),
   ]);
   const unread = unreadRows.length;
   const visible = visibleNavigation(user);
@@ -77,20 +82,27 @@ export default async function SpaceLayout({ children }: LayoutProps<"/espace">) 
   const pushKey = pushPublicKey();
 
   return (
-    <div className="min-h-dvh lg:grid lg:grid-cols-[17rem_1fr]">
-      <aside className="sticky top-0 hidden h-dvh flex-col overflow-y-auto bg-sidebar px-3 py-5 lg:flex">
-        <Link href="/espace" className="mb-6 px-3">
-          <Logo tone="inverse" />
-        </Link>
-        <SidebarNav sections={sections} />
+    <div data-shell className="min-h-dvh lg:grid lg:grid-cols-[17rem_1fr] lg:pt-1">
+      {/* The tricolour rule over the whole window, above the side menu and
+          the top bar (design source of truth, part 3.4). */}
+      <div data-top-rule className="fixed inset-x-0 top-0 z-50 hidden lg:block">
+        <FlagStripe className="h-1" />
+      </div>
+      <aside className="sticky top-1 hidden h-[calc(100dvh-4px)] flex-col bg-sidebar lg:flex">
+        {/* Brand zone: the navy band of the top bar, continued. */}
+        <div className="flex h-16 shrink-0 items-center border-b border-white/10 bg-header px-5">
+          <BrandLockup brand={brand} tone="dark" size="sidebar" href="/espace" />
+        </div>
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 pt-5 pb-6">
+          <SidebarNav sections={sections} />
+        </div>
       </aside>
 
-      <div className="flex min-w-0 flex-col">
-        {/* Overlays never live in here: the blur makes this header the
-            containing block of any fixed descendant. Popovers and sheets
-            open in the top layer. */}
-        <header className="sticky top-0 z-40 border-b border-border bg-surface/95 pt-[env(safe-area-inset-top)] backdrop-blur">
-          <AppBar sections={sections} unread={unread} user={shellUser} pushKey={pushKey} scope={scope} languages={translation?.languages ?? null} />
+      <div className="flex min-h-dvh min-w-0 flex-col lg:min-h-[calc(100dvh-4px)]">
+        {/* Overlays never live in here: popovers and sheets open in the top
+            layer. The navy reaches under the status bar of the phone. */}
+        <header className="sticky top-0 z-40 bg-header pt-[env(safe-area-inset-top)] lg:top-1 lg:pt-0">
+          <AppBar sections={sections} unread={unread} user={shellUser} pushKey={pushKey} brand={brand} languages={translation?.languages ?? null} />
           <TopBar scope={scope} unread={unread} user={shellUser} pushKey={pushKey} languages={translation?.languages ?? null} />
           <NewsTicker items={ticker} />
           <OfflineSession userId={user.id} pages={pages} />
@@ -102,9 +114,10 @@ export default async function SpaceLayout({ children }: LayoutProps<"/espace">) 
           <SchoolStatusBanner user={user} />
           {children}
         </main>
+        <AppFooter brand={brand} year={new Date().getFullYear()} />
       </div>
 
-      <TabBar tabs={tabs} sections={sections} />
+      <TabBar tabs={tabs} sections={sections} brand={brand} />
       <NotificationWatcher latestAt={unreadRows[0]?.createdAt.getTime() ?? null} />
     </div>
   );

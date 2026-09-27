@@ -68,7 +68,7 @@ export function OfflineSession({ userId, pages }: { userId: string; pages: strin
   return (
     <div data-offline-user={userId} role="status" aria-live="polite">
       {(pending > 0 || rejected > 0) && (
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-border bg-warning-soft px-4 py-2 text-sm sm:px-6" data-offline-status>
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 border-y border-l-4 border-warning/30 border-l-warning bg-warning-soft px-4 py-2 text-sm text-text sm:px-6" data-offline-status>
           {pending > 0 && (
             <p className="flex items-center gap-2 font-semibold">
               <CloudUpload className="size-4 shrink-0 text-warning" aria-hidden />

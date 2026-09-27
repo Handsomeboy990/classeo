@@ -7,7 +7,9 @@ import type { ScopeStatistics } from "../queries";
 import { formatIndicator } from "../format";
 
 // Key figures of a scope. Same cards at every level; a school shows its
-// classes instead of a count of schools.
+// classes instead of a count of schools. Every card is navy: a tone only
+// marks a figure past an alert threshold (a pass rate under 50 %, an
+// absence rate over 10 %, requests waiting for a decision).
 export function IndicatorCards({ stats, requestsHref }: { stats: ScopeStatistics; requestsHref?: string }) {
   const t = stats.total;
   const isSchool = stats.scope.level === "SCHOOL";
@@ -24,8 +26,8 @@ export function IndicatorCards({ stats, requestsHref }: { stats: ScopeStatistics
           icon={Landmark}
         />
       )}
-      <StatCard label="Élèves inscrits" value={formatNumber(t.enrollments)} hint={`Filles : ${formatPercent(t.girlsShare, 1)}`} icon={GraduationCap} tone="info" />
-      <StatCard label="Enseignants" value={formatNumber(t.teachers)} hint={`${formatIndicator("studentsPerTeacher", t.studentsPerTeacher)} élèves par enseignant`} icon={UserSquare2} tone="accent" />
+      <StatCard label="Élèves inscrits" value={formatNumber(t.enrollments)} hint={`Filles : ${formatPercent(t.girlsShare, 1)}`} icon={GraduationCap} />
+      <StatCard label="Enseignants" value={formatNumber(t.teachers)} hint={`${formatIndicator("studentsPerTeacher", t.studentsPerTeacher)} élèves par enseignant`} icon={UserSquare2} />
       <StatCard
         label="Taux de réussite"
         value={formatPercent(t.passRate, 1)}
@@ -38,11 +40,11 @@ export function IndicatorCards({ stats, requestsHref }: { stats: ScopeStatistics
         value={formatPercent(t.absenceRate, 1)}
         hint={`Année ${stats.yearLabel ?? "en cours"}, demi-journées relevées`}
         icon={CalendarX2}
-        tone={t.absenceRate !== null && t.absenceRate > 0.1 ? "danger" : "warning"}
+        tone={t.absenceRate !== null && t.absenceRate > 0.1 ? "danger" : "primary"}
       />
-      <StatCard label="Élèves en situation de handicap" value={formatNumber(t.disabled)} hint={`${formatPercent(t.disabledShare, 1)} des élèves`} icon={Accessibility} tone="info" />
+      <StatCard label="Élèves en situation de handicap" value={formatNumber(t.disabled)} hint={`${formatPercent(t.disabledShare, 1)} des élèves`} icon={Accessibility} />
       {!isSchool && (
-        <StatCard label="Effectif moyen par classe" value={formatIndicator("averageClassSize", t.averageClassSize)} hint="Élèves par classe" icon={LayoutGrid} tone="accent" />
+        <StatCard label="Effectif moyen par classe" value={formatIndicator("averageClassSize", t.averageClassSize)} hint="Élèves par classe" icon={LayoutGrid} />
       )}
       <StatCard
         label="Demandes en attente"

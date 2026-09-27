@@ -2684,7 +2684,8 @@ html:is([data-text="xl"], [data-text="xxl"]) .ds-bars-grid {
  * scrollbar, its end fading out.
  *   <nav aria-label="…"><div class="ds-tabs"><a aria-current="page">…
  * Segmented control (.ds-segmented), for a small group of filters: a quiet
- * track, the active segment raised on the surface.
+ * track, the active segment raised on the surface. A filter link of the
+ * current page marks its active segment with aria-current="true".
  */
 @layer components {
   .ds-tabs {
@@ -2763,13 +2764,13 @@ html:is([data-text="xl"], [data-text="xxl"]) .ds-bars-grid {
   .ds-segmented > :is(a, button):hover {
     color: var(--text);
   }
-  .ds-segmented > :is([aria-current="page"], [aria-selected="true"], [aria-pressed="true"]) {
+  .ds-segmented > :is([aria-current="page"], [aria-current="true"], [aria-selected="true"], [aria-pressed="true"]) {
     background: var(--surface);
     color: var(--primary);
     box-shadow: var(--elevation-xs);
   }
 }
-[data-contrast="high"] .ds-segmented > :is([aria-current="page"], [aria-selected="true"], [aria-pressed="true"]) {
+[data-contrast="high"] .ds-segmented > :is([aria-current="page"], [aria-current="true"], [aria-selected="true"], [aria-pressed="true"]) {
   outline: 2px solid currentColor;
   outline-offset: -2px;
 }

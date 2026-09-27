@@ -70,28 +70,30 @@ export async function ScopeBreadcrumb({
 }) {
   const crumbs = await crumbsOf(scope);
   const myRank = SCOPE_RANK[user.scope.level];
+  // Styled as the kit trail (doc 4.8): small muted text, chevron
+  // separators, the current level in the body colour.
   return (
     <nav aria-label="Fil d'Ariane territorial">
-      <ol className="flex flex-wrap items-center gap-1 text-sm">
-        <li aria-hidden>
-          <MapPin className="size-4 text-muted" />
+      <ol className="flex flex-wrap items-center gap-x-1 gap-y-0.5 text-[0.8125rem] text-muted">
+        <li aria-hidden className="mr-0.5 inline-flex">
+          <MapPin className="size-3.5" />
         </li>
         {crumbs.map((c, i) => {
           const last = i === crumbs.length - 1;
           const reachable = SCOPE_RANK[c.level] <= myRank;
           return (
-            <li key={c.level} className="flex items-center gap-1">
-              {i > 0 && <ChevronRight className="size-4 text-muted" aria-hidden />}
+            <li key={c.level} className="inline-flex min-w-0 items-center gap-1">
+              {i > 0 && <ChevronRight className="size-3.5 shrink-0" aria-hidden />}
               {last ? (
                 <span aria-current="page" className="font-semibold text-text">
                   {c.label}
                 </span>
               ) : reachable ? (
-                <Link href={hrefOf(c, basePath)} className="text-primary hover:underline">
+                <Link href={hrefOf(c, basePath)} className="inline-flex min-h-11 items-center underline underline-offset-3 hover:text-text sm:min-h-0">
                   {c.label}
                 </Link>
               ) : (
-                <span className="text-muted">{c.label}</span>
+                <span>{c.label}</span>
               )}
             </li>
           );

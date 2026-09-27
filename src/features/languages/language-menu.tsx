@@ -12,14 +12,14 @@ import { LANGUAGES, languageLabel } from "./languages";
 // users holding translation:view (the layout only renders it for them, with
 // the languages the option allows). The choice applies at once; while a
 // local language is on, "Voir en français" shows the original text.
-export function SpaceLanguageMenu({ languages, className }: { languages: string[]; className?: string }) {
+export function SpaceLanguageMenu({ languages, tone, className }: { languages: string[]; tone?: "default" | "header"; className?: string }) {
   const s = useLanguageState();
   const choices = LANGUAGES.filter((l) => l.code === "fr" || languages.includes(l.code));
   const label = languageLabel(s.lang);
   const shown = s.lang !== "fr" && s.showOriginal ? "fr" : s.lang;
 
   return (
-    <LanguageMenu code={languageCode(shown)} current={label} className={className}>
+    <LanguageMenu code={languageCode(shown)} current={label} tone={tone} className={className}>
       <LanguageGroup title="Langue de l'interface">
         {choices.map((l) => (
           <LanguageButtonOption key={l.code} code={l.code} label={l.label} selected={s.lang === l.code} onSelect={() => setLanguage(l.code)} />

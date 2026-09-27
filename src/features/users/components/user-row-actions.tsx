@@ -91,7 +91,7 @@ function RowAction({ label, tip, short, onClick, danger = false, children }: { l
       <span
         aria-hidden
         className={cn(
-          "pointer-events-none absolute right-0 bottom-full z-20 mb-1.5 hidden rounded-md bg-text px-2 py-1 text-xs font-semibold whitespace-nowrap text-bg shadow-card",
+          "pointer-events-none absolute right-0 bottom-full z-20 mb-1.5 hidden rounded-control bg-text px-2 py-1 text-xs font-semibold whitespace-nowrap text-bg shadow-card",
           "sm:group-hover/tip:block sm:group-has-[:focus-visible]/tip:block",
         )}
       >

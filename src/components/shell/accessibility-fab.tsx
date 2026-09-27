@@ -13,8 +13,8 @@ const TITLE = "Accessibilité";
 const DESCRIPTION = "Ces réglages s'appliquent tout de suite et restent enregistrés sur cet appareil.";
 
 // The accessibility button, bottom right on every screen as on most sites
-// and apps: a round, discreet button (surface colour, hairline, soft
-// shadow), above the tab bar on phones. While the page scrolls it slides
+// and apps: a round navy button with a white icon (design source of truth,
+// part 3.4), above the tab bar on phones. While the page scrolls it slides
 // into a small tab on the right edge, out of the reading line, and comes
 // back 900 ms after the scroll stops; keyboard focus always brings it back.
 // A page with an action bar stuck to the bottom (data-action-bar) hides it:
@@ -80,7 +80,7 @@ export function AccessibilityFab() {
         // dismiss.
         popoverTarget={compact ? undefined : "a11y-panel"}
         onClick={compact ? () => setSheet(true) : undefined}
-        className="a11y-fab inline-flex size-(--fab-size) items-center justify-center rounded-full border border-border bg-surface text-text shadow-raised hover:bg-surface-2"
+        className="a11y-fab inline-flex size-(--fab-size) items-center justify-center rounded-full border border-white/20 bg-primary text-on-primary shadow-raised hover:bg-primary-hover"
         aria-label="Réglages d'accessibilité"
         aria-haspopup="dialog"
         aria-expanded={open}
