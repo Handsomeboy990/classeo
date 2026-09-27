@@ -36,7 +36,7 @@ export function PrintWeekGrid({ slots }: { slots: WeekSlot[] }) {
               </div>
             ))}
           </div>
-          <div className="relative flex h-[520px] print:h-[104mm]">
+          <div className="relative flex h-[520px] print:h-[94mm]">
             <div className="relative w-10 shrink-0" aria-hidden>
               {hours.map((m) => (
                 <span key={m} className="doc-muted absolute right-1.5 -translate-y-1/2 text-[10px]" style={{ top: pct(m) }}>

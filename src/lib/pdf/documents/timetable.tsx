@@ -28,7 +28,9 @@ function tintOf(subject: string, order: string[]) {
   return TINTS[order.indexOf(subject) % TINTS.length]!;
 }
 
-const GRID_HEIGHT = 322;
+// Sized so the grid and the weekly volume stay on one landscape page under
+// the letterhead.
+const GRID_HEIGHT = 296;
 const TIME_COL = 34;
 
 function WeekGrid({ data }: { data: TimetableData }) {

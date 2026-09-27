@@ -109,12 +109,14 @@ function FlagBand() {
 // rule and the ministry of the school's cycle; under it, the school with its
 // logo and details, or the territorial service. The arms sit beside the
 // words rather than above them so every one page document (bulletin,
-// timetable, invoice) keeps its single page. Without the official option
+// timetable, invoice, the preview of a bulletin with its notice) keeps its
+// single page; for the same reason the arms are 38 pt high, above the 32 pt
+// under which the shield loses its details. Without the official option
 // the coat of arms is left out and the words remain.
 function IssuerBlock({ issuer }: { issuer: Issuer }) {
   const ministries = ministriesFor(issuer.kind === "school" ? issuer.cycle : null);
   const official = currentBrand().official;
-  const armsHeight = 42;
+  const armsHeight = 38;
   return (
     <View style={{ width: 290 }}>
       <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
@@ -132,7 +134,7 @@ function IssuerBlock({ issuer }: { issuer: Issuer }) {
           ))}
         </View>
       </View>
-      <View style={{ width: 36, height: 0.75, backgroundColor: COLORS.primary, marginTop: 5, marginBottom: 4 }} />
+      <View style={{ height: 6 }} />
       {issuer.kind === "ministry" ? (
         <View>
           <T style={{ fontSize: 10, fontWeight: 700 }}>{issuer.name}</T>
@@ -158,8 +160,8 @@ function IssuerBlock({ issuer }: { issuer: Issuer }) {
 // Full header, on the first page of a document.
 export function DocumentHeader({ meta, children }: { meta: DocumentMeta; children?: ReactNode }) {
   return (
-    <View style={{ marginBottom: 12 }}>
-      <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", paddingBottom: 10, borderBottomWidth: 1.5, borderBottomColor: COLORS.primary }}>
+    <View style={{ marginBottom: 10 }}>
+      <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", paddingBottom: 8, borderBottomWidth: 1.5, borderBottomColor: COLORS.primary }}>
         <IssuerBlock issuer={meta.issuer} />
         <View style={{ alignItems: "flex-end", flex: 1, marginLeft: 12 }}>
           <T style={[styles.title, { textAlign: "right" }]}>{meta.title}</T>
