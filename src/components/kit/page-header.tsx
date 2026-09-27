@@ -94,12 +94,14 @@ export function PageHeader({
 }
 
 // Breadcrumb trail (doc 4.8): 0.8125rem, chevron separators, the current
-// page last in the body colour. Phone: the parent only, after a back arrow,
-// on a 44 px target.
+// page last in the body colour. Below 1024 px the app bar of the space
+// already offers a back button: the trail is kept for screen readers only,
+// and shell.css removes it altogether on the pages where that back button
+// shows (data-breadcrumbs), so no page has two back controls.
 function Breadcrumbs({ items }: { items: { label: string; href?: string }[] }) {
   const parent = [...items.slice(0, -1)].reverse().find((i) => i.href);
   return (
-    <nav aria-label="Fil d'Ariane" className="mb-2 text-[0.8125rem] text-muted" data-print-hide>
+    <nav aria-label="Fil d'Ariane" className="mb-2 text-[0.8125rem] text-muted max-lg:sr-only" data-print-hide data-breadcrumbs="">
       {parent?.href && (
         <Link href={parent.href} className="-ml-1 inline-flex min-h-11 items-center gap-1 px-1 font-semibold hover:text-text sm:hidden">
           <ChevronLeft className="size-4 shrink-0" aria-hidden />

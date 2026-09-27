@@ -38,6 +38,26 @@ test.describe("head of school", () => {
     }
   });
 
+  test("a page below an entry has one back control: the app bar's on a phone, the breadcrumb on a computer @mobile", async ({ page }) => {
+    await page.goto("/espace/enseignants");
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+    const href = await page.locator("#page-content a[href^='/espace/enseignants/']:not([href*='registre']):not([href*='?'])").first().getAttribute("href");
+    expect(href).toMatch(/^\/espace\/enseignants\/[^/]+$/);
+    await page.goto(href!);
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+    const crumbs = page.locator("nav[data-breadcrumbs]");
+    const back = page.locator("[data-app-bar] [data-app-back]");
+    if ((page.viewportSize()?.width ?? 1366) < 1024) {
+      await expect(back).toBeVisible();
+      await expect(crumbs).toBeHidden();
+      await expect(crumbs).toHaveCSS("display", "none");
+    } else {
+      await expect(back).toBeHidden();
+      await expect(crumbs).toBeVisible();
+      await expect(crumbs.getByRole("link", { name: "Enseignants" })).toHaveAttribute("href", "/espace/enseignants");
+    }
+  });
+
   test("at the end of a page, nothing covers the footer @mobile", async ({ page }) => {
     await page.goto("/espace");
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();

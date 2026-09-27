@@ -115,6 +115,7 @@ export function AppBar({
             onClick={() => (inAppNavigations > 0 ? router.back() : router.push(backTo))}
             className="inline-flex size-11 shrink-0 items-center justify-center rounded-full hover:bg-white/10 active:bg-white/15"
             aria-label="Retour"
+            data-app-back=""
           >
             <ChevronLeft className="size-6" aria-hidden />
           </button>
