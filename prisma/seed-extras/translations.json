@@ -1188,6 +1188,12 @@
 "text": "Ðɔ gbeta e kɔn è wá é."
 },
 {
+"key": "10d3aecb2da72151960c55242faae9946cddbed9f9fbd94e78005452a6ed5261",
+"lang": "fon",
+"source": "Bonjour Madame. Les résultats du premier semestre sont en ligne. En mathématiques, votre fille progresse bien ; elle doit continuer à faire ses exercices chaque soir.",
+"text": "Mi do gbe nu Madame Resultats du semestre premier ɔ ɖo internet ji. Ðò nùjlɛdonǔwu linu ɔ, vǐ nyɔnu towe ɖò nukɔn yì wɛ ganji; é ɖó na kpó ɖò agbazazɔ́ tɔn lɛ wà wɛ gbadanu lɛ bǐ."
+},
+{
 "key": "10f74aa6dee086165b666b5ccc951cb46816da03c49f477fd9b16b7b7e8e718f",
 "lang": "fon",
 "source": "Aucune valeur",
@@ -1404,10 +1410,22 @@
 "text": "Azǎn e è ɖó na fó lɛ é ɖó na xwedó hwenu e nǔ lɛ jɛ é."
 },
 {
+"key": "148b6ad8cbe5e23c2d25f2c90e962be632f60ab6cfbecf18de6cd7073c6c8d4a",
+"lang": "fon",
+"source": "Moyenne générale : 2 sur 3, Bien.",
+"text": "Ðò linlin mɛ bǐ mlɛ́mlɛ́: 2 ɖò 3 jí, É nyɔ́."
+},
+{
 "key": "14d22432eb6d06cf8b4851485d9ceabc6818be966980cb5915dbcf83a58bbde4",
 "lang": "fon",
 "source": "Validé",
 "text": "Do ganji"
+},
+{
+"key": "153314f68a4c27aa03fc055386b0a26b96e8a062d3c51aff68956783ea4d2994",
+"lang": "fon",
+"source": "CM2 · épreuves du 3 mai 4 au 5 mai 4 · Circonscription scolaire d'6",
+"text": "CM2 · examens de 3 mai, 4 mai à 5 mai 4 · District scolaire de 6"
 },
 {
 "key": "1534d201936b6a6dede81b83b339eea2f570ab351aca934858e3faa0a71afa2a",
@@ -1492,6 +1510,12 @@
 "lang": "fon",
 "source": "Notifications sur cet appareil",
 "text": "Nǔ e è nɔ ɖɔ ɖò alokan elɔ jí lɛ é"
+},
+{
+"key": "1609f5583155cfda3fc22e65dfd6fd647aa23afa23de3115ecd2f345cf3e2340",
+"lang": "fon",
+"source": "Circonscription scolaire d'2 (Circonscription scolaire)",
+"text": "Azɔmɛxwe 2 (Azɔmɛxwe)"
 },
 {
 "key": "16118d339be67380d9fb045897f08995c2532faed4da2d6a8c3892de3d039726",
@@ -2196,6 +2220,12 @@
 "text": ", 2 hú mɔ̌."
 },
 {
+"key": "210b1d4a7c7d93271c4dd10925577fa03a674af82a7470204b7ed372eeb880f1",
+"lang": "fon",
+"source": "Bulletin de 2, Trimestre 3 4-5. Moyenne générale : 6 sur 7, Très bien. Rang : 8e sur 9. Appréciation : Très bon travail, continuez ainsi.",
+"text": "Xójlawema 2gɔ́ ɔ, Akpáxwé 3gɔ́ ɔ 4-5. Ðò bǐbɛ̌mɛ ɔ: 6 ɖò 7 jí, É nyɔ́ tawun. Rank: 8ème sur 9. Note: Azɔ̌ ɖagbe ɖé wɛ, mi kpó ɖò mɔ̌ wà wɛ."
+},
+{
 "key": "211e806f6cd1842c9d52861930fe9d693e723a3dc97dd2beef535c124e341aab",
 "lang": "fon",
 "source": "Trimestre",
@@ -2392,6 +2422,12 @@
 "lang": "fon",
 "source": "Commencez par la contribution scolaire : son montant, puis ses tranches.",
 "text": "Bɛ̌ kpo akwɛ e wemaxɔmɛ ɔ nɔ na é kpo: akwɛ nabi e é na é, enɛ gudo hǔn, akpáxwé tɔn lɛ."
+},
+{
+"key": "235d05c6004687957841d0622b551d79ae1a673a0c94332e33187c01ac9231fe",
+"lang": "fon",
+"source": "Moyenne générale : 2 sur 3, Assez bien.",
+"text": "Ðò linlin mɛ bǐ mlɛ́mlɛ́: 2 ɖò 3 jí, É nyɔ́ tawun."
 },
 {
 "key": "236ae6d7d3318ab26779896f4563995f090c44033ca4a9b7bc8d427e96bedcbb",
@@ -2772,6 +2808,12 @@
 "text": "Akwɛ nabi e è wlan é ("
 },
 {
+"key": "2823534dd529f40ea9931cb744da07a8e8dc38aaf86040d0e7cb0920c28d99ca",
+"lang": "fon",
+"source": "Résultats du premier semestre",
+"text": "Nǔ e è mɔ ɖò akpáxwé nukɔntɔn ɔ mɛ lɛ é"
+},
+{
 "key": "283348d05e1cd82a464515beb798768a4ee858161661744ccf46102445ed1e53",
 "lang": "fon",
 "source": "Refuser",
@@ -3130,6 +3172,12 @@
 "lang": "fon",
 "source": "Aperçu non publié",
 "text": "Nukúnnúmɔjɛnǔmɛ e è ma ko ɖetɔ́n ǎ é"
+},
+{
+"key": "2ccb4b8b92e1112bfaf281876f9cd1cfad032ca3b18d9a3d055c7361c4037ce9",
+"lang": "fon",
+"source": "Circonscription scolaire d'Abomey-Calavi",
+"text": "Azɔmɛxwe Abomey-Calavi tɔn"
 },
 {
 "key": "2ce44acbae6a133d3b0aae58e84cfb364ac207ee51d1418293b7c5780f8435bf",
@@ -3846,6 +3894,12 @@
 "text": "Tab “Nǔ e è nɔ ylɔ ɖɔ Grades” é nɔ na linlin ɖokpo ɖokpo kpo linlin e a ɖó nú táan klewun ɖé ɖò sun atɔn ɔ mɛ é kpo."
 },
 {
+"key": "35d2f0724c95529afe118895c02543db65d93b98903722bc0076351533a4ad15",
+"lang": "fon",
+"source": "Bulletin de 2, Semestre 3 4-5. Moyenne générale : 6 sur 7, Assez bien. Rang : 8e sur 9. Appréciation : Travail satisfaisant, peut mieux faire.",
+"text": "Kati Gbè 2gɔ́ ɔ, Akpáxwé 3gɔ́ ɔ 4-5. Ðò linlin mɛ bǐ mlɛ́mlɛ́: 6 ɖò 7 jí, É nyɔ́ tawun. Rank: 8ème sur 9. Rating: Azɔ̌ e jɛmɛ nú mɛ é, sixu wà nǔ ɖagbe hú mɔ̌."
+},
+{
 "key": "35edb8267691892a504f94c4448f48e1ce9ade9b5c000561d987e16136966b39",
 "lang": "fon",
 "source": "Compte introuvable.",
@@ -3934,6 +3988,12 @@
 "lang": "fon",
 "source": "Vous y réglez la taille du texte,",
 "text": "A nɔ jla nǔwlanwlán ɔ sín ɖaxó ɖó ɖò finɛ,."
+},
+{
+"key": "375db8437655ec4d30576d39e1fab08f8966f11ea06cfa7dda45af92cf21ea0e",
+"lang": "fon",
+"source": "Merci Madame. Nous continuons à la maison.",
+"text": "È na cɛ nu we Madame. Mǐ kpó ɖò xwégbe yì wɛ."
 },
 {
 "key": "377c7d4a46da3c5d9d4f7a1189effcc8e8d790507e498c6cbfc3deacbcfe2285",
@@ -6408,6 +6468,12 @@
 "text": "Azɔ̌ énɛ́ ɔ́ nɔ́ ná acɛ e a ma ɖó ǎ é abǐ é nɔ́ wa nǔ hú tɛn towe: a sixú ɖè síìn ǎ."
 },
 {
+"key": "57c7c9762fcf41e0c76d01afcb09b7010defdab0a8b11fc9922495ceec92e8b9",
+"lang": "fon",
+"source": "Bulletin de 2, Semestre 3 4-5. Moyenne générale : 6 sur 7, Très bien. Rang : 8e sur 9. Appréciation : Très bon travail, continuez ainsi.",
+"text": "Kati Gbè 2gɔ́ ɔ, Akpáxwé 3gɔ́ ɔ 4-5. Ðò bǐbɛ̌mɛ ɔ: 6 ɖò 7 jí, É nyɔ́ tawun. Rank: 8ème sur 9. Note: Azɔ̌ ɖagbe ɖé wɛ, mi kpó ɖò mɔ̌ wà wɛ."
+},
+{
 "key": "58014033aca3c32bc89fc96059e948d61ec062b3d1b87d4548f7d2e52c6ee784",
 "lang": "fon",
 "source": "Présence de la semaine",
@@ -6628,6 +6694,12 @@
 "lang": "fon",
 "source": "Les paiements s'enregistrent depuis la facture : ouvrez-la pour encaisser une tranche.",
 "text": "È nɔ wlan akwɛ e è sú lɛ é dó facture ɔ jí: hun bo yí akwɛ kpɛɖé."
+},
+{
+"key": "5b228a6a6912d3ca58a77442ad79e82c3463ed1f7d4d12a95851c680ce768fb1",
+"lang": "fon",
+"source": "Bulletin de 2, Trimestre 3 4-5. Moyenne générale : 6 sur 7, Bien. Rang : 8e sur 9. Appréciation : Très bon travail, continuez ainsi.",
+"text": "Xójlawema 2gɔ́ ɔ, Akpáxwé 3gɔ́ ɔ 4-5. Ðò linlin mɛ bǐ mlɛ́mlɛ́: 6 ɖò 7 jí, É nyɔ́. Rank: 8ème sur 9. Note: Azɔ̌ ɖagbe ɖé wɛ, mi kpó ɖò mɔ̌ wà wɛ."
 },
 {
 "key": "5b3d6d140a381e8bebb52349a4c116d6d8fc9db86185c13ff8f4d17df1f03c69",
@@ -7252,6 +7324,12 @@
 "lang": "fon",
 "source": "Matricule 2.",
 "text": "Numɛro 2."
+},
+{
+"key": "622c85fcdc74bee42e3c8521cb0e24bf657e236aeed3b3a99d789095f074b00f",
+"lang": "fon",
+"source": "Examen blanc départemental du BEPC 2, 3",
+"text": "BEPC 2, 3 azɔ̌xɔsa sín tɛnkpɔn ɖé"
 },
 {
 "key": "622ea8a54fe61af226106b1bb05779a5c1ad795587c1f546891220d95f4eaa59",
@@ -8544,6 +8622,12 @@
 "text": "Wema e mɛ è nɔ wlan nyikɔ dó é"
 },
 {
+"key": "73da6de5c08be41dfe11e266ec08b718778ec3862ba2d9654fe3eef9d6c0fd45",
+"lang": "fon",
+"source": "Bulletin de 2, Semestre 3 4-5. Moyenne générale : 6 sur 7, Passable. Rang : 8e sur 9. Appréciation : Travail satisfaisant, peut mieux faire.",
+"text": "Kati Gbè 2gɔ́ ɔ, Akpáxwé 3gɔ́ ɔ 4-5. Ðò linlin mɛ bǐ mlɛ́mlɛ́: 6 ɖò 7 jí, Fair. Rank: 8ème sur 9. Rating: Azɔ̌ e jɛmɛ nú mɛ é, sixu wà nǔ ɖagbe hú mɔ̌."
+},
+{
 "key": "73dfe6768e45e5f11295c2d8d57c5740cb857d0f34aaee36540a24792e29e6e9",
 "lang": "fon",
 "source": "L'enregistrement a échoué. Réessayez.",
@@ -8862,6 +8946,12 @@
 "text": "Nǔ lɛ"
 },
 {
+"key": "77e70273f42b7d7b8cb47d3a23c768c7dee37db02386d80d0267f8a3aa929677",
+"lang": "fon",
+"source": "Circonscription scolaire d'2",
+"text": "Azɔmɛxwe 2 ɔ"
+},
+{
 "key": "780edd5c7c7da983254fe492ff997cf96dc6e37cc3048d836a5d57d75fe70101",
 "lang": "fon",
 "source": "Rechercher une référence, un élève, une facture…",
@@ -8944,6 +9034,12 @@
 "lang": "fon",
 "source": "Titre",
 "text": "Xɔ́ta"
+},
+{
+"key": "78e81080102e0da74d534c1b1ae1eeba65d2fd4e2cd469ce336c07d49afa9859",
+"lang": "fon",
+"source": "Bulletin de 2, Semestre 3 4-5. Moyenne générale : 6 sur 7, Bien. Rang : 8e sur 9. Appréciation : Très bon travail, continuez ainsi.",
+"text": "Kati Gbè 2gɔ́ ɔ, Akpáxwé 3gɔ́ ɔ 4-5. Ðò linlin mɛ bǐ mlɛ́mlɛ́: 6 ɖò 7 jí, É nyɔ́. Rank: 8ème sur 9. Note: Azɔ̌ ɖagbe ɖé wɛ, mi kpó ɖò mɔ̌ wà wɛ."
 },
 {
 "key": "79075209f2bb88659c27b70f45fa4f4df8ecdb6395abcfc2d54b2a5184116950",
@@ -9052,6 +9148,12 @@
 "lang": "fon",
 "source": "Contenu",
 "text": "Vode"
+},
+{
+"key": "7a6e370a3d42a2a09dfba02e605ae7b2abe62bb7845cea82e652972db9b15f36",
+"lang": "fon",
+"source": "2 a 3 années de scolarité dans 4, dans 5 établissements : 6, 7. 8 transferts dans son parcours.",
+"text": "2 à 3 ans d’école dans 4, dans 5 établissements : 6, 7. 8 transferts dans son cours."
 },
 {
 "key": "7a8a6c4b7b195da6c3581ff111f084027881500e3846e8d9f8c4243f076d7778",
@@ -10164,6 +10266,12 @@
 "text": "Mɛ e yí lɛ é sín nǔxixa."
 },
 {
+"key": "897b87163f32c6ad41584a222fbe11499463231f131a653293549151c9ed5c8b",
+"lang": "fon",
+"source": "2 retards",
+"text": "hwenu 2"
+},
+{
 "key": "89a4c41de9d776e3956674a86f91a79212d8e90a80a090faf6038146af50a70e",
 "lang": "fon",
 "source": "Sur le tableau de bord, appuyez sur « Écouter » : la voix lit le résumé de chaque enfant.",
@@ -10780,6 +10888,12 @@
 "lang": "fon",
 "source": "Prochaine échéance : 2 3 FCFA avant le 4 janvier 5.",
 "text": "Azǎn e bɔ d’ewu é: 2 3 FCFA jɛ nukɔn nú azǎn 4gɔ́ ɔ Kɔnyásun 5gɔ́ ɔ."
+},
+{
+"key": "924d09db3e77603caf6dc50bb3ab3c8d099e1e6e8a206567da916647b880b739",
+"lang": "fon",
+"source": "passe en classe supérieure",
+"text": "sɛ̀ tɛn yì wemaxɔmɛ ɖaxó ɖé mɛ."
 },
 {
 "key": "925318b2c00b9919c27d09917f75936c56982ba9cf3d4d1216707805eada80ab",
@@ -11784,6 +11898,12 @@
 "text": "Mɛjitɔ́ yɔyɔ̌"
 },
 {
+"key": "9de16080381790062036395b3dca4f85837a44367f9676f5c49771a8aa3e7c9c",
+"lang": "fon",
+"source": "2 a 3 années de scolarité dans 4, dans 5 établissements : 6, 7. Un transfert dans son parcours.",
+"text": "2 à 3 ans d’école dans 4, dans 5 établissements : 6, 7. A transfert dans son carrière."
+},
+{
 "key": "9de391b1c7a940f38611b5affebda1b8e1a8b59af5f38cc74af3ff16e66c33b7",
 "lang": "fon",
 "source": "Nouveau message de 2",
@@ -12294,6 +12414,12 @@
 "text": "Ðyɔ fɔtóo"
 },
 {
+"key": "a5c4dffe7201d4eb75d33bd464434f5728d8aa5f32b3d1ee80c8083c06e16b2e",
+"lang": "fon",
+"source": "2e · épreuves du 3 mai 4 au 5 mai 4 · Direction départementale 6",
+"text": "2ème · tests de 3 mai, 4 mai à 5 mai, 4 · Direction départementale 6"
+},
+{
 "key": "a5cbb7322bc2c5516a52c7ea0fcd594dadf8d6747321fe54cf9f6ba0f0c2cd19",
 "lang": "fon",
 "source": "Toutes les annonces et ressources",
@@ -12496,6 +12622,12 @@
 "lang": "fon",
 "source": "Jeudi",
 "text": "Nyɔnuzanbgé"
+},
+{
+"key": "a96ed4712da7a04b69b19b621ef704776f680fd4fbc9c4d1d6c33ecf576a43b4",
+"lang": "fon",
+"source": "Moyenne générale : 2 sur 3, Très bien.",
+"text": "Ðò linlin mɛ bǐ mlɛ́mlɛ́: 2 ɖò 3 jí, É nyɔ́ tawun."
 },
 {
 "key": "a97727fd6ab81616ba164efb37a48134d25b4af6e05a281d36adcddbc3b32b2c",
@@ -12820,6 +12952,12 @@
 "lang": "fon",
 "source": "Ces réglages s'appliquent tout de suite et restent enregistrés sur cet appareil.",
 "text": "Nǔ enɛ lɛ nɔ w’azɔ̌ tlolo bo nɔ kpó ɖò nǔ enɛ jí."
+},
+{
+"key": "ae49b701b6383bbad4b3684093885253eae537741dcac597986c03294ac67acd",
+"lang": "fon",
+"source": "Appréciation : Très bon travail, continuez ainsi.",
+"text": "Rating: Azɔ̌ ɖagbe ɖé wɛ, mi kpó ɖò mɔ̌ wà wɛ."
 },
 {
 "key": "ae5719a5b11104960f5ec3292a807ba2df50b999a38d0310df642f1e78c21f5a",
@@ -14712,6 +14850,12 @@
 "text": "Wɛn nú xwédo ɔ."
 },
 {
+"key": "c91776f7475f348ba2454b394f46dda0471a358a9a26ec36a3b8cd56745c897d",
+"lang": "fon",
+"source": "exclu",
+"text": "è ɖè sín mɛ"
+},
+{
 "key": "c9195a7520bf28581e2575fad758416743f368f7a1cf1204085cdb46509edd16",
 "lang": "fon",
 "source": "Dans « Messagerie », répondez au professeur ou au secrétariat. Un nombre sur fond rouge indique les messages non lus.",
@@ -15070,6 +15214,12 @@
 "lang": "fon",
 "source": "Maternel et primaire",
 "text": "Nursery kpodo primaire kpo"
+},
+{
+"key": "cd7fde03890f652d2b30627dc2e43cb14c0fbac04e6f50eafa5ab229a77e598d",
+"lang": "fon",
+"source": "Bulletin de 2, Trimestre 3 4-5. Moyenne générale : 6 sur 7, Assez bien. Rang : 8e sur 9. Appréciation : Travail satisfaisant, peut mieux faire.",
+"text": "Xójlawema 2gɔ́ ɔ, Akpáxwé 3gɔ́ ɔ 4-5. Ðò linlin mɛ bǐ mlɛ́mlɛ́: 6 ɖò 7 jí, É nyɔ́ tawun. Rank: 8ème sur 9. Rating: Azɔ̌ e jɛmɛ nú mɛ é, sixu wà nǔ ɖagbe hú mɔ̌."
 },
 {
 "key": "cd889d3f003016a49eb606a85d08ccd689d536b37f00decf79bc8d6164b32067",
@@ -16066,6 +16216,12 @@
 "lang": "fon",
 "source": "Parcours de",
 "text": "Tomɛyiyi"
+},
+{
+"key": "db66a40e46a328ab49bf01bf3e61882a55b6c5d23f8e94e7c71e960324c1559b",
+"lang": "fon",
+"source": "redouble",
+"text": "azɔn we"
 },
 {
 "key": "db7cfd08a6341dc40d15fac31f1b86b9fccbe209586355945030facaa5b2ad3a",
@@ -17298,6 +17454,12 @@
 "text": "Wemaxɔmɛ ɔ nɔ gbéjé akpáxwé ɔ kpɔ́n, enɛ gudo ɔ, è nɔ súnsún wema ɔ."
 },
 {
+"key": "ede2583fe6268f0b0273d8fd3c57dffe2d775f0f2a94d44339cd16e6988af3dc",
+"lang": "fon",
+"source": "2 a 3 années de scolarité dans 4, dans 5 établissements : 6, 7.",
+"text": "Xwè 2 jɛ 3 ɖò wemaxɔmɛ ɖò 4 mɛ, ɖò azɔ̌xwé 5 mɛ: 6, 7."
+},
+{
 "key": "ee166cafcd294c5a4e7afe3905769e0227fcc4b78918ac525458db68a2a22a57",
 "lang": "fon",
 "source": "Cotisation APE",
@@ -18346,6 +18508,12 @@
 "lang": "fon",
 "source": "Cette pièce a déjà reçu une réponse.",
 "text": "È ko na xósin nú xóta elɔ."
+},
+{
+"key": "fbc7553363905463915661f19359deb1d455be9f2bdd16d15e6ce44fb0701f59",
+"lang": "fon",
+"source": "Examen blanc du CEP 2, circonscription d'3",
+"text": "CEP 2 tɛnkpɔn ɖiɖe, tokpɔn 3"
 },
 {
 "key": "fbfbced05732f49ff3e0587492138234dfc89f945f19c5d56af8df3f714fdec8",
@@ -19830,6 +19998,12 @@
 "text": "Jẹrisi ipinnu"
 },
 {
+"key": "10d3aecb2da72151960c55242faae9946cddbed9f9fbd94e78005452a6ed5261",
+"lang": "yo",
+"source": "Bonjour Madame. Les résultats du premier semestre sont en ligne. En mathématiques, votre fille progresse bien ; elle doit continuer à faire ses exercices chaque soir.",
+"text": "Kaabo Iyaafin Awọn abajade fun igba ikawe akọkọ wa lori ayelujara. Ni mathimatiki, ọmọbirin rẹ nlọsiwaju daradara; o gbọdọ tẹsiwaju lati ṣe awọn adaṣe rẹ ni gbogbo aṣalẹ."
+},
+{
 "key": "10f74aa6dee086165b666b5ccc951cb46816da03c49f477fd9b16b7b7e8e718f",
 "lang": "yo",
 "source": "Aucune valeur",
@@ -20028,10 +20202,22 @@
 "text": "Awọn akoko ipari gbọdọ tẹle ni ilana akoko."
 },
 {
+"key": "148b6ad8cbe5e23c2d25f2c90e962be632f60ab6cfbecf18de6cd7073c6c8d4a",
+"lang": "yo",
+"source": "Moyenne générale : 2 sur 3, Bien.",
+"text": "Apapọ apapọ: 2 ninu 3, O dara."
+},
+{
 "key": "14d22432eb6d06cf8b4851485d9ceabc6818be966980cb5915dbcf83a58bbde4",
 "lang": "yo",
 "source": "Validé",
 "text": "Wulo"
+},
+{
+"key": "153314f68a4c27aa03fc055386b0a26b96e8a062d3c51aff68956783ea4d2994",
+"lang": "yo",
+"source": "CM2 · épreuves du 3 mai 4 au 5 mai 4 · Circonscription scolaire d'6",
+"text": "CM2 · awọn idanwo lati May 3, May 4 si May 5, 4 · Agbegbe ile-iwe ti 6"
 },
 {
 "key": "1534d201936b6a6dede81b83b339eea2f570ab351aca934858e3faa0a71afa2a",
@@ -20116,6 +20302,12 @@
 "lang": "yo",
 "source": "Notifications sur cet appareil",
 "text": "Awọn iwifunni lori ẹrọ yii"
+},
+{
+"key": "1609f5583155cfda3fc22e65dfd6fd647aa23afa23de3115ecd2f345cf3e2340",
+"lang": "yo",
+"source": "Circonscription scolaire d'2 (Circonscription scolaire)",
+"text": "Agbegbe ile-iwe 2 (agbegbe ile-iwe)"
 },
 {
 "key": "16118d339be67380d9fb045897f08995c2532faed4da2d6a8c3892de3d039726",
@@ -20802,6 +20994,12 @@
 "text": ", 2 julọ"
 },
 {
+"key": "210b1d4a7c7d93271c4dd10925577fa03a674af82a7470204b7ed372eeb880f1",
+"lang": "yo",
+"source": "Bulletin de 2, Trimestre 3 4-5. Moyenne générale : 6 sur 7, Très bien. Rang : 8e sur 9. Appréciation : Très bon travail, continuez ainsi.",
+"text": "Iwe itẹjade 2, mẹẹdogun 3 4-5. Apapọ apapọ: 6 ti 7, O dara pupọ. Ipo: 8th jade ti 9. Rating: Gan ti o dara iṣẹ, pa o soke."
+},
+{
 "key": "211e806f6cd1842c9d52861930fe9d693e723a3dc97dd2beef535c124e341aab",
 "lang": "yo",
 "source": "Trimestre",
@@ -20992,6 +21190,12 @@
 "lang": "yo",
 "source": "Commencez par la contribution scolaire : son montant, puis ses tranches.",
 "text": "Bẹrẹ pẹlu ilowosi ile-iwe: iye rẹ, lẹhinna awọn ipin rẹ."
+},
+{
+"key": "235d05c6004687957841d0622b551d79ae1a673a0c94332e33187c01ac9231fe",
+"lang": "yo",
+"source": "Moyenne générale : 2 sur 3, Assez bien.",
+"text": "Iwoye apapọ: 2 ti 3, O dara daradara."
 },
 {
 "key": "236ae6d7d3318ab26779896f4563995f090c44033ca4a9b7bc8d427e96bedcbb",
@@ -21348,6 +21552,12 @@
 "text": "Iye ti o wọle ("
 },
 {
+"key": "2823534dd529f40ea9931cb744da07a8e8dc38aaf86040d0e7cb0920c28d99ca",
+"lang": "yo",
+"source": "Résultats du premier semestre",
+"text": "Awọn abajade idaji akọkọ"
+},
+{
 "key": "283348d05e1cd82a464515beb798768a4ee858161661744ccf46102445ed1e53",
 "lang": "yo",
 "source": "Refuser",
@@ -21700,6 +21910,12 @@
 "lang": "yo",
 "source": "Aperçu non publié",
 "text": "Awotẹlẹ ti ko tẹjade"
+},
+{
+"key": "2ccb4b8b92e1112bfaf281876f9cd1cfad032ca3b18d9a3d055c7361c4037ce9",
+"lang": "yo",
+"source": "Circonscription scolaire d'Abomey-Calavi",
+"text": "Agbegbe ile-iwe Abomey-Calavi"
 },
 {
 "key": "2ce44acbae6a133d3b0aae58e84cfb364ac207ee51d1418293b7c5780f8435bf",
@@ -22398,6 +22614,12 @@
 "text": "Taabu “Awọn giredi” funni ni ipele kọọkan ati aropin ipese rẹ fun mẹẹdogun."
 },
 {
+"key": "35d2f0724c95529afe118895c02543db65d93b98903722bc0076351533a4ad15",
+"lang": "yo",
+"source": "Bulletin de 2, Semestre 3 4-5. Moyenne générale : 6 sur 7, Assez bien. Rang : 8e sur 9. Appréciation : Travail satisfaisant, peut mieux faire.",
+"text": "Kaadi Iroyin 2, Semester 3 4-5. apapọ apapọ: 6 ti 7, Iṣẹtọ dara. Ipo: 8th ninu 9. Rating: Iṣẹ itelorun, le ṣe dara julọ."
+},
+{
 "key": "35edb8267691892a504f94c4448f48e1ce9ade9b5c000561d987e16136966b39",
 "lang": "yo",
 "source": "Compte introuvable.",
@@ -22480,6 +22702,12 @@
 "lang": "yo",
 "source": "L'élève retrouve sa place en",
 "text": "Ọmọ ile-iwe wa aaye rẹ ninu"
+},
+{
+"key": "375db8437655ec4d30576d39e1fab08f8966f11ea06cfa7dda45af92cf21ea0e",
+"lang": "yo",
+"source": "Merci Madame. Nous continuons à la maison.",
+"text": "O ṣeun Madam. A tesiwaju ile."
 },
 {
 "key": "377c7d4a46da3c5d9d4f7a1189effcc8e8d790507e498c6cbfc3deacbcfe2285",
@@ -24876,6 +25104,12 @@
 "text": "Yi ipa yoo fun awọn ẹtọ ti o ko ba ni tabi sise loke rẹ ipele: o ko ba le yọ o."
 },
 {
+"key": "57c7c9762fcf41e0c76d01afcb09b7010defdab0a8b11fc9922495ceec92e8b9",
+"lang": "yo",
+"source": "Bulletin de 2, Semestre 3 4-5. Moyenne générale : 6 sur 7, Très bien. Rang : 8e sur 9. Appréciation : Très bon travail, continuez ainsi.",
+"text": "Kaadi Iroyin 2, Semester 3 4-5. Apapọ apapọ: 6 ti 7, O dara pupọ. Ipo: 8th jade ti 9. Rating: Gan ti o dara iṣẹ, pa o soke."
+},
+{
 "key": "58014033aca3c32bc89fc96059e948d61ec062b3d1b87d4548f7d2e52c6ee784",
 "lang": "yo",
 "source": "Présence de la semaine",
@@ -25090,6 +25324,12 @@
 "lang": "yo",
 "source": "Les paiements s'enregistrent depuis la facture : ouvrez-la pour encaisser une tranche.",
 "text": "Awọn sisanwo ti wa ni igbasilẹ lati inu risiti: ṣii lati gba diẹdiẹ kan."
+},
+{
+"key": "5b228a6a6912d3ca58a77442ad79e82c3463ed1f7d4d12a95851c680ce768fb1",
+"lang": "yo",
+"source": "Bulletin de 2, Trimestre 3 4-5. Moyenne générale : 6 sur 7, Bien. Rang : 8e sur 9. Appréciation : Très bon travail, continuez ainsi.",
+"text": "Iwe itẹjade 2, mẹẹdogun 3 4-5. Apapọ apapọ: 6 ti 7, O dara. Ipo: 8th jade ti 9. Rating: Gan ti o dara iṣẹ, pa o soke."
 },
 {
 "key": "5b3d6d140a381e8bebb52349a4c116d6d8fc9db86185c13ff8f4d17df1f03c69",
@@ -25666,6 +25906,12 @@
 "lang": "yo",
 "source": "Matricule 2.",
 "text": "Nọmba 2."
+},
+{
+"key": "622c85fcdc74bee42e3c8521cb0e24bf657e236aeed3b3a99d789095f074b00f",
+"lang": "yo",
+"source": "Examen blanc départemental du BEPC 2, 3",
+"text": "BEPC 2, 3 Departmental Mock kẹhìn"
 },
 {
 "key": "622ea8a54fe61af226106b1bb05779a5c1ad795587c1f546891220d95f4eaa59",
@@ -26910,6 +27156,12 @@
 "text": "Iwe iforukọsilẹ"
 },
 {
+"key": "73da6de5c08be41dfe11e266ec08b718778ec3862ba2d9654fe3eef9d6c0fd45",
+"lang": "yo",
+"source": "Bulletin de 2, Semestre 3 4-5. Moyenne générale : 6 sur 7, Passable. Rang : 8e sur 9. Appréciation : Travail satisfaisant, peut mieux faire.",
+"text": "Kaadi Iroyin 2, Semester 3 4-5. Apapọ apapọ: 6 ninu 7, Fair. Ipo: 8th ninu 9. Rating: Iṣẹ itelorun, le ṣe dara julọ."
+},
+{
 "key": "73dfe6768e45e5f11295c2d8d57c5740cb857d0f34aaee36540a24792e29e6e9",
 "lang": "yo",
 "source": "L'enregistrement a échoué. Réessayez.",
@@ -27216,6 +27468,12 @@
 "text": "Awọn ojuami"
 },
 {
+"key": "77e70273f42b7d7b8cb47d3a23c768c7dee37db02386d80d0267f8a3aa929677",
+"lang": "yo",
+"source": "Circonscription scolaire d'2",
+"text": "Agbegbe ile-iwe 2"
+},
+{
 "key": "780edd5c7c7da983254fe492ff997cf96dc6e37cc3048d836a5d57d75fe70101",
 "lang": "yo",
 "source": "Rechercher une référence, un élève, une facture…",
@@ -27298,6 +27556,12 @@
 "lang": "yo",
 "source": "Titre",
 "text": "Akọle"
+},
+{
+"key": "78e81080102e0da74d534c1b1ae1eeba65d2fd4e2cd469ce336c07d49afa9859",
+"lang": "yo",
+"source": "Bulletin de 2, Semestre 3 4-5. Moyenne générale : 6 sur 7, Bien. Rang : 8e sur 9. Appréciation : Très bon travail, continuez ainsi.",
+"text": "Kaadi Iroyin 2, Semester 3 4-5. Apapọ apapọ: 6 ti 7, O dara. Ipo: 8th jade ti 9. Rating: Gan ti o dara iṣẹ, pa o soke."
 },
 {
 "key": "79075209f2bb88659c27b70f45fa4f4df8ecdb6395abcfc2d54b2a5184116950",
@@ -27400,6 +27664,12 @@
 "lang": "yo",
 "source": "Contenu",
 "text": "Akoonu"
+},
+{
+"key": "7a6e370a3d42a2a09dfba02e605ae7b2abe62bb7845cea82e652972db9b15f36",
+"lang": "yo",
+"source": "2 a 3 années de scolarité dans 4, dans 5 établissements : 6, 7. 8 transferts dans son parcours.",
+"text": "2 si 3 ọdun ti ile-iwe ni 4, ni awọn idasile 5: 6, 7. 8 awọn gbigbe ni ipa ọna rẹ."
 },
 {
 "key": "7a8a6c4b7b195da6c3581ff111f084027881500e3846e8d9f8c4243f076d7778",
@@ -28452,6 +28722,12 @@
 "text": "Kika nipasẹ awọn olugba"
 },
 {
+"key": "897b87163f32c6ad41584a222fbe11499463231f131a653293549151c9ed5c8b",
+"lang": "yo",
+"source": "2 retards",
+"text": "2 idaduro"
+},
+{
 "key": "89a4c41de9d776e3956674a86f91a79212d8e90a80a090faf6038146af50a70e",
 "lang": "yo",
 "source": "Sur le tableau de bord, appuyez sur « Écouter » : la voix lit le résumé de chaque enfant.",
@@ -29050,6 +29326,12 @@
 "lang": "yo",
 "source": "Prochaine échéance : 2 3 FCFA avant le 4 janvier 5.",
 "text": "Ọjọ ipari: 2 3 FCFA ṣaaju Oṣu Kini Ọjọ 4, 5."
+},
+{
+"key": "924d09db3e77603caf6dc50bb3ab3c8d099e1e6e8a206567da916647b880b739",
+"lang": "yo",
+"source": "passe en classe supérieure",
+"text": "gbe soke si kan ti o ga kilasi"
 },
 {
 "key": "925318b2c00b9919c27d09917f75936c56982ba9cf3d4d1216707805eada80ab",
@@ -30012,6 +30294,12 @@
 "text": "Obi tuntun"
 },
 {
+"key": "9de16080381790062036395b3dca4f85837a44367f9676f5c49771a8aa3e7c9c",
+"lang": "yo",
+"source": "2 a 3 années de scolarité dans 4, dans 5 établissements : 6, 7. Un transfert dans son parcours.",
+"text": "2 si 3 ọdun ti ile-iwe ni 4, ni awọn idasile 5: 6, 7. Gbigbe kan ninu iṣẹ rẹ."
+},
+{
 "key": "9de391b1c7a940f38611b5affebda1b8e1a8b59af5f38cc74af3ff16e66c33b7",
 "lang": "yo",
 "source": "Nouveau message de 2",
@@ -30492,6 +30780,12 @@
 "text": "Yi fọto pada"
 },
 {
+"key": "a5c4dffe7201d4eb75d33bd464434f5728d8aa5f32b3d1ee80c8083c06e16b2e",
+"lang": "yo",
+"source": "2e · épreuves du 3 mai 4 au 5 mai 4 · Direction départementale 6",
+"text": "2nd · idanwo lati May 3, May 4 si 5, 4 · Ẹka itọsọna 6"
+},
+{
 "key": "a5cbb7322bc2c5516a52c7ea0fcd594dadf8d6747321fe54cf9f6ba0f0c2cd19",
 "lang": "yo",
 "source": "Toutes les annonces et ressources",
@@ -30688,6 +30982,12 @@
 "lang": "yo",
 "source": "Jeudi",
 "text": "OJO JUMI"
+},
+{
+"key": "a96ed4712da7a04b69b19b621ef704776f680fd4fbc9c4d1d6c33ecf576a43b4",
+"lang": "yo",
+"source": "Moyenne générale : 2 sur 3, Très bien.",
+"text": "Apapọ apapọ: 2 ti 3, O dara pupọ."
 },
 {
 "key": "a97727fd6ab81616ba164efb37a48134d25b4af6e05a281d36adcddbc3b32b2c",
@@ -31000,6 +31300,12 @@
 "lang": "yo",
 "source": "Ces réglages s'appliquent tout de suite et restent enregistrés sur cet appareil.",
 "text": "Awọn eto wọnyi waye lẹsẹkẹsẹ ati wa ni ipamọ lori ẹrọ yii."
+},
+{
+"key": "ae49b701b6383bbad4b3684093885253eae537741dcac597986c03294ac67acd",
+"lang": "yo",
+"source": "Appréciation : Très bon travail, continuez ainsi.",
+"text": "Rating: Gan ti o dara iṣẹ, pa o soke."
 },
 {
 "key": "ae5719a5b11104960f5ec3292a807ba2df50b999a38d0310df642f1e78c21f5a",
@@ -32844,6 +33150,12 @@
 "text": "Ifiranṣẹ si idile"
 },
 {
+"key": "c91776f7475f348ba2454b394f46dda0471a358a9a26ec36a3b8cd56745c897d",
+"lang": "yo",
+"source": "exclu",
+"text": "yọkuro"
+},
+{
 "key": "c9195a7520bf28581e2575fad758416743f368f7a1cf1204085cdb46509edd16",
 "lang": "yo",
 "source": "Dans « Messagerie », répondez au professeur ou au secrétariat. Un nombre sur fond rouge indique les messages non lus.",
@@ -33202,6 +33514,12 @@
 "lang": "yo",
 "source": "Maternel et primaire",
 "text": "Nursery ati jc"
+},
+{
+"key": "cd7fde03890f652d2b30627dc2e43cb14c0fbac04e6f50eafa5ab229a77e598d",
+"lang": "yo",
+"source": "Bulletin de 2, Trimestre 3 4-5. Moyenne générale : 6 sur 7, Assez bien. Rang : 8e sur 9. Appréciation : Travail satisfaisant, peut mieux faire.",
+"text": "Iwe itẹjade 2, mẹẹdogun 3 4-5. apapọ apapọ: 6 ti 7, Iṣẹtọ dara. Ipo: 8th ninu 9. Rating: Iṣẹ itelorun, le ṣe dara julọ."
 },
 {
 "key": "cd889d3f003016a49eb606a85d08ccd689d536b37f00decf79bc8d6164b32067",
@@ -34162,6 +34480,12 @@
 "lang": "yo",
 "source": "Parcours de",
 "text": "Irin ajo ti"
+},
+{
+"key": "db66a40e46a328ab49bf01bf3e61882a55b6c5d23f8e94e7c71e960324c1559b",
+"lang": "yo",
+"source": "redouble",
+"text": "redoubles"
 },
 {
 "key": "db7cfd08a6341dc40d15fac31f1b86b9fccbe209586355945030facaa5b2ad3a",
@@ -35328,6 +35652,12 @@
 "text": "Ile-iwe naa jẹrisi apakan naa, lẹhinna faili ti paarẹ."
 },
 {
+"key": "ede2583fe6268f0b0273d8fd3c57dffe2d775f0f2a94d44339cd16e6988af3dc",
+"lang": "yo",
+"source": "2 a 3 années de scolarité dans 4, dans 5 établissements : 6, 7.",
+"text": "2 si 3 ọdun ti ile-iwe ni 4, ni awọn idasile 5: 6, 7."
+},
+{
 "key": "ee166cafcd294c5a4e7afe3905769e0227fcc4b78918ac525458db68a2a22a57",
 "lang": "yo",
 "source": "Cotisation APE",
@@ -36322,6 +36652,12 @@
 "lang": "yo",
 "source": "Cette pièce a déjà reçu une réponse.",
 "text": "A ti dahun nkan yii tẹlẹ."
+},
+{
+"key": "fbc7553363905463915661f19359deb1d455be9f2bdd16d15e6ce44fb0701f59",
+"lang": "yo",
+"source": "Examen blanc du CEP 2, circonscription d'3",
+"text": "Idanwo ẹlẹgàn CEP 2, agbegbe 3"
 },
 {
 "key": "fbfbced05732f49ff3e0587492138234dfc89f945f19c5d56af8df3f714fdec8",

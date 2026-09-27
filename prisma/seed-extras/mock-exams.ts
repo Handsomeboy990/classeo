@@ -5,8 +5,11 @@ import type { SeedContext } from "./index";
 // Mock exams (examens blancs), deterministic, organised where they are in
 // Benin: the BEPC mock by the DDESTFP of the department, the CEP mock by the
 // circonscription scolaire, both in the months before the June exams.
-// - 2025-2026: the departmental BEPC mock of the Atlantique, sat in May 2026
-//   and closed, with the results of the 3e classes of CEG Godomey;
+// - every past year, 2022-2023 to 2025-2026: the departmental BEPC mock of
+//   the Atlantique, sat in May and closed, with the results of the 3e pupils
+//   of every participating college, and the CEP mock of the circonscription
+//   of Abomey-Calavi with the results of the CM2 pupils of its schools. A
+//   pupil's scores follow the yearly average the class council recorded;
 // - 2026-2027: the first departmental BEPC mock of the Atlantique, planned
 //   in February 2027, imposed on every college of the department teaching
 //   3e;
@@ -24,11 +27,10 @@ function generator(seed: number) {
 export async function seedMockExams(db: PrismaClient, ctx: SeedContext) {
   const year = await db.academicYear.findUniqueOrThrow({ where: { id: ctx.yearId }, select: { id: true, startDate: true } });
   const prevYear = await db.academicYear.findFirst({ where: { startDate: { lt: year.startDate } }, orderBy: { startDate: "desc" }, select: { id: true } });
-  const [ddestfp, district, levels, ceg] = await Promise.all([
+  const [ddestfp, district, levels] = await Promise.all([
     db.user.findUnique({ where: { username: "aristide.gbaguidi" }, select: { id: true, departmentId: true } }),
     db.user.findUnique({ where: { username: "benedicta.zannou" }, select: { id: true, communeId: true, commune: { select: { departmentId: true } } } }),
     db.academicLevel.findMany({ where: { code: { in: ["CM2", "3E"] } }, select: { id: true, code: true } }),
-    db.school.findUniqueOrThrow({ where: { id: ctx.schools.ceg }, select: { id: true, name: true, communeId: true, commune: { select: { departmentId: true } } } }),
   ]);
   if (!ddestfp?.departmentId || !district?.communeId || !prevYear) throw new Error("mock exams seed: the Atlantique DDESTFP, the Abomey-Calavi circonscription or last year is missing");
   const level = Object.fromEntries(levels.map((l) => [l.code, l.id]));
@@ -41,44 +43,69 @@ export async function seedMockExams(db: PrismaClient, ctx: SeedContext) {
       orderBy: { code: "asc" },
     });
 
-  // 1. Last year's departmental BEPC mock, sat and closed.
-  const lastSchools = await collegesWith3e(prevYear.id);
-  const last = await db.mockExam.create({
-    data: {
-      title: "Examen blanc départemental du BEPC 2026, Atlantique",
-      levelId: level["3E"]!,
-      academicYearId: prevYear.id,
-      organizerLevel: "DEPARTMENT",
-      organizerDepartmentId: ddestfp.departmentId,
-      createdById: ddestfp.id,
-      startDate: at("2026-05-12T00:00:00Z"),
-      endDate: at("2026-05-14T00:00:00Z"),
-      subjects: subjects3e,
-      status: "CLOSED",
-      decidedById: ddestfp.id,
-      decidedAt: at("2026-03-10T09:00:00Z"),
-      createdAt: at("2026-03-10T09:00:00Z"),
-      participants: { createMany: { data: lastSchools.map((s) => ({ schoolId: s.id, status: "IMPOSED" as const })) } },
-    },
-    select: { id: true, title: true },
-  });
-  const candidates = await db.enrollment.findMany({
-    where: { schoolId: ceg.id, academicYearId: prevYear.id, classroom: { levelId: level["3E"] } },
-    select: { id: true },
-    orderBy: { id: "asc" },
-  });
+  // 1. The mock exams of the past years, sat and closed.
+  const pastYears = await db.academicYear.findMany({ where: { startDate: { lt: year.startDate } }, orderBy: { startDate: "asc" }, select: { id: true, label: true } });
   const rand = generator(20260512);
-  const results = candidates.flatMap((c) => {
-    const ability = 6 + rand() * 10;
-    return subjects3e.map((code) => ({
-      examId: last.id,
-      enrollmentId: c.id,
-      subjectCode: code,
-      score: Math.max(0, Math.min(20, Math.round((ability + (rand() - 0.5) * 7) * 4) / 4)),
-      enteredById: ctx.ids.teacher,
-    }));
-  });
-  await db.mockExamResult.createMany({ data: results });
+  const primariesOf = (academicYearId: string) =>
+    db.school.findMany({
+      where: { communeId: district.communeId!, cycle: { in: ["PRESCHOOL", "PRIMARY"] }, isActive: true, classrooms: { some: { academicYearId, levelId: level.CM2 } } },
+      select: { id: true },
+      orderBy: { code: "asc" },
+    });
+  // The candidates of an exam: the pupils of the level, with the yearly
+  // average of their council decision and the teacher of each subject.
+  const candidatesOf = (academicYearId: string, levelId: string, schoolIds: string[]) =>
+    db.enrollment.findMany({
+      where: { academicYearId, status: "ACTIVE", schoolId: { in: schoolIds }, classroom: { levelId } },
+      select: { id: true, schoolId: true, councilDecision: { select: { yearlyAverage: true } }, classroom: { select: { assignments: { select: { subject: { select: { code: true } }, teacher: { select: { userId: true } } } } } } },
+      orderBy: { id: "asc" },
+    });
+  type Past = { id: string; title: string; schools: number; results: number; organizer: string; level: string; createdAt: Date; closedAt: Date };
+  const past: Past[] = [];
+  const results: { examId: string; enrollmentId: string; subjectCode: string; score: number; enteredById: string }[] = [];
+  const directors = new Map((await db.user.findMany({ where: { scopeLevel: "SCHOOL", role: { code: "SCHOOL_DIRECTOR" } }, select: { id: true, schoolId: true }, orderBy: { username: "asc" } })).map((u) => [u.schoolId!, u.id]));
+  const score = (average: number, spread: number) => Math.max(0, Math.min(20, Math.round((average - 0.6 + (rand() - 0.5) * spread) * 4) / 4));
+  for (const y of pastYears) {
+    const end = Number(y.label.slice(5));
+    for (const kind of ["BEPC", "CEP"] as const) {
+      const bepc = kind === "BEPC";
+      const schools = bepc ? await collegesWith3e(y.id) : await primariesOf(y.id);
+      const subjects = bepc ? subjects3e : ["P-FR", "P-MATH", "P-EST", "P-ES"];
+      const createdAt = at(`${end}-03-${bepc ? "10" : "12"}T09:00:00Z`);
+      const exam = await db.mockExam.create({
+        data: {
+          title: bepc ? `Examen blanc départemental du BEPC ${end}, Atlantique` : `Examen blanc du CEP ${end}, circonscription d'Abomey-Calavi`,
+          levelId: bepc ? level["3E"]! : level.CM2!,
+          academicYearId: y.id,
+          organizerLevel: bepc ? "DEPARTMENT" : "COMMUNE",
+          organizerCommuneId: bepc ? null : district.communeId,
+          organizerDepartmentId: bepc ? ddestfp.departmentId : (district.commune?.departmentId ?? null),
+          createdById: bepc ? ddestfp.id : district.id,
+          startDate: at(`${end}-05-${bepc ? "12" : "19"}T00:00:00Z`),
+          endDate: at(`${end}-05-${bepc ? "14" : "21"}T00:00:00Z`),
+          subjects,
+          status: "CLOSED",
+          decidedById: bepc ? ddestfp.id : district.id,
+          decidedAt: createdAt,
+          createdAt,
+          participants: { createMany: { data: schools.map((s) => ({ schoolId: s.id, status: "IMPOSED" as const })) } },
+        },
+        select: { id: true, title: true },
+      });
+      const candidates = await candidatesOf(y.id, bepc ? level["3E"]! : level.CM2!, schools.map((s) => s.id));
+      let count = 0;
+      for (const c of candidates) {
+        const average = c.councilDecision?.yearlyAverage === null || c.councilDecision === null ? 9 + rand() * 4 : Number(c.councilDecision.yearlyAverage);
+        const teacherOf = new Map(c.classroom.assignments.map((a) => [a.subject.code, a.teacher?.userId ?? null]));
+        for (const code of subjects) {
+          results.push({ examId: exam.id, enrollmentId: c.id, subjectCode: code, score: score(average, bepc ? 6 : 5), enteredById: teacherOf.get(code) ?? directors.get(c.schoolId) ?? ctx.ids.minister });
+          count++;
+        }
+      }
+      past.push({ id: exam.id, title: exam.title, schools: schools.length, results: count, organizer: bepc ? ddestfp.id : district.id, level: bepc ? "3E" : "CM2", createdAt, closedAt: at(`${end}-05-${bepc ? "28" : "29"}T15:00:00Z`) });
+    }
+  }
+  for (let i = 0; i < results.length; i += 5000) await db.mockExamResult.createMany({ data: results.slice(i, i + 5000) });
 
   // 2. This year's first departmental BEPC mock, before the February pause.
   const schools3e = await collegesWith3e(year.id);
@@ -132,25 +159,26 @@ export async function seedMockExams(db: PrismaClient, ctx: SeedContext) {
   // The timeline of each exam, as the actions write it.
   await db.auditLog.createMany({
     data: [
-      {
-        userId: ddestfp.id,
-        action: "create",
-        resource: "mock_exam",
-        resourceId: last.id,
-        summary: `Examen blanc « ${last.title} » (3e) décidé, participation imposée à ${lastSchools.length} établissements`,
-        metadata: { step: "create", level: "3E", schools: lastSchools.length, imposed: true },
-        createdAt: at("2026-03-10T09:00:00Z"),
-      },
-      {
-        userId: ctx.ids.teacher,
-        action: "update",
-        resource: "mock_exam",
-        resourceId: last.id,
-        schoolId: ceg.id,
-        summary: `Examen blanc « ${last.title} » : ${results.length} notes enregistrées pour ${ceg.name}`,
-        metadata: { step: "results" },
-        createdAt: at("2026-05-20T15:00:00Z"),
-      },
+      ...past.flatMap((p) => [
+        {
+          userId: p.organizer,
+          action: "create",
+          resource: "mock_exam",
+          resourceId: p.id,
+          summary: `Examen blanc « ${p.title} » (${p.level === "3E" ? "3e" : "CM2"}) décidé, participation imposée à ${p.schools} ${p.level === "3E" ? "établissements" : "écoles"}`,
+          metadata: { step: "create", level: p.level, schools: p.schools, imposed: true },
+          createdAt: p.createdAt,
+        },
+        {
+          userId: p.organizer,
+          action: "update",
+          resource: "mock_exam",
+          resourceId: p.id,
+          summary: `Examen blanc « ${p.title} » clôturé : ${p.results} notes enregistrées`,
+          metadata: { step: "close" },
+          createdAt: p.closedAt,
+        },
+      ]),
       {
         userId: ddestfp.id,
         action: "create",
@@ -181,5 +209,5 @@ export async function seedMockExams(db: PrismaClient, ctx: SeedContext) {
       createdAt: at("2026-09-18T10:00:00Z"),
     })),
   });
-  console.log(`mock exams: 3 exams, ${results.length} results for ${ceg.name} in 2025-2026`);
+  console.log(`mock exams: ${past.length + 2} exams, ${results.length} results over ${pastYears.length} past years`);
 }
