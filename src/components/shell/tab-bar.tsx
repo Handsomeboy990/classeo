@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, type ReactNode } from "react";
 
+import type { BrandSettings } from "@/components/brand/settings";
 import { badgeText, unreadLabel } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
 
@@ -12,14 +13,18 @@ import { MenuSheet } from "./menu-sheet";
 import { badgeId, isActiveHref, type RenderedItem, type RenderedSection } from "./sidebar-nav";
 import { prefersReducedMotion } from "./use-compact";
 
+// A tab (design source of truth, part 3.4): the icon on a soft navy pill
+// and a 2 px navy line on the top edge when current, the label in
+// Montserrat; the others in the muted text colour.
 function Tab({ active, icon, label, badge, dot }: { active: boolean; icon: ReactNode; label: string; badge?: number; dot?: boolean }) {
   return (
     <>
+      {active && <span aria-hidden className="absolute top-0 left-1/2 h-0.5 w-6 -translate-x-1/2 rounded-b-full bg-primary" />}
       <span
         data-active={active || undefined}
         className={cn(
-          "tab-pill relative inline-flex h-8 w-full max-w-14 shrink-0 items-center justify-center rounded-full transition-[transform,background-color] duration-150 group-active:scale-90 [&_svg]:size-[1.35rem] [&_svg]:shrink-0",
-          active ? "bg-primary-soft text-primary [&_svg]:stroke-[2.4]" : "text-muted",
+          "tab-pill relative inline-flex h-7 w-full max-w-14 shrink-0 items-center justify-center rounded-full transition-[transform,background-color] duration-150 group-active:scale-90 [&_svg]:size-5.5 [&_svg]:shrink-0",
+          active ? "bg-primary-soft text-primary [&_svg]:stroke-[2.25]" : "text-muted",
         )}
       >
         {icon}
@@ -32,7 +37,7 @@ function Tab({ active, icon, label, badge, dot }: { active: boolean; icon: React
         )}
         {dot && !badge && <span className="nav-dot absolute top-0 left-1/2 ml-2.5" aria-hidden />}
       </span>
-      <span className={cn("max-w-full truncate text-[0.6875rem] leading-tight font-medium tracking-[-0.01em]", active ? "text-primary" : "text-muted")}>{label}</span>
+      <span className={cn("max-w-full truncate font-display text-[0.6875rem] leading-tight font-semibold", active ? "text-primary" : "text-muted")}>{label}</span>
     </>
   );
 }
@@ -40,13 +45,13 @@ function Tab({ active, icon, label, badge, dot }: { active: boolean; icon: React
 // Each tab shares the width equally and may shrink (very large text on a
 // narrow phone): the pill narrows, the icon keeps its size, the label is
 // truncated rather than pushing the last tab off screen.
-const TAB = "group flex h-full w-full min-w-0 flex-col items-center justify-center gap-1 px-0.5 select-none";
+const TAB = "group relative flex h-full w-full min-w-0 flex-col items-center justify-center gap-1 px-0.5 select-none";
 
 // Phone tab bar: the four destinations the user needs most (chosen from
 // their own menu, see mobileTabs in lib/navigation.ts) and "Menu" for the
 // rest. Fixed above the home indicator. Touching the current tab again
 // scrolls back to the top, as in native apps.
-export function TabBar({ tabs, sections }: { tabs: RenderedItem[]; sections: RenderedSection[] }) {
+export function TabBar({ tabs, sections, brand }: { tabs: RenderedItem[]; sections: RenderedSection[]; brand: BrandSettings }) {
   const pathname = usePathname();
   const [menu, setMenu] = useState(false);
   const current = tabs.find((t) => isActiveHref(pathname, t.href));
@@ -97,7 +102,7 @@ export function TabBar({ tabs, sections }: { tabs: RenderedItem[]; sections: Ren
           </li>
         </ul>
       </nav>
-      <MenuSheet sections={sections} open={menu} onClose={() => setMenu(false)} />
+      <MenuSheet sections={sections} brand={brand} open={menu} onClose={() => setMenu(false)} />
     </>
   );
 }

@@ -4,13 +4,15 @@ import { ChevronLeft } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
+import { FlagStripe } from "@/components/brand/flag";
+import { BrandLockup } from "@/components/brand/lockup";
+import type { BrandSettings } from "@/components/brand/settings";
 import { Avatar } from "@/components/ui/avatar";
 import { frenchTextContent } from "@/features/languages/client";
 import { SpaceLanguageMenu } from "@/features/languages/language-menu";
 
 import { AccountSheet, type ShellUser } from "./account-sheet";
 import { BellLink } from "./bell-link";
-import { ScopeIdentity, type ShellScope } from "./scope-identity";
 import type { RenderedSection } from "./sidebar-nav";
 
 // Client side navigations since the app was opened: the back button uses
@@ -59,23 +61,25 @@ function useScrolledHeading(pathname: string) {
   return heading?.path === pathname && heading.text ? heading.text : null;
 }
 
-// Top app bar of the phone shell: one line, never wrapping. Home and the
-// menu pages speak for the user's territory or school (flag or logo and its
-// name, with the school switcher); a page below a menu entry gets a back
-// button and the entry's name.
+// Top app bar of the phone shell (design source of truth, part 3.4): the
+// navy bar of the State sites over a 3 px tricolour rule, one line, never
+// wrapping. Home and the menu pages carry the brand lockup; a page below a
+// menu entry gets a back button and the entry's name. Actions on the right:
+// language (accounts that may translate), notifications, account; white
+// icons on navy, 44 px targets, yellow focus rings (globals.css).
 export function AppBar({
   sections,
   unread,
   user,
   pushKey,
-  scope,
+  brand,
   languages,
 }: {
   sections: RenderedSection[];
   unread: number;
   user: ShellUser;
   pushKey: string | null;
-  scope: ShellScope;
+  brand: BrandSettings;
   languages: string[] | null;
 }) {
   const pathname = usePathname();
@@ -103,39 +107,42 @@ export function AppBar({
   const backTo = entry && entry.href !== pathname ? entry.href : "/espace";
 
   return (
-    <div data-app-bar className="flex h-(--app-bar-h) items-center gap-1 px-1.5 lg:hidden">
-      {detail ? (
+    <div className="bg-header lg:hidden">
+      <div data-app-bar className="flex h-(--app-bar-h) items-center gap-0.5 px-1.5 text-header-text">
+        {detail ? (
+          <button
+            type="button"
+            onClick={() => (inAppNavigations > 0 ? router.back() : router.push(backTo))}
+            className="inline-flex size-11 shrink-0 items-center justify-center rounded-full hover:bg-white/10 active:bg-white/15"
+            aria-label="Retour"
+          >
+            <ChevronLeft className="size-6" aria-hidden />
+          </button>
+        ) : null}
+        {title ? (
+          <p key={title} className="app-title-in min-w-0 flex-1 truncate px-1 font-display text-base font-bold">
+            {title}
+          </p>
+        ) : (
+          <div className="flex min-w-0 flex-1 items-center pl-2">
+            <BrandLockup brand={brand} tone="dark" size="bar" href="/espace" />
+          </div>
+        )}
+        {languages && <SpaceLanguageMenu languages={languages} tone="header" className="mx-0.5" />}
+        <BellLink unread={unread} tone="dark" />
         <button
           type="button"
-          onClick={() => (inAppNavigations > 0 ? router.back() : router.push(backTo))}
-          className="inline-flex size-11 shrink-0 items-center justify-center rounded-full text-text active:bg-surface-2"
-          aria-label="Retour"
+          onClick={() => setAccount(true)}
+          className="inline-flex size-11 shrink-0 items-center justify-center rounded-full hover:bg-white/10 active:bg-white/15"
+          aria-label="Mon compte"
+          aria-haspopup="dialog"
+          aria-expanded={account}
         >
-          <ChevronLeft className="size-6" aria-hidden />
+          <Avatar name={user.fullName} className="size-8 bg-white text-xs text-primary" />
         </button>
-      ) : null}
-      {title ? (
-        <p key={title} className="app-title-in min-w-0 flex-1 truncate px-1 font-display text-lg font-bold">
-          {title}
-        </p>
-      ) : (
-        <div className="flex min-w-0 flex-1 items-center pl-2.5">
-          <ScopeIdentity scope={scope} compact />
-        </div>
-      )}
-      {languages && <SpaceLanguageMenu languages={languages} className="mx-0.5" />}
-      <BellLink unread={unread} />
-      <button
-        type="button"
-        onClick={() => setAccount(true)}
-        className="inline-flex size-11 shrink-0 items-center justify-center rounded-full active:bg-surface-2"
-        aria-label="Mon compte"
-        aria-haspopup="dialog"
-        aria-expanded={account}
-      >
-        <Avatar name={user.fullName} className="size-8 text-xs" />
-      </button>
-      <AccountSheet open={account} onClose={() => setAccount(false)} user={user} pushKey={pushKey} />
+        <AccountSheet open={account} onClose={() => setAccount(false)} user={user} pushKey={pushKey} />
+      </div>
+      <FlagStripe className="h-0.75" />
     </div>
   );
 }
