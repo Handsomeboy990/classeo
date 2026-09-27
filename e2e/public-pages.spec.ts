@@ -1,4 +1,4 @@
-import type { Page } from "@playwright/test";
+import type { Locator, Page } from "@playwright/test";
 
 import { PARTNER_EMAIL, PASSWORD } from "./support/accounts";
 import { chooseLanguage, expect, languageMenu, passwordField, test, uniqueSuffix } from "./support/fixtures";
@@ -9,6 +9,7 @@ import { chooseLanguage, expect, languageMenu, passwordField, test, uniqueSuffix
 // credits. The voice is not exercised here (slow, and quota bound).
 
 const FRENCH_TITLE = "Le système éducatif, à portée de main.";
+const NOTICE = "Plateforme indépendante, non officielle. Non affiliée au Gouvernement du Bénin.";
 
 async function expectNoHorizontalScroll(page: Page) {
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
@@ -33,7 +34,7 @@ test("a visitor reads the home page in Fongbe, then back in French @mobile", asy
   await languageMenu(page).click();
   await expect(page.getByRole("group").nth(1).getByRole("link", { name: "Fongbe", exact: true })).toHaveAttribute("aria-current", "true");
   await page.keyboard.press("Escape");
-  await expect(page.getByText("République du Bénin")).toBeVisible();
+  await expect(page.getByRole("banner").locator("[data-brand-lockup]:visible")).toContainText("République du Bénin");
   await expect(page.getByText(/DEGAN Gabin, CC BY-SA 4\.0/)).toBeVisible();
   await expectNoHorizontalScroll(page);
 
@@ -77,6 +78,10 @@ test("the photo credits are reached from the footer, every photograph credited @
     await expect(item.getByText(/CC BY 4\.0|CC BY-SA 4\.0|Domaine public/).first()).toBeVisible();
     await expect(item.getByText(/Redimensionnée/)).toBeVisible();
   }
+  // The coat of arms of the lockup is credited with its licence.
+  const emblem = page.getByRole("region", { name: "Armoiries" });
+  await expect(emblem).toContainText("Tinynanorobots et Fenn-O-maniC");
+  await expect(emblem.getByRole("link", { name: "CC BY-SA 3.0" })).toHaveAttribute("href", /creativecommons\.org\/licenses\/by-sa\/3\.0/);
   // The reading voice is credited too.
   const voice = page.getByRole("region", { name: "Voix de lecture" });
   await expect(voice).toContainText("SIWIS");
@@ -161,3 +166,107 @@ test.describe("sign in page", () => {
     await expect(heading).toHaveText("Connexion");
   });
 });
+
+test.describe("official frame", () => {
+  test("the header: band, navy bar with the lockup, navigation, yellow sign in button, tricolour rule @mobile", async ({ page }) => {
+    await page.goto("/");
+    const mobile = (page.viewportSize()?.width ?? 1366) < 1024;
+    const banner = page.getByRole("banner");
+    const lockup = banner.getByRole("link", { name: "Classéo, accueil" }).locator("visible=true");
+    await expect(lockup).toHaveAttribute("data-brand-lockup", "official");
+    await expect(lockup.locator("img[data-brand-arms]")).toBeVisible();
+    await expect(lockup).toContainText("Classéo");
+
+    // The sign in button: flag yellow, navy text.
+    const signIn = banner.getByRole("link", { name: mobile ? "Connexion" : "Se connecter" });
+    await expect(signIn).toHaveCSS("background-color", "rgb(252, 209, 22)");
+    await expect(signIn).toHaveCSS("color", "rgb(10, 55, 100)");
+    const box = await signIn.boundingBox();
+    expect(box!.height).toBeGreaterThanOrEqual(44);
+
+    // Band, bar and rule: 120 px on a computer, 112 px on a phone (a 44 px
+    // band keeps the language button a full touch target).
+    const bar = await banner.boundingBox();
+    const top = await page.locator("body > div").filter({ has: page.locator("[data-language-menu]") }).first().boundingBox();
+    expect(Math.round(top!.height + bar!.height)).toBe(mobile ? 112 : 120);
+
+    if (!mobile) {
+      const nav = page.getByRole("navigation", { name: "Navigation principale" });
+      await expect(nav.getByRole("link", { name: "Accueil" })).toHaveAttribute("aria-current", "page");
+      await expect(nav.getByRole("link", { name: "Vérifier un document" })).toHaveAttribute("href", "/verifier");
+    }
+    // The bar stays in view on scroll.
+    await page.mouse.wheel(0, 1500);
+    await expect.poll(async () => (await banner.boundingBox())!.y).toBe(0);
+  });
+
+  test("the footer: columns, useful links, motto, notice and flag band @mobile", async ({ page }) => {
+    await page.goto("/");
+    const mobile = (page.viewportSize()?.width ?? 1366) < 640;
+    const footer = page.getByRole("contentinfo");
+    await expect(footer).toHaveCSS("background-color", "rgb(7, 39, 71)");
+    for (const title of ["Plateforme", "Aide", "Liens utiles", "Langues"]) {
+      const heading = mobile ? footer.locator("summary", { hasText: title }) : footer.getByRole("heading", { level: 2, name: title });
+      await expect(heading).toBeVisible();
+    }
+    if (mobile) await footer.locator("summary", { hasText: "Liens utiles" }).click();
+    const links = footer.locator("a[href^='https://']:visible");
+    await expect(links).toHaveCount(3);
+    for (const href of ["https://memp.gouv.bj/", "https://enseignementsecondaire.gouv.bj/", "https://service-public.bj/"]) await expect(footer.locator(`a[href='${href}']:visible`)).toHaveAccessibleName(/\(site externe\)$/);
+    await expect(footer.getByText("Fraternité, Justice, Travail")).toBeVisible();
+    await expect(footer.getByText(NOTICE, { exact: true })).toBeVisible();
+
+    // "Accessibilité" opens the settings of the round button.
+    if (mobile) await footer.locator("summary", { hasText: "Aide" }).click();
+    await footer.getByRole("button", { name: "Accessibilité" }).click();
+    await expect(page.getByRole("dialog", { name: "Accessibilité" })).toBeVisible();
+  });
+
+  test("the independence notice is on every public page, whole and readable @mobile", async ({ page }) => {
+    for (const path of ["/", "/connexion", "/mot-de-passe-oublie", "/mot-de-passe-oublie/email", "/credits", "/verifier", "/verifier/ZZZZZ-ZZZZZ", "/hors-ligne", "/une-page-qui-n-existe-pas"]) {
+      await page.goto(path);
+      const notice = page.getByText(NOTICE, { exact: true }).locator("visible=true").first();
+      await expect(notice, path).toBeVisible();
+      await expect(notice).toHaveAttribute("lang", "fr");
+      await expectNoHorizontalScroll(page);
+    }
+    // Translated: the French sentence first, its translation after it.
+    await page.goto("/?lang=fon");
+    const translated = page.getByRole("contentinfo").locator("[data-independence-notice]");
+    await expect(translated).toContainText(NOTICE);
+    await expect(translated).toContainText(/\(.+\)/);
+  });
+
+  test("the menu drawer holds the focus, closes on Escape and gives it back @mobile-only", async ({ page }) => {
+    await page.goto("/credits");
+    const button = page.getByRole("button", { name: "Ouvrir le menu" });
+    await button.click();
+    const drawer = page.getByRole("dialog", { name: "Menu" });
+    await expect(drawer).toBeVisible();
+    await expect(drawer.getByText(NOTICE, { exact: true })).toBeVisible();
+    await expect(drawer.getByRole("link", { name: "Se connecter" })).toHaveAttribute("href", "/connexion");
+    // Tabbing stays inside the drawer.
+    for (let i = 0; i < 8; i++) {
+      await page.keyboard.press("Tab");
+      expect(await isInside(drawer)).toBe(true);
+    }
+    await page.keyboard.press("Escape");
+    await expect(drawer).toBeHidden();
+    await expect(button).toBeFocused();
+
+    await button.click();
+    await drawer.getByRole("button", { name: "Fermer le menu" }).click();
+    await expect(drawer).toBeHidden();
+    await expect(button).toBeFocused();
+
+    await button.click();
+    await drawer.getByRole("link", { name: "Vérifier un document" }).click();
+    await expect(page).toHaveURL(/\/verifier$/);
+    await button.click();
+    await expect(drawer.getByRole("link", { name: "Vérifier un document" })).toHaveAttribute("aria-current", "page");
+  });
+});
+
+async function isInside(container: Locator) {
+  return container.evaluate((el) => el.contains(document.activeElement));
+}

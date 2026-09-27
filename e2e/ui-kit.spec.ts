@@ -85,6 +85,8 @@ test.describe("unknown address", () => {
     await expect(page.getByRole("heading", { level: 1, name: "Cette page est introuvable" })).toBeVisible();
     await expect(page.getByRole("link", { name: "Aller à mon espace" })).toHaveAttribute("href", "/espace");
     await expect(page.getByRole("button", { name: "Page précédente" })).toBeVisible();
-    await expect(page.getByRole("link", { name: "Accueil du site" })).toHaveAttribute("href", "/");
+    await expect(page.getByRole("link", { name: "Retour à l'accueil" })).toHaveAttribute("href", "/");
+    // In the public frame, with the independence notice.
+    await expect(page.getByRole("contentinfo").getByText("Plateforme indépendante, non officielle. Non affiliée au Gouvernement du Bénin.")).toBeVisible();
   });
 });
