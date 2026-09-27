@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Atkinson_Hyperlegible_Next, Bricolage_Grotesque } from "next/font/google";
+import { Atkinson_Hyperlegible_Next, Montserrat } from "next/font/google";
 
 import { Toaster } from "@/components/kit/toaster";
 import { AccessibilityFab } from "@/components/shell/accessibility-fab";
@@ -12,7 +12,12 @@ import "./globals.css";
 // Atkinson Hyperlegible was designed with the Braille Institute for readers
 // with low vision: distinct letterforms (I, l, 1; O, 0) at every size.
 const body = Atkinson_Hyperlegible_Next({ subsets: ["latin"], variable: "--font-body", display: "swap" });
-const display = Bricolage_Grotesque({ subsets: ["latin"], variable: "--font-display", display: "swap", weight: ["600", "700", "800"] });
+// Montserrat, the typeface of the Beninese State sites, for headings,
+// navigation, buttons and the brand lockup (weights 500 to 800). The
+// variable font: one file per subset for every weight. latin-ext covers the
+// accented letters of the national languages. Self-hosted by Next.js at
+// build time, no request to Google at run time.
+const display = Montserrat({ subsets: ["latin", "latin-ext"], variable: "--font-display", display: "swap" });
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"),
