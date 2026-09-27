@@ -45,13 +45,8 @@ export default async function TeacherFilePage(props: PageProps<"/espace/enseigna
 
   return (
     <>
-      <nav aria-label="Fil d'Ariane" className="mb-2 text-sm text-muted max-lg:hidden">
-        <Link href="/espace/enseignants" className="hover:underline">
-          Registre des enseignants
-        </Link>{" "}
-        / {name}
-      </nav>
       <PageHeader
+        breadcrumbs={[{ label: "Registre des enseignants", href: "/espace/enseignants" }, { label: name }]}
         title={name}
         description={[p.npi ? `NPI ${p.npi}` : "Sans NPI", status ? TEACHER_STATUS_SHORT[status] : null, p.stateMatricule ? `matricule de l'État ${p.stateMatricule}` : null, file.specialty]
           .filter(Boolean)
@@ -80,9 +75,9 @@ export default async function TeacherFilePage(props: PageProps<"/espace/enseigna
 
       <StatGrid>
         <StatCard label="Établissements" value={formatNumber(active.length)} hint={file.hiddenActive ? `et ${plural(file.hiddenActive, "autre")} hors périmètre` : "en activité"} icon={Building2} />
-        <StatCard label="Classes" value={formatNumber(totals.classes)} hint={file.year ? `Année ${file.year.label}` : undefined} icon={LayoutGrid} tone="info" />
-        <StatCard label="Heures par semaine" value={formatNumber(totals.hours)} icon={Clock} tone="accent" />
-        <StatCard label="Élèves suivis" value={formatNumber(totals.students)} icon={Users} tone="warning" />
+        <StatCard label="Classes" value={formatNumber(totals.classes)} hint={file.year ? `Année ${file.year.label}` : undefined} icon={LayoutGrid} />
+        <StatCard label="Heures par semaine" value={formatNumber(totals.hours)} icon={Clock} />
+        <StatCard label="Élèves suivis" value={formatNumber(totals.students)} icon={Users} />
       </StatGrid>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
@@ -133,7 +128,7 @@ function Identity({ file, name }: { file: TeacherFile; name: string }) {
         </div>
         <Pairs>
           <dt className="text-muted">NPI</dt>
-          <dd className="font-mono">{p.npi ?? "Non renseigné"}</dd>
+          <dd className="tabular-nums">{p.npi ?? "Non renseigné"}</dd>
           <dt className="text-muted">Spécialité</dt>
           <dd>{file.specialty ?? "Non renseignée"}</dd>
           <dt className="text-muted">Au registre depuis</dt>
@@ -143,7 +138,7 @@ function Identity({ file, name }: { file: TeacherFile; name: string }) {
               <dt className="text-muted">Téléphone</dt>
               <dd>
                 {p.phone ? (
-                  <a href={`tel:${p.phone}`} className="font-mono text-primary hover:underline">
+                  <a href={`tel:${p.phone}`} className="text-primary tabular-nums hover:underline">
                     {p.phone}
                   </a>
                 ) : (
@@ -212,11 +207,11 @@ function Schools({ file }: { file: TeacherFile }) {
                 {a.school.commune.name}, {a.school.commune.department.name}
               </p>
               <p className="flex flex-wrap gap-1">
-                <Badge tone="info">
+                <Badge tone="primary">
                   {CYCLE_LABELS[a.school.cycle]} · {MINISTRY_OF[chain].short}
                 </Badge>
                 <Badge>{SECTOR_LABELS[a.school.sector]}</Badge>
-                {a.status && <Badge tone={isStateStatus(a.status) ? "accent" : "neutral"}>{TEACHER_STATUS_SHORT[a.status]}</Badge>}
+                {a.status && <Badge tone={isStateStatus(a.status) ? "primary" : "neutral"}>{TEACHER_STATUS_SHORT[a.status]}</Badge>}
               </p>
               <p className="text-xs text-muted">
                 Matricule {a.matricule}
@@ -422,7 +417,7 @@ function Registry({ file }: { file: TeacherFile }) {
           {p.stateStatus && (
             <>
               <dt className="text-muted">Matricule de l&apos;État</dt>
-              <dd className="font-mono">{p.stateMatricule ?? "Non renseigné"}</dd>
+              <dd className="tabular-nums">{p.stateMatricule ?? "Non renseigné"}</dd>
             </>
           )}
         </Pairs>

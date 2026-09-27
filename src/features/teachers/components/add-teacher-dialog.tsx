@@ -100,7 +100,7 @@ export function AddTeacherDialog({ statusOptions }: { statusOptions: TeacherStat
                 ) : (
                   <ul className="flex flex-col gap-2">
                     {matches.map((m) => (
-                      <li key={m.id} className="flex flex-col gap-3 rounded-lg border border-border p-3 sm:flex-row sm:items-center">
+                      <li key={m.id} className="flex flex-col gap-3 rounded-card border border-border p-3 sm:flex-row sm:items-center">
                         <div className="min-w-0 flex-1">
                           <p className="font-semibold">
                             {m.lastName} {m.firstName}
@@ -110,12 +110,12 @@ export function AddTeacherDialog({ statusOptions }: { statusOptions: TeacherStat
                           </p>
                           <p className="text-sm text-muted">{m.schools.length ? `Enseigne à ${m.schools.join(", ")}` : "Sans établissement actuellement"}</p>
                           {m.stateStatus && (
-                            <Badge tone="accent" className="mt-1 mr-1">
+                            <Badge tone="primary" className="mt-1 mr-1">
                               {TEACHER_STATUS_LABELS[m.stateStatus]}
                             </Badge>
                           )}
                           {m.hasAccount && (
-                            <Badge tone="info" className="mt-1">
+                            <Badge tone="primary" className="mt-1">
                               A déjà un compte de connexion
                             </Badge>
                           )}
