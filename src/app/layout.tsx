@@ -4,6 +4,7 @@ import { Atkinson_Hyperlegible_Next, Montserrat } from "next/font/google";
 import { Toaster } from "@/components/kit/toaster";
 import { AccessibilityFab } from "@/components/shell/accessibility-fab";
 import { ThemeColor } from "@/components/shell/theme-color";
+import { VisitBeacon } from "@/features/connections/visit-beacon";
 import { OfflineBanner } from "@/features/pwa/offline-banner";
 import { ServiceWorkerRegistration } from "@/features/pwa/service-worker";
 
@@ -67,6 +68,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <Toaster />
         <ServiceWorkerRegistration />
         <ThemeColor />
+        <VisitBeacon />
       </body>
     </html>
   );

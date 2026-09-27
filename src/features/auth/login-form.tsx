@@ -21,7 +21,10 @@ const S = PUBLIC.signIn;
 // The demonstration panel. The shared password reaches the browser only when
 // the server holds it and the page may show it (src/lib/demo); otherwise the
 // panel fills the identifier alone and the password is typed.
-export type DemoPanel = { password: string | null };
+// accessToken: the token of the secret demonstration address, sent back
+// with the form so the connection statistics can tell demo sign ins apart
+// (the server checks it again).
+export type DemoPanel = { password: string | null; accessToken?: string };
 
 // A lost network must not end on an error page: the person keeps what they
 // typed and reads what happened. A redirect (signed in) goes on as usual.
@@ -54,6 +57,7 @@ export function LoginForm({ next, demo, forgotHref }: { next?: string; demo: Dem
       <ActionForm action={submit} successToast={false} errorToast={false} className="flex flex-col gap-5">
         <FormMessage title={t(S.failed)} />
         {next && <input type="hidden" name="next" value={next} />}
+        {demo?.accessToken && <input type="hidden" name="demoAccess" value={demo.accessToken} />}
         <div className="flex flex-col gap-1">
           <FormField label={t(S.identifier)} name="login" required info={t(S.identifierHint)}>
             <Input

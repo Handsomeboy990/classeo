@@ -7,8 +7,16 @@ import { publicTranslator } from "@/features/public-pages/server";
 import { PUBLIC, PUBLIC_SPEECH } from "@/features/public-pages/texts";
 import { choiceQuery, publicChoice } from "@/features/public-pages/translate";
 import { getCurrentUser } from "@/lib/auth/session";
+import { publicMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = { title: "Mot de passe oublié" };
+export async function generateMetadata({ searchParams }: PageProps<"/mot-de-passe-oublie">): Promise<Metadata> {
+  return publicMetadata({
+    path: "/mot-de-passe-oublie",
+    lang: (await searchParams).lang,
+    title: "Mot de passe oublié",
+    description: "Mot de passe oublié sur Classéo : saisissez votre identifiant, la personne qui gère votre compte vous remettra un mot de passe temporaire.",
+  });
+}
 
 export default async function ForgotPasswordPage({ searchParams }: PageProps<"/mot-de-passe-oublie">) {
   if (await getCurrentUser()) redirect("/espace");

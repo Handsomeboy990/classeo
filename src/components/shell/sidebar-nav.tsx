@@ -11,9 +11,15 @@ export type RenderedItem = { label: string; short?: string; href: string; icon: 
 export type RenderedSection = { title: string; items: RenderedItem[] };
 
 // Active entry: the dashboard only on its own path, any other entry on its
-// path and every page below it.
-export function isActiveHref(pathname: string, href: string) {
-  return href === "/espace" ? pathname === "/espace" : pathname === href || pathname.startsWith(`${href}/`);
+// path and every page below it, unless another entry of the menu matches
+// more closely (/espace/statistiques/connexions is not /espace/statistiques).
+export function isActiveHref(pathname: string, href: string, others: readonly string[] = []) {
+  const matches = (h: string) => (h === "/espace" ? pathname === "/espace" : pathname === h || pathname.startsWith(`${h}/`));
+  return matches(href) && !others.some((o) => o.length > href.length && o.startsWith(`${href}/`) && matches(o));
+}
+
+export function menuHrefs(sections: readonly RenderedSection[]) {
+  return sections.flatMap((s) => s.items.map((i) => i.href));
 }
 
 // Unread notifications of an entry: a count the eye finds, and the same
@@ -46,7 +52,8 @@ export function badgeId(menu: string, href: string) {
 // (globals.css, .bg-sidebar).
 export function SidebarNav({ sections, onNavigate }: { sections: RenderedSection[]; onNavigate?: () => void }) {
   const pathname = usePathname();
-  const isActive = (href: string) => isActiveHref(pathname, href);
+  const hrefs = menuHrefs(sections);
+  const isActive = (href: string) => isActiveHref(pathname, href, hrefs);
 
   return (
     <nav aria-label="Menu principal" className="flex flex-col gap-6">

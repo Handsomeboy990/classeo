@@ -47,7 +47,7 @@ export default async function ContentPage({ params }: PageProps<"/espace/contenu
       </h1>
 
       <div className="mt-4 flex flex-wrap items-center gap-3">
-        <ReadAloud text={listenText(c)} label="Écouter ce contenu" />
+        <ReadAloud text={listenText(c)} contentId={c.status === "PUBLISHED" ? c.id : undefined} label="Écouter ce contenu" />
         {manage && (
           <ContentActions
             id={c.id}
@@ -133,7 +133,7 @@ export default async function ContentPage({ params }: PageProps<"/espace/contenu
             <InfoTip>Le texte de tout ce qui est dit dans le média, pour les personnes sourdes ou malentendantes.</InfoTip>
           </div>
           <p className="mt-3 leading-relaxed whitespace-pre-line">{c.transcript}</p>
-          <ReadAloud text={c.transcript} label="Écouter la transcription" className="mt-3" />
+          <ReadAloud text={c.transcript} contentId={c.status === "PUBLISHED" ? c.id : undefined} contentPart="transcript" label="Écouter la transcription" className="mt-3" />
         </section>
       )}
 

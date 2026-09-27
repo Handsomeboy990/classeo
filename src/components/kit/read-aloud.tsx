@@ -47,6 +47,8 @@ export function ReadAloud({
   className,
   compact = false,
   translatable = true,
+  contentId,
+  contentPart,
 }: {
   text?: string;
   targetId?: string;
@@ -61,6 +63,10 @@ export function ReadAloud({
   compact?: boolean | "mobile";
   // false: no "Traduire" button next to this one.
   translatable?: boolean;
+  // The announcement `text` comes from: the server then reads the text
+  // itself (published content) instead of trusting the page.
+  contentId?: string;
+  contentPart?: "listen" | "transcript";
 }) {
   const [speaking, setSpeaking] = useState(false);
   const [preparing, setPreparing] = useState(false);
@@ -91,7 +97,7 @@ export function ReadAloud({
       const res = await fetch("/api/langues/voix", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ lang: target, text: content.slice(0, 6000) }),
+        body: JSON.stringify(contentId && text ? { lang: target, contentId, part: contentPart } : { lang: target, text: content.slice(0, 6000) }),
       });
       const body = (await res.json().catch(() => ({}))) as { clips?: string[] };
       if (!res.ok || !body.clips?.length) throw new Error();
@@ -150,7 +156,7 @@ export function ReadAloud({
   return (
     <>
       {button}
-      <TranslateContent text={text} compact />
+      <TranslateContent text={text} contentId={contentId} contentPart={contentPart} compact />
     </>
   );
 }
