@@ -22,13 +22,12 @@ export function SpokenSummary({ text, label = "Écouter le résumé", className 
   );
 }
 
+// One colour for every pastille (doc 4.4, no multicoloured tiles): the soft
+// navy. Danger only for what needs the family's attention (an unread
+// message, an absence).
 const tones = {
   primary: "bg-primary-soft text-primary",
-  success: "bg-success-soft text-success",
-  warning: "bg-warning-soft text-warning",
   danger: "bg-danger-soft text-danger",
-  info: "bg-info-soft text-info",
-  accent: "bg-accent-soft text-on-accent",
 } as const;
 
 export type Tone = keyof typeof tones;
@@ -36,7 +35,7 @@ export type Tone = keyof typeof tones;
 export function Pictogram({ icon: Icon, tone = "primary", size = "md" }: { icon: LucideIcon; tone?: Tone; size?: "sm" | "md" | "lg" }) {
   return (
     <span
-      className={cn("flex shrink-0 items-center justify-center rounded-xl", tones[tone], size === "lg" ? "size-14" : size === "sm" ? "size-9 sm:size-11" : "size-11")}
+      className={cn("flex shrink-0 items-center justify-center rounded-full", tones[tone], size === "lg" ? "size-14" : size === "sm" ? "size-9 sm:size-11" : "size-11")}
       aria-hidden
     >
       <Icon className={size === "lg" ? "size-7" : size === "sm" ? "size-5 sm:size-6" : "size-6"} />
@@ -69,7 +68,7 @@ export function PictoTile({
   const body = layout === "strip" ? (
     <div className="flex min-w-0 flex-1 items-center gap-3">
       <Pictogram icon={icon} tone={tone} />
-      <h3 className="min-w-0 flex-1 font-sans text-base font-bold text-text">{title}</h3>
+      <h3 className="min-w-0 flex-1 text-[0.9375rem] font-bold text-text">{title}</h3>
       <div className="shrink-0 text-text">{children}</div>
       {href && <ChevronRight className="size-5 shrink-0 text-muted" aria-hidden />}
     </div>
@@ -77,7 +76,7 @@ export function PictoTile({
     <>
       <div className="flex min-w-0 flex-1 items-center gap-3 lg:flex-none">
         <Pictogram icon={icon} tone={tone} />
-        <h3 className="min-w-0 flex-1 font-sans text-base font-bold text-text">{title}</h3>
+        <h3 className="min-w-0 flex-1 text-[0.9375rem] font-bold text-text">{title}</h3>
         {href && <ChevronRight className="size-5 shrink-0 text-muted max-lg:order-last" aria-hidden />}
         <div className="shrink-0 text-text lg:hidden">{children}</div>
       </div>
@@ -87,7 +86,7 @@ export function PictoTile({
     <>
       <div className="flex items-center gap-2.5 sm:gap-3">
         <Pictogram icon={icon} tone={tone} size="sm" />
-        <h3 className="min-w-0 flex-1 font-sans text-sm leading-snug font-bold text-balance text-text sm:text-base">{title}</h3>
+        <h3 className="min-w-0 flex-1 text-sm leading-snug font-bold text-balance text-text sm:text-base">{title}</h3>
         {href && <ChevronRight className="ml-auto size-5 shrink-0 text-muted max-sm:hidden" aria-hidden />}
       </div>
       <div className="mt-3 min-w-0 text-text [&_.rounded-full]:flex-wrap">{children}</div>
@@ -95,12 +94,12 @@ export function PictoTile({
     </>
   );
   const cls = {
-    strip: "flex items-center rounded-card border border-border bg-surface p-3 sm:p-4",
-    row: "flex h-full items-center rounded-card border border-border bg-surface p-3 sm:p-4 lg:min-h-40 lg:flex-col lg:items-stretch",
-    card: "flex h-full min-h-32 flex-col rounded-card border border-border bg-surface p-3 sm:min-h-40 sm:p-4",
+    strip: "flex items-center rounded-card border border-border bg-surface p-3 shadow-card sm:p-4",
+    row: "flex h-full items-center rounded-card border border-border bg-surface p-3 shadow-card sm:p-4 lg:min-h-40 lg:flex-col lg:items-stretch",
+    card: "flex h-full min-h-32 flex-col rounded-card border border-border bg-surface p-3 shadow-card sm:min-h-40 sm:p-4",
   }[layout];
   return href ? (
-    <Link href={href} className={cn(cls, "transition-colors hover:border-primary hover:bg-surface-2")}>
+    <Link href={href} className={cn(cls, "transition-[border-color,box-shadow] duration-150 hover:border-primary/40 hover:shadow-[var(--elevation-sm)]")}>
       {body}
     </Link>
   ) : (
@@ -125,8 +124,8 @@ export function DateLeaf({ date, className }: { date: Date; className?: string }
   const day = new Intl.DateTimeFormat("fr-FR", { day: "numeric", timeZone: "Africa/Porto-Novo" }).format(date);
   const month = new Intl.DateTimeFormat("fr-FR", { month: "short", timeZone: "Africa/Porto-Novo" }).format(date).replace(".", "");
   return (
-    <span className={cn("flex w-14 shrink-0 flex-col items-center overflow-hidden rounded-lg border border-border-strong bg-surface text-center", className)} aria-hidden>
-      <span className="w-full bg-primary py-0.5 text-xs font-bold text-on-primary uppercase">{month}</span>
+    <span className={cn("flex w-14 shrink-0 flex-col items-center self-start overflow-hidden rounded-control border border-border-strong bg-surface text-center", className)} aria-hidden>
+      <span className="w-full bg-primary py-0.5 font-display text-[0.6875rem] font-bold tracking-[0.08em] text-on-primary uppercase">{month}</span>
       <span className="py-1 font-display text-2xl leading-none font-bold text-text">{day}</span>
     </span>
   );

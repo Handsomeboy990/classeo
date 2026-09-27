@@ -107,7 +107,7 @@ export async function FamilyDashboard({ user }: { user: User }) {
                       </Badge>
                     ) : null}
                   </div>
-                  <h3 className="font-sans text-base font-bold">{r.title}</h3>
+                  <h3 className="text-[0.9375rem] font-bold">{r.title}</h3>
                   {r.easyRead && <p className="text-sm text-muted">{r.easyRead}</p>}
                   <div className="mt-auto flex flex-wrap items-center gap-2 pt-1">
                     <ReadAloud text={[r.title, r.easyRead, r.transcript].filter(Boolean).join(". ")} label="Écouter" />
@@ -134,7 +134,7 @@ export async function FamilyDashboard({ user }: { user: User }) {
               <li key={e.id} className="flex gap-4 rounded-card border border-border bg-surface p-4">
                 {e.eventDate && <DateLeaf date={e.eventDate} />}
                 <div className="min-w-0 flex-1">
-                  <h3 className="font-sans text-base font-bold">{e.title}</h3>
+                  <h3 className="text-[0.9375rem] font-bold">{e.title}</h3>
                   {e.eventDate && <p className="text-sm font-semibold text-primary">{formatEventDate(e.eventDate)}</p>}
                   <p className="mt-1 text-sm text-muted">{e.easyRead ?? e.body}</p>
                   {e.school && <p className="mt-1 text-xs text-muted">{e.school.name}</p>}
@@ -159,11 +159,11 @@ function ChildPanel({ overview: o, isParent }: { overview: ChildOverview; isPare
   const gradeCount = o.term.subjects.reduce((n, s) => n + s.grades.length, 0);
 
   return (
-    <section aria-labelledby={headingId} className="overflow-hidden rounded-card border border-border bg-surface">
+    <section aria-labelledby={headingId} className="overflow-hidden rounded-card border border-border bg-surface shadow-card">
       <div className="flex flex-wrap items-center gap-3 border-b border-border bg-surface-2 p-4 sm:gap-4 sm:p-5">
         <StudentAvatar name={name} photoFileId={e.student.photoFileId} className="size-12 text-base sm:size-14 sm:text-lg" />
         <div className="min-w-0 flex-1">
-          <h2 id={headingId} className="text-xl font-bold sm:text-2xl">
+          <h2 id={headingId} className="text-xl font-bold text-text">
             {isParent ? name : "Ma journée"}
           </h2>
           <p className="text-muted">
@@ -182,19 +182,19 @@ function ChildPanel({ overview: o, isParent }: { overview: ChildOverview; isPare
           <PictoTile icon={FileText} title="Dernier bulletin" href={base} footer={o.lastReport?.periodLabel}>
             {o.lastReport ? <AverageLevel average={o.lastReport.average} /> : <p className="text-sm text-muted">Pas encore de bulletin publié.</p>}
           </PictoTile>
-          <PictoTile icon={NotebookPen} tone="accent" title={`Notes ${ofThePeriod(o.term.periodicity)}`} href={`${base}/notes`} footer={o.term.period ? `${o.term.period.name} · ${countWord(gradeCount, "note", "notes").toLowerCase()}` : undefined}>
+          <PictoTile icon={NotebookPen} title={`Notes ${ofThePeriod(o.term.periodicity)}`} href={`${base}/notes`} footer={o.term.period ? `${o.term.period.name} · ${countWord(gradeCount, "note", "notes").toLowerCase()}` : undefined}>
             {o.term.average !== null ? <AverageLevel average={o.term.average} /> : <p className="text-sm text-muted">Pas encore de note {thisPeriod(o.term.periodicity)}.</p>}
           </PictoTile>
           <PictoTile
             icon={CalendarCheck}
-            tone={o.weekSummary.absences ? "danger" : "success"}
+            tone={o.weekSummary.absences ? "danger" : "primary"}
             title="Cette semaine"
             href={`${base}/presences`}
             footer={o.weekSummary.lates ? countWord(o.weekSummary.lates, "arrivée en retard", "arrivées en retard") : o.weekSummary.recorded ? "Aucun retard" : undefined}
           >
             <p className="font-display text-lg font-bold sm:text-2xl">{o.weekSummary.recorded ? countWord(o.weekSummary.absences, "absence", "absences") : "Pas encore d'appel"}</p>
           </PictoTile>
-          <PictoTile icon={Clock} tone="info" title="Aujourd'hui" href={`${base}/emploi-du-temps`}>
+          <PictoTile icon={Clock} title="Aujourd'hui" href={`${base}/emploi-du-temps`}>
             {!o.hasTimetable ? (
               <p className="text-sm text-muted">Emploi du temps pas encore publié par l&apos;école.</p>
             ) : o.todaySlots.length ? (

@@ -1,4 +1,4 @@
-import { ArrowLeft, CheckCheck } from "lucide-react";
+import { CheckCheck, ChevronLeft } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -35,10 +35,10 @@ export default async function ThreadPage({ params }: PageProps<"/espace/messages
   // thread keeps half the height and the composer sticks above the tab bar.
   return (
     <div data-chat className="max-w-3xl max-lg:flex max-lg:h-(--chat-h) max-lg:flex-col max-lg:[html[data-text=xl]_&]:h-auto max-lg:[html[data-text=xxl]_&]:h-auto">
-      <Link href="/espace/messages" className="mb-3 inline-flex h-11 max-lg:hidden items-center gap-2 text-sm font-semibold text-primary hover:underline">
-        <ArrowLeft className="size-4" aria-hidden /> Toutes les conversations
+      <Link href="/espace/messages" className="-ml-1 mb-1 inline-flex min-h-11 items-center gap-1 px-1 text-[0.8125rem] font-semibold text-muted underline-offset-3 hover:text-text hover:underline max-lg:hidden">
+        <ChevronLeft className="size-4 shrink-0" aria-hidden /> Toutes les conversations
       </Link>
-      <h1 className="text-xl leading-tight font-bold text-balance sm:text-3xl">{thread.subject}</h1>
+      <h1 className="text-xl leading-tight font-bold text-balance text-text sm:text-2xl lg:text-[1.75rem] lg:leading-[1.2]">{thread.subject}</h1>
       <p className="mt-1 text-sm text-muted max-lg:line-clamp-2 sm:text-base">
         {onBehalf ? `${onBehalf} avec ` : "Avec "}
         {others.length ? others.map((o) => (o.kind === "PERSON" ? `${o.name} (${o.detail})` : o.name)).join(", ") : "personne d'autre"}
@@ -72,7 +72,7 @@ export default async function ThreadPage({ params }: PageProps<"/espace/messages
                   <li key={m.id} className={cn("flex", m.mySide ? "justify-end" : "justify-start")}>
                     <article
                       aria-label={`Message de ${signature}`}
-                      className={cn("max-w-[85%] rounded-2xl border px-4 py-3", m.mySide ? "border-primary/30 bg-primary-soft" : "border-border bg-surface-2")}
+                      className={cn("max-w-[85%] rounded-card border px-4 py-3", m.mySide ? "rounded-br-sm border-primary/20 bg-primary-soft" : "rounded-bl-sm border-border bg-surface-2")}
                     >
                       <header className="flex items-center gap-2">
                         <p className="text-sm font-bold">
@@ -82,7 +82,7 @@ export default async function ThreadPage({ params }: PageProps<"/espace/messages
                         <time dateTime={m.createdAt.toISOString()} className="text-xs text-muted">
                           {formatDateTime(m.createdAt)}
                         </time>
-                        {!m.audio && <ReadAloud text={`${m.mine ? "Vous avez écrit" : `${signature} a écrit`} : ${m.body}`} compact label={`Écouter le message de ${sender}`} className="ml-auto size-10 shrink-0" />}
+                        {!m.audio && <ReadAloud text={`${m.mine ? "Vous avez écrit" : `${signature} a écrit`} : ${m.body}`} translatable={false} compact label={`Écouter le message de ${sender}`} className="ml-auto size-10 shrink-0" />}
                       </header>
                       {m.audio ? (
                         <VoicePlayer src={m.audio.url} durationMs={m.audio.durationMs} className="mt-2 w-64 max-w-full" />

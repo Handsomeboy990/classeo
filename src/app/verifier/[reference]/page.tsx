@@ -10,9 +10,10 @@ import { canRevoke, publicVerification } from "@/features/verification/queries";
 import { normalizeCode } from "@/features/verification/reference";
 import { clientIp, getCurrentUser } from "@/lib/auth/session";
 import { hitRateLimit } from "@/lib/rate-limit";
+import { NO_INDEX } from "@/lib/seo";
 import { cn, formatDate } from "@/lib/utils";
 
-export const metadata: Metadata = { title: "Vérification d'un document", robots: { index: false } };
+export const metadata: Metadata = { title: "Vérification d'un document", robots: NO_INDEX };
 
 const STATUS = {
   valid: { Icon: BadgeCheck, title: "Document authentique", tone: "border-success/30 bg-success-soft text-success", text: "Ce document a bien été délivré sur Classéo et il est valable." },

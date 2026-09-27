@@ -5,6 +5,7 @@ import { DataTable, type Column } from "@/components/kit/data-table";
 import { PageHeader } from "@/components/kit/page-header";
 import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
+import { displayIp } from "@/features/connections/ip";
 import { actionLabel, auditFilterOptions, auditFilters, listAudit, resourceLabel } from "@/features/audit/queries";
 import { FilterBar } from "@/features/territory/components/filter-bar";
 import { can, requirePermission } from "@/lib/auth/authorize";
@@ -34,6 +35,8 @@ export default async function AuditPage({ searchParams }: PageProps<"/espace/jou
   const page = listParams(sp, 25);
   const [{ rows, total }, options] = await Promise.all([listAudit(user, filters, page), auditFilterOptions(user)]);
 
+  // Full addresses for the accounts holding connection_ip:view only.
+  const fullIp = can(user, "connection_ip:view");
   const columns: Column<Row>[] = [
     { header: "Date", cell: (r) => <span className="whitespace-nowrap tabular-nums">{formatDateTime(r.createdAt)}</span> },
     {
@@ -54,7 +57,7 @@ export default async function AuditPage({ searchParams }: PageProps<"/espace/jou
     { header: "Action", cell: (r) => <Badge tone={TONES[r.action] ?? "neutral"}>{actionLabel(r.action)}</Badge> },
     { header: "Ressource", cell: (r) => resourceLabel(r.resource), hideBelow: "md" },
     { header: "Détail", primary: true, cell: (r) => <span className="text-sm max-sm:font-semibold">{r.summary}</span> },
-    { header: "Adresse IP", cell: (r) => <span className="text-xs text-muted">{r.ip ?? "–"}</span>, hideBelow: "lg" },
+    { header: "Adresse IP", cell: (r) => <span className="text-xs text-muted">{displayIp(r.ip, fullIp)}</span>, hideBelow: "lg" },
   ];
 
   const exportQuery = new URLSearchParams();

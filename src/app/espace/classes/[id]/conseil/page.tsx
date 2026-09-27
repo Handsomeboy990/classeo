@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { ActionForm, SubmitButton } from "@/components/kit/action-form";
@@ -89,17 +88,8 @@ export default async function CouncilPage(props: PageProps<"/espace/classes/[id]
 
   return (
     <>
-      <nav aria-label="Fil d'Ariane" className="mb-2 text-sm text-muted max-lg:hidden">
-        <Link href="/espace/classes" className="hover:underline">
-          Classes
-        </Link>{" "}
-        /{" "}
-        <Link href={`/espace/classes/${classroom.id}`} className="hover:underline">
-          {classroom.name}
-        </Link>{" "}
-        / Conseil de classe
-      </nav>
       <PageHeader
+        breadcrumbs={[{ label: "Classes", href: "/espace/classes" }, { label: classroom.name, href: `/espace/classes/${classroom.id}` }, { label: "Conseil de classe" }]}
         title={`Conseil de classe, ${classroom.name}`}
         description={`Décisions de fin d'année ${classroom.academicYear.label}`}
         info={`Moyenne annuelle : ${YEARLY_RULE[classroom.school.periodicity]}.`}

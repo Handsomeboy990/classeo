@@ -11,6 +11,7 @@ import { audit } from "@/lib/audit";
 import { ForbiddenError } from "@/lib/auth/authorize";
 import type { PermissionCode } from "@/lib/auth/permissions";
 import { getCurrentUser, type CurrentUser } from "@/lib/auth/session";
+import { hitRateLimit } from "@/lib/rate-limit";
 
 import { withDocumentScope, type DocumentSigned } from "./context";
 import { completeIssuer } from "./data/letterhead";
@@ -46,6 +47,8 @@ export type BuiltPdf = {
 
 const refused = () => new Response("Accès refusé", { status: 403, headers: { "Cache-Control": "no-store" } });
 const missing = () => new Response("Document introuvable", { status: 404, headers: { "Cache-Control": "no-store" } });
+const tooMany = (retryAfterMs: number) =>
+  new Response("Trop de documents demandés. Réessayez dans quelques minutes.", { status: 429, headers: { "Cache-Control": "no-store", "Retry-After": String(Math.ceil(retryAfterMs / 1000)) } });
 
 // Shared PDF export for route handlers, the twin of exportCsv(): permission
 // check, no download under a temporary password, data loaded through the
@@ -60,6 +63,10 @@ export async function exportPdf<D>(options: {
   const user = await getCurrentUser();
   if (!user || !user.permissions.has(options.permission)) return refused();
   if (user.mustChangePassword) return refused();
+  // Rendering is the most expensive work of the platform: 120 documents per
+  // account and 10 minutes covers a whole class printed one by one.
+  const limit = await hitRateLimit(`pdf:${user.id}`, 120, 10 * 60 * 1000);
+  if (!limit.allowed) return tooMany(limit.retryAfterMs);
 
   let data: D | null;
   try {

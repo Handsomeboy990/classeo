@@ -10,7 +10,7 @@ import { listRequests, requestFilters } from "@/features/requests/queries";
 import { FilterBar } from "@/features/territory/components/filter-bar";
 import { can, requirePermission } from "@/lib/auth/authorize";
 import { listParams } from "@/lib/list";
-import { cn, formatDate, formatNumber } from "@/lib/utils";
+import { formatDate, formatNumber } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Demandes" };
 
@@ -52,20 +52,15 @@ export default async function RequestsPage({ searchParams }: PageProps<"/espace/
         info={isSchool ? "Demandes de votre établissement au ministère et décisions reçues." : "Demandes des établissements de votre périmètre. Chaque décision est accompagnée d'une note motivée."}
         actions={can(user, "request:create") && isSchool ? <RequestFormDialog /> : null}
       />
-      <nav aria-label="Filtrer par statut" className="relative -mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">
+      <nav aria-label="Filtrer par statut" className="ds-tabs">
         {tabs.map((t) => {
           const current = filters.status === t.value;
           const q = new URLSearchParams();
           if (t.value) q.set("statut", t.value);
           if (filters.type) q.set("type", filters.type);
           return (
-            <Link
-              key={t.label}
-              href={`/espace/demandes${q.size ? `?${q}` : ""}`}
-              aria-current={current ? "page" : undefined}
-              className={cn("inline-flex min-h-11 shrink-0 items-center rounded-full border px-3 text-sm font-semibold whitespace-nowrap sm:min-h-9", current ? "border-primary bg-primary text-on-primary" : "border-border-strong hover:bg-surface-2")}
-            >
-              {t.label} <span className="tabular-nums opacity-80">({formatNumber(t.count)})</span>
+            <Link key={t.label} href={`/espace/demandes${q.size ? `?${q}` : ""}`} aria-current={current ? "page" : undefined}>
+              {t.label} <span className="font-body font-normal tabular-nums">({formatNumber(t.count)})</span>
             </Link>
           );
         })}

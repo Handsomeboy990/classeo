@@ -67,7 +67,7 @@ export function VoicePlayer({ src, durationMs, label = "message vocal", classNam
         type="button"
         onClick={toggle}
         aria-label={playing ? `Mettre en pause le ${label}` : `Écouter le ${label}, ${spokenDuration(durationMs)}`}
-        className="flex size-11 shrink-0 items-center justify-center rounded-full bg-primary text-on-primary shadow-xs hover:bg-primary-hover focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+        className="flex size-11 shrink-0 items-center justify-center rounded-full bg-primary text-on-primary shadow-xs hover:bg-primary-hover"
       >
         {playing ? <Pause className="size-5" aria-hidden /> : <Play className="size-5 translate-x-px" aria-hidden />}
       </button>

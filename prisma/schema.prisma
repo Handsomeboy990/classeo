@@ -291,6 +291,7 @@ model User {
   paymentsRecorded    Payment[]
   familyDocsSubmitted FamilyDocument[]          @relation("familyDocSubmitter")
   familyDocsReviewed  FamilyDocument[]          @relation("familyDocReviewer")
+  connectionEvents    ConnectionEvent[]
 
   @@index([roleId])
   @@index([schoolId])
@@ -1663,4 +1664,72 @@ model FamilyDocument {
   @@index([enrollmentId])
   @@index([attendanceId])
   @@index([requiredPieceId])
+}
+
+// ---------------------------------------------------------------------------
+// Connection and visit statistics (features/connections)
+// ---------------------------------------------------------------------------
+
+enum ConnectionOutcome {
+  SUCCESS
+  WRONG_PASSWORD
+  LOCKED
+  DISABLED
+  UNKNOWN_ACCOUNT
+  RATE_LIMITED
+  SIGN_OUT
+}
+
+// One sign in attempt or sign out. The account's role and territory are
+// copied at the time of the event, so the statistics of a territory stay
+// right when an account moves. The full IP address is kept 90 days, then
+// truncated (196.47.x.x); rows are deleted after 13 months
+// (features/connections/retention.ts). The identifier typed for an unknown
+// account is never stored.
+model ConnectionEvent {
+  id           String            @id @default(cuid())
+  createdAt    DateTime          @default(now())
+  outcome      ConnectionOutcome
+  userId       String?
+  user         User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
+  roleCode     String?
+  scopeLevel   ScopeLevel?
+  departmentId String?
+  communeId    String?
+  schoolId     String?
+  // Chain of the account (territorial accounts) or of its school's cycle.
+  chain        EducationChain?
+  ip           String?
+  ipTruncated  Boolean           @default(false)
+  // Summarised user agent: never the raw string.
+  browser      String?
+  os           String?
+  device       String?
+  // Signed in from the secret demonstration page.
+  demo         Boolean           @default(false)
+  // The account's first successful sign in.
+  firstTime    Boolean           @default(false)
+
+  @@index([createdAt])
+  @@index([departmentId, createdAt])
+  @@index([userId, createdAt])
+}
+
+// Page views, counted per day and per dimension (path, audience, referrer,
+// language, device, role): no row per visit is ever kept. Days are in Benin
+// time.
+model PageViewDaily {
+  day       DateTime @db.Date
+  dimension String
+  key       String
+  count     Int      @default(0)
+
+  @@id([day, dimension, key])
+  @@index([dimension, day])
+}
+
+// Last run of a periodic task run opportunistically (the retention purge).
+model MaintenanceMarker {
+  key   String   @id
+  ranAt DateTime
 }

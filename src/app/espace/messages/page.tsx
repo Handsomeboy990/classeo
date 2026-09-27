@@ -75,8 +75,8 @@ export default async function MessagesPage({ searchParams }: PageProps<"/espace/
                         <span className={cn("truncate", c.unread ? "font-bold" : "font-semibold")}>{names}</span>
                         {first && <span className="text-xs text-muted">{first.detail}</span>}
                         {c.unread && (
-                          <Badge tone="success" className="ml-auto">
-                            <span className="size-2 rounded-full bg-current" aria-hidden /> Nouveau
+                          <Badge tone="primary" dot className="ml-auto">
+                            Nouveau
                           </Badge>
                         )}
                       </div>

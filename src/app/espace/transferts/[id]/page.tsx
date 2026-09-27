@@ -1,6 +1,5 @@
 import { ArrowRight, Check, History, X } from "lucide-react";
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { ConfirmButton } from "@/components/kit/confirm-button";
@@ -50,13 +49,8 @@ export default async function TransferPage(props: PageProps<"/espace/transferts/
 
   return (
     <>
-      <nav aria-label="Fil d'Ariane" className="mb-2 text-sm text-muted max-lg:hidden">
-        <Link href="/espace/transferts" className="hover:underline">
-          Transferts
-        </Link>{" "}
-        / {name}
-      </nav>
       <PageHeader
+        breadcrumbs={[{ label: "Transferts", href: "/espace/transferts" }, { label: name }]}
         title={`Transfert de ${name}`}
         description={`${KIND_LABELS[t.kind]} · ${t.fromSchool.name}${t.kind === "SCHOOL_CHANGE" ? ` vers ${t.toSchool.name}` : ""}`}
         actionsPlacement="below"
@@ -209,12 +203,12 @@ export default async function TransferPage(props: PageProps<"/espace/transferts/
               <StudentAvatar name={name} photoFileId={s.photoFileId} className="size-16 text-xl" />
               <div className="min-w-0">
                 <p className="text-lg font-bold">{name}</p>
-                <p className="font-mono text-sm text-muted">{s.matricule}</p>
+                <p className="text-sm text-muted tabular-nums">{s.matricule}</p>
               </div>
             </div>
             <div className="grid items-center gap-3 sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]">
               <div className="rounded-control border border-border p-3">
-                <p className="text-xs font-semibold text-muted uppercase">Départ</p>
+                <p className="font-display text-[0.6875rem] font-bold tracking-[0.08em] text-muted uppercase">Départ</p>
                 <p className="font-semibold">{t.fromSchool.name}</p>
                 <p className="text-sm text-muted">
                   {detail.fromClassroom ?? "–"} · {t.fromSchool.commune.name}
@@ -222,7 +216,7 @@ export default async function TransferPage(props: PageProps<"/espace/transferts/
               </div>
               <ArrowRight className="size-5 justify-self-center text-muted max-sm:rotate-90" aria-hidden />
               <div className="rounded-control border border-border p-3">
-                <p className="text-xs font-semibold text-muted uppercase">Arrivée</p>
+                <p className="font-display text-[0.6875rem] font-bold tracking-[0.08em] text-muted uppercase">Arrivée</p>
                 <p className="font-semibold">{t.toSchool.name}</p>
                 <p className="text-sm text-muted">
                   {detail.toClassroom ?? "Classe à choisir"} · {t.toSchool.commune.name}
@@ -235,7 +229,7 @@ export default async function TransferPage(props: PageProps<"/espace/transferts/
               {t.kind === "SCHOOL_CHANGE" && (
                 <>
                   <dt className="text-muted">Dossier scolaire</dt>
-                  <dd>{t.shareHistory ? <Badge tone="success">Transmis à l&apos;établissement d&apos;accueil</Badge> : <Badge>Non transmis</Badge>}</dd>
+                  <dd>{t.shareHistory ? <Badge tone="success" className="whitespace-normal">Transmis à l&apos;établissement d&apos;accueil</Badge> : <Badge>Non transmis</Badge>}</dd>
                   <dt className="text-muted">Parent principal</dt>
                   <dd>
                     {primary ? `${primary.firstName} ${primary.lastName}` : "Non renseigné"}

@@ -10,7 +10,7 @@ import { badgeText, unreadLabel } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
 
 import { MenuSheet } from "./menu-sheet";
-import { badgeId, isActiveHref, type RenderedItem, type RenderedSection } from "./sidebar-nav";
+import { badgeId, isActiveHref, menuHrefs, type RenderedItem, type RenderedSection } from "./sidebar-nav";
 import { prefersReducedMotion } from "./use-compact";
 
 // A tab (design source of truth, part 3.4): the icon on a soft navy pill
@@ -54,7 +54,7 @@ const TAB = "group relative flex h-full w-full min-w-0 flex-col items-center jus
 export function TabBar({ tabs, sections, brand }: { tabs: RenderedItem[]; sections: RenderedSection[]; brand: BrandSettings }) {
   const pathname = usePathname();
   const [menu, setMenu] = useState(false);
-  const current = tabs.find((t) => isActiveHref(pathname, t.href));
+  const current = tabs.find((t) => isActiveHref(pathname, t.href, menuHrefs(sections)));
   // An entry of the Menu sheet (not a tab, not Notifications, which the bell
   // already counts) has unread items.
   const menuHasNews = sections.some((s) => s.items.some((i) => i.badge && i.href !== "/espace/notifications" && !tabs.some((t) => t.href === i.href)));

@@ -9,8 +9,9 @@ import { PUBLIC } from "@/features/public-pages/texts";
 import { publicChoice } from "@/features/public-pages/translate";
 import { getCurrentUser } from "@/lib/auth/session";
 import { mailEnabled } from "@/lib/mail";
+import { NO_INDEX } from "@/lib/seo";
 
-export const metadata: Metadata = { title: "Code par e-mail" };
+export const metadata: Metadata = { title: "Code par e-mail", robots: NO_INDEX };
 
 // The frame follows the language of the page; the form, used by the few
 // accounts with an e-mail address, is written in French only.

@@ -1,4 +1,4 @@
-import { ArrowLeft, CalendarCheck, CheckCircle2, Clock, Coins, FileText, ReceiptText, XCircle } from "lucide-react";
+import { CalendarCheck, ChevronLeft, CheckCircle2, Clock, Coins, FileText, ReceiptText, XCircle } from "lucide-react";
 import Link from "next/link";
 
 import { LogoMark } from "@/components/brand/logo";
@@ -45,13 +45,13 @@ export function ReportCardSheet({ card, student }: { card: ReportCardView; stude
         </div>
         <dl className="grid shrink-0 grid-cols-2 gap-3 sm:flex sm:flex-wrap">
           <div className="rounded-lg bg-surface-2 px-4 py-2">
-            <dt className="text-xs font-semibold text-muted uppercase">Moyenne générale</dt>
+            <dt className="font-display text-[0.6875rem] font-bold tracking-[0.08em] text-muted uppercase">Moyenne générale</dt>
             <dd className="mt-1">
               <AverageLevel average={card.average} />
             </dd>
           </div>
           <div className="rounded-lg bg-surface-2 px-4 py-2">
-            <dt className="text-xs font-semibold text-muted uppercase">Rang</dt>
+            <dt className="font-display text-[0.6875rem] font-bold tracking-[0.08em] text-muted uppercase">Rang</dt>
             <dd className="mt-1 font-display text-xl font-bold">{rankLabel(card.rank, card.classSize)}</dd>
           </div>
         </dl>
@@ -89,20 +89,20 @@ export function ReportCardSheet({ card, student }: { card: ReportCardView; stude
           ))}
         </tbody>
         <tfoot>
-          <tr className="border-t-2 border-border-strong bg-surface-2 font-bold">
-            <td className="px-4 py-3">Total</td>
-            <td className="px-4 py-3 text-center tabular-nums max-sm:hidden">{totalCoef}</td>
-            <td className="px-4 py-3">
+          <tr>
+            <td>Total</td>
+            <td className="text-center tabular-nums max-sm:hidden">{totalCoef}</td>
+            <td>
               <AverageLevel average={card.average} />
             </td>
-            <td className="px-4 py-3 text-right tabular-nums max-md:hidden">{formatAverage(totalPoints)}</td>
-            <td className="px-4 py-3 text-right tabular-nums max-sm:hidden">{rankLabel(card.rank, card.classSize)}</td>
+            <td className="text-right tabular-nums max-md:hidden">{formatAverage(totalPoints)}</td>
+            <td className="text-right tabular-nums max-sm:hidden">{rankLabel(card.rank, card.classSize)}</td>
           </tr>
         </tfoot>
       </Table>
 
       <footer className="border-t border-border p-5">
-        <p className="text-xs font-semibold text-muted uppercase">Appréciation générale</p>
+        <p className="font-display text-[0.6875rem] font-bold tracking-[0.08em] text-muted uppercase">Appréciation générale</p>
         <p className="mt-1 text-lg">{card.appreciation ?? "Aucune appréciation."}</p>
       </footer>
     </article>
@@ -123,7 +123,7 @@ export function TermGradesList({ term }: { term: Awaited<ReturnType<typeof termG
           <li key={s.id} className="flex flex-col gap-3 rounded-card border border-border bg-surface p-4">
             <div className="flex flex-wrap items-start justify-between gap-2">
               <div className="min-w-0">
-                <h3 className="font-sans text-base font-bold">{s.subject}</h3>
+                <h3 className="text-[0.9375rem] font-bold">{s.subject}</h3>
                 <p className="text-sm text-muted">
                   Coefficient {s.coefficient}
                   {s.teacher ? ` · ${s.teacher}` : ""}
@@ -208,19 +208,19 @@ export function AttendanceHistory({ records }: { records: (AttendanceRecord & { 
 
 export function AttendanceFigures({ absences, lates, excused, rate }: { absences: number; lates: number; excused: number; rate: number | null }) {
   const items = [
-    { label: "Demi-journées d'absence", value: String(absences), icon: XCircle, tone: absences ? ("danger" as const) : ("success" as const) },
-    { label: "Retards", value: String(lates), icon: Clock, tone: lates ? ("warning" as const) : ("success" as const) },
-    { label: "Absences excusées", value: String(excused), icon: CalendarCheck, tone: "info" as const },
+    { label: "Demi-journées d'absence", value: String(absences), icon: XCircle, tone: absences ? ("danger" as const) : ("primary" as const) },
+    { label: "Retards", value: String(lates), icon: Clock, tone: "primary" as const },
+    { label: "Absences excusées", value: String(excused), icon: CalendarCheck, tone: "primary" as const },
     { label: "Taux de présence", value: formatPercent(rate), icon: CheckCircle2, tone: "primary" as const },
   ];
   return (
     <dl className="grid grid-cols-1 gap-3 min-[420px]:grid-cols-2 lg:grid-cols-4">
       {items.map((i) => (
-        <div key={i.label} className="flex items-center gap-3 rounded-card border border-border bg-surface p-4">
+        <div key={i.label} className="flex items-center gap-3 rounded-card border border-border bg-surface p-4 shadow-card">
           <Pictogram icon={i.icon} tone={i.tone} />
           <div>
             <dt className="text-sm text-muted">{i.label}</dt>
-            <dd className="font-display text-2xl font-bold">{i.value}</dd>
+            <dd className="font-display text-[1.75rem] leading-[1.1] font-bold tabular-nums">{i.value}</dd>
           </div>
         </div>
       ))}
@@ -243,7 +243,7 @@ export function TimetableWeek({ slots, today }: { slots: SlotView[]; today: Scho
           const isToday = d === today.dayOfWeek;
           return (
             <li key={d} className={cn("rounded-card border bg-surface", isToday ? "border-2 border-primary" : "border-border")} aria-current={isToday ? "date" : undefined}>
-              <h3 className={cn("flex items-center justify-between gap-2 rounded-t-card px-4 py-2 font-sans text-base font-bold", isToday ? "bg-primary text-on-primary" : "bg-surface-2")}>
+              <h3 className={cn("flex items-center justify-between gap-2 rounded-t-card px-4 py-2 text-[0.9375rem] font-bold", isToday ? "bg-primary text-on-primary" : "bg-surface-2")}>
                 {DAYS[d - 1]}
                 {isToday && <span className="rounded-full bg-accent px-2 py-0.5 text-xs text-on-accent">Aujourd&apos;hui</span>}
               </h3>
@@ -330,9 +330,9 @@ export function InvoiceCard({ invoice }: { invoice: Awaited<ReturnType<typeof in
   return (
     <article aria-labelledby={`inv-${invoice.id}`} className="rounded-card border border-border bg-surface">
       <header className="flex flex-wrap items-center gap-3 border-b border-border p-4 sm:p-5">
-        <Pictogram icon={ReceiptText} tone={remaining ? "warning" : "success"} />
+        <Pictogram icon={ReceiptText} />
         <div className="min-w-0 flex-1">
-          <h3 id={`inv-${invoice.id}`} className="font-sans text-base font-bold">
+          <h3 id={`inv-${invoice.id}`} className="text-[0.9375rem] font-bold">
             <Link href={`/espace/frais/factures/${invoice.id}`} className="underline-offset-4 hover:underline">
               Facture {invoice.number}
             </Link>
@@ -430,8 +430,8 @@ export function InvoiceCard({ invoice }: { invoice: Awaited<ReturnType<typeof in
 
 export function BackToChildren() {
   return (
-    <Link href="/espace/suivi" className="inline-flex min-h-11 max-lg:hidden items-center gap-1.5 text-sm font-semibold text-primary underline-offset-4 hover:underline" data-print-hide>
-      <ArrowLeft className="size-4" aria-hidden />
+    <Link href="/espace/suivi" className="-mb-2 inline-flex min-h-11 items-center gap-1 self-start text-[0.8125rem] font-semibold text-muted underline-offset-3 hover:text-text hover:underline max-lg:hidden" data-print-hide>
+      <ChevronLeft className="size-4 shrink-0" aria-hidden />
       Mes enfants
     </Link>
   );

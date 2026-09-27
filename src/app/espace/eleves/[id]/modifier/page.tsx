@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { PageHeader } from "@/components/kit/page-header";
@@ -22,17 +21,8 @@ export default async function EditStudentPage(props: PageProps<"/espace/eleves/[
   const name = `${student.firstName} ${student.lastName}`;
   return (
     <>
-      <nav aria-label="Fil d'Ariane" className="mb-2 text-sm text-muted max-lg:hidden">
-        <Link href="/espace/eleves" className="hover:underline">
-          Élèves
-        </Link>{" "}
-        /{" "}
-        <Link href={`/espace/eleves/${student.id}`} className="hover:underline">
-          {name}
-        </Link>{" "}
-        / Modifier
-      </nav>
-      <PageHeader title={`Modifier : ${name}`} description={`Matricule ${student.matricule}`} readable={false} />
+      <PageHeader
+        breadcrumbs={[{ label: "Élèves", href: "/espace/eleves" }, { label: name, href: `/espace/eleves/${student.id}` }, { label: "Modifier" }]} title={`Modifier : ${name}`} description={`Matricule ${student.matricule}`} readable={false} />
       {enrollment ? (
         <StudentForm
           classes={classes}

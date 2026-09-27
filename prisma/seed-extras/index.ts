@@ -2,6 +2,7 @@
 // Each feature owns its file so parallel work never edits the same seed code.
 import type { PrismaClient } from "../../src/generated/prisma/client";
 
+import { seedConnections } from "./connections";
 import { seedGovernance } from "./governance";
 import { seedIdentity } from "./identity";
 import { seedLanguages } from "./languages";
@@ -29,4 +30,5 @@ export async function seedExtras(db: PrismaClient, ctx: SeedContext) {
   await seedFamilyExchange(db, ctx);
   await seedLanguages(db, ctx);
   await seedHistoryExtras(db, ctx);
+  await seedConnections(db, ctx);
 }

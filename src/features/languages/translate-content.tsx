@@ -18,7 +18,20 @@ type Phase = { kind: "idle" } | { kind: "loading" } | { kind: "error"; message: 
 // holding translation:view: the text translated on request (cache first),
 // shown in a dialog next to the French original, and read aloud in the
 // language when the service has a voice for it.
-export function TranslateContent({ text, compact = false, className }: { text: string; compact?: boolean | "mobile"; className?: string }) {
+export function TranslateContent({
+  text,
+  contentId,
+  contentPart,
+  compact = false,
+  className,
+}: {
+  text: string;
+  // An announcement: the server translates its own copy of the text.
+  contentId?: string;
+  contentPart?: "listen" | "transcript";
+  compact?: boolean | "mobile";
+  className?: string;
+}) {
   const s = useLanguageState();
   const [open, setOpen] = useState(false);
   const [phase, setPhase] = useState<Phase>({ kind: "idle" });
@@ -37,7 +50,7 @@ export function TranslateContent({ text, compact = false, className }: { text: s
       const res = await fetch("/api/langues/contenu", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ lang, text: text.slice(0, 8000) }),
+        body: JSON.stringify(contentId ? { lang, contentId, part: contentPart } : { lang, text: text.slice(0, 8000) }),
       });
       const body = (await res.json().catch(() => ({}))) as Partial<Result> & { error?: string };
       if (!res.ok || !body.paragraphs) throw new Error(body.error ?? "La traduction n'est pas disponible pour le moment. Le texte reste en français.");
@@ -70,7 +83,7 @@ export function TranslateContent({ text, compact = false, className }: { text: s
       const res = await fetch("/api/langues/voix", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ lang, text: text.slice(0, 6000) }),
+        body: JSON.stringify(contentId ? { lang, contentId, part: contentPart } : { lang, text: text.slice(0, 6000) }),
       });
       const body = (await res.json().catch(() => ({}))) as { clips?: string[]; error?: string };
       if (!res.ok || !body.clips?.length) throw new Error(body.error);

@@ -5,7 +5,8 @@ import { FrenchPublicPage } from "@/features/public-pages/public-frame";
 
 // Frame of the public check pages, reachable without an account from the QR
 // code printed on any document: the public header and footer around a
-// column of the light page.
+// column of the light page. The optional analytics banner comes with the
+// public footer.
 export function PublicShell({ children }: { children: ReactNode }) {
   return (
     <FrenchPublicPage current="verify">

@@ -10,7 +10,7 @@ import { reviewableKinds, staffFilters, staffQueue } from "@/features/family-doc
 import { isHealthDoc, KIND_LABELS, STATUS_LABELS, STATUS_TONES, type FamilyDocKind, type FamilyDocStatus } from "@/features/family-documents/rules";
 import { can, requirePermission } from "@/lib/auth/authorize";
 import { listParams } from "@/lib/list";
-import { cn, formatDate, formatDateTime, formatNumber } from "@/lib/utils";
+import { formatDate, formatDateTime, formatNumber } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Pièces des familles" };
 
@@ -79,7 +79,6 @@ export default async function FamilyPiecesQueuePage({ searchParams }: PageProps<
     { value: "REJECTED", label: "Refusées" },
     { value: "tous", label: "Toutes" },
   ];
-  const tab = (on: boolean) => cn("inline-flex min-h-11 shrink-0 items-center rounded-full border px-3 text-sm font-semibold whitespace-nowrap sm:min-h-9", on ? "border-primary bg-primary text-on-primary" : "border-border-strong hover:bg-surface-2");
 
   return (
     <div className="flex flex-col gap-4">
@@ -94,19 +93,19 @@ export default async function FamilyPiecesQueuePage({ searchParams }: PageProps<
           ) : null
         }
       />
-      <nav aria-label="Filtrer par type de pièce" className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">
+      <nav aria-label="Filtrer par type de pièce" className="ds-tabs">
         {kindTabs.map((t) => (
-          <Link key={t.label} href={href({ type: t.value })} aria-current={filters.kind === t.value ? "page" : undefined} className={tab(filters.kind === t.value)}>
+          <Link key={t.label} href={href({ type: t.value })} aria-current={filters.kind === t.value ? "page" : undefined}>
             {t.label}
-            {t.count > 0 && <span className="ml-1 tabular-nums opacity-80">({formatNumber(t.count)} en attente)</span>}
+            {t.count > 0 && <span className="font-body font-normal tabular-nums">({formatNumber(t.count)} en attente)</span>}
           </Link>
         ))}
       </nav>
-      <nav aria-label="Filtrer par statut" className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">
+      <nav aria-label="Filtrer par statut" className="ds-segmented self-start">
         {statusTabs.map((t) => {
           const on = (filters.status ?? "tous") === t.value;
           return (
-            <Link key={t.value} href={href({ statut: t.value })} aria-current={on ? "page" : undefined} className={tab(on)}>
+            <Link key={t.value} href={href({ statut: t.value })} aria-current={on ? "page" : undefined}>
               {t.label}
             </Link>
           );

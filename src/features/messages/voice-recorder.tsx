@@ -170,12 +170,12 @@ export function VoiceRecorder({ conversationId, onActiveChange, onError }: { con
           loading={phase.name === "asking"}
           aria-label="Enregistrer un message vocal"
           title="Enregistrer un message vocal"
-          className="size-12 shrink-0 self-end rounded-full [&_svg]:size-5"
+          className="size-12 shrink-0 self-end [&_svg]:size-5"
         >
           <Mic aria-hidden />
         </Button>
       ) : phase.name === "recording" ? (
-        <div className="flex min-h-12 items-center gap-2 rounded-full border border-danger/40 bg-danger-soft py-1 pr-1 pl-4" role="group" aria-label="Enregistrement du message vocal">
+        <div className="flex min-h-12 items-center gap-2 rounded-control border border-danger/40 bg-danger-soft py-1 pr-1 pl-4" role="group" aria-label="Enregistrement du message vocal">
           <span className="size-3 shrink-0 rounded-full bg-danger motion-safe:animate-pulse" aria-hidden />
           <p className="min-w-0 flex-1 text-sm font-semibold">
             <span className="sr-only" role="status">
@@ -192,7 +192,7 @@ export function VoiceRecorder({ conversationId, onActiveChange, onError }: { con
           <Button type="button" variant="ghost" size="sm" onClick={cancel}>
             <Trash2 aria-hidden /> Annuler
           </Button>
-          <Button ref={stopButton} type="button" variant="danger" size="sm" onClick={stop} className="rounded-full">
+          <Button ref={stopButton} type="button" variant="danger" size="sm" onClick={stop}>
             <Square aria-hidden /> Arrêter
           </Button>
         </div>
