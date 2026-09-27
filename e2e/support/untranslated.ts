@@ -17,8 +17,11 @@ export async function visibleTexts(page: Page): Promise<Seen[]> {
     const norm = (s: string) => s.replace(/\s+/g, " ").trim();
     // Left out: what the application marks as never translated by the
     // interface layer, the language switcher (the names of the languages,
-    // in their own language) and texts translated on request.
-    const skip = "script, style, noscript, template, [data-no-translate], [translate=no]";
+    // in their own language), texts translated on request, and the spoken
+    // summaries, sentences generated from the day's data that the layer
+    // translates by template at run time, so no prepared cache holds
+    // every day's version.
+    const skip = "script, style, noscript, template, [data-no-translate], [translate=no], [data-generated-summary]";
     const visible = (el: Element) => el.checkVisibility({ visibilityProperty: true, contentVisibilityAuto: true });
     const region = (el: Element) =>
       el.closest("#page-content")
