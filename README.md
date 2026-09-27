@@ -149,6 +149,46 @@ fictitious schools and people, deterministically. It refuses to run on a
 database that already has users. `SEED_RESET=true` (used by `npm run db:reset`)
 truncates every table first and reseeds: it destroys all data.
 
+The demo data covers five school years, 2022-2023 to 2025-2026 closed and
+2026-2027 active, so that every menu of every demo account has content and the
+year comparison has five years to show:
+
+- **Pupils across years** (`prisma/seed-history`): the past years are built
+  backwards from this year's pupils, each keeping one identity (matricule).
+  Pupils move up a class each year; about one in ten repeats, behind a
+  REDOUBLEMENT council decision; new pupils come in at CI and 6e (from the
+  primary schools of the commune, EPP Godomey Centre feeding CEG Godomey), in
+  2nde, or by transfer between schools of a commune (with the family's
+  consent recorded); others finish the school's last level, move away, drop
+  out, are excluded by the council or leave during the year. Sènami
+  Hounkpatin went from EPP Godomey Centre (CM2 in 2022-2023) to CEG Godomey;
+  her brother Mahougnon started CI there in 2023-2024. CEG Godomey opened its
+  second cycle one class a year from 2024-2025 and a second 6e in 2026-2027.
+- **Results**: report cards for every period of every past year (semesters
+  for public secondary schools, trimesters elsewhere), with averages, ranks and
+  appreciation, consistent with every council decision (passage at 10/20 in
+  secondary school, automatic passage at CI, CE1 and CM1) and the yearly
+  average rule. CEG Godomey and EPP Godomey Centre keep all their marks
+  (official formula, locked sheets); outside the Atlantique and the Littoral
+  past report cards hold the general average and rank only, to keep the volume
+  reasonable.
+- **Around the results**: attendance for every year (twelve days a year at
+  the two demo schools, one or two half days elsewhere), the fees of CEG
+  Godomey for every year (girls exempt from the contribution only from
+  2026-2027, public primary never billed) with installments and some unpaid
+  balances, timetables of CEG Godomey for every year, teachers who joined or
+  left, payslips of the teachers the schools pay, the BEPC mock of the
+  Atlantique and the CEP mock of Abomey-Calavi each year with results,
+  requests and year extensions, document requests, announcements, resources,
+  conversations, notifications, the register of issued documents, family
+  pieces and the activity log.
+
+A full seed takes two to three minutes on a local database (2 min 10 s to
+2 min 50 s measured on a shared laptop; about 370 MB, 42 500 pupils, 96 000
+enrollments, 204 000 report cards, 185 000 marks, 299 000 attendance marks);
+expect a few minutes more against Neon over the network. The large tables
+are written with one query per batch (`prisma/seed-lib/bulk.ts`).
+
 ### Environment variables
 
 Only `DATABASE_URL` and `SESSION_SECRET` are required. Every other service is

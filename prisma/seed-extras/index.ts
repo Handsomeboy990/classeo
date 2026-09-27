@@ -2,7 +2,6 @@
 // Each feature owns its file so parallel work never edits the same seed code.
 import type { PrismaClient } from "../../src/generated/prisma/client";
 
-import { seedCouncil } from "./council";
 import { seedGovernance } from "./governance";
 import { seedIdentity } from "./identity";
 import { seedLanguages } from "./languages";
@@ -10,6 +9,7 @@ import { seedLifecycle } from "./lifecycle";
 import { seedPay } from "./pay";
 import { seedPaymentsAndSignatures } from "./payments-signatures";
 import { seedFamilyExchange } from "./family-exchange";
+import { seedHistoryExtras } from "./history";
 import { seedWave2 } from "./wave2";
 
 export type SeedContext = {
@@ -27,6 +27,6 @@ export async function seedExtras(db: PrismaClient, ctx: SeedContext) {
   await seedPaymentsAndSignatures(db, ctx);
   await seedWave2(db, ctx);
   await seedFamilyExchange(db, ctx);
-  await seedCouncil(db, ctx);
   await seedLanguages(db, ctx);
+  await seedHistoryExtras(db, ctx);
 }
