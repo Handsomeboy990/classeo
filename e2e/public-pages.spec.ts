@@ -65,7 +65,7 @@ test("the voice language is chosen apart from the page", async ({ page }) => {
 
 test("the photo credits are reached from the footer, every photograph credited @mobile", async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("contentinfo").getByRole("link", { name: "Crédits photos" }).click();
+  await page.getByRole("contentinfo").getByRole("link", { name: "Crédits photos" }).locator("visible=true").first().click();
   await expect(page).toHaveURL(/\/credits$/);
   await expect(page.getByRole("heading", { level: 1, name: "Crédits photos" })).toBeVisible();
 

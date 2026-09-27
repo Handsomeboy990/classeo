@@ -87,6 +87,21 @@ export function PublicMenu({
             // The dialog box itself is only reached through the veil: the panel
             // fills it.
             onClick={(e) => e.target === dialog.current && setOpen(false)}
+            // The browser lets Tab leave a modal dialog for its own controls:
+            // the focus wraps from the last control to the first and back.
+            onKeyDown={(e) => {
+              if (e.key !== "Tab" || !dialog.current) return;
+              const items = [...dialog.current.querySelectorAll<HTMLElement>("a[href], button:not([disabled])")];
+              const first = items[0];
+              const last = items[items.length - 1];
+              if (e.shiftKey && document.activeElement === first) {
+                e.preventDefault();
+                last?.focus();
+              } else if (!e.shiftKey && document.activeElement === last) {
+                e.preventDefault();
+                first?.focus();
+              }
+            }}
             className={cn(
               "fixed inset-y-0 right-0 left-auto m-0 h-dvh max-h-dvh w-[min(22rem,88vw)] max-w-none overflow-hidden bg-surface p-0 text-text shadow-overlay backdrop:bg-(--overlay)",
               "translate-x-0 transition-transform duration-200 ease-(--ease-emphasis) starting:open:translate-x-full motion-reduce:transition-none",

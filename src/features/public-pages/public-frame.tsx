@@ -72,7 +72,7 @@ export async function PublicHeader({
       {/* The band scrolls away with the page. Its background is not the
           bg-band utility: the yellow focus ring of the navy surfaces would
           reach the light panel of the language menu. */}
-      <div lang={lang} className="border-b border-white/10 bg-(--band) text-band-text">
+      <div lang={lang} className="bg-(--band) text-band-text shadow-[inset_0_-1px_0_rgb(255_255_255/0.1)]">
         <div className={cn(WRAP, "flex h-11 items-center gap-2 lg:h-9")}>
           <BeninFlag className="h-3 w-[1.125rem] rounded-[1px]" />
           <p className="min-w-0 text-xs leading-tight">
