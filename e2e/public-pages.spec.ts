@@ -175,7 +175,11 @@ test.describe("official frame", () => {
     const lockup = banner.getByRole("link", { name: "Classéo, accueil" }).locator("visible=true");
     await expect(lockup).toHaveAttribute("data-brand-lockup", "official");
     await expect(lockup.locator("img[data-brand-arms]")).toBeVisible();
-    await expect(lockup).toContainText("Classéo");
+    // Decision D5: "République du Bénin" above, then Classéo as a product,
+    // in sentence case, and no ministry name.
+    await expect(lockup).toHaveText(/^République du Bénin\s*Classéo/);
+    await expect(lockup.getByText("Classéo", { exact: true })).toHaveCSS("text-transform", "none");
+    await expect(lockup).not.toContainText("Ministère");
 
     // The sign in button: flag yellow, navy text.
     const signIn = banner.getByRole("link", { name: mobile ? "Connexion" : "Se connecter" });
@@ -213,7 +217,9 @@ test.describe("official frame", () => {
     const links = footer.locator("a[href^='https://']:visible");
     await expect(links).toHaveCount(3);
     for (const href of ["https://memp.gouv.bj/", "https://enseignementsecondaire.gouv.bj/", "https://service-public.bj/"]) await expect(footer.locator(`a[href='${href}']:visible`)).toHaveAccessibleName(/\(site externe\)$/);
-    await expect(footer.getByText("Fraternité, Justice, Travail")).toBeVisible();
+    // The motto over the flag band, away from the brand column (D5).
+    await expect(footer.locator("[data-national-motto]").getByText("Fraternité, Justice, Travail")).toBeVisible();
+    await expect(footer.locator("div:has(> [data-brand-lockup])").getByText("Fraternité, Justice, Travail")).toHaveCount(0);
     await expect(footer.getByText(NOTICE, { exact: true })).toBeVisible();
 
     // "Accessibilité" opens the settings of the round button.

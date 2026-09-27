@@ -256,14 +256,6 @@ export async function PublicFooter({ tr, voice, languages = true }: { tr: Public
                 text it would otherwise spill out of its column. */}
             <BrandLockup brand={brand} tone="dark" size="footer" fixed href={withChoice("/", lang, voice)} />
             <p className="mt-4 max-w-[36ch] text-sm leading-relaxed text-footer-muted">{node(PUBLIC.common.footerNote)}</p>
-            {brand.official && (
-              <div className="mt-4 flex flex-col gap-2">
-                <p className="font-display text-xs font-semibold text-footer-muted" lang="fr" translate="no">
-                  {NATIONAL_MOTTO}
-                </p>
-                <FlagStripe className="h-0.5 w-24" />
-              </div>
-            )}
           </div>
           {columns.map((c) => (
             <div key={c.title}>
@@ -303,6 +295,17 @@ export async function PublicFooter({ tr, voice, languages = true }: { tr: Public
             </Link>
           </p>
         </div>
+        {/* The national motto of the official mode, over the flag band and
+            away from the brand column: Classéo is a product, and the motto
+            must not read as its signature (decision D5). */}
+        {brand.official && (
+          <div className="mt-6 flex flex-col items-center gap-2 pr-[calc(var(--fab-size)+1rem)] sm:pl-[calc(var(--fab-size)+1rem)]" data-national-motto="">
+            <p className="font-display text-xs font-semibold text-footer-muted" lang="fr" translate="no">
+              {NATIONAL_MOTTO}
+            </p>
+            <FlagStripe className="h-0.5 w-24" />
+          </div>
+        )}
       </div>
       <FlagStripe className="h-1.5" />
     </footer>
