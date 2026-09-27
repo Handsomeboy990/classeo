@@ -282,7 +282,7 @@ async function isInside(container: Locator) {
 test("the accessibility button covers nothing at the end of a page @mobile", async ({ page }) => {
   for (const path of ["/", "/credits", "/verifier", "/connexion", "/mot-de-passe-oublie"]) {
     await page.goto(path);
-    const fab = page.getByRole("button", { name: "Réglages d'accessibilité" });
+    const fab = page.getByRole("button", { name: "Réglages d'accessibilité", exact: true });
     await expect(fab).toBeVisible();
     await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
     // The button slides to the edge while the page scrolls and comes back
