@@ -28,7 +28,7 @@ const TILE_LABELS: Partial<Record<IndicatorKey, string>> = {
   enrollments: "Élèves inscrits",
   girlsShare: "Part des filles",
   teachers: "Enseignants",
-  studentsPerTeacher: "Élèves/enseignant",
+  studentsPerTeacher: "Élèves par enseignant",
   absenceRate: "Taux d'absence",
   passRate: "Réussite",
   meanAverage: "Moyenne",

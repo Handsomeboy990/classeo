@@ -95,7 +95,7 @@ export function ReportCardPage({ data, meta, issuer }: { data: ReportCardData; m
         empty="Aucune matière notée pour cette période."
       />
 
-      <View style={{ marginTop: 14 }} wrap={false}>
+      <View style={{ marginTop: 10 }} wrap={false}>
         <FigureRow>
           <Figure big tone="primary" label="Moyenne générale" value={card.generalAverage === null ? "–" : `${formatAverage(card.generalAverage)} / 20`} hint={m ? `Mention : ${m.label}` : "Aucune moyenne calculée"} />
           <Figure big label="Rang" value={ordinal(card.rank)} hint={`sur ${plural(card.classSize, "élève")}`} />
@@ -110,6 +110,7 @@ export function ReportCardPage({ data, meta, issuer }: { data: ReportCardData; m
       </View>
 
       <Signatures
+        marginTop={12}
         items={[
           { role: "Le professeur principal", name: data.classroom.mainTeacher },
           { role: "Le chef d'établissement", name: data.headOfSchool, stamp: true },
