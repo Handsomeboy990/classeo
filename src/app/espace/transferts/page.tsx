@@ -13,7 +13,7 @@ import { listTransfers, pendingCounts, type TransferDirection } from "@/features
 import { requirePermission } from "@/lib/auth/authorize";
 import { isEnabled } from "@/lib/features";
 import { listParams, param } from "@/lib/list";
-import { cn, formatDate, formatNumber } from "@/lib/utils";
+import { formatDate, formatNumber } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Transferts" };
 
@@ -98,24 +98,16 @@ export default async function TransfersPage(props: PageProps<"/espace/transferts
     <div className="flex flex-col gap-4">
       <PageHeader title="Transferts" info={description} />
       {isSchool && (
-        <nav aria-label="Sens des transferts" className="flex flex-wrap gap-2">
+        <nav aria-label="Sens des transferts" className="ds-tabs">
           {tabs.map((t) => {
             const qs = new URLSearchParams();
             qs.set("sens", t.value);
             if (status !== "ALL") qs.set("statut", status);
             return (
-              <Link
-                key={t.value}
-                href={`/espace/transferts?${qs}`}
-                aria-current={t.current ? "page" : undefined}
-                className={cn(
-                  "inline-flex min-h-11 items-center gap-2 rounded-full border px-4 text-sm font-semibold whitespace-nowrap",
-                  t.current ? "border-primary bg-primary text-on-primary" : "border-border-strong bg-surface hover:bg-surface-2",
-                )}
-              >
+              <Link key={t.value} href={`/espace/transferts?${qs}`} aria-current={t.current ? "page" : undefined}>
                 {t.label}
                 {t.count > 0 && (
-                  <span className="tabular-nums">
+                  <span className="font-body font-normal tabular-nums">
                     ({formatNumber(t.count)} en attente)
                   </span>
                 )}

@@ -12,7 +12,7 @@ import { EXAM_STATUSES, ORGANIZER_LABELS, STATUS_LABELS, STATUS_TONES } from "@/
 import { can, requirePermission } from "@/lib/auth/authorize";
 import { isTeacherRole } from "@/lib/auth/scope";
 import { listParams } from "@/lib/list";
-import { cn, formatDate, formatNumber, plural } from "@/lib/utils";
+import { formatDate, formatNumber, plural } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Examens blancs" };
 
@@ -87,23 +87,15 @@ export default async function MockExamsPage({ searchParams }: PageProps<"/espace
           </ul>
         </Alert>
       )}
-      <nav aria-label="Filtrer par statut" className="relative -mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">
+      <nav aria-label="Filtrer par statut" className="ds-tabs">
         {tabs.map((t) => {
           const current = filters.status === t.value;
           const q = new URLSearchParams();
           if (t.value) q.set("statut", t.value);
           if (filters.q) q.set("q", filters.q);
           return (
-            <Link
-              key={t.label}
-              href={`/espace/examens-blancs${q.size ? `?${q}` : ""}`}
-              aria-current={current ? "page" : undefined}
-              className={cn(
-                "inline-flex min-h-11 shrink-0 items-center rounded-full border px-3 text-sm font-semibold whitespace-nowrap sm:min-h-9",
-                current ? "border-primary bg-primary text-on-primary" : "border-border-strong hover:bg-surface-2",
-              )}
-            >
-              {t.label} <span className="tabular-nums opacity-80">({formatNumber(t.count)})</span>
+            <Link key={t.label} href={`/espace/examens-blancs${q.size ? `?${q}` : ""}`} aria-current={current ? "page" : undefined}>
+              {t.label} <span className="font-body font-normal tabular-nums">({formatNumber(t.count)})</span>
             </Link>
           );
         })}

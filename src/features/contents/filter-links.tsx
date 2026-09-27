@@ -2,7 +2,6 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 
 import type { SearchParams } from "@/lib/list";
-import { cn } from "@/lib/utils";
 
 // Filter chips kept in the URL: shareable, survive reload, no client state.
 export function FilterLinks({
@@ -28,28 +27,16 @@ export function FilterLinks({
     return qs ? `${basePath}?${qs}` : basePath;
   }
   return (
-    <nav aria-label={label}>
-      <ul className="flex flex-wrap gap-2">
-        {options.map((o) => {
-          const active = o.value === current;
-          return (
-            <li key={o.label}>
-              <Link
-                href={href(o.value)}
-                aria-current={active ? "page" : undefined}
-                scroll={false}
-                className={cn(
-                  "inline-flex h-11 items-center gap-2 rounded-full border px-4 text-sm font-semibold [&_svg]:size-4",
-                  active ? "border-primary bg-primary text-on-primary" : "border-border-strong bg-surface text-text hover:bg-surface-2",
-                )}
-              >
-                {o.icon}
-                {o.label}
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
+    <nav aria-label={label} className="ds-segmented self-start">
+      {options.map((o) => {
+        const active = o.value === current;
+        return (
+          <Link key={o.label} href={href(o.value)} aria-current={active ? "page" : undefined} scroll={false} className="[&_svg]:size-4">
+            {o.icon}
+            {o.label}
+          </Link>
+        );
+      })}
     </nav>
   );
 }
