@@ -82,7 +82,7 @@ describe("the e-mail frame", () => {
   it("names Classéo as a school management platform, never as an institution", () => {
     expect(mail.html).toContain("République du Bénin");
     expect(mail.html).toContain("Plateforme de gestion scolaire");
-    expect(mail.text.startsWith("RÉPUBLIQUE DU BÉNIN\nClasséo, plateforme de gestion scolaire")).toBe(true);
+    expect(mail.text.startsWith("RÉPUBLIQUE DU BÉNIN\nClasséo\nPlateforme de gestion scolaire")).toBe(true);
     for (const part of [mail.html, mail.text]) expect(part).not.toMatch(/plateforme nationale|ministère de l'éducation/i);
   });
 

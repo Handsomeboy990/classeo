@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 import { completeIssuer } from "../data/letterhead";
 import { beninDate, beninDateTime } from "../format";
 import type { DocumentMeta, Issuer } from "../layout";
-import { contactLine, ministriesFor, REPUBLIC } from "../letterhead";
+import { contactLine, PRODUCT, PRODUCT_LINE, REPUBLIC } from "../letterhead";
 import { COLORS as C } from "../theme";
 
 // HTML twin of the PDF layout, for the pages printed from the browser: the
@@ -28,13 +28,16 @@ const CSS = `
 .doc-sheet .doc-band span:nth-child(1), .doc-sheet .doc-rule3 span:nth-child(1) { background: ${C.green}; }
 .doc-sheet .doc-band span:nth-child(2), .doc-sheet .doc-rule3 span:nth-child(2) { background: ${C.yellow}; }
 .doc-sheet .doc-band span:nth-child(3), .doc-sheet .doc-rule3 span:nth-child(3) { background: ${C.red}; }
-.doc-sheet .doc-rule3 { display: flex; height: 2px; width: 80px; }
+.doc-sheet .doc-rule3 { display: flex; height: 2px; }
 .doc-sheet .doc-title { font-family: var(--font-display), system-ui, sans-serif; font-weight: 700; color: var(--doc-dark); line-height: 1.1; }
 .doc-sheet .doc-head { font-family: var(--font-display), system-ui, sans-serif; color: var(--doc-dark); text-transform: uppercase; }
 .doc-sheet .doc-label { font-size: 10px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--doc-muted); }
 .doc-sheet .doc-muted { color: var(--doc-muted); }
 .doc-sheet .doc-box { border: 1px solid var(--doc-border); border-radius: 6px; }
 .doc-sheet .doc-letterhead { border-bottom: 2px solid var(--doc-primary); }
+.doc-sheet .doc-overline { color: var(--doc-muted); }
+.doc-sheet .doc-display { font-family: var(--font-display), system-ui, sans-serif; }
+.doc-sheet .doc-product { font-family: var(--font-display), system-ui, sans-serif; color: var(--doc-primary); }
 .doc-sheet table.doc-table { width: 100%; border-collapse: collapse; border-top: 1.5px solid var(--doc-primary); border-bottom: 1px solid var(--doc-border); }
 .doc-sheet .doc-table thead th { background: var(--doc-soft); color: var(--doc-dark); font-family: var(--font-display), system-ui, sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; text-align: left; padding: 7px 8px; border-bottom: 1.5px solid var(--doc-primary); }
 .doc-sheet .doc-table td, .doc-sheet .doc-table tbody th { padding: 6px 8px; border-bottom: 1px solid var(--doc-rule); text-align: left; font-weight: 400; vertical-align: middle; }
@@ -64,12 +67,12 @@ const CSS = `
   .doc-sheet * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }`;
 
-// The letterhead, as on the PDF and like the brand lockup of the site: the
-// coat of arms (official option) at the left, then the Republic over the
-// tricolour rule and the ministry; under it, the school with its logo and
+// The letterhead, as on the PDF and like the brand lockup of the site
+// (decision D5): the coat of arms (official option) at the left, then the
+// Republic as an overline over the tricolour rule, Classéo and its product
+// line, no institution named; under it, the school with its logo and
 // details.
 function IssuerBlock({ issuer, official }: { issuer: Issuer; official: boolean }) {
-  const ministries = ministriesFor(issuer.kind === "school" ? issuer.cycle : null);
   return (
     <div className="min-w-0 max-w-md">
       <div className="flex items-center gap-3">
@@ -78,19 +81,20 @@ function IssuerBlock({ issuer, official }: { issuer: Issuer; official: boolean }
           <img src={ARMS_SRC} alt="" aria-hidden width={Math.round(56 * ARMS_RATIO)} height={56} className="h-14 w-auto shrink-0" decoding="async" data-doc-arms="" />
         )}
         <div className="min-w-0">
-          <p className="doc-head text-[11px] font-bold tracking-[0.12em]" translate="no">
-            {REPUBLIC}
-          </p>
-          <span className="doc-rule3 my-1" aria-hidden>
-            <span />
-            <span />
-            <span />
+          <span className="inline-flex flex-col gap-1">
+            <span className="doc-head doc-overline text-[10px] font-semibold tracking-[0.12em]" translate="no">
+              {REPUBLIC}
+            </span>
+            <span className="doc-rule3 w-full" aria-hidden>
+              <span />
+              <span />
+              <span />
+            </span>
           </span>
-          {ministries.map((m) => (
-            <p key={m} className="doc-head text-[10px] leading-snug font-semibold">
-              {m}
-            </p>
-          ))}
+          <p className="doc-product mt-1.5 text-xl leading-none font-extrabold" translate="no">
+            {PRODUCT}
+          </p>
+          <p className="doc-overline doc-display mt-1 text-[11px] font-semibold">{PRODUCT_LINE}</p>
         </div>
       </div>
       <span className="my-2 block h-px w-10" style={{ background: C.primary }} aria-hidden />

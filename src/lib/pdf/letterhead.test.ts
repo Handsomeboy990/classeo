@@ -13,18 +13,13 @@ import { Signatures } from "./components";
 import { withDocumentScope } from "./context";
 import { prepareFonts } from "./fonts";
 import { DocumentPage, PdfDocument, T } from "./layout";
-import { contactLine, MINISTRIES, ministriesFor, pdfImageFormat } from "./letterhead";
+import { contactLine, pdfImageFormat, PRODUCT, PRODUCT_LINE, REPUBLIC } from "./letterhead";
 
-describe("ministriesFor", () => {
-  it("names the ministry of the school's cycle", () => {
-    expect(ministriesFor("PRESCHOOL")).toEqual([MINISTRIES.primary]);
-    expect(ministriesFor("PRIMARY")).toEqual(["Ministère des Enseignements Maternel et Primaire"]);
-    expect(ministriesFor("SECONDARY")).toEqual(["Ministère des Enseignements Secondaire, Technique et de la Formation Professionnelle"]);
-    expect(ministriesFor("TECHNICAL")).toEqual([MINISTRIES.secondary]);
-  });
-
-  it("names both ministries on a territorial document", () => {
-    expect(ministriesFor(null)).toEqual([MINISTRIES.primary, MINISTRIES.secondary]);
+describe("letterhead words", () => {
+  it("reads like the product lockup: the Republic, then Classéo and what it is", () => {
+    expect(REPUBLIC).toBe("République du Bénin");
+    expect(PRODUCT).toBe("Classéo");
+    expect(PRODUCT_LINE).toBe("Plateforme de gestion scolaire");
   });
 });
 

@@ -11,6 +11,7 @@
 // product, never as an institution.
 
 import { INDEPENDENCE_NOTICE } from "@/components/brand/settings";
+import { PRODUCT, PRODUCT_LINE, REPUBLIC } from "@/lib/pdf/letterhead";
 
 // The e-mail palette, the light tokens of the design system.
 export const BRAND = {
@@ -65,9 +66,6 @@ const TITLE_FONT = "Montserrat, Arial, sans-serif";
 const FONT = "Arial, Helvetica, sans-serif";
 const MONO = "'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace";
 
-// The brand lines of the header and of the plain text version.
-const REPUBLIC = "République du Bénin";
-const PRODUCT = "Classéo, plateforme de gestion scolaire";
 const AUTOMATIC = "Ce message est envoyé automatiquement par Classéo, plateforme de gestion scolaire : merci de ne pas y répondre.";
 
 export function escapeHtml(value: string): string {
@@ -206,8 +204,8 @@ export function renderEmail(content: EmailContent): RenderedEmail {
 <td width="32" height="2" style="height:2px;background:${BRAND.yellow};font-size:0;line-height:0;">&nbsp;</td>
 <td width="32" height="2" style="height:2px;background:${BRAND.red};font-size:0;line-height:0;">&nbsp;</td>
 </tr></table>
-<p style="margin:0;font-family:${TITLE_FONT};font-size:24px;line-height:1.15;letter-spacing:0.01em;font-weight:800;color:${BRAND.white};">Classéo</p>
-<p style="margin:4px 0 0;font-family:${FONT};font-size:13px;line-height:1.4;color:${BRAND.headerMuted};">Plateforme de gestion scolaire</p>
+<p style="margin:0;font-family:${TITLE_FONT};font-size:24px;line-height:1.15;letter-spacing:0.01em;font-weight:800;color:${BRAND.white};">${PRODUCT}</p>
+<p style="margin:4px 0 0;font-family:${FONT};font-size:13px;line-height:1.4;color:${BRAND.headerMuted};">${PRODUCT_LINE}</p>
 </td></tr>
 <tr><td style="padding:0;font-size:0;line-height:0;">${TRICOLOUR}</td></tr>
 <tr><td class="pad body b-border" style="padding:32px 36px 12px;background:${BRAND.white};border-left:1px solid ${BRAND.border};border-right:1px solid ${BRAND.border};">
@@ -228,7 +226,7 @@ ${content.blocks.map(blockHtml).join("\n")}
 </html>`;
 
   const text = [
-    `${REPUBLIC.toUpperCase()}\n${PRODUCT}`,
+    `${REPUBLIC.toUpperCase()}\n${PRODUCT}\n${PRODUCT_LINE}`,
     content.title,
     ...content.blocks.map(blockText),
     "--",

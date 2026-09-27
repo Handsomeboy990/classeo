@@ -11,7 +11,7 @@ import { ARMS_PNG_RATIO, armsImage } from "./arms";
 import { currentBrand, currentVerification, type DocumentVerification, type PdfImage } from "./context";
 import { FONT_TITLE } from "./fonts";
 import { beninDate, beninDateTime, pageLabel, pdfText } from "./format";
-import { contactLine, ministriesFor, REPUBLIC, type SchoolCycleCode } from "./letterhead";
+import { contactLine, PRODUCT, PRODUCT_LINE, REPUBLIC, type SchoolCycleCode } from "./letterhead";
 import { styles } from "./styles";
 import { COLORS, PAGE } from "./theme";
 
@@ -103,18 +103,19 @@ function FlagBand() {
   );
 }
 
-// Letterhead (design source of truth, part 4.14, with the owner's decision
-// D1 to show the coat of arms). It reads like the brand lockup of the site:
-// the coat of arms at the left, then "RÉPUBLIQUE DU BÉNIN", a thin tricolour
-// rule and the ministry of the school's cycle; under it, the school with its
-// logo and details, or the territorial service. The arms sit beside the
+// Letterhead (design source of truth, part 4.14, with the owner's decisions
+// D1, coat of arms, and D5, the product lockup). It reads like the brand
+// lockup of the site: the coat of arms at the left, then "RÉPUBLIQUE DU
+// BÉNIN" as a small overline over a thin tricolour rule, the product name
+// Classéo and "Plateforme de gestion scolaire", no institution named; under
+// it, the school that issues the document, with its logo and details, or
+// the territorial service. The arms sit beside the
 // words rather than above them so every one page document (bulletin,
 // timetable, invoice, the preview of a bulletin with its notice) keeps its
 // single page; for the same reason the arms are 38 pt high, above the 32 pt
 // under which the shield loses its details. Without the official option
 // the coat of arms is left out and the words remain.
 function IssuerBlock({ issuer }: { issuer: Issuer }) {
-  const ministries = ministriesFor(issuer.kind === "school" ? issuer.cycle : null);
   const official = currentBrand().official;
   const armsHeight = 38;
   return (
@@ -125,13 +126,12 @@ function IssuerBlock({ issuer }: { issuer: Issuer }) {
           <Image src={armsImage()} style={{ width: armsHeight * ARMS_PNG_RATIO, height: armsHeight }} />
         ) : null}
         <View style={{ flexShrink: 1 }}>
-          <T style={{ fontFamily: FONT_TITLE, fontSize: 8, fontWeight: 700, letterSpacing: 1.2, color: COLORS.primaryDark, textTransform: "uppercase" }}>{REPUBLIC}</T>
-          <TricolourRule width={60} height={1.5} style={{ marginTop: 2.5, marginBottom: 3 }} />
-          {ministries.map((m) => (
-            <T key={m} style={{ fontFamily: FONT_TITLE, fontSize: 7.5, fontWeight: 600, lineHeight: 1.25, color: COLORS.primaryDark, textTransform: "uppercase", marginTop: 1 }}>
-              {m}
-            </T>
-          ))}
+          <View style={{ alignSelf: "flex-start" }}>
+            <T style={{ fontFamily: FONT_TITLE, fontSize: 7, fontWeight: 600, letterSpacing: 1.1, color: COLORS.muted, textTransform: "uppercase" }}>{REPUBLIC}</T>
+            <TricolourRule height={1.5} style={{ marginTop: 2.5 }} />
+          </View>
+          <T style={{ fontFamily: FONT_TITLE, fontSize: 15, fontWeight: 800, lineHeight: 1.1, color: COLORS.primary, marginTop: 4 }}>{PRODUCT}</T>
+          <T style={{ fontFamily: FONT_TITLE, fontSize: 7.5, fontWeight: 600, color: COLORS.muted, marginTop: 1.5 }}>{PRODUCT_LINE}</T>
         </View>
       </View>
       <View style={{ height: 6 }} />
