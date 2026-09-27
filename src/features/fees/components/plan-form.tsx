@@ -64,7 +64,7 @@ export function PlanFields({ feeTypeId, amount, initial }: { feeTypeId: string; 
         </Button>
       </fieldset>
 
-      <p role="status" className={cn("rounded-lg px-3 py-2 text-sm font-semibold", error ? "bg-warning-soft text-warning" : "bg-success-soft text-success")}>
+      <p role="status" className={cn("rounded-control px-3 py-2 text-sm font-semibold", error ? "bg-warning-soft text-warning" : "bg-success-soft text-success")}>
         Total : {sum} % {error ? `· ${error}` : `· ${formatFcfa(amount)} en ${rows.length} tranche${rows.length > 1 ? "s" : ""}`}
       </p>
       <PlanError />
@@ -96,7 +96,7 @@ function InstallmentRow({
 }) {
   const id = useId();
   return (
-    <div className="grid grid-cols-2 items-end gap-2 rounded-lg border border-border p-3 sm:grid-cols-[1.4fr_0.7fr_1.1fr_auto]">
+    <div className="grid grid-cols-2 items-end gap-2 rounded-card border border-border p-3 sm:grid-cols-[1.4fr_0.7fr_1.1fr_auto]">
       <div className="col-span-2 flex flex-col gap-1 sm:col-span-1">
         <Label htmlFor={`${id}-label`}>Libellé</Label>
         <Input id={`${id}-label`} name="label[]" value={r.label} onChange={(e) => onChange({ label: e.target.value })} maxLength={80} required />

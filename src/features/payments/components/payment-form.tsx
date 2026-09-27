@@ -70,7 +70,7 @@ export function PaymentForm({ invoiceId, remaining, today }: { invoiceId: string
       </FormField>
       <SubmitButton pendingLabel="Enregistrement du paiement…">Enregistrer le paiement</SubmitButton>
       {last && (
-        <p role="status" className="rounded-lg bg-success-soft px-3 py-2 text-sm text-text">
+        <p role="status" className="rounded-control bg-success-soft px-3 py-2 text-sm text-text">
           Paiement {last.reference} enregistré.{" "}
           <Link href={`/espace/frais/paiements/${last.paymentId}/recu`} className="inline-flex items-center gap-1 font-semibold text-primary underline">
             <ReceiptText className="size-4" aria-hidden /> Imprimer le reçu
