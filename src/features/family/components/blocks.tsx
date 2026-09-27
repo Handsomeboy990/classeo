@@ -17,7 +17,12 @@ export function SpokenSummary({ text, label = "Écouter le résumé", className 
   return (
     <div className={cn("inline-flex shrink-0", className)}>
       <ReadAloud text={text} label={label} />
-      <p className="sr-only">Résumé : {text}</p>
+      {/* Built from the day's data (timetable, marks, absences): the
+          translation layer translates it by template at run time, so the
+          untranslated-text check treats it as generated content. */}
+      <p className="sr-only" data-generated-summary>
+        Résumé : {text}
+      </p>
     </div>
   );
 }

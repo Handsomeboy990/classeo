@@ -68,17 +68,38 @@ describe("IndependenceNotice", () => {
 });
 
 describe("BrandLockup", () => {
-  it("official mode: coat of arms, name, tricolour rule and République du Bénin", () => {
+  it("official mode: coat of arms, République du Bénin above its rule, then Classéo as a product (decision D5)", () => {
     for (const size of SIZES) {
       const html = lockup({ brand: OFFICIAL, size });
       expect(html).toContain('src="/brand/armoiries-benin.svg"');
       expect(html).toMatch(/<img[^>]*alt=""/);
-      expect(text(html)).toContain("Classéo");
-      expect(text(html)).toContain("République du Bénin");
-      expect(html).toContain("bg-flag-green");
-      expect(html).not.toContain("Gestion scolaire");
       expect(html).toContain('data-brand-lockup="official"');
+      // The State first, as a small muted supra-line over the rule, then
+      // the product name.
+      expect(html).toMatch(/République du Bénin[\s\S]*bg-flag-green[\s\S]*>Classéo</);
+      const republic = html.match(/<span[^>]*class="([^"]*)"[^>]*>République du Bénin<\/span>/);
+      expect(republic![1]).toContain("text-[0.5625em]");
+      expect(republic![1]).toMatch(/text-(header-)?muted/);
+      // Classéo in sentence case, never in the capitals of an institution.
+      const word = html.match(/<span[^>]*class="([^"]*)"[^>]*>Classéo<\/span>/);
+      expect(word![1]).not.toContain("uppercase");
+      // No ministry name, no independent subtitle.
+      expect(text(html)).not.toMatch(/Minist/);
+      expect(html).not.toContain("Gestion scolaire");
     }
+  });
+
+  it("official mode: the product line, except in the app bar and the sidebar, and the part that goes under 360 px", () => {
+    for (const size of SIZES.filter((s) => s !== "bar" && s !== "sidebar")) {
+      const html = lockup({ brand: OFFICIAL, size });
+      expect(html).toMatch(/max-\[359px\]:hidden[^>]*>Plateforme de gestion scolaire</);
+    }
+    for (const size of ["bar", "sidebar"] as const) expect(text(lockup({ brand: OFFICIAL, size }))).not.toContain("Plateforme de gestion scolaire");
+  });
+
+  it("keeps the px sizes of part 3.1 when fixed, and follows the text size otherwise", () => {
+    expect(lockup({ brand: OFFICIAL, fixed: true })).toContain("text-[16px]");
+    expect(lockup({ brand: OFFICIAL })).toContain("text-[1rem]");
   });
 
   it("official mode names a configured authority, then Classéo", () => {

@@ -115,6 +115,7 @@ export function AppBar({
             onClick={() => (inAppNavigations > 0 ? router.back() : router.push(backTo))}
             className="inline-flex size-11 shrink-0 items-center justify-center rounded-full hover:bg-white/10 active:bg-white/15"
             aria-label="Retour"
+            data-app-back=""
           >
             <ChevronLeft className="size-6" aria-hidden />
           </button>
@@ -138,7 +139,7 @@ export function AppBar({
           aria-haspopup="dialog"
           aria-expanded={account}
         >
-          <Avatar name={user.fullName} className="size-8 bg-white text-xs text-primary" />
+          <Avatar name={user.fullName} className="size-8 bg-header-text text-xs text-header" />
         </button>
         <AccountSheet open={account} onClose={() => setAccount(false)} user={user} pushKey={pushKey} />
       </div>

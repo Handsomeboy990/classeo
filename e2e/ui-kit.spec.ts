@@ -83,9 +83,12 @@ test.describe("unknown address", () => {
     const res = await page.goto("/une-page-qui-n-existe-pas");
     expect(res?.status()).toBe(404);
     await expect(page.getByRole("heading", { level: 1, name: "Cette page est introuvable" })).toBeVisible();
-    await expect(page.getByRole("link", { name: "Aller à mon espace" })).toHaveAttribute("href", "/espace");
-    await expect(page.getByRole("button", { name: "Page précédente" })).toBeVisible();
-    await expect(page.getByRole("link", { name: "Retour à l'accueil" })).toHaveAttribute("href", "/");
+    // The two actions of part 4.13, and no other.
+    const main = page.locator("#page-content");
+    await expect(main.getByRole("link", { name: "Retour à l'accueil" })).toHaveAttribute("href", "/");
+    await expect(main.getByRole("link", { name: "Aide" })).toHaveAttribute("href", "/espace/aide");
+    await expect(main.getByRole("link")).toHaveCount(2);
+    await expect(main.getByRole("button")).toHaveCount(0);
     // In the public frame, with the independence notice.
     await expect(page.getByRole("contentinfo").getByText("Plateforme indépendante, non officielle. Non affiliée au Gouvernement du Bénin.")).toBeVisible();
   });

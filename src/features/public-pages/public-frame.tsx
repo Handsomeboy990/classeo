@@ -97,10 +97,15 @@ export async function PublicHeader({
 
       <header lang={lang} className="sticky top-0 z-30">
         <div className="bg-header text-header-text">
-          <div className={cn(WRAP, "flex h-16 items-center gap-2 max-[399px]:px-4 min-[400px]:gap-3 lg:h-20")}>
+          {/* Below 1024 px the bar keeps its px sizes at every text size
+              (64 px, margins 16 then 20 px, 44 px buttons, the lockup of
+              part 3.1): it holds a logo and icon buttons, and with a very
+              large text it would otherwise push the menu off the screen
+              (WCAG 1.4.10) and take a third of the window, sticky. */}
+          <div className="mx-auto flex h-[64px] w-full max-w-[80rem] items-center gap-[8px] px-[16px] min-[400px]:gap-[12px] min-[400px]:px-[20px] sm:px-[24px] lg:h-20 lg:gap-3 lg:px-8">
             {/* The compact size of the lockup below 1024 px: the coat of arms,
                 the name and the two buttons hold on one line down to 320 px. */}
-            <BrandLockup brand={brand} tone="dark" size="bar" href={withChoice("/", lang, voice)} className="mr-auto lg:hidden" />
+            <BrandLockup brand={brand} tone="dark" size="bar" fixed href={withChoice("/", lang, voice)} className="mr-auto lg:hidden" />
             <BrandLockup brand={brand} tone="dark" size="header" href={withChoice("/", lang, voice)} className="mr-auto max-lg:hidden" />
             <nav aria-label={t(PUBLIC.common.mainNav)} className="h-full max-lg:hidden">
               <ul className="flex h-full items-stretch gap-1">
@@ -124,14 +129,15 @@ export async function PublicHeader({
             {signIn && (
               <Link
                 href={signInHref}
-                className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-control bg-accent px-3 font-display text-sm font-bold whitespace-nowrap text-on-accent hover:brightness-95 focus-visible:outline-white! max-[439px]:w-11 max-[439px]:px-0 min-[440px]:px-4 lg:ml-4 lg:px-5"
+                className="inline-flex h-[44px] shrink-0 items-center justify-center gap-[8px] rounded-control bg-accent px-3 font-display text-sm font-bold whitespace-nowrap text-on-accent hover:brightness-95 focus-visible:outline-white! max-[439px]:w-[44px] max-[439px]:px-0 min-[440px]:px-4 max-sm:text-large:w-[44px] max-sm:text-large:px-0! lg:ml-4 lg:h-11 lg:gap-2 lg:px-5"
               >
-                <LogIn className="size-[1.125rem] shrink-0" aria-hidden />
+                <LogIn className="size-[18px] shrink-0 lg:size-[1.125rem]" aria-hidden />
                 {/* One name at a time, the one shown: "Connexion" on a
                     phone, the icon alone under 440 px (the official lockup
-                    leaves no more room), "Se connecter" from 1024 px. */}
-                <span className="sr-only min-[440px]:hidden">{node(PUBLIC.common.signInShort)}</span>
-                <span className="max-[439px]:hidden lg:hidden">{node(PUBLIC.common.signInShort)}</span>
+                    leaves no more room) and, with a very large text, under
+                    640 px; "Se connecter" from 1024 px. */}
+                <span className="sr-only min-[440px]:hidden max-sm:text-large:inline!">{node(PUBLIC.common.signInShort)}</span>
+                <span className="max-[439px]:hidden max-sm:text-large:hidden lg:hidden">{node(PUBLIC.common.signInShort)}</span>
                 <span className="max-lg:hidden">{node(PUBLIC.common.signIn)}</span>
               </Link>
             )}
@@ -247,16 +253,10 @@ export async function PublicFooter({ tr, voice, languages = true }: { tr: Public
       <div className={cn(WRAP, "pt-10 pb-5 lg:pt-14 lg:pb-6")}>
         <div className="grid gap-x-8 gap-y-2 sm:grid-cols-2 sm:gap-y-8 lg:grid-cols-[1.4fr_1fr_1fr_1.25fr_0.8fr] lg:gap-10">
           <div className="max-sm:mb-4 sm:col-span-2 lg:col-span-1">
-            <BrandLockup brand={brand} tone="dark" size="footer" href={withChoice("/", lang, voice)} />
+            {/* The logo keeps its size at every text size: with a very large
+                text it would otherwise spill out of its column. */}
+            <BrandLockup brand={brand} tone="dark" size="footer" fixed href={withChoice("/", lang, voice)} />
             <p className="mt-4 max-w-[36ch] text-sm leading-relaxed text-footer-muted">{node(PUBLIC.common.footerNote)}</p>
-            {brand.official && (
-              <div className="mt-4 flex flex-col gap-2">
-                <p className="font-display text-xs font-semibold text-footer-muted" lang="fr" translate="no">
-                  {NATIONAL_MOTTO}
-                </p>
-                <FlagStripe className="h-0.5 w-24" />
-              </div>
-            )}
           </div>
           {columns.map((c) => (
             <div key={c.title}>
@@ -276,7 +276,9 @@ export async function PublicFooter({ tr, voice, languages = true }: { tr: Public
           ))}
         </div>
 
-        <div className="mt-10 flex flex-col gap-4 border-t border-footer-rule pt-5 sm:flex-row sm:items-start sm:justify-between">
+        {/* The end of the page keeps the room of the floating
+            accessibility button on its right, so it never covers a link. */}
+        <div className="mt-10 flex flex-col gap-4 border-t border-footer-rule pt-5 pr-[calc(var(--fab-size)+1rem)] sm:flex-row sm:items-start sm:justify-between">
           <div className="flex flex-col gap-1.5">
             <p className="text-[0.8125rem] text-footer-muted">
               © {year} <span translate="no">Classéo</span>
@@ -294,6 +296,17 @@ export async function PublicFooter({ tr, voice, languages = true }: { tr: Public
             </Link>
           </p>
         </div>
+        {/* The national motto of the official mode, over the flag band and
+            away from the brand column: Classéo is a product, and the motto
+            must not read as its signature (decision D5). */}
+        {brand.official && (
+          <div className="mt-6 flex flex-col items-center gap-2 pr-[calc(var(--fab-size)+1rem)] sm:pl-[calc(var(--fab-size)+1rem)]" data-national-motto="">
+            <p className="font-display text-xs font-semibold text-footer-muted" lang="fr" translate="no">
+              {NATIONAL_MOTTO}
+            </p>
+            <FlagStripe className="h-0.5 w-24" />
+          </div>
+        )}
       </div>
       <FlagStripe className="h-1.5" />
       <AnalyticsSlot tr={tr} />

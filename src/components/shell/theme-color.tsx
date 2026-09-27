@@ -1,20 +1,18 @@
 "use client";
 
-import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 
-// The browser bar and, in the installed app, the status bar take the colour
-// of what is right under them: the navy app bar in the private space, the
-// navy band of the home page, the page background elsewhere. Follows the
-// theme and contrast chosen in Classéo, never the system setting.
+// The browser bar and, in the installed app, the status bar take the navy of
+// the bar right under them (design source of truth, 2.6): the app bar of the
+// private space, the band and main bar of the public pages, the sign in bar
+// on a phone. One colour everywhere, --header: #0A3764 in the light theme,
+// #0D2440 in the dark one. Follows the theme and contrast chosen in Classéo,
+// never the system setting.
 export function ThemeColor() {
-  const pathname = usePathname();
-
   useEffect(() => {
     const root = document.documentElement;
-    const token = pathname === "/" ? "--sidebar" : pathname.startsWith("/espace") ? "--header" : "--bg";
     const apply = () => {
-      const color = getComputedStyle(root).getPropertyValue(token).trim();
+      const color = getComputedStyle(root).getPropertyValue("--header").trim();
       if (!color) return;
       document.querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]').forEach((m) => {
         m.content = color;
@@ -24,7 +22,7 @@ export function ThemeColor() {
     const mo = new MutationObserver(apply);
     mo.observe(root, { attributes: true, attributeFilter: ["data-theme", "data-contrast"] });
     return () => mo.disconnect();
-  }, [pathname]);
+  }, []);
 
   return null;
 }
