@@ -38,9 +38,9 @@ export default async function GenerateInvoicesPage({ params }: PageProps<"/espac
       <div className="flex flex-col gap-6">
         <StatGrid>
           <StatCard label="Élèves concernés" value={formatNumber(preview.concerned)} />
-          <StatCard label="Factures à créer" value={formatNumber(preview.toCreate)} tone="info" />
-          <StatCard label="Déjà facturés, ignorés" value={formatNumber(preview.skipped)} tone="warning" />
-          <StatCard label="Montant total" value={formatFcfa(preview.total)} tone="accent" />
+          <StatCard label="Factures à créer" value={formatNumber(preview.toCreate)} />
+          <StatCard label="Déjà facturés, ignorés" value={formatNumber(preview.skipped)} />
+          <StatCard label="Montant total" value={formatFcfa(preview.total)} />
         </StatGrid>
 
         {!feeType.isActive && <Alert tone="warning" title="Type de frais désactivé">Réactivez-le avant de générer des factures.</Alert>}
@@ -83,7 +83,7 @@ export default async function GenerateInvoicesPage({ params }: PageProps<"/espac
             </CardHeader>
             <CardBody className="flex flex-col gap-4">
               {schedule ? (
-                <ol className="divide-y divide-border rounded-lg border border-border text-sm">
+                <ol className="divide-y divide-border rounded-card border border-border text-sm">
                   {schedule.map((s) => (
                     <li key={s.label} className="flex flex-wrap justify-between gap-2 px-3 py-2">
                       <span className="font-medium">

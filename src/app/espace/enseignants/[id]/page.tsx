@@ -33,13 +33,8 @@ export default async function TeacherPage(props: PageProps<"/espace/enseignants/
 
   return (
     <>
-      <nav aria-label="Fil d'Ariane" className="mb-2 text-sm text-muted max-lg:hidden">
-        <Link href="/espace/enseignants" className="hover:underline">
-          Enseignants
-        </Link>{" "}
-        / {name}
-      </nav>
       <PageHeader
+        breadcrumbs={[{ label: "Enseignants", href: "/espace/enseignants" }, { label: name }]}
         title={name}
         description={[
           `Matricule ${t.matricule}`,
@@ -84,9 +79,9 @@ export default async function TeacherPage(props: PageProps<"/espace/enseignants/
       />
       <StatGrid>
         <StatCard label="Classes" value={formatNumber(students.size)} icon={LayoutGrid} />
-        <StatCard label="Élèves suivis" value={formatNumber([...students.values()].reduce((a, b) => a + b, 0))} icon={Users} tone="info" />
-        <StatCard label="Heures par semaine" value={formatNumber(hours)} icon={Clock} tone="accent" />
-        <StatCard label="Professeur principal" value={t.mainClasses.length ? t.mainClasses.map((c) => c.name).join(", ") : "–"} icon={BookOpen} tone="warning" />
+        <StatCard label="Élèves suivis" value={formatNumber([...students.values()].reduce((a, b) => a + b, 0))} icon={Users} />
+        <StatCard label="Heures par semaine" value={formatNumber(hours)} icon={Clock} />
+        <StatCard label="Professeur principal" value={t.mainClasses.length ? t.mainClasses.map((c) => c.name).join(", ") : "–"} icon={BookOpen} />
       </StatGrid>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
@@ -151,11 +146,11 @@ export default async function TeacherPage(props: PageProps<"/espace/enseignants/
             <CardBody>
               <dl className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-3 text-sm [&_dd]:min-w-0 [&_dd]:break-words">
                 <dt className="text-muted">Téléphone</dt>
-                <dd>{t.phone ? <a href={`tel:${t.phone}`} className="font-mono hover:underline">{t.phone}</a> : "–"}</dd>
+                <dd>{t.phone ? <a href={`tel:${t.phone}`} className="tabular-nums hover:underline">{t.phone}</a> : "–"}</dd>
                 <dt className="text-muted">Embauche</dt>
                 <dd>{t.hiredAt ? shortDate(t.hiredAt) : "–"}</dd>
                 <dt className="text-muted">NPI</dt>
-                <dd className="font-mono">{t.profile?.npi ?? "Non renseigné"}</dd>
+                <dd className="tabular-nums">{t.profile?.npi ?? "Non renseigné"}</dd>
                 <dt className="text-muted">Compte</dt>
                 <dd className="break-all">
                   {t.user ? (

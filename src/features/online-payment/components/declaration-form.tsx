@@ -5,6 +5,7 @@ import { useState } from "react";
 
 import { ActionForm, SubmitButton } from "@/components/kit/action-form";
 import { FormField } from "@/components/kit/form-field";
+import { Button } from "@/components/ui/button";
 import { FileInput, Input, Select } from "@/components/ui/input";
 import { formatFcfa } from "@/lib/utils";
 
@@ -51,9 +52,9 @@ export function DeclarationForm({ invoiceId, max, accounts, suggestions, default
       {suggestions.length > 0 && (
         <div className="-mt-2 flex flex-wrap gap-2">
           {suggestions.map((s) => (
-            <button key={s.label} type="button" onClick={() => setAmount(String(s.amount))} className="rounded-full border border-border px-3 py-1.5 text-sm font-semibold hover:bg-surface-2">
+            <Button key={s.label} type="button" variant="soft" size="sm" onClick={() => setAmount(String(s.amount))}>
               {s.label} ({formatFcfa(s.amount)})
-            </button>
+            </Button>
           ))}
         </div>
       )}

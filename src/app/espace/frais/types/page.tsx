@@ -99,7 +99,7 @@ function FeeTypeCard({ feeType: ft, levels, user }: { feeType: FeeTypeRow; level
       <CardBody className="flex flex-1 flex-col gap-4">
         <div className="flex flex-wrap gap-2">
           <Badge tone={ft.isActive ? "success" : "neutral"}>{ft.isActive ? "Actif" : "Désactivé"}</Badge>
-          <Badge tone={invoiced ? "info" : "neutral"}>{invoiced ? `${formatNumber(invoiced)} facture${invoiced > 1 ? "s émises" : " émise"}` : "Pas encore facturé"}</Badge>
+          <Badge tone={invoiced ? "primary" : "neutral"}>{invoiced ? `${formatNumber(invoiced)} facture${invoiced > 1 ? "s émises" : " émise"}` : "Pas encore facturé"}</Badge>
         </div>
 
         <section aria-label={`Échéancier de ${ft.name}`}>
@@ -107,7 +107,7 @@ function FeeTypeCard({ feeType: ft, levels, user }: { feeType: FeeTypeRow; level
             <CalendarRange className="size-4 text-muted" aria-hidden /> {plan ? plan.name : "Paiement en une fois (pas d'échéancier)"}
           </h3>
           {plan && (
-            <ol className="mt-2 divide-y divide-border rounded-lg border border-border text-sm">
+            <ol className="mt-2 divide-y divide-border rounded-card border border-border text-sm">
               {plan.installments.map((i, k) => (
                 <li key={i.id} className="flex flex-wrap items-center justify-between gap-2 px-3 py-2">
                   <span className="font-medium">

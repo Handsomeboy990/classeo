@@ -68,38 +68,41 @@ export default async function SchoolDetailPage({ params, searchParams }: PagePro
 
   return (
     <div className="flex flex-col gap-6">
-      <PageHeader
-        title={school.name}
-        description={`${school.code} · ${school.commune.name}, ${school.commune.department.name}`}
-        actions={
-          <>
-            {canEdit && (
-              <SchoolFormDialog
-                communes={communes}
-                school={{
-                  id: school.id,
-                  name: school.name,
-                  sector: school.sector,
-                  cycle: school.cycle,
-                  communeId: school.communeId,
-                  address: school.address,
-                  phone: school.phone,
-                  email: school.email,
-                  periodicity: school.periodicity === defaultPeriodicity(school) ? "" : school.periodicity,
-                  denomination: school.denomination,
-                  isBilingual: school.isBilingual,
-                  authorizationRef: school.authorizationRef,
-                  authorizationDate: school.authorizationDate ? school.authorizationDate.toISOString().slice(0, 10) : null,
-                  promoter: school.promoter,
-                }}
-                canSetPeriodicity={user.scope.level === "NATIONAL"}
-              />
-            )}
-            {can(user, "school:lock") && ["NATIONAL", "DEPARTMENT", "COMMUNE"].includes(user.scope.level) && <SchoolStatusDialog id={school.id} name={school.name} status={school.status} />}
-          </>
-        }
-      />
-      <ScopeBreadcrumb scope={{ level: "SCHOOL", id: school.id }} basePath="/espace/territoire" user={user} />
+      {/* The territorial trail above the title (doc 4.8). */}
+      <div className="flex flex-col gap-2">
+        <ScopeBreadcrumb scope={{ level: "SCHOOL", id: school.id }} basePath="/espace/territoire" user={user} />
+        <PageHeader
+          title={school.name}
+          description={`${school.code} · ${school.commune.name}, ${school.commune.department.name}`}
+          actions={
+            <>
+              {canEdit && (
+                <SchoolFormDialog
+                  communes={communes}
+                  school={{
+                    id: school.id,
+                    name: school.name,
+                    sector: school.sector,
+                    cycle: school.cycle,
+                    communeId: school.communeId,
+                    address: school.address,
+                    phone: school.phone,
+                    email: school.email,
+                    periodicity: school.periodicity === defaultPeriodicity(school) ? "" : school.periodicity,
+                    denomination: school.denomination,
+                    isBilingual: school.isBilingual,
+                    authorizationRef: school.authorizationRef,
+                    authorizationDate: school.authorizationDate ? school.authorizationDate.toISOString().slice(0, 10) : null,
+                    promoter: school.promoter,
+                  }}
+                  canSetPeriodicity={user.scope.level === "NATIONAL"}
+                />
+              )}
+              {can(user, "school:lock") && ["NATIONAL", "DEPARTMENT", "COMMUNE"].includes(user.scope.level) && <SchoolStatusDialog id={school.id} name={school.name} status={school.status} />}
+            </>
+          }
+        />
+      </div>
       {school.status !== "ACTIVE" && (
         <Alert tone={school.status === "SUSPENDED" ? "warning" : "danger"} title={`Établissement ${school.status === "SUSPENDED" ? "suspendu" : "fermé"}${school.statusChangedAt ? ` depuis le ${formatDate(school.statusChangedAt)}` : ""}`}>
           <p>Ses données restent consultables ; aucune modification n&apos;est acceptée.{school.statusReason ? ` Motif : ${school.statusReason}` : ""}</p>

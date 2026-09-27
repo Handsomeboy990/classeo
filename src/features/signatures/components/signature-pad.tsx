@@ -12,7 +12,12 @@ type Point = { x: number; y: number; w: number };
 
 const WIDTH = 600;
 const HEIGHT = 220;
-const INK = "#10233f";
+
+// The ink is the navy of the mobile bar (--header), dark in both themes:
+// the signature is saved as an image and printed on white paper.
+function inkColour(el: Element) {
+  return getComputedStyle(el).getPropertyValue("--header").trim() || "currentColor";
+}
 
 // A pad to draw a signature with a finger, a stylus or a mouse (pointer
 // events). The strokes are kept so the last one can be undone; the saved
@@ -31,13 +36,14 @@ export function SignaturePad() {
     const ctx = c?.getContext("2d");
     if (!c || !ctx) return;
     ctx.clearRect(0, 0, c.width, c.height);
-    ctx.strokeStyle = INK;
+    const ink = inkColour(c);
+    ctx.strokeStyle = ink;
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
     for (const s of strokes.current) {
       if (s.length === 1) {
         ctx.beginPath();
-        ctx.fillStyle = INK;
+        ctx.fillStyle = ink;
         ctx.arc(s[0]!.x, s[0]!.y, s[0]!.w / 2, 0, Math.PI * 2);
         ctx.fill();
         continue;
