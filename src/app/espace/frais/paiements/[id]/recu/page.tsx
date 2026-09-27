@@ -58,8 +58,8 @@ export default async function ReceiptPage({ params }: PageProps<"/espace/frais/p
           ]}
         />
 
-        <div className="doc-keep mt-4 rounded-md border-l-4 border-[#006b40] bg-[#e3f1e9] px-5 py-4">
-          <p className="doc-label !text-[#006b40]">Montant reçu le {beninDate(data.paidAt)}</p>
+        <div className="doc-amount doc-keep mt-4 px-5 py-4">
+          <p className="doc-label">Montant reçu le {beninDate(data.paidAt)}</p>
           <p className="doc-title mt-1 text-4xl">{pdfFcfa(data.amount)}</p>
           <p className="mt-2">
             Arrêté le présent reçu à la somme de <strong>{amountSentence(data.amount)}</strong>.
