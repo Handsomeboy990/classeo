@@ -7932,6 +7932,12 @@
 "text": "2 3 FCFA sín xó."
 },
 {
+"key": "6b4af8cfe265a23c69492d94ef72ad408a24088519df7efede8ed91e0e8766ef",
+"lang": "fon",
+"source": "Vérifier un document",
+"text": "Kpɔ́n wema ɖé."
+},
+{
 "key": "6b60bcff0d38eab79062362ab52ea72e7e5a2ad20a17b43c76170e4fed49c6e1",
 "lang": "fon",
 "source": "Pas de cours",
@@ -17370,6 +17376,12 @@
 "text": "Mɛjitɔ́ ɔ mɔ hwɛjijɔ ɔ bo sixu lɛ́vɔ na gbeɖiɖó ɔ kpo wema e sɔgbe é kpo."
 },
 {
+"key": "ec1a4a92b628baa2320653051b2593595730bfed40cff6504508e6d7aa819433",
+"lang": "fon",
+"source": "Plateforme indépendante, non officielle. Non affiliée au Gouvernement du Bénin.",
+"text": "Atɛjijɛ mɛɖesunɔ tɔn, e ma nyí acɛkpikpa tɔn ǎ é. É ɖò bǔ xá Acɛkpikpa Benin tɔn ǎ."
+},
+{
 "key": "ec458dd68f9fb601c089457cc9f99495c08ea955dead4af75f3b98f394df48f2",
 "lang": "fon",
 "source": "Ce paiement a déjà été annulé.",
@@ -26502,6 +26514,12 @@
 "text": "Olukọni yii jẹ aṣoju ipinle: owo-osu rẹ jẹ nipasẹ Ile-iṣẹ ti Aje ati Isuna, kii ṣe nipasẹ idasile."
 },
 {
+"key": "6b4af8cfe265a23c69492d94ef72ad408a24088519df7efede8ed91e0e8766ef",
+"lang": "yo",
+"source": "Vérifier un document",
+"text": "Ṣayẹwo iwe-ipamọ kan"
+},
+{
 "key": "6b60bcff0d38eab79062362ab52ea72e7e5a2ad20a17b43c76170e4fed49c6e1",
 "lang": "yo",
 "source": "Pas de cours",
@@ -35578,6 +35596,12 @@
 "lang": "yo",
 "source": "Le parent reçoit le motif et peut déclarer à nouveau avec la bonne référence.",
 "text": "Obi gba idi naa ati pe o le ṣe ijabọ lẹẹkansii pẹlu itọkasi to tọ."
+},
+{
+"key": "ec1a4a92b628baa2320653051b2593595730bfed40cff6504508e6d7aa819433",
+"lang": "yo",
+"source": "Plateforme indépendante, non officielle. Non affiliée au Gouvernement du Bénin.",
+"text": "Independent, laigba aṣẹ Syeed. Ko ṣe ajọṣepọ pẹlu ijọba ti Benin."
 },
 {
 "key": "ec458dd68f9fb601c089457cc9f99495c08ea955dead4af75f3b98f394df48f2",
