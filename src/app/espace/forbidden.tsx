@@ -1,6 +1,6 @@
-import { ShieldX } from "lucide-react";
+import { Home, LifeBuoy, ShieldX } from "lucide-react";
 
-import { BackButton, StatusPage } from "@/components/kit/status-page";
+import { StatusPage } from "@/components/kit/status-page";
 import { ButtonLink } from "@/components/ui/button";
 
 // Rendered by forbidden() in a page of the space: the account is signed in
@@ -15,9 +15,11 @@ export default function SpaceForbidden() {
       title="Accès refusé"
       actions={
         <>
-          <BackButton fallback="/espace" />
+          <ButtonLink href="/espace/aide" variant="secondary" size="lg">
+            <LifeBuoy aria-hidden /> Aide
+          </ButtonLink>
           <ButtonLink href="/espace" size="lg">
-            Retour au tableau de bord
+            <Home aria-hidden /> Retour à l&apos;accueil
           </ButtonLink>
         </>
       }
