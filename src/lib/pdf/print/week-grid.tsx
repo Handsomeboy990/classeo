@@ -36,7 +36,7 @@ export function PrintWeekGrid({ slots }: { slots: WeekSlot[] }) {
               </div>
             ))}
           </div>
-          <div className="relative flex h-[520px] print:h-[94mm]">
+          <div className="relative flex h-[520px] print:h-[100mm]">
             <div className="relative w-10 shrink-0" aria-hidden>
               {hours.map((m) => (
                 <span key={m} className="doc-muted absolute right-1.5 -translate-y-1/2 text-[10px]" style={{ top: pct(m) }}>
@@ -57,7 +57,7 @@ export function PrintWeekGrid({ slots }: { slots: WeekSlot[] }) {
                       return (
                         <div
                           key={i}
-                          className="absolute overflow-hidden rounded-sm border-r-2 border-white px-1.5 py-1 text-[10px] leading-tight"
+                          className="absolute overflow-hidden rounded-sm border-r-2 border-white px-1.5 py-1 text-[10px] leading-tight print:py-0.5 print:leading-[1.15]"
                           style={{
                             top: `calc(${pct(toMinutes(s.startTime))} + 1px)`,
                             height: `calc(${((toMinutes(s.endTime) - toMinutes(s.startTime)) / span) * 100}% - 2px)`,
@@ -85,7 +85,7 @@ export function PrintWeekGrid({ slots }: { slots: WeekSlot[] }) {
           </div>
         </div>
       </div>
-      <p className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs">
+      <p className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-xs">
         <span className="doc-title">Volume hebdomadaire : {duration(all)}</span>
         {[...totals.entries()]
           .sort((a, b) => b[1] - a[1])
