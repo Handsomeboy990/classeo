@@ -69,9 +69,10 @@ export function PublicMenu({
         aria-expanded={open}
         aria-controls={id}
         aria-label={labels.open}
-        className="inline-flex size-11 shrink-0 items-center justify-center rounded-control bg-white/10 text-header-text hover:bg-white/20 lg:hidden"
+        // In px, as the whole phone bar: 44 px at every text size.
+        className="inline-flex size-[44px] shrink-0 items-center justify-center rounded-control bg-white/10 text-header-text hover:bg-white/20 lg:hidden"
       >
-        <Menu className="size-[1.375rem]" aria-hidden />
+        <Menu className="size-[22px]" aria-hidden />
       </button>
       {mounted &&
         createPortal(

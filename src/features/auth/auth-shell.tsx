@@ -76,9 +76,12 @@ export async function AuthShell({
       {/* Phones: the navy bar with the lockup and the language, the rule
           under it. Not the bg-header utility: the yellow focus ring of the
           navy surfaces would reach the light panel of the language menu. */}
+      {/* The bar keeps its px sizes at every text size (56 px, margins 16,
+          20 then 32 px, the lockup of part 3.1): with a very large text the
+          lockup would otherwise push the language button off the screen. */}
       <div className="shrink-0 lg:hidden" lang={lang}>
-        <div className="flex min-h-14 items-center justify-between gap-3 bg-(--header) px-4 pt-[env(safe-area-inset-top)] min-[400px]:px-5 sm:px-8">
-          <BrandLockup brand={brand} tone="dark" size="bar" href={home} className="focus-visible:outline-flag-yellow!" />
+        <div className="flex min-h-[56px] items-center justify-between gap-[12px] bg-(--header) px-[16px] pt-[env(safe-area-inset-top)] min-[400px]:px-[20px] sm:px-[32px]">
+          <BrandLockup brand={brand} tone="dark" size="bar" fixed href={home} className="focus-visible:outline-flag-yellow!" />
           <LanguageControls lang={lang} voice={voice} extra={extra} labels={labels} tone="inverse" className={BAR_LANGUAGE} />
         </div>
         <FlagStripe className="h-1" />

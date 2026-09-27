@@ -270,3 +270,34 @@ test.describe("official frame", () => {
 async function isInside(container: Locator) {
   return container.evaluate((el) => el.contains(document.activeElement));
 }
+
+// Reflow with the two largest text sizes of the accessibility panel (WCAG
+// 1.4.10, control 9 of the design source of truth): on a phone, no public
+// or sign in page scrolls sideways, and the menu and language buttons stay
+// whole on the screen.
+test.describe("very large text on a phone", () => {
+  const PAGES = ["/", "/credits", "/verifier", "/une-page-qui-n-existe-pas", "/connexion", "/mot-de-passe-oublie"];
+
+  for (const text of ["xl", "xxl"] as const) {
+    for (const width of [320, 390]) {
+      test(`text ${text} at ${width} px: no sideways scroll, the controls on screen`, async ({ page }) => {
+        await page.addInitScript((size) => localStorage.setItem("classeo:text", size), text);
+        await page.setViewportSize({ width, height: 800 });
+        for (const path of PAGES) {
+          await page.goto(path);
+          await expect(page.locator("html")).toHaveAttribute("data-text", text);
+          await expectNoHorizontalScroll(page);
+          const controls = page.locator("button[aria-label='Ouvrir le menu'], [data-language-menu]").locator("visible=true");
+          const count = await controls.count();
+          expect(count, `${path}: header controls`).toBeGreaterThan(0);
+          for (let i = 0; i < count; i++) {
+            const box = (await controls.nth(i).boundingBox())!;
+            expect(box.x, `${path}: control ${i}, left edge`).toBeGreaterThanOrEqual(0);
+            expect(box.x + box.width, `${path}: control ${i}, right edge`).toBeLessThanOrEqual(width);
+            expect(Math.round(box.height), `${path}: control ${i}, height`).toBeGreaterThanOrEqual(44);
+          }
+        }
+      });
+    }
+  }
+});

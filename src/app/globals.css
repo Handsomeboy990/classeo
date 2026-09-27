@@ -13,6 +13,8 @@
  */
 
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+/* The two largest text sizes of the accessibility panel (xl, xxl). */
+@custom-variant text-large (&:where([data-text="xl"] *, [data-text="xxl"] *));
 
 :root {
   --bg: #f4f6fa;

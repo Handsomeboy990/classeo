@@ -96,10 +96,15 @@ export async function PublicHeader({
 
       <header lang={lang} className="sticky top-0 z-30">
         <div className="bg-header text-header-text">
-          <div className={cn(WRAP, "flex h-16 items-center gap-2 max-[399px]:px-4 min-[400px]:gap-3 lg:h-20")}>
+          {/* Below 1024 px the bar keeps its px sizes at every text size
+              (64 px, margins 16 then 20 px, 44 px buttons, the lockup of
+              part 3.1): it holds a logo and icon buttons, and with a very
+              large text it would otherwise push the menu off the screen
+              (WCAG 1.4.10) and take a third of the window, sticky. */}
+          <div className="mx-auto flex h-[64px] w-full max-w-[80rem] items-center gap-[8px] px-[16px] min-[400px]:gap-[12px] min-[400px]:px-[20px] sm:px-[24px] lg:h-20 lg:gap-3 lg:px-8">
             {/* The compact size of the lockup below 1024 px: the coat of arms,
                 the name and the two buttons hold on one line down to 320 px. */}
-            <BrandLockup brand={brand} tone="dark" size="bar" href={withChoice("/", lang, voice)} className="mr-auto lg:hidden" />
+            <BrandLockup brand={brand} tone="dark" size="bar" fixed href={withChoice("/", lang, voice)} className="mr-auto lg:hidden" />
             <BrandLockup brand={brand} tone="dark" size="header" href={withChoice("/", lang, voice)} className="mr-auto max-lg:hidden" />
             <nav aria-label={t(PUBLIC.common.mainNav)} className="h-full max-lg:hidden">
               <ul className="flex h-full items-stretch gap-1">
@@ -123,14 +128,15 @@ export async function PublicHeader({
             {signIn && (
               <Link
                 href={signInHref}
-                className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-control bg-accent px-3 font-display text-sm font-bold whitespace-nowrap text-on-accent hover:brightness-95 focus-visible:outline-white! max-[439px]:w-11 max-[439px]:px-0 min-[440px]:px-4 lg:ml-4 lg:px-5"
+                className="inline-flex h-[44px] shrink-0 items-center justify-center gap-[8px] rounded-control bg-accent px-3 font-display text-sm font-bold whitespace-nowrap text-on-accent hover:brightness-95 focus-visible:outline-white! max-[439px]:w-[44px] max-[439px]:px-0 min-[440px]:px-4 max-sm:text-large:w-[44px] max-sm:text-large:px-0! lg:ml-4 lg:h-11 lg:gap-2 lg:px-5"
               >
-                <LogIn className="size-[1.125rem] shrink-0" aria-hidden />
+                <LogIn className="size-[18px] shrink-0 lg:size-[1.125rem]" aria-hidden />
                 {/* One name at a time, the one shown: "Connexion" on a
                     phone, the icon alone under 440 px (the official lockup
-                    leaves no more room), "Se connecter" from 1024 px. */}
-                <span className="sr-only min-[440px]:hidden">{node(PUBLIC.common.signInShort)}</span>
-                <span className="max-[439px]:hidden lg:hidden">{node(PUBLIC.common.signInShort)}</span>
+                    leaves no more room) and, with a very large text, under
+                    640 px; "Se connecter" from 1024 px. */}
+                <span className="sr-only min-[440px]:hidden max-sm:text-large:inline!">{node(PUBLIC.common.signInShort)}</span>
+                <span className="max-[439px]:hidden max-sm:text-large:hidden lg:hidden">{node(PUBLIC.common.signInShort)}</span>
                 <span className="max-lg:hidden">{node(PUBLIC.common.signIn)}</span>
               </Link>
             )}

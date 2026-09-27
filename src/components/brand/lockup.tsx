@@ -21,17 +21,26 @@ import { ARMS_RATIO, ARMS_SRC, BRAND_DEFAULTS, type BrandSettings } from "./sett
 // the block clips or ellipsises, and below 360 px the small subtitle line is
 // the part that goes. Capitals come from CSS, so screen readers read words,
 // not letters.
+//
+// Every inner size is in em of the block's own size: 1rem by default, so the
+// block grows with the text size preference; 16 px with `fixed`, so it keeps
+// the sizes of part 3.1 at every text size, as a logo does. The navy bars of
+// phones and the public footer use `fixed`: with a very large text the block
+// would otherwise push the menu and language buttons off the screen, or out
+// of its footer column.
 
 export type LockupSize = "header" | "sidebar" | "bar" | "drawer" | "footer" | "auth";
 
 // Height of the coat of arms, of the mark, and size of the name, per place.
+// In em of the block (see above). The authority line is 0.625em, so its
+// maximum width is in its own em: 13rem there is 20.8em.
 const SIZES: Record<LockupSize, { arms: string; mark: string; word: string; authority: string }> = {
-  header: { arms: "h-11 lg:h-14", mark: "size-9 lg:size-10", word: "text-[1.125rem] lg:text-[1.25rem]", authority: "max-w-[13rem]" },
-  sidebar: { arms: "h-10", mark: "size-9", word: "text-[1.125rem]", authority: "max-w-[9.5rem]" },
-  bar: { arms: "h-10", mark: "size-8", word: "text-[1.0625rem]", authority: "max-w-[11rem]" },
-  drawer: { arms: "h-10", mark: "size-8", word: "text-[1.0625rem]", authority: "max-w-[11rem]" },
-  footer: { arms: "h-16", mark: "size-10", word: "text-[1.25rem]", authority: "max-w-[14rem]" },
-  auth: { arms: "h-14", mark: "size-10", word: "text-[1.25rem]", authority: "max-w-[14rem]" },
+  header: { arms: "h-[2.75em] lg:h-[3.5em]", mark: "size-[2.25em] lg:size-[2.5em]", word: "text-[1.125em] lg:text-[1.25em]", authority: "max-w-[20.8em]" },
+  sidebar: { arms: "h-[2.5em]", mark: "size-[2.25em]", word: "text-[1.125em]", authority: "max-w-[15.2em]" },
+  bar: { arms: "h-[2.5em]", mark: "size-[2em]", word: "text-[1.0625em]", authority: "max-w-[17.6em]" },
+  drawer: { arms: "h-[2.5em]", mark: "size-[2em]", word: "text-[1.0625em]", authority: "max-w-[17.6em]" },
+  footer: { arms: "h-[4em]", mark: "size-[2.5em]", word: "text-[1.25em]", authority: "max-w-[22.4em]" },
+  auth: { arms: "h-[3.5em]", mark: "size-[2.5em]", word: "text-[1.25em]", authority: "max-w-[22.4em]" },
 };
 
 // Independent mode: the app bar has no room for the "Gestion scolaire"
@@ -43,6 +52,7 @@ export function BrandLockup({
   tone = "light",
   size = "header",
   href,
+  fixed = false,
   className,
 }: {
   // From loadBrand() on the server; the defaults otherwise.
@@ -52,6 +62,8 @@ export function BrandLockup({
   size?: LockupSize;
   // Makes the whole block the home link, named "Classéo, accueil".
   href?: string;
+  // Keeps the px sizes of part 3.1 whatever the text size preference.
+  fixed?: boolean;
   className?: string;
 }) {
   const s = SIZES[size];
@@ -83,25 +95,25 @@ export function BrandLockup({
       />
       {brand.authority ? (
         <>
-          <span className="flex min-w-0 flex-col gap-1 max-sm:hidden" data-brand-authority="">
-            <span className={cn("font-display text-[0.625rem] leading-[1.2] font-bold tracking-[0.02em] text-balance uppercase", s.authority, name)}>{brand.authority}</span>
-            <FlagStripe className="h-0.5 w-full max-w-24" />
+          <span className="flex min-w-0 flex-col gap-[0.25em] max-sm:hidden" data-brand-authority="">
+            <span className={cn("font-display text-[0.625em] leading-[1.2] font-bold tracking-[0.02em] text-balance uppercase", s.authority, name)}>{brand.authority}</span>
+            <FlagStripe className="h-[0.125em] w-full max-w-[6em]" />
             {subtitle && <Republic className={muted} />}
           </span>
-          <span aria-hidden className={cn("h-8 w-px shrink-0 max-sm:hidden", dark ? "bg-white/20" : "bg-border-strong")} />
-          <span className="flex flex-col gap-1">
-            <span className="inline-flex flex-col gap-1 self-start">
+          <span aria-hidden className={cn("h-[2em] w-px shrink-0 max-sm:hidden", dark ? "bg-white/20" : "bg-border-strong")} />
+          <span className="flex flex-col gap-[0.25em]">
+            <span className="inline-flex flex-col gap-[0.25em] self-start">
               {word}
-              <FlagStripe className="h-0.5 sm:hidden" />
+              <FlagStripe className="h-[0.125em] sm:hidden" />
             </span>
             {subtitle && <Republic className={cn("sm:hidden", muted)} />}
           </span>
         </>
       ) : (
-        <span className="flex flex-col gap-1">
-          <span className="inline-flex flex-col gap-1 self-start">
+        <span className="flex flex-col gap-[0.25em]">
+          <span className="inline-flex flex-col gap-[0.25em] self-start">
             {word}
-            <FlagStripe className="h-0.5" />
+            <FlagStripe className="h-[0.125em]" />
           </span>
           {subtitle && <Republic className={muted} />}
         </span>
@@ -110,13 +122,13 @@ export function BrandLockup({
   ) : (
     <>
       <LogoMark tone={tone} className={s.mark} />
-      <span className="flex flex-col gap-1">
-        <span className="inline-flex flex-col gap-1 self-start">
+      <span className="flex flex-col gap-[0.25em]">
+        <span className="inline-flex flex-col gap-[0.25em] self-start">
           {word}
-          <FlagStripe className="h-0.5" />
+          <FlagStripe className="h-[0.125em]" />
         </span>
         {subtitle && (
-          <span className={cn("font-display text-[0.625rem] leading-none font-semibold tracking-widest whitespace-nowrap uppercase max-[359px]:hidden", muted)}>
+          <span className={cn("font-display text-[0.625em] leading-none font-semibold tracking-widest whitespace-nowrap uppercase max-[359px]:hidden", muted)}>
             Gestion scolaire · Bénin
           </span>
         )}
@@ -124,7 +136,12 @@ export function BrandLockup({
     </>
   );
 
-  const cls = cn("inline-flex min-w-0 shrink-0 items-center gap-3", brand.official && brand.authority && "gap-x-3 sm:gap-x-4", className);
+  const cls = cn(
+    "inline-flex min-w-0 shrink-0 items-center gap-[0.75em]",
+    fixed ? "text-[16px]" : "text-[1rem]",
+    brand.official && brand.authority && "sm:gap-x-[1em]",
+    className,
+  );
   if (href) {
     return (
       <Link href={href} aria-label="Classéo, accueil" className={cn(cls, "rounded-control")} data-brand-lockup={brand.official ? "official" : "independent"}>
@@ -142,7 +159,7 @@ export function BrandLockup({
 // "République du Bénin", in spaced capitals under the rule.
 function Republic({ className }: { className?: string }) {
   return (
-    <span className={cn("font-display text-[0.5625rem] leading-none font-semibold tracking-[0.12em] whitespace-nowrap uppercase", className)} translate="no">
+    <span className={cn("font-display text-[0.5625em] leading-none font-semibold tracking-[0.12em] whitespace-nowrap uppercase", className)} translate="no">
       République du Bénin
     </span>
   );

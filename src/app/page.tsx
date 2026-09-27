@@ -247,7 +247,9 @@ function SectionTitle({ id, children }: { id: string; children: ReactNode }) {
 function ServiceTile({ icon: Icon, title, body, href, tr }: { icon: LucideIcon; title: string; body: string; href: string; tr: PublicTranslator }) {
   const { node } = tr;
   return (
-    <li className="relative flex gap-4 rounded-card border border-border bg-surface p-5 shadow-xs transition-[border-color,box-shadow] hover:border-primary/40 hover:shadow-sm has-[a:focus-visible]:outline-3 has-[a:focus-visible]:outline-offset-2 has-[a:focus-visible]:outline-focus lg:p-6">
+    // min-w-0 and the breaks: with a very large text on a phone, a long word
+    // wraps instead of widening the tile, then the page.
+    <li className="relative flex min-w-0 gap-4 rounded-card border border-border bg-surface p-5 break-words hyphens-auto shadow-xs transition-[border-color,box-shadow] hover:border-primary/40 hover:shadow-sm has-[a:focus-visible]:outline-3 has-[a:focus-visible]:outline-offset-2 has-[a:focus-visible]:outline-focus lg:p-6">
       <span className="flex size-14 shrink-0 items-center justify-center rounded-full bg-primary-soft text-primary">
         <Icon className="size-6" aria-hidden />
       </span>
@@ -269,7 +271,7 @@ function ServiceTile({ icon: Icon, title, body, href, tr }: { icon: LucideIcon; 
 
 function Feature({ icon: Icon, title, children }: { icon: LucideIcon; title: ReactNode; children: ReactNode }) {
   return (
-    <li className="flex gap-4 rounded-card border border-border bg-surface p-5 shadow-xs lg:p-6">
+    <li className="flex min-w-0 gap-4 rounded-card border border-border bg-surface p-5 break-words hyphens-auto shadow-xs lg:p-6">
       <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-primary-soft text-primary">
         <Icon className="size-6" aria-hidden />
       </span>
