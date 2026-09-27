@@ -24,11 +24,11 @@ export function GuideSteps({ guide, headingLevel = 2 }: { guide: Guide; headingL
           const body = (
             <>
               <span className="flex items-center gap-3">
-                <span className="relative flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary" aria-hidden>
+                <span className="relative flex size-12 shrink-0 items-center justify-center rounded-full bg-primary-soft text-primary" aria-hidden>
                   <s.icon className="size-6" />
-                  <span className="absolute -top-2 -left-2 flex size-6 items-center justify-center rounded-full bg-primary text-xs font-bold text-on-primary">{i + 1}</span>
+                  <span className="absolute -top-1.5 -left-1.5 flex size-6 items-center justify-center rounded-full border-2 border-surface bg-primary font-display text-xs font-bold text-on-primary">{i + 1}</span>
                 </span>
-                <span className="min-w-0 font-bold break-words hyphens-auto">
+                <span className="min-w-0 font-display text-[0.9375rem] font-bold break-words hyphens-auto">
                   <span className="sr-only">Étape {i + 1} : </span>
                   {s.title}
                 </span>
@@ -36,11 +36,11 @@ export function GuideSteps({ guide, headingLevel = 2 }: { guide: Guide; headingL
               <span className="mt-2 block text-muted">{s.text}</span>
             </>
           );
-          const cls = "block h-full rounded-xl border border-border bg-bg p-4";
+          const cls = "block h-full rounded-card border border-border bg-surface p-4 shadow-card";
           return (
             <li key={s.title}>
               {s.href ? (
-                <Link href={s.href} className={cn(cls, "hover:border-primary")}>
+                <Link href={s.href} className={cn(cls, "transition-[border-color,box-shadow] duration-150 hover:border-primary/40 hover:shadow-[var(--elevation-sm)]")}>
                   {body}
                 </Link>
               ) : (
