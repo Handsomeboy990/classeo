@@ -27,7 +27,8 @@ function dismiss(id: number) {
 const EMPTY: Toast[] = [];
 
 // Visual and screen reader feedback for every action. Errors use an
-// assertive region, successes a polite one.
+// assertive region, successes a polite one. A dark card in the light theme
+// (the body text colour as background), a light one in the dark theme.
 export function Toaster() {
   const list = useSyncExternalStore(
     (l) => (listeners.add(l), () => listeners.delete(l)),
@@ -43,7 +44,7 @@ export function Toaster() {
             .map((t) => (
               <div
                 key={t.id}
-                className="ds-toast pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-control border border-border bg-surface py-3 pr-2 pl-3 text-sm shadow-overlay"
+                className="ds-toast pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-card border border-text bg-text py-3 pr-2 pl-3 text-sm text-surface shadow-overlay"
               >
                 <span
                   className={cn(
@@ -54,12 +55,12 @@ export function Toaster() {
                 >
                   {tone === "error" ? <XCircle className="size-4" /> : <CheckCircle2 className="size-4" />}
                 </span>
-                <p className="flex-1 self-center leading-snug font-medium text-text">{t.message}</p>
+                <p className="flex-1 self-center leading-snug font-medium">{t.message}</p>
                 <button
                   type="button"
                   onClick={() => dismiss(t.id)}
                   aria-label="Fermer la notification"
-                  className="-my-1 inline-flex size-9 shrink-0 items-center justify-center rounded-control text-muted transition-colors hover:bg-surface-2 hover:text-text"
+                  className="-my-1 inline-flex size-9 shrink-0 items-center justify-center rounded-control text-surface/80 transition-colors hover:bg-surface/10 hover:text-surface"
                 >
                   <X className="size-4" aria-hidden />
                 </button>

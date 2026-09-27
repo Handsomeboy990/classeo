@@ -3,14 +3,16 @@ import type { ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
 
+// A 64 px round pill with a 28 px icon: the soft navy for an empty list,
+// the tone of the problem otherwise. No decorative illustration.
 function Glyph({ tone = "neutral", children }: { tone?: "neutral" | "danger" | "warning"; children: ReactNode }) {
   const cls = {
-    neutral: "bg-surface-2 text-muted ring-border",
+    neutral: "bg-primary-soft text-primary ring-primary/15",
     danger: "bg-danger-soft text-danger ring-danger/20",
     warning: "bg-warning-soft text-warning ring-warning/25",
   }[tone];
   return (
-    <span className={cn("flex size-12 items-center justify-center rounded-2xl ring-1 ring-inset [&_svg]:size-6", cls)} aria-hidden>
+    <span className={cn("flex size-16 items-center justify-center rounded-full ring-1 ring-inset [&_svg]:size-7", cls)} aria-hidden>
       {children}
     </span>
   );
@@ -37,8 +39,8 @@ export function EmptyState({
   return (
     <div className={cn("flex flex-col items-center justify-center gap-4 px-6 py-12 text-center sm:py-14", className)}>
       <Glyph>{icon ?? (variant === "no-results" ? <SearchX /> : <Inbox />)}</Glyph>
-      <div className="max-w-md">
-        <p className="font-semibold text-balance text-text">{title}</p>
+      <div className="max-w-[42ch]">
+        <p className="font-display text-[1.0625rem] leading-snug font-bold text-balance text-text">{title}</p>
         {description && <p className="mt-1 text-sm text-pretty text-muted">{description}</p>}
       </div>
       {action}
@@ -52,8 +54,8 @@ export function ErrorState({ title = "Impossible de charger cette page", descrip
       <Glyph tone="danger">
         <CloudOff />
       </Glyph>
-      <div className="max-w-md">
-        <p className="text-lg font-bold text-balance">{title}</p>
+      <div className="max-w-[42ch]">
+        <p className="font-display text-[1.0625rem] leading-snug font-bold text-balance">{title}</p>
         <p className="mt-1 text-sm text-pretty text-muted">{description ?? "Vérifiez votre connexion puis réessayez. Si le problème persiste, contactez l'administrateur."}</p>
       </div>
       {action}
@@ -67,7 +69,7 @@ export function ForbiddenState() {
       <Glyph tone="warning">
         <ShieldX />
       </Glyph>
-      <div className="max-w-md">
+      <div className="max-w-[42ch]">
         <h1 className="text-xl font-bold">Accès refusé</h1>
         <p className="mt-1 text-sm text-pretty text-muted">Votre rôle ne donne pas accès à cette page. Si vous pensez que c&apos;est une erreur, contactez votre administrateur.</p>
       </div>
