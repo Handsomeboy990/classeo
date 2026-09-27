@@ -29,13 +29,8 @@ export default async function ParentPage(props: PageProps<"/espace/parents/[id]"
 
   return (
     <>
-      <nav aria-label="Fil d'Ariane" className="mb-2 text-sm text-muted max-lg:hidden">
-        <Link href="/espace/parents" className="hover:underline">
-          Parents
-        </Link>{" "}
-        / {name}
-      </nav>
       <PageHeader
+        breadcrumbs={[{ label: "Parents", href: "/espace/parents" }, { label: name }]}
         title={name}
         description={`${g.phone}${g.profession ? ` · ${g.profession}` : ""}`}
         actions={

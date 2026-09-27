@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 
 import { PageHeader } from "@/components/kit/page-header";
 import { EmptyState } from "@/components/kit/states";
@@ -15,13 +14,8 @@ export default async function NewStudentPage() {
   const [classes, guardians] = await Promise.all([classroomOptions(user), guardianOptions(user)]);
   return (
     <>
-      <nav aria-label="Fil d'Ariane" className="mb-2 text-sm text-muted max-lg:hidden">
-        <Link href="/espace/eleves" className="hover:underline">
-          Élèves
-        </Link>{" "}
-        / Inscription
-      </nav>
-      <PageHeader title="Inscrire un élève" info="Inscription pour l'année active. Le matricule est attribué à l'enregistrement." />
+      <PageHeader
+        breadcrumbs={[{ label: "Élèves", href: "/espace/eleves" }, { label: "Inscription" }]} title="Inscrire un élève" info="Inscription pour l'année active. Le matricule est attribué à l'enregistrement." />
       {classes.length ? (
         <StudentForm classes={classes} guardians={guardians} cancelHref="/espace/eleves" />
       ) : (

@@ -15,7 +15,7 @@ import { DOC_STATUS_LABELS, DOC_STATUS_TONES, DOC_STATUSES, isOverdue } from "@/
 import { docFilters, listDocRequests, requestableSchools } from "@/features/document-requests/queries";
 import { can, requirePermission } from "@/lib/auth/authorize";
 import { listParams } from "@/lib/list";
-import { cn, formatDate, formatNumber } from "@/lib/utils";
+import { formatDate, formatNumber } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Pièces demandées" };
 
@@ -100,17 +100,12 @@ export default async function DocRequestsPage({ searchParams }: PageProps<"/espa
           ) : null
         }
       />
-      <nav aria-label="Filtrer par statut" className="relative -mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">
+      <nav aria-label="Filtrer par statut" className="ds-tabs">
         {tabs.map((t) => {
           const current = filters.status === t.value;
           return (
-            <Link
-              key={t.label}
-              href={t.value ? `/espace/pieces-demandees?statut=${t.value}` : "/espace/pieces-demandees"}
-              aria-current={current ? "page" : undefined}
-              className={cn("inline-flex min-h-11 shrink-0 items-center rounded-full border px-3 text-sm font-semibold whitespace-nowrap sm:min-h-9", current ? "border-primary bg-primary text-on-primary" : "border-border-strong hover:bg-surface-2")}
-            >
-              {t.label} <span className="ml-1 tabular-nums opacity-80">({formatNumber(t.count)})</span>
+            <Link key={t.label} href={t.value ? `/espace/pieces-demandees?statut=${t.value}` : "/espace/pieces-demandees"} aria-current={current ? "page" : undefined}>
+              {t.label} <span className="font-body font-normal tabular-nums">({formatNumber(t.count)})</span>
             </Link>
           );
         })}

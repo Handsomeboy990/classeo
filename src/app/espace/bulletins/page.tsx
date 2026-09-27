@@ -165,8 +165,8 @@ export default async function ReportCardsPage(props: PageProps<"/espace/bulletin
 
       <StatGrid>
         <StatCard label="Moyenne de la classe" value={summary.classAverage !== null ? `${formatAverage(summary.classAverage)}/20` : "–"} icon={FileText} />
-        <StatCard label="Taux de réussite" value={formatPercent(summary.passRate)} hint="Moyenne générale au moins égale à 10" tone="accent" />
-        <StatCard label="Plus haute / plus basse" value={`${formatAverage(summary.highest)} / ${formatAverage(summary.lowest)}`} tone="info" />
+        <StatCard label="Taux de réussite" value={formatPercent(summary.passRate)} hint="Moyenne générale au moins égale à 10" />
+        <StatCard label="Plus haute / plus basse" value={`${formatAverage(summary.highest)} / ${formatAverage(summary.lowest)}`} />
         <StatCard
           label="Bulletins publiés"
           value={`${publishedCount} / ${cards.length}`}

@@ -33,6 +33,20 @@ test("opens the report card of Sènami", async ({ page }) => {
   await expect(page.getByRole("button", { name: "Écouter le bulletin" })).toBeVisible();
 });
 
+test("a phone keeps the current section tab in view @mobile", async ({ page }) => {
+  await page.goto("/espace/suivi");
+  await page.getByRole("link", { name: /^Sènami Hounkpatin/ }).click();
+  await expect(page).toHaveURL(/\/espace\/suivi\/[\w-]+$/);
+  // The last section, off the screen on a phone until the row scrolls.
+  await page.goto(`${new URL(page.url()).pathname}/parcours`);
+  const tabs = page.getByRole("navigation", { name: "Sections du suivi" });
+  const current = tabs.getByRole("link", { name: "Parcours" });
+  await expect(current).toHaveAttribute("aria-current", "page");
+  await expect(current).toBeInViewport({ ratio: 1 });
+  // The row scrolls sideways; the page itself never does.
+  expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(0);
+});
+
 test("cannot open another student's page by id", async ({ page, pageAs }) => {
   // A real student of the same school, taken from the director's list.
   const director = await pageAs("directeur");

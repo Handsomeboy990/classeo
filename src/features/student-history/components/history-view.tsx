@@ -42,7 +42,7 @@ export function HistoryView({ history, reportCardHref, transferHref }: { history
               .map((y) => (
                 <li key={y.yearId} className="rounded-card border border-border bg-surface">
                   <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border px-5 py-3">
-                    <h3 className="font-sans text-lg font-bold">Année {y.label}</h3>
+                    <h3 className="text-lg font-bold">Année {y.label}</h3>
                     {y.isActive && <Badge tone="info">Année en cours</Badge>}
                   </div>
                   <ol className="divide-y divide-border">

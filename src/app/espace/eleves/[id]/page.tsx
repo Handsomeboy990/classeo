@@ -83,13 +83,8 @@ export default async function StudentPage(props: PageProps<"/espace/eleves/[id]"
 
   return (
     <>
-      <nav aria-label="Fil d'Ariane" className="mb-2 text-sm text-muted max-lg:hidden">
-        <Link href="/espace/eleves" className="hover:underline">
-          Élèves
-        </Link>{" "}
-        / {name}
-      </nav>
       <PageHeader
+        breadcrumbs={[{ label: "Élèves", href: "/espace/eleves" }, { label: name }]}
         title={name}
         description={`Matricule ${student.matricule}${current ? ` · ${current.classroom.name}, ${current.school.name} · ${ENROLLMENT_STATUS_LABELS[current.status]}` : ""}`}
         actionsPlacement="below"
@@ -142,18 +137,18 @@ export default async function StudentPage(props: PageProps<"/espace/eleves/[id]"
                   </span>
                 </div>
               </div>
-              <StatCard label="Rang dans la classe" value={general?.rank ? formatRank(general.rank) : "–"} hint={general ? `sur ${general.classSize} élèves` : undefined} icon={Trophy} tone="accent" />
+              <StatCard label="Rang dans la classe" value={general?.rank ? formatRank(general.rank) : "–"} hint={general ? `sur ${general.classSize} élèves` : undefined} icon={Trophy} />
             </>
           )}
           {rights.attendance && (
             <>
-              <StatCard label="Taux de présence" value={formatPercent(attendanceRate)} hint="Depuis la rentrée" icon={CalendarCheck} tone="info" />
+              <StatCard label="Taux de présence" value={formatPercent(attendanceRate)} hint="Depuis la rentrée" icon={CalendarCheck} />
               <StatCard
                 label="Absences"
                 value={formatNumber(attendanceCounts.ABSENT ?? 0)}
                 hint={`${plural(attendanceCounts.LATE ?? 0, "retard", "retards")}, ${plural(attendanceCounts.EXCUSED ?? 0, "excusée", "excusées")}, en demi-journées`}
                 icon={UserX}
-                tone="danger"
+                tone={attendanceCounts.ABSENT ? "danger" : "primary"}
               />
             </>
           )}
