@@ -4,8 +4,9 @@
 // raw strings.
 //
 // Design source of truth, part 4.15, with the official palette: a navy band
-// with the brand reading of the site ("République du Bénin" over "Classéo,
-// plateforme de gestion scolaire"), the tricolour rule, a white body, and a
+// reading like the brand lockup of the site (decision D5): "République du
+// Bénin" as a small overline, a thin tricolour rule, the product name
+// "Classéo" and "Plateforme de gestion scolaire"; then the tricolour rule, a white body, and a
 // navy footer carrying the full independence notice. Classéo is named as a
 // product, never as an institution.
 
@@ -196,8 +197,13 @@ export function renderEmail(content: EmailContent): RenderedEmail {
 <tr><td align="center" style="padding:24px 12px;">
 <table role="presentation" class="container" width="600" cellpadding="0" cellspacing="0" style="width:600px;max-width:600px;border-collapse:separate;border-radius:8px;overflow:hidden;">
 <tr><td class="pad" style="padding:20px 36px 18px;background:${BRAND.navy};">
-<p style="margin:0 0 6px;font-family:${TITLE_FONT};font-size:10px;line-height:1.2;letter-spacing:0.14em;text-transform:uppercase;font-weight:600;color:${BRAND.headerMuted};">${escapeHtml(REPUBLIC)}</p>
-<p style="margin:0;font-family:${TITLE_FONT};font-size:22px;line-height:1.2;letter-spacing:0.02em;font-weight:800;text-transform:uppercase;color:${BRAND.white};">Classéo</p>
+<p style="margin:0;font-family:${TITLE_FONT};font-size:10px;line-height:1.2;letter-spacing:0.14em;text-transform:uppercase;font-weight:600;color:${BRAND.headerMuted};">${escapeHtml(REPUBLIC)}</p>
+<table role="presentation" width="96" cellpadding="0" cellspacing="0" style="width:96px;margin:6px 0 8px;border-collapse:collapse;"><tr>
+<td width="32" height="2" style="height:2px;background:${BRAND.green};font-size:0;line-height:0;">&nbsp;</td>
+<td width="32" height="2" style="height:2px;background:${BRAND.yellow};font-size:0;line-height:0;">&nbsp;</td>
+<td width="32" height="2" style="height:2px;background:${BRAND.red};font-size:0;line-height:0;">&nbsp;</td>
+</tr></table>
+<p style="margin:0;font-family:${TITLE_FONT};font-size:24px;line-height:1.15;letter-spacing:0.01em;font-weight:800;color:${BRAND.white};">Classéo</p>
 <p style="margin:4px 0 0;font-family:${FONT};font-size:13px;line-height:1.4;color:${BRAND.headerMuted};">Plateforme de gestion scolaire</p>
 </td></tr>
 <tr><td style="padding:0;font-size:0;line-height:0;">${TRICOLOUR}</td></tr>
