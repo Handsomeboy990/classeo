@@ -91,7 +91,7 @@ export default async function RightsPage({ searchParams }: PageProps<"/espace/dr
             .filter((g) => g.items.length || (g.title === ownGroupTitle && levels.length))
             .map((g) => (
           <div key={g.title} className="mb-3 last:mb-0">
-          <h2 className="mb-1.5 text-xs font-bold tracking-wide text-muted uppercase">{g.title}</h2>
+          <h2 className="mb-2 font-display text-[0.6875rem] leading-snug font-bold tracking-[0.08em] text-muted uppercase">{g.title}</h2>
           {g.items.length === 0 && <p className="text-sm text-muted">Aucun rôle pour l&apos;instant. Utilisez « Nouveau rôle ».</p>}
           <ul className="relative -mx-4 flex gap-1.5 overflow-x-auto px-4 pb-1 sm:-mx-6 sm:px-6 lg:mx-0 lg:flex-col lg:overflow-visible lg:px-0 lg:pb-0">
             {g.items.map((r) => {
@@ -101,10 +101,13 @@ export default async function RightsPage({ searchParams }: PageProps<"/espace/dr
                   <Link
                     href={`/espace/droits?role=${r.id}`}
                     aria-current={current ? "page" : undefined}
-                    className={cn("flex h-full flex-col gap-1 rounded-lg border px-3 py-2.5 text-sm", current ? "border-primary bg-primary-soft" : "border-border bg-surface hover:bg-surface-2")}
+                    className={cn(
+                      "flex h-full flex-col gap-1 rounded-control border px-3 py-2.5 text-sm transition-colors",
+                      current ? "border-primary/40 bg-primary-soft shadow-[inset_3px_0_0_var(--primary)]" : "border-border bg-surface hover:border-primary/40",
+                    )}
                   >
                     <span className="flex items-center justify-between gap-2">
-                      <span className={cn(current && "font-semibold")}>{r.name}</span>
+                      <span className={cn("font-semibold", current && "text-primary")}>{r.name}</span>
                       <span className="inline-flex items-center gap-1 text-xs text-muted" title="Comptes titulaires dans votre périmètre">
                         <Users className="size-3.5" aria-hidden />
                         <span className="sr-only">Comptes :</span>
@@ -113,7 +116,7 @@ export default async function RightsPage({ searchParams }: PageProps<"/espace/dr
                     </span>
                     <span className="flex flex-wrap items-center gap-1.5 text-xs text-muted">
                       <span>{SCOPE_LABELS[r.scopeLevel]}</span>
-                      {!r.isSystem && <Badge tone="accent">Personnalisé</Badge>}
+                      {!r.isSystem && <Badge tone="primary">Personnalisé</Badge>}
                       {r.ownerName && user.scope.level === "NATIONAL" && <span className="truncate">{r.ownerName}</span>}
                     </span>
                   </Link>
@@ -146,9 +149,9 @@ export default async function RightsPage({ searchParams }: PageProps<"/espace/dr
                 </p>
               </div>
               <div className="flex flex-wrap gap-2">
-                <Badge tone="info">Niveau : {SCOPE_LABELS[selected.scopeLevel]}</Badge>
-                {selected.isSystem ? <Badge>Rôle système</Badge> : <Badge tone="accent">Personnalisé</Badge>}
-                <Badge tone={selected.ownerName ? "success" : "neutral"}>{selected.ownerName ? `Propre à ${selected.ownerName}` : "Rôle national"}</Badge>
+                <Badge tone="primary">Niveau : {SCOPE_LABELS[selected.scopeLevel]}</Badge>
+                {selected.isSystem ? <Badge>Rôle système</Badge> : <Badge tone="primary">Personnalisé</Badge>}
+                <Badge>{selected.ownerName ? `Propre à ${selected.ownerName}` : "Rôle national"}</Badge>
                 <Badge>
                   {formatNumber(selected.users)} compte{selected.users > 1 ? "s" : ""}
                 </Badge>
