@@ -1,6 +1,6 @@
 import type { Page } from "@playwright/test";
 
-import { authFile } from "./support/accounts";
+import { authFile, ROLES } from "./support/accounts";
 import { chooseLanguage, expect, mainMenu, test } from "./support/fixtures";
 
 // The private space shell in the official style (design source of truth,
@@ -99,6 +99,32 @@ test.describe("head of school", () => {
     await expect(notice).toContainText(NOTICE);
   });
 });
+
+// An address of the space that matches no page: the 404 of the space, inside
+// the shell (design source of truth, part 4.13), never the public one.
+for (const role of ROLES) {
+  test.describe(`unknown address, ${role}`, () => {
+    test.use({ storageState: authFile(role) });
+
+    test("an unknown page of the space stays in the shell @mobile", async ({ page }) => {
+      const mobile = (page.viewportSize()?.width ?? 1366) < 1024;
+      for (const path of ["/espace/page-inexistante", "/espace/eleves/a/b/c"]) {
+        const response = await page.goto(path);
+        expect(response?.status(), path).toBe(404);
+        await expect(page.getByRole("heading", { level: 1, name: "Cette page est introuvable" })).toBeVisible();
+        // The shell: the side menu on a large screen, the tab bar on a phone,
+        // the footer of the space; not the public header and its sign in.
+        if (mobile) await expect(page.getByRole("navigation", { name: "Navigation rapide" })).toBeVisible();
+        else await expect(page.getByRole("navigation", { name: "Menu principal" })).toBeVisible();
+        await expect(footer(page)).toBeVisible();
+        await expect(page.getByRole("link", { name: /^Se connecter|^Connexion$/ })).toHaveCount(0);
+        const main = page.locator("#page-content");
+        await expect(main.getByRole("link", { name: "Retour à l'accueil" })).toHaveAttribute("href", "/espace");
+        await expect(main.getByRole("link", { name: "Aide" })).toHaveAttribute("href", "/espace/aide");
+      }
+    });
+  });
+}
 
 test.describe("parent", () => {
   test.use({ storageState: authFile("parent") });
