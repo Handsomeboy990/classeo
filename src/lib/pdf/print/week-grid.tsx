@@ -85,7 +85,7 @@ export function PrintWeekGrid({ slots }: { slots: WeekSlot[] }) {
           </div>
         </div>
       </div>
-      <p className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-xs">
+      <p className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-xs print:mt-2">
         <span className="doc-title">Volume hebdomadaire : {duration(all)}</span>
         {[...totals.entries()]
           .sort((a, b) => b[1] - a[1])
