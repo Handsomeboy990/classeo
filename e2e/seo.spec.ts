@@ -31,6 +31,9 @@ for (const path of PUBLIC_PAGES) {
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", path === "/" ? /^https?:\/\/[^/]+\/?$/ : new RegExp(`${path}$`));
     await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /index, follow/);
     await expect(page.locator('meta[property="og:title"]')).toHaveCount(1);
+    // Every public page shares the card, not only the home page.
+    await expect(page.locator('meta[property="og:image"]')).toHaveAttribute("content", /\/opengraph-image/);
+    await expect(page.locator('meta[name="twitter:image"]')).toHaveAttribute("content", /\/opengraph-image/);
   });
 }
 

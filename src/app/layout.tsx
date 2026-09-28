@@ -7,6 +7,7 @@ import { ThemeColor } from "@/components/shell/theme-color";
 import { VisitBeacon } from "@/features/connections/visit-beacon";
 import { OfflineBanner } from "@/features/pwa/offline-banner";
 import { ServiceWorkerRegistration } from "@/features/pwa/service-worker";
+import { siteUrl } from "@/lib/seo";
 
 import "./globals.css";
 
@@ -21,7 +22,11 @@ const body = Atkinson_Hyperlegible_Next({ subsets: ["latin"], variable: "--font-
 const display = Montserrat({ subsets: ["latin", "latin-ext"], variable: "--font-display", display: "swap" });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"),
+  // The public address with the same fallbacks as the canonical addresses
+  // (APP_URL, NEXT_PUBLIC_APP_URL, then the Vercel production address), so
+  // a page without its own metadata, the 404 for one, never shares a
+  // localhost image.
+  metadataBase: new URL(siteUrl()),
   title: { default: "Classéo · Le système éducatif, à portée de main", template: "%s · Classéo" },
   description:
     "Classéo, la plateforme de gestion scolaire pour le Bénin : inscriptions, notes, bulletins, présences, frais et messages, accessibles à tous, même hors ligne.",

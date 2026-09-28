@@ -48,6 +48,15 @@ describe("page metadata", () => {
     expect(m.robots).toEqual({ index: true, follow: true });
   });
 
+  it("names the share card on every public page but the home, which has its own file", () => {
+    for (const path of ["/connexion", "/mot-de-passe-oublie", "/credits", "/verifier"]) {
+      const m = publicMetadata({ path, title: "T", description: "D" });
+      expect(m.openGraph, path).toMatchObject({ images: [{ url: "/opengraph-image", width: 1200, height: 630 }] });
+      expect(m.twitter, path).toMatchObject({ images: [{ url: "/opengraph-image" }] });
+    }
+    expect(publicMetadata({ path: "/", title: "T", description: "D" }).openGraph).not.toHaveProperty("images");
+  });
+
   it("ignores an unknown language and a page without languages", () => {
     expect(publicMetadata({ path: "/", title: "T", description: "D", lang: "xx" }).alternates?.canonical).toBe("/");
     const verify = publicMetadata({ path: "/verifier", title: "T", description: "D", lang: "fon", languages: false });

@@ -14,6 +14,9 @@ type Env = Record<string, string | undefined>;
 
 export const SITE_NAME = "Classéo";
 
+// The share card drawn by app/opengraph-image.tsx (same size and alt text).
+export const SHARE_IMAGE = { url: "/opengraph-image", width: 1200, height: 630, alt: "Classéo, plateforme de gestion scolaire" };
+
 export function siteUrl(env: Env = process.env) {
   return appUrl(env);
 }
@@ -60,6 +63,10 @@ export function isSeoLang(value: unknown): value is SeoLang {
 export function publicMetadata(page: { path: string; title: string; description: string; lang?: unknown; languages?: boolean; absoluteTitle?: boolean }): Metadata {
   const lang: SeoLang = page.languages !== false && isSeoLang(page.lang) ? page.lang : "fr";
   const canonical = withLang(page.path, lang);
+  // The home page gets its card from app/opengraph-image.tsx itself; any
+  // other page's own openGraph block replaces the layout's, so it names the
+  // same card explicitly.
+  const images = page.path === "/" ? {} : { images: [SHARE_IMAGE] };
   return {
     // APP_URL, NEXT_PUBLIC_APP_URL or the Vercel production address, so the
     // canonical and share addresses are absolute.
@@ -74,8 +81,9 @@ export function publicMetadata(page: { path: string; title: string; description:
       url: canonical,
       title: page.absoluteTitle ? page.title : `${page.title} · ${SITE_NAME}`,
       description: page.description,
+      ...images,
     },
-    twitter: { card: "summary_large_image", title: page.absoluteTitle ? page.title : `${page.title} · ${SITE_NAME}`, description: page.description },
+    twitter: { card: "summary_large_image", title: page.absoluteTitle ? page.title : `${page.title} · ${SITE_NAME}`, description: page.description, ...images },
     robots: { index: true, follow: true },
   };
 }
