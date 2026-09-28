@@ -57,7 +57,7 @@ export function PrintWeekGrid({ slots }: { slots: WeekSlot[] }) {
                       return (
                         <div
                           key={i}
-                          className="absolute overflow-hidden rounded-sm border-r-2 border-white px-1.5 py-1 text-[10px] leading-tight print:py-0.5 print:leading-[1.15]"
+                          className="absolute overflow-hidden rounded-sm border-r-2 px-1.5 py-1 text-[10px] leading-tight print:py-0.5 print:leading-[1.15]"
                           style={{
                             top: `calc(${pct(toMinutes(s.startTime))} + 1px)`,
                             height: `calc(${((toMinutes(s.endTime) - toMinutes(s.startTime)) / span) * 100}% - 2px)`,
@@ -65,6 +65,8 @@ export function PrintWeekGrid({ slots }: { slots: WeekSlot[] }) {
                             width: `${100 / s.lanes}%`,
                             background: s.cancelledOn ? COLORS.soft : bg,
                             borderLeft: `3px solid ${s.cancelledOn ? COLORS.faint : edge}`,
+                            // The paper white of the print palette parts two lessons side by side.
+                            borderRightColor: COLORS.white,
                           }}
                         >
                           <p className="doc-muted">

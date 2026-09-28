@@ -545,7 +545,7 @@ export function GradeGrid({
           data-action-bar
           className={cn(
             "flex flex-wrap items-center gap-2 lg:col-start-2 lg:row-start-1 lg:justify-end lg:border-b lg:border-border lg:p-4",
-            "sticky bottom-[var(--tab-bar-space)] z-30 rounded-b-card border-t border-border bg-surface/95 p-3 shadow-[0_-4px_16px_rgb(0_0_0/0.06)] backdrop-blur-sm lg:static lg:z-auto lg:rounded-none lg:border-t-0 lg:bg-surface lg:shadow-none lg:backdrop-blur-none",
+            "sticky bottom-[var(--tab-bar-space)] z-30 rounded-b-card border-t border-border bg-surface/95 p-3 shadow-(--elevation-up) backdrop-blur-sm lg:static lg:z-auto lg:rounded-none lg:border-t-0 lg:bg-surface lg:shadow-none lg:backdrop-blur-none",
           )}
         >
           <p className="min-w-0 flex-1 text-sm text-muted lg:flex-none max-lg:[html[data-text=xl]_&]:basis-full max-lg:[html[data-text=xxl]_&]:basis-full" aria-live="polite">
