@@ -1,6 +1,7 @@
 import { BookOpen, CalendarCheck, CalendarDays, Clock, FileText, MessageCircle, NotebookPen, PlayCircle, Users } from "lucide-react";
 import Link from "next/link";
 
+import { roleLabel } from "@/features/messages/role-label";
 import { AverageLevel } from "@/components/kit/level";
 import { PageHeader } from "@/components/kit/page-header";
 import { ReadAloud } from "@/components/kit/read-aloud";
@@ -31,7 +32,7 @@ export async function FamilyDashboard({ user }: { user: User }) {
   if (!enrollments.length) {
     return (
       <>
-        <PageHeader title={`Bonjour, ${user.firstName}`} description={user.role.name} />
+        <PageHeader title={`Bonjour, ${user.firstName}`} description={roleLabel(user.role.name, user.gender)} />
         <EmptyState
           icon={<Users className="size-7" />}
           title={isParent ? "Aucun enfant n'est encore rattaché à votre compte" : "Vous n'êtes pas encore inscrit pour cette année"}

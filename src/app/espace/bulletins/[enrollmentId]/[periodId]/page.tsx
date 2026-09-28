@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { roleLabel } from "@/features/messages/role-label";
 import { ReadAloud } from "@/components/kit/read-aloud";
 import { EmptyState } from "@/components/kit/states";
 import { Alert } from "@/components/ui/alert";
@@ -52,7 +53,7 @@ export default async function ReportCardPage(props: PageProps<"/espace/bulletins
     subtitle: `${period.name} · ${enrollment.academicYear.label}`,
     reference: documentReference("BUL", now, enrollment.id, period.id, mode),
     generatedAt: now,
-    generatedBy: { name: user.fullName, role: user.role.name, email: user.username },
+    generatedBy: { name: user.fullName, role: roleLabel(user.role.name, user.gender), email: user.username },
     issuer: schoolIssuer(c.school),
   };
 

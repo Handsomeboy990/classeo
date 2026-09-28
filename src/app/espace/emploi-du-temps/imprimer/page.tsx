@@ -2,6 +2,7 @@ import { ArrowLeft } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { roleLabel } from "@/features/messages/role-label";
 import { EmptyState } from "@/components/kit/states";
 import { PrintButton } from "@/components/kit/print-button";
 import { requirePermission } from "@/lib/auth/authorize";
@@ -50,7 +51,7 @@ export default async function PrintTimetablePage({ searchParams }: PageProps<"/e
     subtitle: `${data.who}${data.yearLabel ? ` · ${data.yearLabel}` : ""}`,
     reference: documentReference("EDT", now, t.subjectId, week),
     generatedAt: now,
-    generatedBy: { name: user.fullName, role: user.role.name, email: user.username },
+    generatedBy: { name: user.fullName, role: roleLabel(user.role.name, user.gender), email: user.username },
     issuer: t.issuer,
   };
   const pdfQuery = new URLSearchParams(query);

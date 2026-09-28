@@ -1,6 +1,7 @@
 import { ArrowRight, BarChart3, ChevronRight, Inbox, KeyRound, Landmark, Map, ScrollText, ShieldCheck, type LucideIcon } from "lucide-react";
 import Link from "next/link";
 
+import { roleLabel } from "@/features/messages/role-label";
 import { BarChart } from "@/components/kit/bar-chart";
 import { DonutChart } from "@/components/kit/donut-chart";
 import { PageHeader } from "@/components/kit/page-header";
@@ -52,7 +53,7 @@ export async function StaffDashboard({ user }: { user: User }) {
 
   return (
     <div className="flex flex-col gap-6">
-      <PageHeader title={`Bonjour, ${user.firstName}`} description={`${user.role.name} · ${user.scope.label} · Année scolaire ${years.current?.label ?? ""}`} />
+      <PageHeader title={`Bonjour, ${user.firstName}`} description={`${roleLabel(user.role.name, user.gender)} · ${user.scope.label} · Année scolaire ${years.current?.label ?? ""}`} />
 
       {stats && <IndicatorCards stats={stats} requestsHref={showRequests ? "/espace/demandes?statut=PENDING" : undefined} />}
 

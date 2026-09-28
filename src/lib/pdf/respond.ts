@@ -4,6 +4,7 @@ import type { ReactElement } from "react";
 
 import { renderToBuffer, type DocumentProps } from "@react-pdf/renderer";
 
+import { roleLabel } from "@/features/messages/role-label";
 import { loadBrand } from "@/components/brand/load-brand";
 import { recordIssued, signedIssuance, verificationOf } from "@/features/verification/registry";
 import { contentHash, newVerificationCode, sha256, type DocumentKind } from "@/features/verification/reference";
@@ -80,7 +81,7 @@ export async function exportPdf<D>(options: {
   const ctx: PdfContext = {
     user,
     generatedAt: new Date(),
-    generatedBy: { name: user.fullName, role: user.role.name, email: user.username },
+    generatedBy: { name: user.fullName, role: roleLabel(user.role.name, user.gender), email: user.username },
   };
   // Every school document carries the full letterhead (ministry, logo).
   if (data && typeof data === "object" && "issuer" in data) {

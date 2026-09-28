@@ -1,6 +1,7 @@
 import { CheckCircle2, ClipboardCheck, FileText, LayoutGrid, NotebookPen, Users } from "lucide-react";
 import Link from "next/link";
 
+import { roleLabel } from "@/features/messages/role-label";
 import { PageHeader } from "@/components/kit/page-header";
 import { StatCard, StatGrid } from "@/components/kit/stat-card";
 import { EmptyState } from "@/components/kit/states";
@@ -20,7 +21,7 @@ import { formatDate, formatNumber, formatPercent } from "@/lib/utils";
 // sheets to complete with their progress, attendance to take today.
 export async function TeacherDashboard({ user }: { user: NonNullable<CurrentUser> }) {
   const [year, period] = await Promise.all([getActiveYear(), getCurrentPeriod(userPeriodicity(user))]);
-  const header = <PageHeader title={`Bonjour, ${user.firstName}`} description={`${user.role.name} · ${user.scope.label}${period ? ` · ${period.name} ${year?.label ?? ""}` : ""}`} />;
+  const header = <PageHeader title={`Bonjour, ${user.firstName}`} description={`${roleLabel(user.role.name, user.gender)} · ${user.scope.label}${period ? ` · ${period.name} ${year?.label ?? ""}` : ""}`} />;
   if (!user.teacherId || !year || !period) {
     return (
       <>

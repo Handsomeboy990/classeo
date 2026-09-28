@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { roleLabel } from "@/features/messages/role-label";
 import { PrintButton } from "@/components/kit/print-button";
 import { requirePermission } from "@/lib/auth/authorize";
 import { PAYMENT_METHOD_LABELS } from "@/lib/domain/payments";
@@ -29,7 +30,7 @@ export default async function ReceiptPage({ params }: PageProps<"/espace/frais/p
     subtitle: `Facture ${data.invoice.number}`,
     reference: data.reference,
     generatedAt: new Date(),
-    generatedBy: { name: user.fullName, role: user.role.name, email: user.username },
+    generatedBy: { name: user.fullName, role: roleLabel(user.role.name, user.gender), email: user.username },
     issuer,
   };
 

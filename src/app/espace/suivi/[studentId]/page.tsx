@@ -2,6 +2,7 @@ import { FileText } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { roleLabel } from "@/features/messages/role-label";
 import { EmptyState } from "@/components/kit/states";
 import { Badge } from "@/components/ui/badge";
 import { SpokenSummary } from "@/features/family/components/blocks";
@@ -56,7 +57,7 @@ export default async function ReportCardsPage({ params, searchParams }: PageProp
     subtitle: `${card.periodName} · ${card.yearLabel}`,
     reference: documentReference("BUL", now, printable?.data.enrollmentId, printable?.periodId, "published"),
     generatedAt: now,
-    generatedBy: { name: user.fullName, role: user.role.name, email: user.username },
+    generatedBy: { name: user.fullName, role: roleLabel(user.role.name, user.gender), email: user.username },
   };
 
   const byYear = new Map<string, typeof cards>();
