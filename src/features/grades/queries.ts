@@ -108,7 +108,7 @@ export async function getSheetForEntry(user: User, id: string) {
     db.enrollment.findMany({
       where: { classroomId: sheet.assignment.classroomId, status: "ACTIVE" },
       orderBy: [{ student: { lastName: "asc" } }, { student: { firstName: "asc" } }],
-      select: { id: true, student: { select: { id: true, matricule: true, firstName: true, lastName: true, disabilities: true } } },
+      select: { id: true, student: { select: { id: true, matricule: true, firstName: true, lastName: true } } },
     }),
     db.grade.findMany({ where: { gradeSheetId: sheet.id }, select: { enrollmentId: true, type: true, sequence: true, value: true } }),
     db.gradeSheet.count({ where: { AND: [{ id: sheet.id }, sheetWriteWhere(user)] } }),

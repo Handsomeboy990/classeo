@@ -72,7 +72,7 @@ export async function getClassroom(user: User, id: string) {
         select: {
           id: true,
           isRepeating: true,
-          student: { select: { id: true, matricule: true, firstName: true, lastName: true, gender: true, birthDate: true, disabilities: true } },
+          student: { select: { id: true, matricule: true, firstName: true, lastName: true, gender: true, birthDate: true } },
         },
       },
     },

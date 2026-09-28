@@ -15,6 +15,7 @@ import { assertEnrollmentWritable, assertWritable } from "@/lib/guards";
 import { DomainError } from "@/lib/errors";
 
 import { DISABILITIES, ENROLLMENT_STATUS_LABELS } from "./labels";
+import { canSeeSpecialNeeds } from "./needs";
 import { dropPhotoBlob, optionalPhoto, storeStudentPhoto } from "./photo";
 import { studentWhere } from "./queries";
 
@@ -168,7 +169,7 @@ export const updateStudent = createAction({
     const year = await requireActiveYear();
     const student = await db.student.findFirst({
       where: { AND: [{ id: input.id }, studentWhere(user)] },
-      include: { enrollments: { where: { AND: [enrollmentWhere(user), { academicYearId: year.id }] }, select: { id: true, classroomId: true, status: true } } },
+      include: { enrollments: { where: { AND: [enrollmentWhere(user), { academicYearId: year.id }] }, select: { id: true, schoolId: true, classroomId: true, status: true } } },
     });
     if (!student) throw new DomainError("Élève introuvable ou hors de votre périmètre.");
     const enrollment = student.enrollments[0];
@@ -194,7 +195,10 @@ export const updateStudent = createAction({
           gender: input.gender,
           birthDate: isoToDate(input.birthDate),
           birthPlace: input.birthPlace,
-          disabilities: input.disabilities,
+          // Only an editor who may read the special needs changes them
+          // (decision D8): the others' form leaves the field out, and the
+          // saved value is kept whatever they send.
+          ...(canSeeSpecialNeeds(user, enrollment) ? { disabilities: input.disabilities } : {}),
           ...(photoFileId ? { photoFileId } : {}),
         },
       }),

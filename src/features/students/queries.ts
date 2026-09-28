@@ -11,6 +11,8 @@ import { DEFAULT_FORMULA, subjectAverage, type GradeInput } from "@/lib/domain/g
 import { db } from "@/lib/db";
 import { sortByName } from "@/lib/utils";
 
+import { canSeeSpecialNeeds } from "./needs";
+
 type User = NonNullable<CurrentUser>;
 
 export async function listStudents(
@@ -65,7 +67,6 @@ export async function listStudents(
           lastName: true,
           gender: true,
           birthDate: true,
-          disabilities: true,
           photoFileId: true,
           guardians: { where: { isPrimary: true }, take: 1, select: { guardian: { select: { firstName: true, lastName: true, phone: true } } } },
         },
@@ -132,9 +133,14 @@ export async function getStudentProfile(user: User, studentId: string) {
   ]);
   const counts = Object.fromEntries(statusCounts.map((s) => [s.status, s._count._all]));
   const myCard = classCards?.cards.find((c) => c.enrollmentId === current?.id) ?? null;
+  // Special needs leave this function only for the head of the school and
+  // the teachers of the class (decision D8); `current` is reached through
+  // enrollmentWhere(user), which limits a teacher to their own classes.
+  const { disabilities, ...identity } = student;
   return {
     rights,
-    student,
+    student: identity,
+    needs: canSeeSpecialNeeds(user, current) ? disabilities : null,
     current,
     period,
     grades,
@@ -196,7 +202,7 @@ export async function getStudentForEdit(user: User, studentId: string) {
   return db.student.findFirst({
     where: { AND: [{ id: studentId }, studentWhere(user)] },
     include: {
-      enrollments: { where: { AND: [enrollmentWhere(user), { academicYearId: year?.id ?? "__none__" }] }, select: { id: true, classroomId: true, isRepeating: true, status: true } },
+      enrollments: { where: { AND: [enrollmentWhere(user), { academicYearId: year?.id ?? "__none__" }] }, select: { id: true, schoolId: true, classroomId: true, isRepeating: true, status: true } },
     },
   });
 }

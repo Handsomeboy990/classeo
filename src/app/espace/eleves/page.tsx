@@ -9,7 +9,7 @@ import { ButtonLink, buttonVariants } from "@/components/ui/button";
 import { getActiveYear } from "@/features/classes/academic";
 import { UrlSelect } from "@/components/kit/url-select";
 import { classroomOptions } from "@/features/classes/queries";
-import { DISABILITY_LABELS, ENROLLMENT_STATUS_LABELS, GENDER_LABELS, shortDate } from "@/features/students/labels";
+import { ENROLLMENT_STATUS_LABELS, GENDER_LABELS, shortDate } from "@/features/students/labels";
 import { listStudents } from "@/features/students/queries";
 import { StudentAvatar } from "@/features/students/components/student-avatar";
 import { can, requirePermission } from "@/lib/auth/authorize";
@@ -44,14 +44,13 @@ export default async function StudentsPage(props: PageProps<"/espace/eleves">) {
             <Link href={`/espace/eleves/${r.student.id}`} className="font-semibold text-primary hover:underline">
               {r.student.lastName} {r.student.firstName}
             </Link>
-            <span className="ml-2 inline-flex flex-wrap gap-1">
-              {r.isRepeating && <Badge>Redoublant</Badge>}
-              {r.student.disabilities.map((d) => (
-                <Badge key={d} tone="info">
-                  {DISABILITY_LABELS[d]}
-                </Badge>
-              ))}
-            </span>
+            {/* Special needs never show in a list (decision D8): only on
+                the student's record, for the head and the class teachers. */}
+            {r.isRepeating && (
+              <span className="ml-2 inline-flex flex-wrap gap-1">
+                <Badge>Redoublant</Badge>
+              </span>
+            )}
           </div>
         </div>
       ),

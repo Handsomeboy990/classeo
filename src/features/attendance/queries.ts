@@ -25,7 +25,7 @@ export async function register(user: User, classroomId: string, date: string, ha
     orderBy: [{ student: { lastName: "asc" } }, { student: { firstName: "asc" } }],
     select: {
       id: true,
-      student: { select: { id: true, matricule: true, firstName: true, lastName: true, disabilities: true } },
+      student: { select: { id: true, matricule: true, firstName: true, lastName: true } },
       attendances: { where: { date: isoToDate(date), half }, select: { status: true, reason: true, recordedBy: { select: { firstName: true, lastName: true } }, createdAt: true } },
     },
   });

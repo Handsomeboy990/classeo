@@ -44,7 +44,7 @@ export default async function StudentPage(props: PageProps<"/espace/eleves/[id]"
   const sp = await props.searchParams;
   const profile = await getStudentProfile(user, id);
   if (!profile) notFound();
-  const { rights, student, current, period, grades, general, attendance, attendanceCounts, attendanceRate, reportCards } = profile;
+  const { rights, student, needs, current, period, grades, general, attendance, attendanceCounts, attendanceRate, reportCards } = profile;
   const name = `${student.firstName} ${student.lastName}`;
   const canUpdate = can(user, "student:update");
   const age = Math.floor((isoToDate(todayIso()).getTime() - student.birthDate.getTime()) / (365.25 * 86400000));
@@ -201,18 +201,24 @@ export default async function StudentPage(props: PageProps<"/espace/eleves/[id]"
               </dd>
               <dt className="text-muted">Compte élève</dt>
               <dd className="break-all">{student.user ? student.user.email : "Aucun"}</dd>
-              <dt className="text-muted">Besoins particuliers</dt>
-              <dd className="flex flex-wrap gap-1">
-                {student.disabilities.length ? (
-                  student.disabilities.map((d) => (
-                    <Badge key={d} tone="info">
-                      {DISABILITY_LABELS[d]}
-                    </Badge>
-                  ))
-                ) : (
-                  <span className="text-muted">Aucun signalé</span>
-                )}
-              </dd>
+              {/* Only for the head of the school and the class teachers
+                  (decision D8); absent for every other role. */}
+              {needs && (
+                <>
+                  <dt className="text-muted">Besoins particuliers</dt>
+                  <dd className="flex flex-wrap gap-1" data-special-needs="">
+                    {needs.length ? (
+                      needs.map((d) => (
+                        <Badge key={d} tone="info">
+                          {DISABILITY_LABELS[d]}
+                        </Badge>
+                      ))
+                    ) : (
+                      <span className="text-muted">Aucun signalé</span>
+                    )}
+                  </dd>
+                </>
+              )}
               {current && (
                 <>
                   <dt className="text-muted">Professeur principal</dt>

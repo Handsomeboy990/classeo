@@ -22,7 +22,9 @@ export type StudentValues = {
   gender: "F" | "M";
   birthDate: string;
   birthPlace: string | null;
-  disabilities: string[];
+  // null: the editor may not read the student's special needs (decision
+  // D8), so the field is left out and the saved value is kept.
+  disabilities: string[] | null;
   classroomId: string;
   isRepeating: boolean;
   photoUrl?: string | null;
@@ -106,7 +108,7 @@ export function StudentForm({ classes, guardians, values, cancelHref }: { classe
             </Select>
           </FormField>
           <Checkbox name="isRepeating" defaultChecked={values?.isRepeating} label="Redoublant cette année" labelClassName="sm:col-span-2" />
-          <Disabilities values={values?.disabilities} />
+          {values?.disabilities !== null && <Disabilities values={values?.disabilities} />}
         </CardBody>
       </Card>
 

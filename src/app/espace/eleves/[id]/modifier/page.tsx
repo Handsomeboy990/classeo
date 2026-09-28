@@ -5,6 +5,7 @@ import { PageHeader } from "@/components/kit/page-header";
 import { EmptyState } from "@/components/kit/states";
 import { classroomOptions } from "@/features/classes/queries";
 import { StudentForm } from "@/features/students/components/student-form";
+import { canSeeSpecialNeeds } from "@/features/students/needs";
 import { getStudentForEdit } from "@/features/students/queries";
 import { requirePermission } from "@/lib/auth/authorize";
 import { dateToIso } from "@/lib/domain/attendance";
@@ -34,7 +35,8 @@ export default async function EditStudentPage(props: PageProps<"/espace/eleves/[
             gender: student.gender,
             birthDate: dateToIso(student.birthDate),
             birthPlace: student.birthPlace,
-            disabilities: student.disabilities,
+            // Shown and editable only by those who may read them (D8).
+            disabilities: canSeeSpecialNeeds(user, enrollment) ? student.disabilities : null,
             classroomId: enrollment.classroomId,
             isRepeating: enrollment.isRepeating,
             photoUrl: fileUrl(student.photoFileId),

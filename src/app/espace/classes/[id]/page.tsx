@@ -18,7 +18,6 @@ import { ConfirmButton } from "@/components/kit/confirm-button";
 import { classFormOptions, getClassroom } from "@/features/classes/queries";
 import { classDispensations } from "@/features/family-documents/queries";
 import { computeClassCards } from "@/features/report-cards/compute";
-import { DISABILITY_LABELS } from "@/features/students/labels";
 import { can, requirePermission } from "@/lib/auth/authorize";
 import { attendanceRate, isoToDate, schoolWeek, todayIso } from "@/lib/domain/attendance";
 import { db } from "@/lib/db";
@@ -271,14 +270,12 @@ export default async function ClassPage(props: PageProps<"/espace/classes/[id]">
                         <Link href={`/espace/eleves/${e.student.id}`} className="font-semibold text-primary hover:underline">
                           {e.student.lastName} {e.student.firstName}
                         </Link>
-                        <span className="ml-2 inline-flex flex-wrap gap-1">
-                          {e.isRepeating && <Badge tone="neutral">Redoublant</Badge>}
-                          {e.student.disabilities.map((d) => (
-                            <Badge key={d} tone="info">
-                              {DISABILITY_LABELS[d]}
-                            </Badge>
-                          ))}
-                        </span>
+                        {/* No special needs in a roster (decision D8). */}
+                        {e.isRepeating && (
+                          <span className="ml-2 inline-flex flex-wrap gap-1">
+                            <Badge tone="neutral">Redoublant</Badge>
+                          </span>
+                        )}
                       </TD>
                       <TD className="font-mono text-xs max-sm:hidden">{e.student.matricule}</TD>
                       <TD className="whitespace-nowrap tabular-nums max-md:hidden">{shortDate(e.student.birthDate)}</TD>
