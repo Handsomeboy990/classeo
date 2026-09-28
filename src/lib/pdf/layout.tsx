@@ -11,7 +11,7 @@ import { ARMS_PNG_RATIO, armsImage } from "./arms";
 import { currentBrand, currentVerification, type DocumentVerification, type PdfImage } from "./context";
 import { FONT_TITLE } from "./fonts";
 import { beninDate, beninDateTime, pageLabel, pdfText } from "./format";
-import { contactLine, PRODUCT, PRODUCT_LINE, REPUBLIC, type SchoolCycleCode } from "./letterhead";
+import { contactLine, REPUBLIC, supervisingMinistry, type SchoolCycleCode } from "./letterhead";
 import { styles } from "./styles";
 import { COLORS, PAGE } from "./theme";
 
@@ -104,17 +104,17 @@ function FlagBand() {
 }
 
 // Letterhead (design source of truth, part 4.14, with the owner's decisions
-// D1, coat of arms, and D5, the product lockup). It reads like the brand
-// lockup of the site: the coat of arms at the left, then "RÉPUBLIQUE DU
-// BÉNIN" as a small overline over a thin tricolour rule, the product name
-// Classéo and "Plateforme de gestion scolaire", no institution named; under
-// it, the school that issues the document, with its logo and details, or
-// the territorial service. The arms sit beside the
-// words rather than above them so every one page document (bulletin,
-// timetable, invoice, the preview of a bulletin with its notice) keeps its
-// single page; for the same reason the arms are 38 pt high, above the 32 pt
-// under which the shield loses its details. Without the official option
-// the coat of arms is left out and the words remain.
+// D1, coat of arms, and D6, the issuer chain). A school document names who
+// really issues it: the coat of arms at the left, then "RÉPUBLIQUE DU
+// BÉNIN" over a thin tricolour rule, the ministry that supervises the
+// school (from its cycle), and under it the school with its logo and
+// details. A territorial or national document names its service under the
+// Republic, as before. Classéo is named in the footer only. The arms sit
+// beside the words rather than above them so every one page document
+// (bulletin, timetable, invoice, the preview of a bulletin with its
+// notice) keeps its single page; for the same reason the arms are 38 pt
+// high, above the 32 pt under which the shield loses its details. Without
+// the official option the coat of arms is left out and the words remain.
 function IssuerBlock({ issuer }: { issuer: Issuer }) {
   const official = currentBrand().official;
   const armsHeight = 38;
@@ -126,12 +126,11 @@ function IssuerBlock({ issuer }: { issuer: Issuer }) {
           <Image src={armsImage()} style={{ width: armsHeight * ARMS_PNG_RATIO, height: armsHeight }} />
         ) : null}
         <View style={{ flexShrink: 1 }}>
-          <View style={{ alignSelf: "flex-start" }}>
-            <T style={{ fontFamily: FONT_TITLE, fontSize: 7, fontWeight: 600, lineHeight: 1.1, letterSpacing: 1.1, color: COLORS.muted, textTransform: "uppercase" }}>{REPUBLIC}</T>
-            <TricolourRule height={1.5} style={{ marginTop: 2 }} />
-          </View>
-          <T style={{ fontFamily: FONT_TITLE, fontSize: 13, fontWeight: 800, lineHeight: 1, color: COLORS.primary, marginTop: 3.5 }}>{PRODUCT}</T>
-          <T style={{ fontFamily: FONT_TITLE, fontSize: 7, fontWeight: 600, lineHeight: 1.2, color: COLORS.muted, marginTop: 2 }}>{PRODUCT_LINE}</T>
+          <T style={{ fontFamily: FONT_TITLE, fontSize: 8, fontWeight: 700, lineHeight: 1.1, letterSpacing: 1.2, color: COLORS.primaryDark, textTransform: "uppercase" }}>{REPUBLIC}</T>
+          <TricolourRule width={60} height={1.5} style={{ marginTop: 2.5, marginBottom: 3 }} />
+          {issuer.kind === "school" ? (
+            <T style={{ fontFamily: FONT_TITLE, fontSize: 7.5, fontWeight: 600, lineHeight: 1.25, color: COLORS.primaryDark, textTransform: "uppercase" }}>{supervisingMinistry(issuer.cycle)}</T>
+          ) : null}
         </View>
       </View>
       <View style={{ height: 6 }} />
@@ -184,7 +183,7 @@ function RunningHeader({ meta }: { meta: DocumentMeta }) {
     <Text
       fixed
       style={{ position: "absolute", top: 16, left: PAGE.marginX, right: PAGE.marginX, fontSize: 7.5, color: COLORS.muted }}
-      render={({ subPageNumber }) => (subPageNumber > 1 ? pdfText(`Classéo · ${meta.issuer.name} · ${meta.title}${meta.subtitle ? `, ${meta.subtitle}` : ""} · Réf. ${meta.reference}`) : "")}
+      render={({ subPageNumber }) => (subPageNumber > 1 ? pdfText(`${meta.issuer.name} ·${meta.title}${meta.subtitle ? `, ${meta.subtitle}` : ""} · Réf. ${meta.reference}`) : "")}
     />
   );
 }

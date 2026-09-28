@@ -13,13 +13,27 @@ import { Signatures } from "./components";
 import { withDocumentScope } from "./context";
 import { prepareFonts } from "./fonts";
 import { DocumentPage, PdfDocument, T } from "./layout";
-import { contactLine, pdfImageFormat, PRODUCT, PRODUCT_LINE, REPUBLIC } from "./letterhead";
+import { contactLine, pdfImageFormat, REPUBLIC, supervisingMinistry } from "./letterhead";
 
+// Owner's decision D6: a school document names its real issuer chain, the
+// Republic, the ministry that supervises the school, then the school.
 describe("letterhead words", () => {
-  it("reads like the product lockup: the Republic, then Classéo and what it is", () => {
+  it("opens on the Republic", () => {
     expect(REPUBLIC).toBe("République du Bénin");
-    expect(PRODUCT).toBe("Classéo");
-    expect(PRODUCT_LINE).toBe("Plateforme de gestion scolaire");
+  });
+
+  it("names the ministry that supervises the school, from its cycle", () => {
+    const memp = "Ministère des Enseignements Maternel et Primaire";
+    const mestfp = "Ministère des Enseignements Secondaire, Technique et de la Formation Professionnelle";
+    expect(supervisingMinistry("PRESCHOOL")).toBe(memp);
+    expect(supervisingMinistry("PRIMARY")).toBe(memp);
+    expect(supervisingMinistry("SECONDARY")).toBe(mestfp);
+    expect(supervisingMinistry("TECHNICAL")).toBe(mestfp);
+  });
+
+  it("does not guess the ministry of a school whose cycle is unknown", () => {
+    expect(supervisingMinistry(null)).toBe("Ministères en charge de l'éducation");
+    expect(supervisingMinistry(undefined)).toBe("Ministères en charge de l'éducation");
   });
 });
 
