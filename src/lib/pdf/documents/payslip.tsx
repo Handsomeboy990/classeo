@@ -6,7 +6,7 @@ import { TEACHER_STATUS_LABELS, type TeacherStatus } from "@/lib/domain/teacher-
 import { DataTable, Figure, FigureRow, InfoGrid, SectionTitle, Signatures } from "../components";
 import { amountSentence, beninDate, officialName, pdfFcfa } from "../format";
 import { DocumentPage, PdfDocument, T, type DocumentMeta } from "../layout";
-import { styles } from "../theme";
+import { styles } from "../styles";
 
 export type PayslipData = {
   teacher: { firstName: string; lastName: string; matricule: string; status: TeacherStatus | null; specialty: string | null };

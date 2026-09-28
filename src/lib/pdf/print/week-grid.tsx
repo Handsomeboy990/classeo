@@ -1,18 +1,10 @@
 import { DAYS, toMinutes } from "@/lib/domain/timetable";
 
 import { duration } from "../format";
+import { COLORS, SUBJECT_TINTS } from "../theme";
 import { mergeSimultaneous, placeSlots, weeklyMinutes, type WeekSlot } from "../week";
 
-const TINTS = [
-  ["#e3f1e9", "#006b40"],
-  ["#e5edff", "#1d4ed8"],
-  ["#fff1d1", "#8a5a00"],
-  ["#fde8eb", "#b3102a"],
-  ["#e0f4f4", "#0f6b6b"],
-  ["#efe7fb", "#6b3fb3"],
-  ["#eef2dc", "#5b6b12"],
-  ["#eceeee", "#3f4a4a"],
-] as const;
+const TINTS = SUBJECT_TINTS;
 
 const time = (t: string) => t.replace(":", " h ");
 
@@ -37,14 +29,14 @@ export function PrintWeekGrid({ slots }: { slots: WeekSlot[] }) {
     <div className="doc-keep">
       <div className="overflow-x-auto">
         <div className="min-w-[720px]">
-          <div className="ml-10 grid grid-cols-6 border-b-[1.5px] border-[#006b40] bg-[#e3f1e9]">
+          <div className="ml-10 grid grid-cols-6 border-b-[1.5px]" style={{ borderColor: COLORS.primary, background: COLORS.primarySoft }}>
             {DAYS.map((d) => (
-              <div key={d.value} className="py-1.5 text-center text-[10px] font-bold tracking-wide text-[#0b3b2a] uppercase">
+              <div key={d.value} className="doc-title py-1.5 text-center text-[10px] tracking-wide uppercase" style={{ color: COLORS.primaryDark }}>
                 {d.label}
               </div>
             ))}
           </div>
-          <div className="relative flex h-[520px] print:h-[104mm]">
+          <div className="relative flex h-[520px] print:h-[100mm]">
             <div className="relative w-10 shrink-0" aria-hidden>
               {hours.map((m) => (
                 <span key={m} className="doc-muted absolute right-1.5 -translate-y-1/2 text-[10px]" style={{ top: pct(m) }}>
@@ -54,9 +46,9 @@ export function PrintWeekGrid({ slots }: { slots: WeekSlot[] }) {
             </div>
             <div className="grid flex-1 grid-cols-6">
               {DAYS.map((d) => (
-                <div key={d.value} className="relative border-b border-l border-[#cfcec4]">
+                <div key={d.value} className="relative border-b border-l" style={{ borderColor: COLORS.border }}>
                   {hours.slice(1, -1).map((m) => (
-                    <div key={m} className="absolute inset-x-0 border-t border-[#ecebe4]" style={{ top: pct(m) }} aria-hidden />
+                    <div key={m} className="absolute inset-x-0 border-t" style={{ top: pct(m), borderColor: COLORS.rule }} aria-hidden />
                   ))}
                   {placed
                     .filter((s) => s.dayOfWeek === d.value)
@@ -65,14 +57,14 @@ export function PrintWeekGrid({ slots }: { slots: WeekSlot[] }) {
                       return (
                         <div
                           key={i}
-                          className="absolute overflow-hidden rounded-sm border-r-2 border-white px-1.5 py-1 text-[10px] leading-tight"
+                          className="absolute overflow-hidden rounded-sm border-r-2 border-white px-1.5 py-1 text-[10px] leading-tight print:py-0.5 print:leading-[1.15]"
                           style={{
                             top: `calc(${pct(toMinutes(s.startTime))} + 1px)`,
                             height: `calc(${((toMinutes(s.endTime) - toMinutes(s.startTime)) / span) * 100}% - 2px)`,
                             left: `${(s.lane / s.lanes) * 100}%`,
                             width: `${100 / s.lanes}%`,
-                            background: s.cancelledOn ? "#f0f1ea" : bg,
-                            borderLeft: `3px solid ${s.cancelledOn ? "#7a8078" : edge}`,
+                            background: s.cancelledOn ? COLORS.soft : bg,
+                            borderLeft: `3px solid ${s.cancelledOn ? COLORS.faint : edge}`,
                           }}
                         >
                           <p className="doc-muted">
@@ -81,7 +73,9 @@ export function PrintWeekGrid({ slots }: { slots: WeekSlot[] }) {
                           </p>
                           <p className="text-[11px] font-bold">{s.subject}</p>
                           {s.detail && <p className="doc-muted">{s.detail}</p>}
-                          {s.cancelledOn && <p className="font-bold text-[#b3102a]">Annulé cette semaine</p>}
+                          {s.cancelledOn && <p className="font-bold" style={{ color: COLORS.danger }}>
+                              Annulé cette semaine
+                            </p>}
                         </div>
                       );
                     })}
@@ -91,7 +85,7 @@ export function PrintWeekGrid({ slots }: { slots: WeekSlot[] }) {
           </div>
         </div>
       </div>
-      <p className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs">
+      <p className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-xs print:mt-2">
         <span className="doc-title">Volume hebdomadaire : {duration(all)}</span>
         {[...totals.entries()]
           .sort((a, b) => b[1] - a[1])

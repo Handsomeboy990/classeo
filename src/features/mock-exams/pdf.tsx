@@ -3,7 +3,8 @@ import { View } from "@react-pdf/renderer";
 import { DataTable, Figure, FigureRow, InfoGrid, SectionTitle } from "@/lib/pdf/components";
 import { ordinal, pdfText } from "@/lib/pdf/format";
 import { DocumentPage, PdfDocument, T, type DocumentMeta } from "@/lib/pdf/layout";
-import { COLORS, styles } from "@/lib/pdf/theme";
+import { styles } from "@/lib/pdf/styles";
+import { COLORS } from "@/lib/pdf/theme";
 import { formatAverage, formatNumber, formatPercent } from "@/lib/utils";
 
 import type { ExamDetail, ExamResults } from "./queries";

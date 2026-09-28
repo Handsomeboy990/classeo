@@ -1,25 +1,17 @@
-// Official letterhead of every printed document: the Republic, the ministry
-// in charge of the school's cycle, then the school. Text only for the
-// Republic and the ministry: no coat of arms or emblem is reproduced. Pure,
-// shared by the PDF documents and the HTML print views.
+// Letterhead of every printed document, read like the brand lockup of the
+// site (owner's decision D5): "République du Bénin" as a small overline,
+// then the product, Classéo, and what it is; no ministry or other
+// institution is named. The school (or the territorial service) that issues
+// the document follows. Pure, shared by the PDF documents, the HTML print
+// views and the e-mails.
 
 export type SchoolCycleCode = "PRESCHOOL" | "PRIMARY" | "SECONDARY" | "TECHNICAL";
 
 export const REPUBLIC = "République du Bénin";
 
-export const MINISTRIES = {
-  primary: "Ministère des Enseignements Maternel et Primaire",
-  secondary: "Ministère des Enseignements Secondaire, Technique et de la Formation Professionnelle",
-} as const;
-
-// Preschool and primary schools answer to the MEMP, secondary and technical
-// schools to the MESTFP. A territorial document (statistics of a commune,
-// a department, the nation) covers both.
-export function ministriesFor(cycle: SchoolCycleCode | null | undefined): string[] {
-  if (cycle === "PRESCHOOL" || cycle === "PRIMARY") return [MINISTRIES.primary];
-  if (cycle === "SECONDARY" || cycle === "TECHNICAL") return [MINISTRIES.secondary];
-  return [MINISTRIES.primary, MINISTRIES.secondary];
-}
+// The same words as the lockup (src/components/brand/lockup.tsx).
+export const PRODUCT = "Classéo";
+export const PRODUCT_LINE = "Plateforme de gestion scolaire";
 
 // "BP 123 Cotonou · Tél. 01 21 30 00 00 · ceg.godomey@classeo.bj": the
 // contact line under the school name, empty parts left out.

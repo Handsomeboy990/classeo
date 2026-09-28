@@ -1,0 +1,20 @@
+armoiries-benin.png
+
+Coat of arms of the Republic of Benin, printed on the letterhead of the PDF
+documents.
+
+Source: "Coat of arms of Benin.svg" by Tinynanorobots and Fenn-O-maniC,
+Wikimedia Commons,
+https://commons.wikimedia.org/wiki/File:Coat_of_arms_of_Benin.svg
+
+Licence: Creative Commons Attribution-ShareAlike 3.0 Unported (CC BY-SA 3.0),
+https://creativecommons.org/licenses/by-sa/3.0/
+
+Modifications: rasterised from public/brand/armoiries-benin.svg (the same
+drawing, optimised with SVGO) to a PNG 600 pixels wide with a transparent
+background and an indexed palette, because the PDF renderer draws no SVG
+image. The drawing is unchanged. This derivative file is shared under the
+same licence, CC BY-SA 3.0.
+
+The coat of arms is an official insignia: its use may be regulated
+independently of copyright.

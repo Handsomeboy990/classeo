@@ -6,7 +6,8 @@ import { INDICATORS, type IndicatorKey, type Indicators } from "@/lib/domain/ind
 import { DataTable, Figure, FigureRow, SectionTitle } from "../components";
 import { beninDateTime, pdfText } from "../format";
 import { DocumentPage, PdfDocument, T, type DocumentMeta } from "../layout";
-import { COLORS, styles } from "../theme";
+import { styles } from "../styles";
+import { COLORS } from "../theme";
 
 export type StatisticsData = {
   scopeName: string;
@@ -27,7 +28,7 @@ const TILE_LABELS: Partial<Record<IndicatorKey, string>> = {
   enrollments: "Élèves inscrits",
   girlsShare: "Part des filles",
   teachers: "Enseignants",
-  studentsPerTeacher: "Élèves/enseignant",
+  studentsPerTeacher: "Élèves par enseignant",
   absenceRate: "Taux d'absence",
   passRate: "Réussite",
   meanAverage: "Moyenne",

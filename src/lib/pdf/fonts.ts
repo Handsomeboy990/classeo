@@ -6,15 +6,22 @@ import { join } from "node:path";
 import { Font } from "@react-pdf/renderer";
 
 // Brand fonts embedded in every PDF (SIL Open Font License 1.1, licences next
-// to the files, no reserved font name). The TrueType files are the latin
-// subsets of the @fontsource packages pinned in devDependencies, unpacked
-// from WOFF once. They live in src/lib/pdf/fonts so the server never
-// downloads a font; each path is a literal joined to process.cwd(), the form
+// to the files, no reserved font name): Montserrat for titles, the typeface
+// of the official sites, and Atkinson Hyperlegible Next for text. The
+// TrueType files are subsets of the @fontsource packages pinned in
+// devDependencies, unpacked from WOFF once: latin for both, plus the latin
+// extended subset of Montserrat as a fallback family, so a title carrying a
+// letter of the national languages (ɔ, ɛ...) still prints it. They live in
+// src/lib/pdf/fonts so the server never downloads a font; each path is a literal joined to process.cwd(), the form
 // the output file tracing follows, so the files ship with the standalone and
 // serverless bundles.
 
 export const FONT_TEXT = "Atkinson";
-export const FONT_TITLE = "Bricolage";
+const TITLE = "Montserrat";
+const TITLE_EXT = "MontserratExt";
+// Every style names both title families: the renderer takes each glyph
+// from the first one that has it.
+export const FONT_TITLE: string[] = [TITLE, TITLE_EXT];
 
 function dataUrl(file: string) {
   return `data:font/ttf;base64,${readFileSync(file).toString("base64")}`;
@@ -34,11 +41,19 @@ function register() {
     ],
   });
   Font.register({
-    family: FONT_TITLE,
+    family: TITLE,
     fonts: [
-      { src: dataUrl(join(process.cwd(), "src/lib/pdf/fonts/BricolageGrotesque-SemiBold.ttf")), fontWeight: 600 },
-      { src: dataUrl(join(process.cwd(), "src/lib/pdf/fonts/BricolageGrotesque-Bold.ttf")), fontWeight: 700 },
-      { src: dataUrl(join(process.cwd(), "src/lib/pdf/fonts/BricolageGrotesque-ExtraBold.ttf")), fontWeight: 800 },
+      { src: dataUrl(join(process.cwd(), "src/lib/pdf/fonts/Montserrat-SemiBold.ttf")), fontWeight: 600 },
+      { src: dataUrl(join(process.cwd(), "src/lib/pdf/fonts/Montserrat-Bold.ttf")), fontWeight: 700 },
+      { src: dataUrl(join(process.cwd(), "src/lib/pdf/fonts/Montserrat-ExtraBold.ttf")), fontWeight: 800 },
+    ],
+  });
+  Font.register({
+    family: TITLE_EXT,
+    fonts: [
+      { src: dataUrl(join(process.cwd(), "src/lib/pdf/fonts/Montserrat-SemiBold-LatinExt.ttf")), fontWeight: 600 },
+      { src: dataUrl(join(process.cwd(), "src/lib/pdf/fonts/Montserrat-Bold-LatinExt.ttf")), fontWeight: 700 },
+      { src: dataUrl(join(process.cwd(), "src/lib/pdf/fonts/Montserrat-ExtraBold-LatinExt.ttf")), fontWeight: 800 },
     ],
   });
   // French words are never cut with a hyphen the reader did not write.
@@ -70,7 +85,7 @@ function guard(font: LoadedFont) {
 export async function prepareFonts() {
   register();
   const families = Font.getRegisteredFonts() as unknown as Record<string, { sources: Source[] }>;
-  for (const family of [FONT_TEXT, FONT_TITLE]) {
+  for (const family of [FONT_TEXT, TITLE, TITLE_EXT]) {
     for (const source of families[family]?.sources ?? []) {
       await source.load();
       if (source.data) guard(source.data);

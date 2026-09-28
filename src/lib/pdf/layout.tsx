@@ -5,11 +5,15 @@ import type { Style } from "@react-pdf/types";
 
 import { qrPath } from "@/lib/qr";
 
-import { currentVerification, type DocumentVerification, type PdfImage } from "./context";
+import { INDEPENDENCE_NOTICE } from "@/components/brand/settings";
+
+import { ARMS_PNG_RATIO, armsImage } from "./arms";
+import { currentBrand, currentVerification, type DocumentVerification, type PdfImage } from "./context";
 import { FONT_TITLE } from "./fonts";
 import { beninDate, beninDateTime, pageLabel, pdfText } from "./format";
-import { contactLine, ministriesFor, REPUBLIC, type SchoolCycleCode } from "./letterhead";
-import { COLORS, PAGE, styles } from "./theme";
+import { contactLine, PRODUCT, PRODUCT_LINE, REPUBLIC, type SchoolCycleCode } from "./letterhead";
+import { styles } from "./styles";
+import { COLORS, PAGE } from "./theme";
 
 type StyleProp = Style | Style[];
 
@@ -30,8 +34,7 @@ export function T({ children, style, ...rest }: { children?: ReactNode; style?: 
 }
 
 // Who issues the document: a school (bulletins, receipts, lists) or a level
-// of the ministry (territorial statistics). Written as text: no emblem.
-// The letterhead details (cycle, postal box, logo) are filled in by
+// of the ministry (territorial statistics). The letterhead details (cycle, postal box, logo) are filled in by
 // completeIssuer() from the school code before rendering.
 export type Issuer =
   | {
@@ -60,7 +63,8 @@ export type DocumentMeta = {
 };
 
 // The Classéo mark, drawn from the same paths as the application logo: an
-// open book with the rising sun, in the colours of the flag.
+// open book with the rising sun, on the institutional navy, with the flag
+// yellow sun and red bookmark.
 export function Mark({ size = 34 }: { size?: number }) {
   return (
     <Svg viewBox="0 0 64 64" width={size} height={size}>
@@ -72,36 +76,65 @@ export function Mark({ size = 34 }: { size?: number }) {
         <Path d="M46.5 20L43 23.5" />
       </G>
       <Path d="M8 38c8-4 16-4 24 2v14c-8-6-16-6-24-2z" fill={COLORS.white} />
-      <Path d="M56 38c-8-4-16-4-24 2v14c8-6 16-6 24-2z" fill="#F0F1EA" />
+      <Path d="M56 38c-8-4-16-4-24 2v14c8-6 16-6 24-2z" fill={COLORS.white} fillOpacity={0.86} />
       <Path d="M30.5 40h3v17l-1.5-2-1.5 2z" fill={COLORS.red} />
     </Svg>
   );
 }
 
-// A thin band in the three flag colours along the top edge of every page.
-function FlagBand() {
+// Three equal thirds, green, yellow, red, left to right: the band along the
+// top edge of every page and the thin rule of the letterhead.
+export function TricolourRule({ width, height, style }: { width?: number; height: number; style?: Style }) {
   return (
-    <View fixed style={{ position: "absolute", top: 0, left: 0, right: 0, height: 4, flexDirection: "row" }}>
-      <View style={{ flex: 5, backgroundColor: COLORS.primary }} />
-      <View style={{ flex: 2, backgroundColor: COLORS.yellow }} />
-      <View style={{ flex: 2, backgroundColor: COLORS.red }} />
+    <View style={[{ flexDirection: "row", height }, width ? { width } : {}, style ?? {}]}>
+      <View style={{ flex: 1, backgroundColor: COLORS.green }} />
+      <View style={{ flex: 1, backgroundColor: COLORS.yellow }} />
+      <View style={{ flex: 1, backgroundColor: COLORS.red }} />
     </View>
   );
 }
 
-// Letterhead: the Republic and the ministry in words (no emblem), then the
-// school with its logo and details, or the territorial service.
-function IssuerBlock({ issuer }: { issuer: Issuer }) {
-  const ministries = ministriesFor(issuer.kind === "school" ? issuer.cycle : null);
+// The flag band along the top edge of every page.
+function FlagBand() {
   return (
-    <View style={{ maxWidth: 270 }}>
-      <T style={{ fontSize: 8, fontWeight: 700, letterSpacing: 1.2, color: COLORS.primaryDark, textTransform: "uppercase" }}>{REPUBLIC}</T>
-      {ministries.map((m) => (
-        <T key={m} style={{ fontSize: 7.5, fontWeight: 600, marginTop: 1.5, lineHeight: 1.25 }}>
-          {m}
-        </T>
-      ))}
-      <View style={{ width: 36, height: 1, backgroundColor: COLORS.primary, marginVertical: 4 }} />
+    <View fixed style={{ position: "absolute", top: 0, left: 0, right: 0 }}>
+      <TricolourRule height={4} />
+    </View>
+  );
+}
+
+// Letterhead (design source of truth, part 4.14, with the owner's decisions
+// D1, coat of arms, and D5, the product lockup). It reads like the brand
+// lockup of the site: the coat of arms at the left, then "RÉPUBLIQUE DU
+// BÉNIN" as a small overline over a thin tricolour rule, the product name
+// Classéo and "Plateforme de gestion scolaire", no institution named; under
+// it, the school that issues the document, with its logo and details, or
+// the territorial service. The arms sit beside the
+// words rather than above them so every one page document (bulletin,
+// timetable, invoice, the preview of a bulletin with its notice) keeps its
+// single page; for the same reason the arms are 38 pt high, above the 32 pt
+// under which the shield loses its details. Without the official option
+// the coat of arms is left out and the words remain.
+function IssuerBlock({ issuer }: { issuer: Issuer }) {
+  const official = currentBrand().official;
+  const armsHeight = 38;
+  return (
+    <View style={{ width: 290 }}>
+      <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+        {official ? (
+          // eslint-disable-next-line jsx-a11y/alt-text
+          <Image src={armsImage()} style={{ width: armsHeight * ARMS_PNG_RATIO, height: armsHeight }} />
+        ) : null}
+        <View style={{ flexShrink: 1 }}>
+          <View style={{ alignSelf: "flex-start" }}>
+            <T style={{ fontFamily: FONT_TITLE, fontSize: 7, fontWeight: 600, lineHeight: 1.1, letterSpacing: 1.1, color: COLORS.muted, textTransform: "uppercase" }}>{REPUBLIC}</T>
+            <TricolourRule height={1.5} style={{ marginTop: 2 }} />
+          </View>
+          <T style={{ fontFamily: FONT_TITLE, fontSize: 13, fontWeight: 800, lineHeight: 1, color: COLORS.primary, marginTop: 3.5 }}>{PRODUCT}</T>
+          <T style={{ fontFamily: FONT_TITLE, fontSize: 7, fontWeight: 600, lineHeight: 1.2, color: COLORS.muted, marginTop: 2 }}>{PRODUCT_LINE}</T>
+        </View>
+      </View>
+      <View style={{ height: 6 }} />
       {issuer.kind === "ministry" ? (
         <View>
           <T style={{ fontSize: 10, fontWeight: 700 }}>{issuer.name}</T>
@@ -111,7 +144,7 @@ function IssuerBlock({ issuer }: { issuer: Issuer }) {
         <View style={{ flexDirection: "row", gap: 7, alignItems: "flex-start" }}>
           {issuer.logo ? (
             // eslint-disable-next-line jsx-a11y/alt-text
-            <Image src={issuer.logo} style={{ width: 34, height: 34, objectFit: "contain" }} />
+            <Image src={issuer.logo} style={{ width: 30, height: 30, objectFit: "contain" }} />
           ) : null}
           <View style={{ flexShrink: 1 }}>
             <T style={{ fontSize: 10.5, fontWeight: 700 }}>{issuer.name}</T>
@@ -127,12 +160,10 @@ function IssuerBlock({ issuer }: { issuer: Issuer }) {
 // Full header, on the first page of a document.
 export function DocumentHeader({ meta, children }: { meta: DocumentMeta; children?: ReactNode }) {
   return (
-    <View style={{ marginBottom: 12 }}>
-      <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", paddingBottom: 10, borderBottomWidth: 1.5, borderBottomColor: COLORS.primary }}>
-        <View style={{ maxWidth: "56%" }}>
-          <IssuerBlock issuer={meta.issuer} />
-        </View>
-        <View style={{ alignItems: "flex-end", maxWidth: "45%" }}>
+    <View style={{ marginBottom: 10 }}>
+      <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", paddingBottom: 8, borderBottomWidth: 1.5, borderBottomColor: COLORS.primary }}>
+        <IssuerBlock issuer={meta.issuer} />
+        <View style={{ alignItems: "flex-end", flex: 1, marginLeft: 12 }}>
           <T style={[styles.title, { textAlign: "right" }]}>{meta.title}</T>
           {meta.subtitle ? <T style={{ fontSize: 10, fontWeight: 600, marginTop: 3, textAlign: "right" }}>{meta.subtitle}</T> : null}
           <View style={{ marginTop: 6, flexDirection: "row", gap: 4, alignItems: "baseline" }}>
@@ -172,16 +203,21 @@ export function QrCode({ matrix, size }: { matrix: DocumentVerification["qr"]; s
 
 // The footer text is static; the page number is a sibling of its own, the
 // form the paginator repeats reliably on every page. When the document is
-// registered, the QR code and the verification code sit at its left.
+// registered, the QR code and the verification code sit at its left. At its
+// right, under the page number: the Classéo mark and the short independence
+// notice (owner's decision D3: "Plateforme indépendante", without "non
+// officielle", which could read as casting doubt on a certificate).
 function Footer({ meta, pageHeight }: { meta: DocumentMeta; pageHeight: number }) {
   const by = meta.generatedBy;
   const check = currentVerification();
+  const notice = currentBrand().notice;
   const qrSize = 44;
+  const side = 92;
   return (
     <>
       <View
         fixed
-        style={{ position: "absolute", bottom: 12, left: PAGE.marginX, right: PAGE.marginX, borderTopWidth: 0.75, borderTopColor: COLORS.border, paddingTop: 4, paddingRight: 70, flexDirection: "row", gap: 7, alignItems: "center" }}
+        style={{ position: "absolute", bottom: 12, left: PAGE.marginX, right: PAGE.marginX, borderTopWidth: 0.75, borderTopColor: COLORS.border, paddingTop: 4, paddingRight: side, flexDirection: "row", gap: 7, alignItems: "center" }}
       >
         {check ? <QrCode matrix={check.qr} size={qrSize} /> : null}
         <View style={{ flex: 1 }}>
@@ -191,7 +227,7 @@ function Footer({ meta, pageHeight }: { meta: DocumentMeta; pageHeight: number }
             </T>
           ) : null}
           <T style={{ fontSize: 7, color: COLORS.muted }}>
-            Généré sur Classéo le {beninDateTime(meta.generatedAt)} (heure du Bénin) par {by.name}, {by.role}.
+            Généré sur Classéo, plateforme de gestion scolaire, le {beninDateTime(meta.generatedAt)} (heure du Bénin) par {by.name}, {by.role}.
           </T>
           <T style={{ fontSize: 7, color: COLORS.muted }}>
             {check ? "Scannez le code ou saisissez l'adresse pour vérifier l'authenticité de ce document." : `Vérification : réf. ${meta.reference} · compte ${by.email} · inscrit au journal d'activité de la plateforme.`}
@@ -200,12 +236,15 @@ function Footer({ meta, pageHeight }: { meta: DocumentMeta; pageHeight: number }
       </View>
       <Text
         fixed
-        style={{ position: "absolute", top: pageHeight - 40, right: PAGE.marginX, width: 70, textAlign: "right", fontSize: 8, fontWeight: 700, color: COLORS.primaryDark }}
+        style={{ position: "absolute", top: pageHeight - 42, right: PAGE.marginX, width: side, textAlign: "right", fontSize: 8, fontWeight: 700, color: COLORS.primaryDark }}
         render={({ subPageNumber, subPageTotalPages }) => pageLabel(subPageNumber, subPageTotalPages)}
       />
-      <View fixed style={{ position: "absolute", top: pageHeight - 27, right: PAGE.marginX, flexDirection: "row", gap: 3, alignItems: "center" }}>
-        <Mark size={9} />
-        <Text style={{ fontFamily: FONT_TITLE, fontWeight: 700, fontSize: 7, color: COLORS.primaryDark }}>Classéo</Text>
+      <View fixed style={{ position: "absolute", top: pageHeight - 30, right: PAGE.marginX, width: side, alignItems: "flex-end" }}>
+        <View style={{ flexDirection: "row", gap: 3, alignItems: "center" }}>
+          <Mark size={9} />
+          <Text style={{ fontFamily: FONT_TITLE, fontWeight: 700, fontSize: 7, color: COLORS.primaryDark }}>Classéo</Text>
+        </View>
+        {notice ? <Text style={{ fontSize: 6.5, color: COLORS.muted, marginTop: 1.5 }}>{INDEPENDENCE_NOTICE.short}</Text> : null}
       </View>
     </>
   );

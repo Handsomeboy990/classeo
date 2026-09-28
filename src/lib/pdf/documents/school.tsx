@@ -10,7 +10,8 @@ import type { PdfPhoto } from "../data/photo";
 import { FONT_TITLE } from "../fonts";
 import { beninDate, calendarDate, calendarShort, calendarWeekday, officialName } from "../format";
 import { DocumentPage, PdfDocument, T, type DocumentMeta } from "../layout";
-import { COLORS, styles } from "../theme";
+import { styles } from "../styles";
+import { COLORS } from "../theme";
 
 import { PhotoFrame } from "./attestation";
 

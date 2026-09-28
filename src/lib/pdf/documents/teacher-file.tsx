@@ -9,7 +9,8 @@ import { PAYER_LABELS, payerOf, TEACHER_STATUS_LABELS } from "@/lib/domain/teach
 import { DataTable, Figure, FigureRow, InfoGrid, SectionTitle } from "../components";
 import { beninDateTime, calendarDate, officialName } from "../format";
 import { DocumentPage, PdfDocument, T, type DocumentMeta } from "../layout";
-import { COLORS, styles } from "../theme";
+import { styles } from "../styles";
+import { COLORS } from "../theme";
 
 // Fiche enseignant: the teacher file page on paper, for the ministry, a
 // department or a circonscription. The same rules as the page: only the

@@ -1,6 +1,8 @@
 import type { ReactNode } from "react";
 
+import { loadBrand } from "@/components/brand/load-brand";
 import { LogoMark } from "@/components/brand/logo";
+import { ARMS_RATIO, ARMS_SRC, INDEPENDENCE_NOTICE } from "@/components/brand/settings";
 import { DOCUMENT_KINDS, contentHash, type DocumentKind } from "@/features/verification/reference";
 import { issueOnce, verificationOf } from "@/features/verification/registry";
 import { getCurrentUser } from "@/lib/auth/session";
@@ -10,35 +12,48 @@ import { cn } from "@/lib/utils";
 import { completeIssuer } from "../data/letterhead";
 import { beninDate, beninDateTime } from "../format";
 import type { DocumentMeta, Issuer } from "../layout";
-import { contactLine, ministriesFor, REPUBLIC } from "../letterhead";
+import { contactLine, PRODUCT, PRODUCT_LINE, REPUBLIC } from "../letterhead";
+import { COLORS as C } from "../theme";
 
 // HTML twin of the PDF layout, for the pages printed from the browser: the
-// same flag band, header, typography and footer, on white paper. The styles
-// are local to the sheet (class names prefixed with doc-) so the application
-// theme never leaks onto paper, and table rows never break across pages.
+// same flag band, letterhead, typography and footer, on white paper. The
+// styles are local to the sheet (class names prefixed with doc-) so the
+// application theme never leaks onto paper, and table rows never break
+// across pages. Colours come from the print palette (../theme).
 const CSS = `
-.doc-sheet { --doc-green: #006b40; --doc-dark: #0b3b2a; --doc-soft: #e3f1e9; --doc-muted: #545a52; --doc-border: #cfcec4; --doc-rule: #dddcd3; --doc-zebra: #f6f6f1;
-  background: #fff; color: #1a1d1a; font-family: var(--font-body), system-ui, sans-serif; font-size: 13px; line-height: 1.4; position: relative; }
+.doc-sheet { --doc-primary: ${C.primary}; --doc-dark: ${C.primaryDark}; --doc-soft: ${C.primarySoft}; --doc-muted: ${C.muted}; --doc-faint: ${C.faint}; --doc-border: ${C.border}; --doc-rule: ${C.rule}; --doc-zebra: ${C.zebra}; --doc-foot: ${C.soft};
+  background: ${C.white}; color: ${C.text}; font-family: var(--font-body), system-ui, sans-serif; font-size: 13px; line-height: 1.4; position: relative; }
 .doc-sheet .doc-band { display: flex; height: 5px; }
-.doc-sheet .doc-band span:nth-child(1) { flex: 5; background: #006b40; }
-.doc-sheet .doc-band span:nth-child(2) { flex: 2; background: #fcd116; }
-.doc-sheet .doc-band span:nth-child(3) { flex: 2; background: #e8112d; }
+.doc-sheet .doc-band span, .doc-sheet .doc-rule3 span { flex: 1; }
+.doc-sheet .doc-band span:nth-child(1), .doc-sheet .doc-rule3 span:nth-child(1) { background: ${C.green}; }
+.doc-sheet .doc-band span:nth-child(2), .doc-sheet .doc-rule3 span:nth-child(2) { background: ${C.yellow}; }
+.doc-sheet .doc-band span:nth-child(3), .doc-sheet .doc-rule3 span:nth-child(3) { background: ${C.red}; }
+.doc-sheet .doc-rule3 { display: flex; height: 2px; }
 .doc-sheet .doc-title { font-family: var(--font-display), system-ui, sans-serif; font-weight: 700; color: var(--doc-dark); line-height: 1.1; }
+.doc-sheet .doc-head { font-family: var(--font-display), system-ui, sans-serif; color: var(--doc-dark); text-transform: uppercase; }
 .doc-sheet .doc-label { font-size: 10px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--doc-muted); }
 .doc-sheet .doc-muted { color: var(--doc-muted); }
 .doc-sheet .doc-box { border: 1px solid var(--doc-border); border-radius: 6px; }
-.doc-sheet table.doc-table { width: 100%; border-collapse: collapse; border-top: 1.5px solid var(--doc-green); border-bottom: 1px solid var(--doc-border); }
-.doc-sheet .doc-table thead th { background: var(--doc-soft); color: var(--doc-dark); font-size: 10px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; text-align: left; padding: 7px 8px; border-bottom: 1.5px solid var(--doc-green); }
+.doc-sheet .doc-letterhead { border-bottom: 2px solid var(--doc-primary); }
+.doc-sheet .doc-overline { color: var(--doc-muted); }
+.doc-sheet .doc-display { font-family: var(--font-display), system-ui, sans-serif; }
+.doc-sheet .doc-product { font-family: var(--font-display), system-ui, sans-serif; color: var(--doc-primary); }
+.doc-sheet table.doc-table { width: 100%; border-collapse: collapse; border-top: 1.5px solid var(--doc-primary); border-bottom: 1px solid var(--doc-border); }
+.doc-sheet .doc-table thead th { background: var(--doc-soft); color: var(--doc-dark); font-family: var(--font-display), system-ui, sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; text-align: left; padding: 7px 8px; border-bottom: 1.5px solid var(--doc-primary); }
 .doc-sheet .doc-table td, .doc-sheet .doc-table tbody th { padding: 6px 8px; border-bottom: 1px solid var(--doc-rule); text-align: left; font-weight: 400; vertical-align: middle; }
 .doc-sheet .doc-table tbody tr:nth-child(even) { background: var(--doc-zebra); }
-.doc-sheet .doc-table tfoot td, .doc-sheet .doc-table tfoot th { background: #f0f1ea; border-top: 1.5px solid var(--doc-green); font-weight: 700; padding: 6px 8px; text-align: left; }
+.doc-sheet .doc-table tfoot td, .doc-sheet .doc-table tfoot th { background: var(--doc-foot); border-top: 1.5px solid var(--doc-primary); font-weight: 700; padding: 6px 8px; text-align: left; }
 .doc-sheet .doc-num { text-align: right !important; font-variant-numeric: tabular-nums; }
 .doc-sheet .doc-center { text-align: center !important; }
 .doc-sheet .doc-figure { border: 1px solid var(--doc-border); border-radius: 6px; padding: 10px 12px; }
-.doc-sheet .doc-figure.doc-primary { background: var(--doc-soft); border-color: var(--doc-green); }
+.doc-sheet .doc-figure.doc-primary { background: var(--doc-soft); border-color: var(--doc-primary); }
 .doc-sheet .doc-figure strong { display: block; font-family: var(--font-display), system-ui, sans-serif; font-size: 24px; color: var(--doc-dark); line-height: 1.2; margin-top: 2px; }
-.doc-sheet .doc-sign { height: 64px; border: 1px dashed var(--doc-border); border-radius: 6px; margin-top: 6px; display: flex; align-items: flex-end; padding: 4px 6px; font-size: 9px; color: #7a8078; }
-.doc-sheet .doc-notice { background: #fff1d1; border-left: 3px solid #8a5a00; padding: 6px 10px; }
+.doc-sheet .doc-amount { background: var(--doc-soft); border-left: 4px solid var(--doc-primary); border-radius: 6px; }
+.doc-sheet .doc-amount .doc-label { color: var(--doc-primary); }
+.doc-sheet .doc-sign { height: 64px; border: 1px dashed var(--doc-border); border-radius: 6px; margin-top: 6px; display: flex; align-items: flex-end; padding: 4px 6px; font-size: 9px; color: var(--doc-faint); }
+.doc-sheet .doc-notice { background: ${C.warningSoft}; border-left: 3px solid ${C.warning}; padding: 6px 10px; }
+.doc-sheet .doc-footer { border-top: 1px solid var(--doc-border); }
+.doc-sheet .doc-check { color: var(--doc-dark); }
 @media print {
   @page { size: A4; margin: 12mm 12mm 14mm; }
   /* Only the sheet reaches the paper: every element that neither holds it
@@ -52,19 +67,37 @@ const CSS = `
   .doc-sheet * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }`;
 
-// The letterhead: the Republic and the ministry in words, no emblem, then
-// the school with its logo and details.
-function IssuerBlock({ issuer }: { issuer: Issuer }) {
-  const ministries = ministriesFor(issuer.kind === "school" ? issuer.cycle : null);
+// The letterhead, as on the PDF and like the brand lockup of the site
+// (decision D5): the coat of arms (official option) at the left, then the
+// Republic as an overline over the tricolour rule, Classéo and its product
+// line, no institution named; under it, the school with its logo and
+// details.
+function IssuerBlock({ issuer, official }: { issuer: Issuer; official: boolean }) {
   return (
     <div className="min-w-0 max-w-md">
-      <p className="text-[11px] font-bold tracking-[0.12em] text-[#0b3b2a] uppercase">{REPUBLIC}</p>
-      {ministries.map((m) => (
-        <p key={m} className="text-xs leading-snug font-semibold">
-          {m}
-        </p>
-      ))}
-      <span className="my-1.5 block h-px w-10 bg-[#006b40]" aria-hidden />
+      <div className="flex items-center gap-3">
+        {official && (
+          // eslint-disable-next-line @next/next/no-img-element -- a static SVG, served as is
+          <img src={ARMS_SRC} alt="" aria-hidden width={Math.round(56 * ARMS_RATIO)} height={56} className="h-14 w-auto shrink-0 print:h-11" decoding="async" data-doc-arms="" />
+        )}
+        <div className="min-w-0">
+          <span className="inline-flex flex-col gap-1">
+            <span className="doc-head doc-overline text-[10px] font-semibold tracking-[0.12em]" translate="no">
+              {REPUBLIC}
+            </span>
+            <span className="doc-rule3 w-full" aria-hidden>
+              <span />
+              <span />
+              <span />
+            </span>
+          </span>
+          <p className="doc-product mt-1.5 text-xl print:text-lg leading-none font-extrabold" translate="no">
+            {PRODUCT}
+          </p>
+          <p className="doc-overline doc-display mt-1 text-[11px] font-semibold">{PRODUCT_LINE}</p>
+        </div>
+      </div>
+      <span className="my-2 block h-px w-10" style={{ background: C.primary }} aria-hidden />
       {issuer.kind === "ministry" ? (
         <>
           <p className="font-bold">{issuer.name}</p>
@@ -128,8 +161,8 @@ export async function PrintSheet({
   children: ReactNode;
   id?: string;
 }) {
-  const meta = { ...given, issuer: await completeIssuer(given.issuer, { withLogoBytes: false }) };
-  const check = await registerView(given, record);
+  const [issuer, check, brand] = await Promise.all([completeIssuer(given.issuer, { withLogoBytes: false }), registerView(given, record), loadBrand()]);
+  const meta = { ...given, issuer };
   const qr = check ? qrPath(check.qr, 2) : null;
   const by = meta.generatedBy;
   return (
@@ -147,15 +180,9 @@ export async function PrintSheet({
         <span />
       </div>
       <div className="p-5 sm:p-8 print:p-0 print:pt-3">
-        <header className="flex flex-col gap-4 border-b-2 border-[#006b40] pb-4 sm:flex-row sm:items-start sm:justify-between">
-          <div className="flex gap-3">
-            <div className="flex flex-col items-center gap-0.5">
-              <LogoMark className="size-11" />
-              <span className="doc-title text-[11px]">Classéo</span>
-            </div>
-            <IssuerBlock issuer={meta.issuer} />
-          </div>
-          <div className="sm:text-right">
+        <header className="doc-letterhead flex flex-col gap-4 pb-4 sm:flex-row sm:items-start sm:justify-between">
+          <IssuerBlock issuer={meta.issuer} official={brand.official} />
+          <div className="w-full sm:w-auto sm:pt-1 sm:text-right">
             <h1 className="doc-title text-2xl sm:text-[26px]">{meta.title}</h1>
             {meta.subtitle && <p className="mt-1 font-semibold">{meta.subtitle}</p>}
             <p className="mt-1.5 text-xs">
@@ -166,27 +193,40 @@ export async function PrintSheet({
         </header>
         {headerExtra}
         <div className="mt-4">{children}</div>
-        <footer className="doc-muted doc-keep mt-8 flex items-center gap-3 border-t border-[#cfcec4] pt-2 text-[10px] leading-snug">
+        <footer className="doc-footer doc-muted doc-keep mt-8 print:mt-2 flex items-center gap-3 pt-2 text-[10px] leading-snug">
           {check && qr && (
-            <svg viewBox={`0 0 ${qr.viewBox} ${qr.viewBox}`} className="size-16 shrink-0" role="img" aria-label={`QR code de vérification, ${check.shortUrl}`}>
-              <rect width={qr.viewBox} height={qr.viewBox} fill="#fff" />
-              <path d={qr.d} fill="#1a1d1a" />
+            <svg viewBox={`0 0 ${qr.viewBox} ${qr.viewBox}`} className="size-16 shrink-0 print:size-14" role="img" aria-label={`QR code de vérification, ${check.shortUrl}`}>
+              <rect width={qr.viewBox} height={qr.viewBox} fill={C.white} />
+              <path d={qr.d} fill={C.text} />
             </svg>
           )}
-          <div className="min-w-0">
+          <div className="min-w-0 flex-1">
             {check && (
-              <p className="text-[11px] font-bold text-[#0b3b2a]">
+              <p className="doc-check text-[11px] font-bold">
                 Code de vérification {check.code} · {check.shortUrl}
               </p>
             )}
             <p>
-              Généré sur Classéo le {beninDateTime(meta.generatedAt)} (heure du Bénin) par {by.name}, {by.role}. Réf. {meta.reference}.
+              Généré sur Classéo, plateforme de gestion scolaire, le {beninDateTime(meta.generatedAt)} (heure du Bénin) par {by.name}, {by.role}. Réf. {meta.reference}.
             </p>
             <p>
               {check
                 ? "Scannez le code ou saisissez l'adresse pour vérifier l'authenticité de ce document."
                 : `Vérification : réf. ${meta.reference} · compte ${by.email}. Le document figure au journal d'activité.`}
             </p>
+          </div>
+          <div className="flex shrink-0 flex-col items-end gap-0.5 self-end text-right">
+            <span className="flex items-center gap-1">
+              <LogoMark className="size-3.5" />
+              <span className="doc-title text-[10px]" translate="no">
+                Classéo
+              </span>
+            </span>
+            {brand.notice && (
+              <span lang="fr" translate="no" data-doc-notice="">
+                {INDEPENDENCE_NOTICE.short}
+              </span>
+            )}
           </div>
         </footer>
       </div>

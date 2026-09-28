@@ -6,7 +6,8 @@ import { DataTable, Signatures } from "../components";
 import { FONT_TITLE } from "../fonts";
 import { beninDate, calendarDate, officialName } from "../format";
 import { DocumentPage, PdfDocument, T, type DocumentMeta } from "../layout";
-import { COLORS, styles } from "../theme";
+import { styles } from "../styles";
+import { COLORS } from "../theme";
 
 // Certificat de scolarité: the whole schooling of a pupil in the school,
 // year by year, where the attestation covers the running year only.

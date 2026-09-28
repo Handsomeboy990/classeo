@@ -6,24 +6,20 @@ import { createElement, type FC } from "react";
 
 import { renderToBuffer } from "@react-pdf/renderer";
 
+import { BRAND_DEFAULTS } from "@/components/brand/settings";
 import { encodeQr } from "@/lib/qr";
 
 import { Signatures } from "./components";
 import { withDocumentScope } from "./context";
 import { prepareFonts } from "./fonts";
 import { DocumentPage, PdfDocument, T } from "./layout";
-import { contactLine, MINISTRIES, ministriesFor, pdfImageFormat } from "./letterhead";
+import { contactLine, pdfImageFormat, PRODUCT, PRODUCT_LINE, REPUBLIC } from "./letterhead";
 
-describe("ministriesFor", () => {
-  it("names the ministry of the school's cycle", () => {
-    expect(ministriesFor("PRESCHOOL")).toEqual([MINISTRIES.primary]);
-    expect(ministriesFor("PRIMARY")).toEqual(["Ministère des Enseignements Maternel et Primaire"]);
-    expect(ministriesFor("SECONDARY")).toEqual(["Ministère des Enseignements Secondaire, Technique et de la Formation Professionnelle"]);
-    expect(ministriesFor("TECHNICAL")).toEqual([MINISTRIES.secondary]);
-  });
-
-  it("names both ministries on a territorial document", () => {
-    expect(ministriesFor(null)).toEqual([MINISTRIES.primary, MINISTRIES.secondary]);
+describe("letterhead words", () => {
+  it("reads like the product lockup: the Republic, then Classéo and what it is", () => {
+    expect(REPUBLIC).toBe("République du Bénin");
+    expect(PRODUCT).toBe("Classéo");
+    expect(PRODUCT_LINE).toBe("Plateforme de gestion scolaire");
   });
 });
 
@@ -69,5 +65,17 @@ describe("document rendering", () => {
     expect(buffer.subarray(0, 5).toString()).toBe("%PDF-");
     // The scope reaches the footer and the signature block.
     expect(buffer.length).toBeGreaterThan(8000);
+
+    // The coat of arms follows the official option: the same document
+    // without it is lighter by the embedded image.
+    const plain = await withDocumentScope({ verification: null, signed: null, brand: { ...BRAND_DEFAULTS, official: false } }, () =>
+      renderToBuffer(doc as unknown as Parameters<typeof renderToBuffer>[0]),
+    );
+    const withArms = await withDocumentScope({ verification: null, signed: null, brand: { ...BRAND_DEFAULTS, official: true } }, () =>
+      renderToBuffer(doc as unknown as Parameters<typeof renderToBuffer>[0]),
+    );
+    expect(withArms.length - plain.length).toBeGreaterThan(20_000);
+    expect(plain.includes("/Subtype /Image")).toBe(false);
+    expect(withArms.includes("/Subtype /Image")).toBe(true);
   }, 30_000);
 });

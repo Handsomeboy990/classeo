@@ -7,7 +7,8 @@ import { mergeSimultaneous, placeSlots, weeklyMinutes, type WeekSlot } from "../
 import { FONT_TITLE } from "../fonts";
 import { calendarDate, duration } from "../format";
 import { DocumentPage, PdfDocument, T, type DocumentMeta } from "../layout";
-import { COLORS, styles } from "../theme";
+import { styles } from "../styles";
+import { COLORS, SUBJECT_TINTS } from "../theme";
 
 // detail: the teacher for a class timetable, the class for a teacher's.
 export type TimetableSlot = WeekSlot;
@@ -21,23 +22,15 @@ export type TimetableData = {
   slots: TimetableSlot[];
 };
 
-// Tints for subjects, light enough for any printer, each with a darker edge.
-const TINTS = [
-  ["#e3f1e9", "#006b40"],
-  ["#e5edff", "#1d4ed8"],
-  ["#fff1d1", "#8a5a00"],
-  ["#fde8eb", "#b3102a"],
-  ["#e0f4f4", "#0f6b6b"],
-  ["#efe7fb", "#6b3fb3"],
-  ["#eef2dc", "#5b6b12"],
-  ["#eceeee", "#3f4a4a"],
-] as const;
+const TINTS = SUBJECT_TINTS;
 
 function tintOf(subject: string, order: string[]) {
   return TINTS[order.indexOf(subject) % TINTS.length]!;
 }
 
-const GRID_HEIGHT = 322;
+// Sized so the grid and the weekly volume stay on one landscape page under
+// the letterhead.
+const GRID_HEIGHT = 296;
 const TIME_COL = 34;
 
 function WeekGrid({ data }: { data: TimetableData }) {
