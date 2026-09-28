@@ -444,7 +444,7 @@ it grants no licence. Third party works keep their own licences:
 - **Dependencies**: Next.js, React, zod, jose, pg, `@node-rs/argon2`,
   `@react-pdf/renderer` (MIT); Prisma (Apache-2.0); lucide-react (ISC);
   nodemailer (MIT-0); web-push (MPL-2.0); Atkinson Hyperlegible Next and
-  Bricolage Grotesque fonts (OFL-1.1). `piper-tts` is GPL-3.0-or-later: it
+  Montserrat fonts (OFL-1.1). `piper-tts` is GPL-3.0-or-later: it
   runs only on the server, inside the Python function, and is not distributed
   to browsers.
 
