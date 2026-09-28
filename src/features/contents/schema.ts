@@ -2,6 +2,8 @@ import { z } from "zod";
 
 import { requiresTranscript } from "@/lib/domain/content-targeting";
 
+import { beninToday } from "./dates";
+
 export const TRANSCRIPT_REQUIRED =
   "La transcription est obligatoire pour un audio ou une vidéo : les personnes sourdes ou malentendantes doivent pouvoir lire tout ce qui est dit.";
 
@@ -72,10 +74,7 @@ export function parseEventDate(value: string) {
   return new Date(Number.NaN);
 }
 
-// Today in Benin (UTC+1), as YYYY-MM-DD.
-export function beninToday(now = new Date()) {
-  return new Date(now.getTime() + 60 * 60 * 1000).toISOString().slice(0, 10);
-}
+export { beninToday };
 
 // The band runs until the end of its last day, Benin time.
 export function tickerEnd(day: string) {

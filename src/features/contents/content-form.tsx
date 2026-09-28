@@ -15,7 +15,7 @@ import { AUDIENCE_LABELS, MAX_RECIPIENTS, requiresTranscript, type AudienceCode 
 import { createContent, updateContent } from "./actions";
 import { FormRecovery } from "./form-recovery";
 import { CONTENT_TYPES, MEDIA_LABELS, type ContentTypeCode } from "./meta";
-import { beninToday } from "./schema";
+import { beninToday } from "./dates";
 import type { TargetOption } from "./queries";
 
 export type ContentFormValues = {
