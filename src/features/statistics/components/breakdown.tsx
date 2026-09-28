@@ -131,7 +131,7 @@ export function Breakdown({
               <p className="text-sm text-muted">Aucune valeur disponible pour cet indicateur.</p>
             )}
             {/* On a phone the grid scrolls sideways; the name column stays pinned. */}
-            <Table density="compact">
+            <Table>
               <caption className="sr-only">
                 Indicateurs par {labels.singular.toLowerCase()}, {stats.childLevel === "COMMUNE" || stats.childLevel === "CLASS" ? "triées" : "triés"} par {meta.label.toLowerCase()}
               </caption>

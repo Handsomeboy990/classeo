@@ -28,7 +28,7 @@ export function Table({
     // the frame, so it never widens the page when the table scrolls.
     <div className={cn("ds-table-scroll relative w-full overflow-x-auto", sticky && "lg:overflow-x-visible", wrapperClassName)} data-sticky={sticky || undefined}>
       <table
-        className={cn("ds-table w-full border-collapse text-sm", className)}
+        className={cn("ds-table w-full border-collapse text-[0.9375rem]", className)}
         data-density={density === "compact" ? "compact" : undefined}
         data-sticky={sticky || undefined}
         data-striped={striped || undefined}
