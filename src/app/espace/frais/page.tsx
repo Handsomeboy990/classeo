@@ -57,7 +57,7 @@ export default async function FeesOverviewPage() {
         </Card>
       ) : (
         <div className="flex flex-col gap-6">
-          <StatGrid>
+          <StatGrid wide>
             <StatCard label="Montant attendu" value={formatFcfa(overview.expected)} hint={`${formatNumber(overview.invoiceCount)} factures`} icon={Coins} />
             <StatCard label="Montant encaissé" value={formatFcfa(overview.collected)} hint={`${formatNumber(overview.paidCount)} factures soldées`} icon={CheckCircle2} />
             <StatCard label="Reste à recouvrer" value={formatFcfa(overview.remaining)} icon={Wallet} />

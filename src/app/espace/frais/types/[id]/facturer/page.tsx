@@ -36,7 +36,7 @@ export default async function GenerateInvoicesPage({ params }: PageProps<"/espac
       />
 
       <div className="flex flex-col gap-6">
-        <StatGrid>
+        <StatGrid wide>
           <StatCard label="Élèves concernés" value={formatNumber(preview.concerned)} />
           <StatCard label="Factures à créer" value={formatNumber(preview.toCreate)} />
           <StatCard label="Déjà facturés, ignorés" value={formatNumber(preview.skipped)} />

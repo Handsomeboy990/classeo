@@ -38,25 +38,31 @@ export function StatCard({
   }[tone];
   const body = (
     <>
-      {/* Phone: the pictogram sits small before the label, which then has
-          the card's whole width; from 40rem it is a tile on the right. */}
-      <div className="flex items-start gap-2 sm:justify-between sm:gap-3">
+      {/* Phone: the pictogram sits small before the label; from 40rem it is
+          a tile on the right. When the label's longest word and the
+          pictogram do not fit side by side, the row wraps: a word is never
+          cut to make room. */}
+      <div className="flex flex-wrap items-start gap-2 sm:justify-between sm:gap-3">
         {Icon && (
           <span className={cn("flex size-6 shrink-0 items-center justify-center rounded-control sm:order-last sm:size-9", toneCls)} aria-hidden>
             <Icon className="size-3.5 sm:size-5" />
           </span>
         )}
-        <p lang="fr" className="min-w-0 font-display text-[0.6875rem] leading-snug font-bold tracking-[0.08em] text-balance hyphens-auto text-muted uppercase">
+        <p lang="fr" data-stat-label className="min-w-min grow basis-0 font-display text-[0.6875rem] leading-snug font-bold tracking-[0.08em] text-balance break-normal wrap-normal hyphens-manual text-muted uppercase">
           {label}
         </p>
       </div>
-      <p className="mt-2.5 font-display text-[1.625rem] leading-[1.1] font-bold text-text tabular-nums sm:mt-2 sm:text-[1.75rem]">{value}</p>
+      <p data-stat-value className="mt-2.5 font-display text-[1.625rem] leading-[1.1] font-bold text-text tabular-nums sm:mt-2 sm:text-[1.75rem]">
+        <FigureParts value={value} />
+      </p>
       {hint && <p className="mt-1.5 text-xs leading-snug text-muted sm:mt-2 sm:text-hint">{hint}</p>}
     </>
   );
   const cls = cn(
-    "relative overflow-hidden rounded-card border border-border bg-surface p-3.5 shadow-card sm:p-5",
-    "before:absolute before:inset-x-0 before:top-0 before:h-[3px] before:content-['']",
+    // No overflow clipping: the grid track then keeps the card as wide as
+    // its figure. The rule follows the inner corners of the card instead.
+    "relative rounded-card border border-border bg-surface p-3.5 shadow-card sm:p-5",
+    "before:absolute before:inset-x-0 before:top-0 before:h-[3px] before:rounded-t-[calc(var(--radius-card)-1px)] before:content-['']",
     rule,
   );
   return href ? (
@@ -68,8 +74,31 @@ export function StatCard({
   );
 }
 
-export function StatGrid({ children }: { children: React.ReactNode }) {
-  // Two per row from the smallest phone, four on large screens; a single
-  // column when the text is enlarged (see globals.css, .ds-stat-grid).
-  return <div className="ds-stat-grid grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">{children}</div>;
+// A figure never wraps: "19 523" split over two lines reads as two other
+// numbers. A value that lists several figures or names ("14,25 / 6,50",
+// "6e A, 5e B") may break between them only.
+function FigureParts({ value }: { value: string }) {
+  return value.split(/(, | \/ )/).map((part, i) =>
+    i % 2 ? (
+      part
+    ) : (
+      <span key={i} data-stat-figure className="whitespace-nowrap">
+        {part}
+      </span>
+    ),
+  );
+}
+
+// Columns follow the width the grid has, at every text size: four, two or
+// one, never three (the cards go by pairs). See globals.css, .ds-stat-grid.
+// `wide` for figures of about fourteen characters, such as amounts in FCFA
+// ("5 645 000 FCFA"): wider cards, so they fit on one line.
+export function StatGrid({ children, wide = false }: { children: React.ReactNode; wide?: boolean }) {
+  return (
+    <div className="ds-stat-wrap">
+      <div className="ds-stat-grid" data-wide={wide || undefined}>
+        {children}
+      </div>
+    </div>
+  );
 }

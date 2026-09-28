@@ -154,9 +154,10 @@ export async function StaffDashboard({ user }: { user: User }) {
           <h2 id="shortcuts-title" className="text-lg font-bold">
             Accès rapides
           </h2>
-          {/* One per row on a phone, two from 40rem, four on large screens;
-              a column never narrower than 15rem when the text is enlarged. */}
-          <ul className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,15rem),1fr))] gap-3 *:min-w-0 sm:gap-4 xl:grid-cols-4">
+          {/* As many columns as tiles of 15rem fit, at every text size: one
+              on a phone, four on a large screen at the usual size, fewer
+              when the text is enlarged. */}
+          <ul className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,15rem),1fr))] gap-3 *:min-w-0 sm:gap-4">
             {links.map((l) => (
               <ShortcutTile key={l.href} {...l} />
             ))}
@@ -168,15 +169,17 @@ export async function StaffDashboard({ user }: { user: User }) {
 }
 
 // Service tile (doc 4.4): the same soft navy pastille for every shortcut,
-// the title is the link and the whole tile answers the pointer.
+// the title is the link and the whole tile answers the pointer. Words are
+// never cut: when the longest one does not fit beside the pastille, the
+// text goes under it.
 function ShortcutTile({ href, label, body, icon: Icon }: { href: string; label: string; body: string; icon: LucideIcon }) {
   return (
-    <li className="relative flex gap-3.5 rounded-card border border-border bg-surface p-4 shadow-card transition-[border-color,box-shadow] hover:border-primary/40 hover:shadow-[var(--elevation-sm)] has-[a:focus-visible]:outline-3 has-[a:focus-visible]:outline-offset-2 has-[a:focus-visible]:outline-focus lg:p-5">
+    <li className="relative flex flex-wrap gap-3.5 rounded-card border border-border bg-surface p-4 shadow-card transition-[border-color,box-shadow] hover:border-primary/40 hover:shadow-[var(--elevation-sm)] has-[a:focus-visible]:outline-3 has-[a:focus-visible]:outline-offset-2 has-[a:focus-visible]:outline-focus lg:p-5">
       <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-primary-soft text-primary" aria-hidden>
         <Icon className="size-6" />
       </span>
-      <div className="flex min-w-0 flex-col">
-        <p className="font-display text-base leading-snug font-bold text-balance text-text [overflow-wrap:anywhere]">
+      <div className="flex min-w-min grow basis-0 flex-col">
+        <p className="font-display text-base leading-snug font-bold text-balance break-normal wrap-normal hyphens-manual text-text">
           <Link href={href} className="outline-none! after:absolute after:inset-0 after:rounded-card">
             {label}
           </Link>

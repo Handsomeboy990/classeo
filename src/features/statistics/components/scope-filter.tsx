@@ -46,7 +46,7 @@ export function ScopeFilter({
   }
 
   return (
-    <form method="get" className="grid grid-cols-2 gap-3 sm:flex sm:flex-row sm:items-end" aria-busy={pending || undefined}>
+    <form method="get" className="grid grid-cols-2 gap-3 sm:flex sm:flex-row sm:flex-wrap sm:items-end" aria-busy={pending || undefined}>
       {Object.entries(keep).map(([k, v]) => (
         <input key={k} type="hidden" name={k} value={v} />
       ))}

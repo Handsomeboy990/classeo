@@ -89,9 +89,9 @@ export default async function StatisticsPage({ searchParams }: PageProps<"/espac
         }
       />
       {/* The scope and its filters in one panel, as on the list pages. */}
-      <div className="flex flex-col gap-4 rounded-card border border-border bg-surface p-3 shadow-card sm:p-4 lg:flex-row lg:items-end lg:justify-between">
+      <div className="flex flex-col gap-4 rounded-card border border-border bg-surface p-3 shadow-card sm:p-4 lg:flex-row lg:flex-wrap lg:items-end lg:justify-between">
         <ScopeBreadcrumb scope={scope} basePath="/espace/statistiques" user={user} />
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
+        <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end">
           <YearSelect options={years} value={year?.id} />
           {(departments || communes.length > 0) && (
             <ScopeFilter

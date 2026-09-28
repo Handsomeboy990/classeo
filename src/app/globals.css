@@ -1345,15 +1345,66 @@ html[data-lite="on"] img[data-decorative] {
   }
 }
 
-/* Enlarged text on a phone: key figures one per row, never clipped. */
-@media (max-width: 39.999rem) {
-  html:is([data-text="lg"], [data-text="xl"], [data-text="xxl"]) .ds-stat-grid {
-    grid-template-columns: minmax(0, 1fr);
+/*
+ * Key figure grids (stat-card.tsx): the columns follow the width the grid
+ * has, at every text size and on every screen. The thresholds of the
+ * container queries are in rem, which there follow the root size, so a
+ * larger text needs a wider grid for the same number of columns: a card is
+ * never narrower than its longest label word beside its pictogram, or than
+ * its figure, which never wraps. Four, two or one per row, never three.
+ * - Phone card (pictogram before the label): two per row from 19.75rem,
+ *   two cards of 9.5rem.
+ * - From 40rem (pictogram tile on the right): cards of 13.5rem at least,
+ *   two per row from 28rem, four from 57rem.
+ * - `data-wide` (amounts in FCFA, about 14.5rem of figure): phone cards of
+ *   15.5rem, two per row from 31.75rem; then cards of 17.25rem, two per
+ *   row from 35.5rem, four from 72rem.
+ * The tracks are `1fr`, whose minimum is the card's own: a figure longer
+ * than planned widens its column instead of being clipped.
+ */
+.ds-stat-wrap {
+  container: stat-grid / inline-size;
+}
+.ds-stat-grid {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: 1fr;
+}
+@container stat-grid (min-width: 19.75rem) {
+  .ds-stat-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
-@media (max-width: 22rem) {
+@media (min-width: 40rem) {
   .ds-stat-grid {
-    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+  }
+  @container stat-grid (max-width: 27.999rem) {
+    .ds-stat-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  @container stat-grid (min-width: 57rem) {
+    .ds-stat-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+}
+@container stat-grid (max-width: 31.749rem) {
+  .ds-stat-grid[data-wide] {
+    grid-template-columns: 1fr;
+  }
+}
+@media (min-width: 40rem) {
+  @container stat-grid (min-width: 31.75rem) and (max-width: 35.499rem) {
+    .ds-stat-grid[data-wide] {
+      grid-template-columns: 1fr;
+    }
+  }
+  @container stat-grid (min-width: 57rem) and (max-width: 71.999rem) {
+    .ds-stat-grid[data-wide] {
+      grid-template-columns: repeat(2, 1fr);
+    }
   }
 }
 
