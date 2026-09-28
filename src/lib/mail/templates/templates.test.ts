@@ -86,6 +86,20 @@ describe("the e-mail frame", () => {
     for (const part of [mail.html, mail.text]) expect(part).not.toMatch(/plateforme nationale|ministère de l'éducation/i);
   });
 
+  // Owner's decision D7: no e-mail claims that a ministry or a public
+  // service takes part in the platform.
+  it("claims no involvement of a ministry or of a public service", () => {
+    const all = [
+      credentialsEmail(credentials),
+      credentialsEmail({ ...credentials, reason: "reset" }),
+      resetCodeEmail({ firstName: "A", code: "1", minutes: 15, maxAttempts: 5, codeUrl: "https://a" }),
+      passwordChangedEmail({ firstName: "P", email: "p@a.bj", at: new Date(), signInUrl: "https://a.bj/connexion", forgotUrl: "https://a.bj/mot-de-passe-oublie" }),
+      notificationEmail({ firstName: "A", kind: "absence", title: "T", body: "B", url: "https://a.bj/espace" }),
+    ];
+    for (const m of all) expect(m.html + m.text).not.toMatch(/\bminist[èe]res?\b|services? déconcentrés/i);
+    expect(mail.text).toContain("Classéo, plateforme de gestion scolaire qui relie l'école, les enseignants et les familles.");
+  });
+
   it("uses the official palette: navy band and button, tricolour rule, navy footer", () => {
     for (const colour of ["#0A3764", "#008751", "#FCD116", "#E8112D", "#072747"]) expect(mail.html).toContain(`background:${colour}`);
     // The old green frame is gone.

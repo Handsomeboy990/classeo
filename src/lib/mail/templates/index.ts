@@ -48,7 +48,7 @@ export function credentialsEmail(input: CredentialsEmailInput): RenderedEmail {
       eyebrow: "Nouveau compte",
       title: `Bienvenue sur Classéo, ${input.firstName}`,
       blocks: [
-        { type: "paragraph", text: `${input.by.name} (${input.by.roleName}) vous a ouvert un compte sur Classéo, la plateforme qui relie le ministère, les services déconcentrés, les écoles et les familles.` },
+        { type: "paragraph", text: `${input.by.name} (${input.by.roleName}) vous a ouvert un compte sur Classéo, plateforme de gestion scolaire qui relie l'école, les enseignants et les familles.` },
         ...common,
         { type: "small", text: "Vous n'attendiez pas ce compte ? Ne vous connectez pas et signalez-le à votre administration." },
       ],
